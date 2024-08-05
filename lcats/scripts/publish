@@ -1,0 +1,12 @@
+#!/bin/bash
+# Publish LCATS to PyPI via twine
+# Requires:
+# - pip install twine
+echo "Publishing lcats to pip..."
+if [ -d "dist" ]; then
+    echo twine upload dist/*
+    echo "Publishing not yet supported until LCATS is more heavily tested / fleshed out."
+else
+    echo "No dist directory found, please run build first."
+fi
+echo

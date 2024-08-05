@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Cleaning lcats build..."
+echo rm -rf build dist lcats.egg-info
+rm -rf build dist lcats.egg-info
+echo

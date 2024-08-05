@@ -1,0 +1,8 @@
+#!/bin/bash
+# Build LCATS via Python's build module
+# Requires:
+# - pip install build
+echo "Building the lcats package..."
+echo python -m build
+python -m build
+echo

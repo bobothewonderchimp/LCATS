@@ -1,0 +1,6 @@
+#!/bin/bash
+# Test LCATS via Python's unittest module
+echo "Testing lcats ..."
+echo python -m unittest discover tests "*_test.py"
+python -m unittest discover tests "*_test.py"
+echo
