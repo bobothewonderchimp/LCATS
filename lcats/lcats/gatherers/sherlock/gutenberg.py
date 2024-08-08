@@ -59,13 +59,12 @@ def find_paragraphs_adventures(soup, start_heading_text):
 
 def create_download_callback(story_name, url, start_heading_text, description):
     """Create a download callback function for a specific story."""
-    def story_download_callback():
+    def story_download_callback(contents):
         """Download a specific Sherlock story from the Gutenberg Project."""
-        story_gutenberg = downloaders.load_page(url)
-        if story_gutenberg is None:
+        if contents is None:
             raise ValueError(f"Failed to download {url}")
 
-        story_soup = BeautifulSoup(story_gutenberg, "lxml")
+        story_soup = BeautifulSoup(contents, "lxml")
 
         story_text = find_paragraphs_adventures(story_soup, start_heading_text)
         if story_text is None:
@@ -81,7 +80,7 @@ def create_download_callback(story_name, url, start_heading_text, description):
 
         return description, story_text, story_data
 
-    return story_name, story_download_callback
+    return story_download_callback
 
 
 def gather():
@@ -91,12 +90,14 @@ def gather():
         description="Sherlock Holmes stories from the Gutenberg Project.",
         license="Public domain, from Project Gutenberg.")
     for filename, heading, title in ADVENTURES_HEADINGS:
-       gatherer.download(
-           *create_download_callback(
-               story_name=filename,
-               url=ADVENTURES_GUTENBERG,
-               start_heading_text=heading,
-               description=title))
+        gatherer.download(
+            filename,
+            ADVENTURES_GUTENBERG,
+            create_download_callback(
+                story_name=filename,
+                url=ADVENTURES_GUTENBERG,
+                start_heading_text=heading,
+                description=title))
     return gatherer.downloads
 
 

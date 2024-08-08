@@ -1,16 +1,22 @@
 """Data gathering utility functions."""
+import abc
 import json
 import os
-import requests
+import hashlib
 import shutil
+from urllib.parse import urlparse, unquote
+
+import requests
+
+import lcats.constants as constants
 
 
-LICENSE = "LICENSE"
 
 
 def load_page(url, timeout=10):
     """Load a page from a URL and return the text content."""
     response = requests.get(url, timeout=timeout)
+    response.encoding = constants.TEXT_ENCODING
     if response.status_code == 200:
         print("File successfully downloaded.")
         return response.text
@@ -19,13 +25,138 @@ def load_page(url, timeout=10):
         return None
 
 
+def filename_from_url(url):
+    """Generate a unique filename from a URL."""
+    # Parse the URL
+    parsed_url = urlparse(url)
+    
+    # Extract the path and query to form the base of the filename
+    url_path = unquote(parsed_url.path)
+    url_query = unquote(parsed_url.query)
+
+    # Combine path and query to form a unique identifier
+    unique_string = url_path + '?' + url_query if url_query else url_path
+
+    # Create a hash of the unique string
+    url_hash = hashlib.sha256(unique_string.encode('utf-8')).hexdigest()
+
+    # Get the file extension (if any) from the URL path
+    file_extension = os.path.splitext(parsed_url.path)[1]
+
+    # Combine the hash with the file extension to form the filename
+    filename = f"{url_hash}{file_extension}"
+
+    return filename
+
+
+class ResourceCache(abc.ABC):
+    """Utility class to cache resources in a directory."""
+
+    def __init__(self, 
+                 root=constants.CACHE_ROOT,
+                 encoding=constants.TEXT_ENCODING):
+        """Initialize the downloader with a root directory."""
+        self.root = root
+        self.encoding = encoding
+
+    def full_path(self, filename):
+        """Return the full path to the file in the cache."""
+        return os.path.join(self.root, filename)
+    
+    def ensure(self, filename):
+        """Ensure the directory tree exists and whether the file is there."""
+        # Create the root directory if it doesn't exist
+        if not os.path.exists(self.root):
+            os.makedirs(self.root)
+
+        # Check if the file exists
+        full_path = self.full_path(filename)
+        return os.path.exists(full_path), full_path    
+    
+    @abc.abstractmethod
+    def canonicalize(self, resource):
+        """Canonicalize the resource name as a file we can save."""
+
+    @abc.abstractmethod
+    def acquire(self, resource):
+        """Get the contents of the resource."""
+
+    def store(self, contents, full_path):
+        """Store the contents of the resource at the full path."""
+        with open(full_path, 'w', encoding=self.encoding) as file:
+            file.write(self.acquire(contents))
+
+    def cache(self, resource, force=False):
+        """If a file doesn't already exist, get it from the resource."""
+        file_name = self.canonicalize(resource)
+        file_exists, full_path = self.ensure(file_name)
+
+        if not file_exists or force:
+            self.store(resource, full_path)
+            print(f"Resource {resource} saved to {file_name} .")
+        else:
+            print(f"Resource {resource} exists at {file_name} , skipping download.")
+        return full_path
+
+    def get(self, resource, force=False):
+        """Get the contents of a file if it exists, otherwise acquire it."""
+        full_path = self.cache(resource, force=force)
+        with open(full_path, 'r', encoding=self.encoding) as file:
+            return file.read()
+
+    def clear(self):
+        """Clear the contents of the gatherer's directory."""
+        if os.path.exists(self.root):
+            # Remove all contents of the directory
+            for filename in os.listdir(self.root):
+                file_path = os.path.join(self.root, filename)
+                try:
+                    if os.path.isfile(file_path) or os.path.islink(file_path):
+                        os.unlink(file_path)  # Remove the file or link
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)  # Remove the directory
+                except Exception as e:
+                    print(f'Failed to delete {file_path}. Reason: {e}')
+            print(f"Cleared all contents in {self.root}")
+        else:
+            print(f"Directory {self.root} does not exist, nothing to clear.")
+
+
+class LambdaResourceCache(ResourceCache):
+    """Utility class to cache URL-loadable resources in a directory."""
+
+    def __init__(self, canonicalizer, acquirer, **kwargs):
+        """Initialize the downloader with a root directory."""
+        super().__init__(**kwargs)
+        self.canonicalizer = canonicalizer
+        self.acquirer = acquirer
+
+    def canonicalize(self, resource):
+        """Canonicalize the URL as a file we can save."""
+        return self.canonicalizer(resource)
+    
+    def acquire(self, resource):
+        """Acquire the resource from an URL and return the text content."""
+        return self.acquirer(resource)
+
+
+class UrlResourceCache(LambdaResourceCache):
+    """Utility class to cache URL-loadable resources in a directory."""
+
+    def __init__(self, **kwargs):
+        """Initialize the downloader with a root directory."""
+        super().__init__(
+            canonicalizer=filename_from_url, acquirer=load_page, **kwargs)
+
+
 class DataGatherer:
     """Utility class to download data files if needed to a given directory."""
 
     def __init__(self,
                  name,
                  description=None,
-                 root="data",
+                 root=constants.DATA_ROOT,
+                 cache=constants.CACHE_ROOT,
                  suffix=".json",
                  license=None):
         """Initialize the gatherer with a name, description, and root directory.
@@ -39,9 +170,11 @@ class DataGatherer:
         self.name = name
         self.description = description
         self.root = root
+        self.cache = cache
         self.suffix = suffix
         self.license = license
         self.downloads = {}
+        self.resource_cache = UrlResourceCache(root=self.cache)
     
     @property
     def path(self):
@@ -59,7 +192,7 @@ class DataGatherer:
             os.makedirs(self.path)
 
         # Create the license file if it doesn't exist
-        license_path = os.path.join(self.path, LICENSE)
+        license_path = os.path.join(self.path, constants.LICENSE_FILE)
         if not os.path.exists(license_path):
             with open(license_path, 'w', encoding='utf-8') as license_file:
                 license_file.write(
@@ -68,14 +201,21 @@ class DataGatherer:
         # Check if the file exists
         file_path = os.path.join(self.path, filename + self.suffix)
         return os.path.exists(file_path), file_path
+    
+    def resource(self, resource, force=False):
+        """Get the contents of a file if it exists, otherwise acquire it."""
+        return self.resource_cache.get(resource, force=force)
 
-    def download(self, filename, callback, force=False):
-        """If a file doesn't already exist, download it using the callback."""
+    def download(self, filename, resource, handler, force=False):
+        """If a file doesn't already exist, get its resource and process it with the handler."""
         file_exists, file_path = self.ensure(filename)
 
         if not file_exists or force:
+            # Get the resource from the URL
+            contents = self.resource(resource, force=force)
+
             # Execute the callback to get the data to save
-            descriptive_name, body_text, additional_data = callback()
+            descriptive_name, body_text, additional_data = handler(contents)
             if body_text is None:
                 raise ValueError(f"Failed to download {descriptive_name}")
 
@@ -94,6 +234,15 @@ class DataGatherer:
         else:
             print(f"File {file_path} exists, skipping download.")
 
+    def get(self, filename, callback, force=False):
+        """Get the contents of a file if it exists, otherwise download it."""
+        file_exists, file_path = self.ensure(filename)
+        if not file_exists or force:
+            self.download(filename, callback, force)
+        else:
+            with open(file_path, 'r', encoding='utf-8') as json_file:
+                return json.load(json_file)
+
     def clear(self):
         """Clear the contents of the gatherer's directory."""
         if os.path.exists(self.path):
@@ -110,3 +259,5 @@ class DataGatherer:
             print(f"Cleared all contents in {self.path}")
         else:
             print(f"Directory {self.path} does not exist, nothing to clear.")
+
+
