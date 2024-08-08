@@ -76,6 +76,8 @@ class DataGatherer:
         if not file_exists or force:
             # Execute the callback to get the data to save
             descriptive_name, body_text, additional_data = callback()
+            if body_text is None:
+                raise ValueError(f"Failed to download {descriptive_name}")
 
             # Structure the data into a dictionary
             data_to_save = {

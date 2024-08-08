@@ -2,7 +2,7 @@
 echo "Updating the Anaconda dependency listing..."
 set -x
 
-conda env export > environment.yml
+conda env export | egrep -v "^name:" | egrep -v "^prefix:" > environment.yml
 
 # Turn off logging and print a blank line
 { set +x; } 2>/dev/null

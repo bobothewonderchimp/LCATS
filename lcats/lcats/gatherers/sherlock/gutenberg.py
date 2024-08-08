@@ -23,7 +23,7 @@ ADVENTURES_HEADINGS = [
      'Sherlock Holmes - The Adventure of the Blue Carbuncle'),
     ('speckled_band', "THE ADVENTURE OF THE SPECKLED BAND",
      'Sherlock Holmes - The Adventure of the Speckled Band'),
-    ('engineers_thumb', "THE ADVENTURE OF THE ENGINEER'S THUMB",
+    ('engineers_thumb', "THE ADVENTURE OF THE ENGINEER’S THUMB",
      'Sherlock Holmes - The Adventure of the Engineer\'s Thumb'),
     ('noble_bachelor', "THE ADVENTURE OF THE NOBLE BACHELOR",
      'Sherlock Holmes - The Adventure of the Noble Bachelor'),
@@ -62,9 +62,16 @@ def create_download_callback(story_name, url, start_heading_text, description):
     def story_download_callback():
         """Download a specific Sherlock story from the Gutenberg Project."""
         story_gutenberg = downloaders.load_page(url)
+        if story_gutenberg is None:
+            raise ValueError(f"Failed to download {url}")
+
         story_soup = BeautifulSoup(story_gutenberg, "lxml")
 
         story_text = find_paragraphs_adventures(story_soup, start_heading_text)
+        if story_text is None:
+            raise ValueError(
+                f"Failed to find text for {story_name} given {start_heading_text} in {url}")
+        
         story_data = {
             "author": "Arthur Conan Doyle",
             "year": 1891,
@@ -80,7 +87,9 @@ def create_download_callback(story_name, url, start_heading_text, description):
 def gather():
     """Run DataGatherers for the Sherlock Holmes corpus."""
     gatherer = downloaders.DataGatherer(
-        "sherlock", description="Sherlock Holmes stories from the Gutenberg Project.")
+        "sherlock", 
+        description="Sherlock Holmes stories from the Gutenberg Project.",
+        license="Public domain, from Project Gutenberg.")
     for filename, heading, title in ADVENTURES_HEADINGS:
        gatherer.download(
            *create_download_callback(
