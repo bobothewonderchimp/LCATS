@@ -1,6 +1,10 @@
 #!/bin/bash
 # Test LCATS via Python's unittest module
 echo "Testing lcats ..."
-echo python -m unittest discover tests "*_test.py"
+set -x
+
 python -m unittest discover tests "*_test.py"
+
+# Turn off logging and print a blank line
+{ set +x; } 2>/dev/null
 echo

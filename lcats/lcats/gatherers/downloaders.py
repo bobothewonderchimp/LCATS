@@ -5,6 +5,9 @@ import requests
 import shutil
 
 
+LICENSE = "LICENSE"
+
+
 def load_page(url, timeout=10):
     """Load a page from a URL and return the text content."""
     response = requests.get(url, timeout=timeout)
@@ -19,7 +22,12 @@ def load_page(url, timeout=10):
 class DataGatherer:
     """Utility class to download data files if needed to a given directory."""
 
-    def __init__(self, name, description=None, root="data", suffix=".json"):
+    def __init__(self,
+                 name,
+                 description=None,
+                 root="data",
+                 suffix=".json",
+                 license=None):
         """Initialize the gatherer with a name, description, and root directory.
         
         Args:
@@ -32,6 +40,7 @@ class DataGatherer:
         self.description = description
         self.root = root
         self.suffix = suffix
+        self.license = license
         self.downloads = {}
     
     @property
@@ -44,10 +53,17 @@ class DataGatherer:
         # Create the root directory if it doesn't exist
         if not os.path.exists(self.root):
             os.makedirs(self.root)
-        
+
         # Create the subdirectory if provided and doesn't exist
         if not os.path.exists(self.path):
             os.makedirs(self.path)
+
+        # Create the license file if it doesn't exist
+        license_path = os.path.join(self.path, LICENSE)
+        if not os.path.exists(license_path):
+            with open(license_path, 'w', encoding='utf-8') as license_file:
+                license_file.write(
+                    self.license if self.license else "No license provided.")
 
         # Check if the file exists
         file_path = os.path.join(self.path, filename + self.suffix)

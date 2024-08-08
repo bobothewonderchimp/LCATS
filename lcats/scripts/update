@@ -1,9 +1,10 @@
 #!/bin/bash
-echo "Cleaning lcats build..."
+echo "Updating the Anaconda dependency listing..."
 set -x
 
-rm -rf build dist lcats.egg-info
+conda env export > environment.yml
 
 # Turn off logging and print a blank line
 { set +x; } 2>/dev/null
 echo
+

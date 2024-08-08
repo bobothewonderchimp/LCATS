@@ -3,6 +3,10 @@
 # Requires:
 # - pip install build
 echo "Building the lcats package..."
-echo python -m build
+set -x
+
 python -m build
+
+# Turn off logging and print a blank line
+{ set +x; } 2>/dev/null
 echo

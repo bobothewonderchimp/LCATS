@@ -6,6 +6,32 @@ import lcats.gatherers.downloaders as downloaders
 
 
 ADVENTURES_GUTENBERG = 'https://www.gutenberg.org/files/1661/1661-h/1661-h.htm'
+ADVENTURES_HEADINGS = [
+    ('scandal_in_bohemia', "A SCANDAL IN BOHEMIA",
+     'Sherlock Holmes - A Scandal in Bohemia'),
+    ('red_headed_league', "THE RED-HEADED LEAGUE",
+     'Sherlock Holmes - The Red-Headed League'),
+    ('case_of_identity', "A CASE OF IDENTITY",
+     'Sherlock Holmes - A Case of Identity'),
+    ('boscombe_valley', "THE BOSCOMBE VALLEY MYSTERY",
+     'Sherlock Holmes - The Boscombe Valley Mystery'),
+    ('five_orange_pips', "THE FIVE ORANGE PIPS",
+     'Sherlock Holmes - The Five Orange Pips'),
+    ('twisted_lip', "THE MAN WITH THE TWISTED LIP",
+     'Sherlock Holmes - The Man with the Twisted Lip'),
+    ('blue_carbuncle', "THE ADVENTURE OF THE BLUE CARBUNCLE",
+     'Sherlock Holmes - The Adventure of the Blue Carbuncle'),
+    ('speckled_band', "THE ADVENTURE OF THE SPECKLED BAND",
+     'Sherlock Holmes - The Adventure of the Speckled Band'),
+    ('engineers_thumb', "THE ADVENTURE OF THE ENGINEER'S THUMB",
+     'Sherlock Holmes - The Adventure of the Engineer\'s Thumb'),
+    ('noble_bachelor', "THE ADVENTURE OF THE NOBLE BACHELOR",
+     'Sherlock Holmes - The Adventure of the Noble Bachelor'),
+    ('beryl_coronet', "THE ADVENTURE OF THE BERYL CORONET",
+     'Sherlock Holmes - The Adventure of the Beryl Coronet'),
+    ('copper_beeches', "THE ADVENTURE OF THE COPPER BEECHES",
+     'Sherlock Holmes - The Adventure of the Copper Beeches'),
+]
 ADVENURES_SCANDAL_HEADING = "A SCANDAL IN BOHEMIA"
 
 
@@ -55,11 +81,13 @@ def gather():
     """Run DataGatherers for the Sherlock Holmes corpus."""
     gatherer = downloaders.DataGatherer(
         "sherlock", description="Sherlock Holmes stories from the Gutenberg Project.")
-    gatherer.download(
-        *create_download_callback("scandal_in_bohemia", 
-                                  ADVENTURES_GUTENBERG, 
-                                  ADVENURES_SCANDAL_HEADING,
-                                  "Sherlock Holmes - A Scandal in Bohemia"))
+    for filename, heading, title in ADVENTURES_HEADINGS:
+       gatherer.download(
+           *create_download_callback(
+               story_name=filename,
+               url=ADVENTURES_GUTENBERG,
+               start_heading_text=heading,
+               description=title))
     return gatherer.downloads
 
 
