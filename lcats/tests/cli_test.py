@@ -2,6 +2,7 @@
 
 import parameterized
 import unittest
+from unittest.mock import patch, Mock
 
 from lcats import cli
 
@@ -22,11 +23,16 @@ class TestCli(unittest.TestCase):
         self.assertEqual(result, "LCATS is a literary case based reasoning system.")
         self.assertEqual(response, 0)
 
-    def test_dispatch_gather(self):
+    @patch('lcats.gatherers.main.run')
+    def test_dispatch_gather(self, mock_run):
         """Ensure the dispatcher function is working."""
-        result, response = cli.dispatch('gather', [True])
-        self.assertEqual(result, "Gathering complete.")
-        self.assertEqual(response, 0)
+        expected_message = "Gathering complete."
+        expected_status = 0
+        mock_run.return_value = (expected_message, expected_status)
+
+        actual_message, actual_status = cli.dispatch('gather', [True])
+        self.assertEqual(expected_message, actual_message)
+        self.assertEqual(expected_status, actual_status)
 
     @parameterized.parameterized.expand([
         ('index', 'Indexing data files is not yet implemented.'),
