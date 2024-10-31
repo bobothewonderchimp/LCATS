@@ -27,6 +27,7 @@ Thumbs.db
 data/
 lcats/data
 lcats/lcats/data
+lcats/notebooks/data
 lcats/lcats/notebooks/data
 
 # Ignore package build directories
@@ -59,5 +60,7 @@ htmlcov/
 docs/_build/
 
 # Ignore notebook outputs
+lcats/notebooks/output/
+lcats/notebooks/Output/
 lcats/lcats/notebooks/output/
 lcats/lcats/notebooks/Output/

@@ -53,7 +53,6 @@ dependencies:
   - nest-asyncio=1.6.0=pyhd8ed1ab_0
   - networkx=3.3=pyhd8ed1ab_1
   - nomkl=1.0=h5ca1d4c_0
-  - numpy=2.0.1=py311h4268184_0
   - openssl=3.3.1=hfb2fe0b_2
   - parameterized=0.9.0=pyhd8ed1ab_0
   - parso=0.8.4=pyhd8ed1ab_0
@@ -83,40 +82,123 @@ dependencies:
   - tornado=6.4.1=py311hd3f4193_0
   - traitlets=5.14.3=pyhd8ed1ab_0
   - typing_extensions=4.12.2=pyha770c72_0
-  - tzdata=2024a=h0c530f3_0
   - wcwidth=0.2.13=pyhd8ed1ab_0
   - wheel=0.43.0=pyhd8ed1ab_1
   - xz=5.2.6=h57fd34a_0
   - zeromq=4.3.5=hcc0f68c_4
   - zipp=3.19.2=pyhd8ed1ab_0
   - pip:
+      - aiohappyeyeballs==2.4.0
+      - aiohttp==3.10.5
+      - aiosignal==1.3.1
+      - annotated-types==0.7.0
+      - anyio==4.4.0
+      - attrs==24.2.0
       - backports-tarfile==1.2.0
       - beautifulsoup4==4.12.3
       - build==1.2.1
       - certifi==2024.7.4
+      - chardet==5.2.0
       - charset-normalizer==3.3.2
+      - construct==2.5.3
+      - datasets==2.21.0
+      - defusedxml==0.7.1
+      - deprecated==1.2.14
+      - dill==0.3.8
+      - distro==1.9.0
+      - dnspython==2.6.1
       - docutils==0.21.2
+      - faiss-cpu==1.8.0.post1
+      - frozenlist==1.4.1
+      - future==1.0.0
+      - gutenbergpy==0.3.5
+      - h11==0.14.0
+      - haystack==0.42
+      - httpcore==1.0.5
+      - httpsproxy-urllib2==1.0
+      - httpx==0.27.2
+      - huggingface-hub==0.24.6
       - idna==3.7
+      - isodate==0.6.1
       - jaraco-classes==3.4.0
       - jaraco-context==5.3.0
       - jaraco-functools==4.0.2
+      - jiter==0.5.0
+      - jsonpatch==1.33
+      - jsonpointer==3.0.0
+      - jsonschema==4.23.0
+      - jsonschema-path==0.3.3
+      - jsonschema-specifications==2023.12.1
       - keyring==25.3.0
+      - langchain==0.2.16
+      - langchain-core==0.2.38
+      - langchain-text-splitters==0.2.4
+      - langsmith==0.1.114
+      - lazy-object-proxy==1.10.0
       - lcats==0.1
       - lxml==5.2.2
       - markdown-it-py==3.0.0
       - mdurl==0.1.2
       - more-itertools==10.3.0
+      - multidict==6.0.5
+      - multiprocess==0.70.16
       - nh3==0.2.18
+      - numpy==1.25.2
+      - openai==1.43.0
+      - openapi-core==0.19.4
+      - openapi-schema-validator==0.6.2
+      - openapi-spec-validator==0.7.1
+      - opentelemetry-api==1.27.0
+      - opentelemetry-sdk==1.27.0
+      - opentelemetry-semantic-conventions==0.48b0
+      - orjson==3.10.7
       - packaging==24.1
+      - pandas==2.2.2
+      - parse==1.20.2
+      - pathable==0.4.3
+      - pefile==2024.8.26
+      - pinecone-client==5.0.1
+      - pinecone-plugin-inference==1.0.3
+      - pinecone-plugin-interface==0.0.7
       - pkginfo==1.10.0
+      - prance==23.6.21.0
+      - pyarrow==17.0.0
+      - pybars4==0.9.13
+      - pydantic==2.8.2
+      - pydantic-core==2.20.1
+      - pydantic-settings==2.4.0
+      - pymeta3==0.5.1
+      - pymongo==4.10.1
       - pyproject-hooks==1.1.0
+      - python-dotenv==1.0.1
+      - python-ptrace==0.9.9
+      - pytz==2024.1
+      - pyyaml==6.0.2
       - readme-renderer==44.0
+      - referencing==0.35.1
+      - regex==2024.7.24
       - requests==2.32.3
       - requests-toolbelt==1.0.0
+      - rfc3339-validator==0.1.4
       - rfc3986==2.0.0
       - rich==13.7.1
+      - rpds-py==0.20.0
+      - ruamel-yaml==0.18.6
+      - ruamel-yaml-clib==0.2.8
+      - safetensors==0.4.4
+      - semantic-kernel==1.8.2
+      - sniffio==1.3.1
       - soupsieve==2.5
+      - sqlalchemy==2.0.34
+      - tenacity==8.5.0
       - tinydb==4.8.0
+      - tokenizers==0.19.1
       - tqdm==4.66.5
+      - transformers==4.44.2
       - twine==5.1.1
+      - tzdata==2024.1
       - urllib3==2.2.2
+      - werkzeug==3.0.4
+      - wrapt==1.16.0
+      - xxhash==3.5.0
+      - yarl==1.9.11
