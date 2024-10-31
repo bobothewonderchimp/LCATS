@@ -6,7 +6,7 @@ from torch.utils.data import Dataset
 
 
 # TODO(centaur): Do this in a more principled way.
-DEFAULT_ROOT_DIR = "../../data"
+DEFAULT_ROOT_DIR = "data"
 
 
 class JsonDataset(Dataset):
