@@ -1,27 +1,87 @@
 """Data gathering utility functions."""
 import abc
+import codecs
 import json
 import os
 import hashlib
 import shutil
 from urllib.parse import urlparse, unquote
 
+import chardet
 import requests
 
 import lcats.constants as constants
 
 
+def detect_url_encoding(url, timeout=10):
+    """Get the encoding of a page from a URL.
+
+    Args:
+        url (str): The URL to check.
+        timeout (int): The number of seconds to wait for a response.
+
+    Returns:
+        str: The encoding of the page, or None if it couldn't be determined.
+    """
+    response = requests.head(url, timeout=timeout)
+    if response.status_code == 200:
+        return response.encoding
+    else:
+        print(
+            f"Failed to get the encoding. Status code: {response.status_code}")
+        return None
 
 
-def load_page(url, timeout=10):
-    """Load a page from a URL and return the text content."""
+def detect_encoding(text):
+    """Detect the encoding of a text string."""
+    # If text is a string, encode it to bytes for detection
+    if isinstance(text, str):
+        text = text.encode('utf-8', errors='ignore')
+
+    # Use chardet to detect encoding
+    detected = chardet.detect(text)
+    return detected['encoding']
+
+
+def convert_encoding(text, source_encoding='utf-8', target_encoding='ISO-8859-1'):
+    """Convert the encoding of a text string from source to target encoding."""
+    # Decode the text from source encoding, then re-encode in target encoding
+    try:
+        # Confirm we have valid input and output codecs
+        codecs.lookup(source_encoding)
+        codecs.lookup(target_encoding)
+
+        # If text is bytes, decode it first; otherwise, assume it's already decoded
+        if isinstance(text, bytes):
+            text = text.decode(source_encoding, errors='strict')
+        # Encode in the target encoding
+        converted_text = text.encode(target_encoding, errors='strict')
+        return converted_text
+    except (UnicodeEncodeError, UnicodeDecodeError, LookupError) as e:
+        print(f"Error converting text encoding: {e}")
+        return None
+
+
+def load_page(url, timeout=10, force_encoding=None):
+    """Load a page from a URL and return the text content.
+
+    Args:
+        url (str): The URL to load.
+        timeout (int): The number of seconds to wait for a response.
+        force_encoding (str): The encoding to use for the response.
+
+    Returns:
+        str: The text content of the page.
+    """
     response = requests.get(url, timeout=timeout)
-    response.encoding = constants.TEXT_ENCODING
+    if force_encoding:
+        response.encoding = force_encoding
     if response.status_code == 200:
         print("File successfully downloaded.")
         return response.text
     else:
-        print(f"Failed to download the file. Status code: {response.status_code}")
+        print(
+            f"Failed to download the file. Status code: {response.status_code}")
         return None
 
 
@@ -29,7 +89,7 @@ def filename_from_url(url):
     """Generate a unique filename from a URL."""
     # Parse the URL
     parsed_url = urlparse(url)
-    
+
     # Extract the path and query to form the base of the filename
     url_path = unquote(parsed_url.path)
     url_query = unquote(parsed_url.query)
@@ -52,17 +112,22 @@ def filename_from_url(url):
 class ResourceCache(abc.ABC):
     """Utility class to cache resources in a directory."""
 
-    def __init__(self, 
+    def __init__(self,
                  root=constants.CACHE_ROOT,
                  encoding=constants.TEXT_ENCODING):
-        """Initialize the downloader with a root directory."""
+        """Initialize the downloader with a root directory.
+
+        Args:
+            root: The root directory where the data will be stored.
+            encoding: The encoding to use for the files.
+        """
         self.root = root
         self.encoding = encoding
 
     def full_path(self, filename):
         """Return the full path to the file in the cache."""
         return os.path.join(self.root, filename)
-    
+
     def ensure(self, filename):
         """Ensure the directory tree exists and whether the file is there."""
         # Create the root directory if it doesn't exist
@@ -71,8 +136,8 @@ class ResourceCache(abc.ABC):
 
         # Check if the file exists
         full_path = self.full_path(filename)
-        return os.path.exists(full_path), full_path    
-    
+        return os.path.exists(full_path), full_path
+
     @abc.abstractmethod
     def canonicalize(self, resource):
         """Canonicalize the resource name as a file we can save."""
@@ -83,8 +148,11 @@ class ResourceCache(abc.ABC):
 
     def store(self, contents, full_path):
         """Store the contents of the resource at the full path."""
+        acquired = self.acquire(contents)
+        print(f"Acquired {len(acquired)} bytes from {contents}")
+        print(f"Storing at {full_path} with encoding {self.encoding}")
         with open(full_path, 'w', encoding=self.encoding) as file:
-            file.write(self.acquire(contents))
+            file.write(acquired)
 
     def cache(self, resource, force=False):
         """If a file doesn't already exist, get it from the resource."""
@@ -95,7 +163,8 @@ class ResourceCache(abc.ABC):
             self.store(resource, full_path)
             print(f"Resource {resource} saved to {file_name} .")
         else:
-            print(f"Resource {resource} exists at {file_name} , skipping download.")
+            print(
+                f"Resource {resource} exists at {file_name} , skipping download.")
         return full_path
 
     def get(self, resource, force=False):
@@ -126,15 +195,20 @@ class LambdaResourceCache(ResourceCache):
     """Utility class to cache URL-loadable resources in a directory."""
 
     def __init__(self, canonicalizer, acquirer, **kwargs):
-        """Initialize the downloader with a root directory."""
+        """Initialize the downloader with a root directory.
+
+        Args:
+            canonicalizer: A function to convert a resource to a filename.
+            acquirer: A function to get the contents of a resource.
+        """
         super().__init__(**kwargs)
         self.canonicalizer = canonicalizer
         self.acquirer = acquirer
 
     def canonicalize(self, resource):
-        """Canonicalize the URL as a file we can save."""
+        """Canonicalize the resource URL as a file we can save."""
         return self.canonicalizer(resource)
-    
+
     def acquire(self, resource):
         """Acquire the resource from an URL and return the text content."""
         return self.acquirer(resource)
@@ -146,7 +220,9 @@ class UrlResourceCache(LambdaResourceCache):
     def __init__(self, **kwargs):
         """Initialize the downloader with a root directory."""
         super().__init__(
-            canonicalizer=filename_from_url, acquirer=load_page, **kwargs)
+            canonicalizer=filename_from_url,
+            acquirer=lambda url: load_page(url, force_encoding=self.encoding),
+            **kwargs)
 
 
 class DataGatherer:
@@ -160,7 +236,7 @@ class DataGatherer:
                  suffix=".json",
                  license=None):
         """Initialize the gatherer with a name, description, and root directory.
-        
+
         Args:
             name: The name of the gatherer.
             description: A description of the gatherer.
@@ -175,7 +251,7 @@ class DataGatherer:
         self.license = license
         self.downloads = {}
         self.resource_cache = UrlResourceCache(root=self.cache)
-    
+
     @property
     def path(self):
         """Return the full path to the gatherer's directory."""
@@ -201,7 +277,7 @@ class DataGatherer:
         # Check if the file exists
         file_path = os.path.join(self.path, filename + self.suffix)
         return os.path.exists(file_path), file_path
-    
+
     def resource(self, resource, force=False):
         """Get the contents of a file if it exists, otherwise acquire it."""
         return self.resource_cache.get(resource, force=force)
@@ -259,5 +335,3 @@ class DataGatherer:
             print(f"Cleared all contents in {self.path}")
         else:
             print(f"Directory {self.path} does not exist, nothing to clear.")
-
-

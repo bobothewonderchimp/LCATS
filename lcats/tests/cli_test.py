@@ -1,8 +1,9 @@
 """Tests for the cli command-line interpreter module."""
 
-import parameterized
 import unittest
-from unittest.mock import patch, Mock
+from unittest.mock import patch
+
+import parameterized
 
 from lcats import cli
 

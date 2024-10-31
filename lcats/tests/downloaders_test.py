@@ -1,5 +1,7 @@
 """Tests for the downloaders module."""
 
+# Assuming convert_encoding is in this module
+from lcats.gatherers import downloaders
 import os
 import unittest
 from unittest.mock import patch, Mock
@@ -13,6 +15,127 @@ from lcats import test_utils
 from lcats.gatherers import downloaders
 
 
+class TestDetectUrlEncoding(unittest.TestCase):
+    """Unit tests for the detect_url_encoding function."""
+
+    @patch('requests.head')
+    def test_detect_url_encoding_success(self, mock_head):
+        """Test detecting the encoding of a URL with a successful response."""
+        # Mock a successful response with a specified encoding
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.encoding = 'utf-8'
+        mock_head.return_value = mock_response
+
+        url = 'http://example.com'
+        encoding = downloaders.detect_url_encoding(url)
+        self.assertEqual(encoding, 'utf-8')
+
+    @patch('requests.head')
+    def test_detect_url_encoding_failure(self, mock_head):
+        """Test detecting the encoding of a URL with a failed response."""
+        # Mock a failed response (e.g., 404 Not Found)
+        mock_response = Mock()
+        mock_response.status_code = 404
+        mock_response.encoding = None
+        mock_head.return_value = mock_response
+
+        url = 'http://example.com'
+        encoding = downloaders.detect_url_encoding(url)
+        self.assertIsNone(encoding)
+
+
+class TestDetectEncoding(unittest.TestCase):
+    """Unit tests for the detect_encoding function."""
+
+    def test_detect_encoding_utf8(self):
+        """Test detecting UTF-8 encoding."""
+        text = "Some UTF-8 encoded text 麦蒂"
+        encoding = downloaders.detect_encoding(text)
+        self.assertEqual(encoding, 'utf-8')
+
+    def test_detect_encoding_latin1(self):
+        """"Text in Latin-1 encoding."""
+        text = "quanto lhe é possive"
+        encoding = downloaders.detect_encoding(text)
+        self.assertEqual(encoding, 'ISO-8859-1')
+
+    def test_detect_encoding_ascii(self):
+        """Test detecting ASCII encoding."""
+        text = "Simple ASCII text"
+        encoding = downloaders.detect_encoding(text)
+        self.assertEqual(encoding, 'ascii')
+
+    def test_detect_encoding_unknown(self):
+        """Test detecting an unknown encoding."""
+        # A byte sequence that doesn't clearly match a known encoding
+        text = b'\xff\xfe\xfd'
+        encoding = downloaders.detect_encoding(text)
+        # `chardet` might return None for unknown encodings, or call it UTF-16
+        self.assertEqual(encoding, 'UTF-16')
+
+
+class TestConvertEncoding(unittest.TestCase):
+    """Unit tests for the convert_encoding function."""
+
+    def test_utf8_to_iso8859_1(self):
+        """Test converting UTF-8 to ISO-8859-1 encoding."""
+        text = "Café"  # UTF-8 text with a special character
+        result = downloaders.convert_encoding(
+            text, source_encoding='utf-8', target_encoding='ISO-8859-1')
+        expected_result = text.encode('ISO-8859-1')
+        self.assertEqual(result, expected_result)
+
+    def test_iso8859_1_to_utf8(self):
+        """Test converting ISO-8859-1 to UTF-8 encoding."""
+        text = "Café".encode('ISO-8859-1')  # Latin-1 encoded byte string
+        result = downloaders.convert_encoding(
+            text, source_encoding='ISO-8859-1', target_encoding='utf-8')
+        expected_result = "Café".encode('utf-8')
+        self.assertEqual(result, expected_result)
+
+    def test_ascii_to_utf8(self):
+        """Test converting ASCII to UTF-8 encoding."""
+        text = "Simple ASCII text"  # ASCII text
+        result = downloaders.convert_encoding(
+            text, source_encoding='ascii', target_encoding='utf-8')
+        expected_result = text.encode('utf-8')
+        self.assertEqual(result, expected_result)
+
+    def test_byte_input_utf8_to_iso8859_1(self):
+        """Test converting a byte string from UTF-8 to ISO-8859-1 encoding."""
+        # UTF-8 encoded byte string with an emoji
+        text = "Text with emoji 😊".encode('utf-8')
+        result = downloaders.convert_encoding(
+            text, source_encoding='utf-8', target_encoding='ISO-8859-1')
+        # ISO-8859-1 cannot represent the emoji, should return None
+        self.assertIsNone(result)
+
+    def test_invalid_source_encoding(self):
+        text = "Invalid encoding test"
+        result = downloaders.convert_encoding(
+            text, source_encoding='nonexistent-encoding', target_encoding='utf-8')
+        self.assertIsNone(result)
+
+    def test_invalid_target_encoding(self):
+        text = "Invalid encoding test"
+        result = downloaders.convert_encoding(
+            text, source_encoding='utf-8', target_encoding='nonexistent-encoding')
+        self.assertIsNone(result)
+
+    def test_empty_string(self):
+        text = ""
+        result = downloaders.convert_encoding(
+            text, source_encoding='utf-8', target_encoding='ISO-8859-1')
+        self.assertEqual(result, b"")
+
+    def test_none_input(self):
+        text = None
+        with self.assertRaises(AttributeError):
+            downloaders.convert_encoding(
+                text, source_encoding='utf-8', target_encoding='ISO-8859-1')
+
+
 class TestLoadPage(unittest.TestCase):
     """Tests for the load_page function."""
 
@@ -24,10 +147,10 @@ class TestLoadPage(unittest.TestCase):
         mock_response.status_code = 200
         mock_response.text = "Mocked page content"
         mock_get.return_value = mock_response
-        
+
         # Call the function
         result = downloaders.load_page("http://example.com")
-        
+
         # Assert the expected behavior
         self.assertEqual(result, "Mocked page content")
         mock_get.assert_called_once_with("http://example.com", timeout=10)
@@ -40,10 +163,10 @@ class TestLoadPage(unittest.TestCase):
         mock_response.status_code = 404
         mock_response.text = "Not Found"
         mock_get.return_value = mock_response
-        
+
         # Call the function
         result = downloaders.load_page("http://example.com")
-        
+
         # Assert the expected behavior
         self.assertIsNone(result)
         mock_get.assert_called_once_with("http://example.com", timeout=10)
@@ -53,7 +176,7 @@ class TestLoadPage(unittest.TestCase):
         """Test the load_page function with a timeout exception."""
         # Simulate a timeout exception
         mock_get.side_effect = requests.exceptions.Timeout
-        
+
         # Call the function
         with self.assertRaises(requests.exceptions.Timeout):
             downloaders.load_page("http://example.com")
@@ -67,43 +190,44 @@ class TestFilenameFromUrl(unittest.TestCase):
         url = "http://example.com/file.txt"
         expected_extension = ".txt"
         filename = downloaders.filename_from_url(url)
-        
+
         # Ensure the filename ends with the correct extension
         self.assertTrue(filename.endswith(expected_extension))
-        
+
         # Ensure the filename is correctly hashed and unique
         self.assertEqual(len(filename), 64 + len(expected_extension))
-    
+
     def test_url_with_query(self):
         """Test generating a filename from a URL with a query parameter."""
         url = "http://example.com/file.txt?param=value"
         filename = downloaders.filename_from_url(url)
-        
+
         # Ensure the filename is unique even with a query parameter
-        self.assertEqual(len(filename), 64 + 4)  # 64 for the hash + 4 for ".txt"
-    
+        # 64 for the hash + 4 for ".txt"
+        self.assertEqual(len(filename), 64 + 4)
+
     def test_url_without_extension(self):
         """Test generating a filename from a URL without an extension."""
         url = "http://example.com/file"
         filename = downloaders.filename_from_url(url)
-        
+
         # Ensure the filename has no extension
         self.assertEqual(len(filename), 64)
         self.assertTrue('.' not in filename)
-    
+
     def test_url_with_no_path(self):
         """Test generating a filename from a URL with no path."""
         url = "http://example.com"
         filename = downloaders.filename_from_url(url)
-        
+
         # Ensure the filename has no extension and is hashed correctly
         self.assertEqual(len(filename), 64)
-    
+
     def test_empty_url(self):
         """Test generating a filename from an empty URL."""
         url = ""
         filename = downloaders.filename_from_url(url)
-        
+
         # Ensure the filename is still a valid hash with no extension
         self.assertEqual(len(filename), 64)
 
@@ -119,7 +243,7 @@ class TestLambdaResourceCache(test_utils.TestCaseWithData):
             )
             self.assertIsInstance(
                 cache, downloaders.LambdaResourceCache,
-                "LambdaResourceCache instance was not created correctly.") 
+                "LambdaResourceCache instance was not created correctly.")
             self.assertEqual(cache.root, constants.CACHE_ROOT)
         except Exception as e:
             self.fail(f"Instantiation of LambdaResourceCache failed: {e}")
@@ -137,7 +261,7 @@ class TestLambdaResourceCache(test_utils.TestCaseWithData):
                 "LambdaResourceCache instance was not created correctly.")
             self.assertEqual(cache.root, self.test_temp_dir)
         except Exception as e:
-            self.fail(f"Instantiation of LambdaResourceCache failed: {e}")  
+            self.fail(f"Instantiation of LambdaResourceCache failed: {e}")
 
     def test_full_path(self):
         """Test the full_path method."""
@@ -157,7 +281,7 @@ class TestLambdaResourceCache(test_utils.TestCaseWithData):
             canonicalizer=lambda x: x,
             acquirer=lambda x: x
         )
-        
+
         full_path = cache.full_path("foo.bar")
         if os.path.exists(full_path):
             os.unlink(full_path)  # Remove the file or link
@@ -281,6 +405,7 @@ class TestLambdaResourceCache(test_utils.TestCaseWithData):
             "Clear failed to remove the file."
         )
 
+
 class TestUrlResourceCache(test_utils.TestCaseWithData):
 
     def test_instantiation(self):
@@ -289,7 +414,7 @@ class TestUrlResourceCache(test_utils.TestCaseWithData):
             cache = downloaders.UrlResourceCache()
             self.assertIsInstance(
                 cache, downloaders.UrlResourceCache,
-                "UrlResourceCache instance was not created correctly.") 
+                "UrlResourceCache instance was not created correctly.")
             self.assertEqual(cache.root, constants.CACHE_ROOT)
         except Exception as e:
             self.fail(f"Instantiation of UrlResourceCache failed: {e}")
@@ -305,7 +430,7 @@ class TestUrlResourceCache(test_utils.TestCaseWithData):
                 "UrlResourceCache instance was not created correctly.")
             self.assertEqual(cache.root, self.test_temp_dir)
         except Exception as e:
-            self.fail(f"Instantiation of UrlResourceCache failed: {e}")  
+            self.fail(f"Instantiation of UrlResourceCache failed: {e}")
 
     def test_full_path(self):
         """Test the full_path method."""
@@ -321,7 +446,7 @@ class TestUrlResourceCache(test_utils.TestCaseWithData):
         cache = downloaders.UrlResourceCache(
             root=self.test_temp_dir
         )
-        
+
         full_path = cache.full_path("foo.bar")
         if os.path.exists(full_path):
             os.unlink(full_path)  # Remove the file.
@@ -377,7 +502,7 @@ class TestUrlResourceCache(test_utils.TestCaseWithData):
         resource = "http://example.com"
         canonical = cache.canonicalize(resource)
         full_path = cache.full_path(canonical)
-        
+
         contents = "contents"
         cache.store(contents, full_path)
         self.assertTrue(
@@ -460,6 +585,7 @@ class TestUrlResourceCache(test_utils.TestCaseWithData):
             os.path.exists(full_path),
             "Clear failed to remove the file."
         )
+
 
 if __name__ == '__main__':
     unittest.main()

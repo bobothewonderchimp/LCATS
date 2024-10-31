@@ -6,6 +6,7 @@ import lcats.gatherers.main
 
 USAGE_MESSAGE = """Usage: lcats <command> [<args>]
 Commands:   
+    help      Display this help message.
     info      Describes LCATS, the literary captain's advisory tool system.
     gather    Gathers corpus data to a local database.
     index     Preprocesses a corpus to answer questions.
@@ -42,6 +43,9 @@ def dispatch(command, args):
 
     elif command == 'eval':
         return "Evaluating LCATS is not yet implemented.", 1
+    
+    elif command == 'help':
+        return usage(), 0
 
     else:
         return f"Unknown command: {command}", 1
