@@ -25,6 +25,9 @@ Thumbs.db
 
 # Ignore local copies of data corpus.
 data/
+lcats/data
+lcats/lcats/data
+lcats/lcats/notebooks/data
 
 # Ignore package build directories
 dist/
@@ -54,3 +57,7 @@ htmlcov/
 
 # Ignore documentation files
 docs/_build/
+
+# Ignore notebook outputs
+lcats/lcats/notebooks/output/
+lcats/lcats/notebooks/Output/
