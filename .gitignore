@@ -64,3 +64,6 @@ lcats/notebooks/output/
 lcats/notebooks/Output/
 lcats/lcats/notebooks/output/
 lcats/lcats/notebooks/Output/
+
+# Ignore local secrets files (e.g. API keys).
+.secrets/
