@@ -30,6 +30,9 @@ lcats/lcats/data
 lcats/notebooks/data
 lcats/lcats/notebooks/data
 
+# Ignore local output files.
+output/
+
 # Ignore package build directories
 dist/
 build/
