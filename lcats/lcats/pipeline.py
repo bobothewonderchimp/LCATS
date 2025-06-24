@@ -82,6 +82,7 @@ class Pipeline:
             except Exception as e:
                 last_exception = e
                 if self.log:
-                    self.log(f"Retry {attempt+1}/{stage.retries} failed for stage {stage.name}: {e}")
+                    self.log(
+                        f"Retry {attempt+1}/{stage.retries} failed for stage {stage.name}: {e}")
                 time.sleep(0.5)
         raise last_exception
