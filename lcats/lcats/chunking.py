@@ -93,3 +93,12 @@ def summarize_chunks(chunks: List[Chunk]) -> str:
         output_lines.extend([header, snippet, ""])
 
     return "\n".join(output_lines)
+
+
+def display_chunks(chunks: List[Chunk]) -> None:
+    """Print a summary of each chunk to the console."""
+    summary = summarize_chunks(chunks)
+    print(summary)
+    print(f"Total chunks: {len(chunks)}")
+    print(f"Total characters: {sum(len(chunk.text) for chunk in chunks)}")
+    print(f"Total tokens: {sum(count_tokens(chunk.text) for chunk in chunks)}")
