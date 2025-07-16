@@ -1,0 +1,110 @@
+"""Extract structured data from stories using LLMs and prompt templates."""
+
+from dataclasses import dataclass
+from typing import Dict, List, Optional
+
+import json
+
+from lcats import utils
+
+
+@dataclass
+class ExtractionTemplate:
+    """A pair of prompt templates for system and user roles that interpolates the story text."""
+
+    name: str
+    system_template: str
+    user_template: str
+
+    def build_prompt(self, story_text: str) -> List[Dict[str, str]]:
+        """Create the prompt messages for the LLM with the given story text."""
+        return [
+            {"role": "system", "content": self.system_template},
+            {"role": "user", "content": self.user_template.format(
+                story_text=story_text)}
+        ]
+
+
+@dataclass
+class ExtractionResult:  # pylint: disable=too-many-instance-attributes
+    """Result of structured extraction from a story using an LLM and a prompt template."""
+    story_text: str
+    model_name: str
+    template: ExtractionTemplate
+    messages: List[Dict[str, str]]
+    raw_output: str
+    parsed_output: Optional[Dict]
+    parsing_error: Optional[str]
+    extraction_error: Optional[str]
+    response: Optional[object] = None  # raw OpenAI response object
+
+    @property
+    def events(self) -> List[Dict]:
+        """Extracted events from the parsed output, if valid."""
+        events = self.parsed_output.get(
+            "events") if self.parsed_output else None
+        return events if isinstance(events, list) else []
+
+    def summary(self) -> str:
+        """Return a summary of the extraction result."""
+        return (
+            f"Model: {self.model_name}\n"
+            f"Template: {self.template.name}\n"
+            f"Events extracted: {len(self.events)}\n"
+            f"Parsing error: {self.parsing_error}\n"
+            f"Extraction error: {self.extraction_error}"
+        )
+
+    def validate_events(self) -> List[str]:
+        """Returns a list of warnings for malformed events."""
+        errors = []
+        for i, event in enumerate(self.events):
+            if not isinstance(event, dict):
+                errors.append(f"Event {i} is not a dictionary")
+            elif "text" not in event or "type" not in event:
+                errors.append(f"Event {i} missing 'text' or 'type'")
+        return errors
+
+
+def extract_from_story(
+    story_text: str,
+    template: ExtractionTemplate,
+    client,
+    model_name: str = "gpt-3.5-turbo",
+    temperature: float = 0.2
+) -> ExtractionResult:
+    """Perform structured extraction from a story using an LLM and a prompt template."""
+    messages = template.build_prompt(story_text)
+    response = client.chat.completions.create(
+        model=model_name,
+        messages=messages,
+        temperature=temperature,
+    )
+    raw_output = response.choices[0].message.content
+
+    try:
+        parsed_output = utils.extract_json(raw_output)
+        parsing_error = None
+    except (json.JSONDecodeError, ValueError) as exc:
+        parsed_output = None
+        parsing_error = str(exc)
+
+    if not parsed_output:
+        extraction_error = f"Failed to parse JSON (output length: {len(raw_output)} chars)"
+    elif "events" not in parsed_output:
+        extraction_error = (
+            f"Parsed output missing 'events' key. Found keys: {list(parsed_output.keys())}")
+    else:
+        extraction_error = None
+
+    return ExtractionResult(
+        story_text=story_text,
+        model_name=model_name,
+        template=template,
+        messages=messages,
+        raw_output=raw_output,
+        parsed_output=parsed_output,
+        parsing_error=parsing_error,
+        extraction_error=extraction_error,
+        response=response,
+    )
