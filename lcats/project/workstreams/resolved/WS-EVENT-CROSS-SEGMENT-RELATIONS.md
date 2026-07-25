@@ -2,8 +2,8 @@
 id: WS-EVENT-CROSS-SEGMENT-RELATIONS
 kind: planning_node
 title: Cross-Segment Causal Relation Extraction for Event-Role-World
-status: proposed
-stage: designed
+status: resolved
+stage: closed
 origin: design_review
 summary: Investigate whether the Worldcon paper's analysis needs causal relations spanning segment boundaries, and if so, design how the Event-Role-World extractor's stage-6 relation pass gets broader (multi-segment or full-story) context.
 related_focus:
@@ -91,6 +91,22 @@ workstream picks up that recorded follow-up as new scope.
 ## Exit Criteria
 
 (see frontmatter `exit_criteria:` above)
+
+## Known Follow-ups
+
+- **Cross-segment relation extraction is still not implemented.**
+  WI-EVENT-0028 determined the need is real (yes) and recommended option A
+  (a post-reconciliation story-level relation pass), documented in
+  `project/design/event-role-world-cross-segment-relations-evaluation.md`.
+  This workstream produced the recommendation only, per its Non-Goals; a
+  follow-up deliverable work item should implement option A. That
+  follow-up work item has not yet been created as of this workstream's
+  closure. Before implementing, the follow-up should also run the larger
+  stratified pilot (5-10 stories per genre) this investigation flagged as
+  still needed to size the effect precisely for the paper, and must update
+  `export.build_analysis_tables` and `baseline.summarize_annotations` (per
+  the design doc's implementation sketch) since neither currently reads
+  `StoryWorldAnnotation.relations`.
 
 ## Non-Goals
 

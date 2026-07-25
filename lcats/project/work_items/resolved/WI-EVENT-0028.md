@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Investigation complete — determination: yes, cross-segment causal relations are needed. A reading-based pilot over 4 corpus stories (2 Lovecraft SF/horror vs. Doyle mystery and O. Henry general-fiction) found multiple long-range causal chains in the SF/horror stories and none in the comparison stories, confirming per-segment-only relation extraction would undercount SF's causal density. Recommended architecture: option A (post-reconciliation story-level relation pass). Delivered as project/design/event-role-world-cross-segment-relations-evaluation.md, merged in PR #154 (commit 162a611)."
 blocked_reason: null
 blocked: false
 id: WI-EVENT-0028
 title: Investigate need and design for cross-segment causal relation extraction
 type: investigation
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
@@ -159,5 +159,5 @@ criteria did not require it. This work item is the recorded follow-up.
 
 ## Related Workstream and Designs
 
-- Workstream: `project/workstreams/proposed/WS-EVENT-CROSS-SEGMENT-RELATIONS.md`
+- Workstream: `project/workstreams/resolved/WS-EVENT-CROSS-SEGMENT-RELATIONS.md`
 - Design: `project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md`
