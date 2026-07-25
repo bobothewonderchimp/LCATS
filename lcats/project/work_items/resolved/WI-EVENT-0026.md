@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #150 (commit 7b0ce9a); adds the relation pass (stage 6), discourse/SF-tag pass (stage 7), and validation/export (stage 9), plus story-level reconciliation and baseline extension, on top of WI-EVENT-0024's stages 1-5."
 blocked_reason: null
 blocked: false
 id: WI-EVENT-0026
 title: Implement Event-Role-World extractor stages 6-7 and 9 (relation, discourse/SF-tag, and validation/export)
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
