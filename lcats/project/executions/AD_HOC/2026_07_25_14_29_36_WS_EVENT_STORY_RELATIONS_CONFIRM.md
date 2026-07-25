@@ -2,7 +2,7 @@
 execution_id: 2026_07_25_14_29_36_WS_EVENT_STORY_RELATIONS_CONFIRM
 prompt_id: PROMPT(AD_HOC:WS_EVENT_STORY_RELATIONS_CONFIRM)[2026-07-25T14:29:26-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_07_25_14_26_55_WS_EVENT_STORY_RELATIONS_REVIEW
 pr: https://github.com/xenotaur/LCATS/pull/155
 commit: e61f1f6

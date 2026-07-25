@@ -2,8 +2,8 @@
 execution_id: 2026_07_25_14_26_55_WS_EVENT_STORY_RELATIONS_REVIEW
 prompt_id: PROMPT(AD_HOC:WS_EVENT_STORY_RELATIONS_REVIEW)[2026-07-25T14:26:25-04:00]
 work_item: AD_HOC
-status: in_progress
-rerun_of: 
+status: landed
+rerun_of: 2026_07_25_14_49_56_WS_EVENT_STORY_RELATIONS
 pr: https://github.com/xenotaur/LCATS/pull/155
 commit: 0f7dded
 agent: claude_app
