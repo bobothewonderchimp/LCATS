@@ -17,7 +17,7 @@ related_roadmap:
 related_workstreams:
   - WS-EVENT-ROLE-WORLD
 related_design:
-  - project/design/proposals/proposed/lcats-event-role-world-extractor/00_proposal.md
+  - project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md
 depends_on: []
 blocked_by: []
 expected_actions:
@@ -69,7 +69,7 @@ annotations for each existing LCATS segment.
 
 `WS-EVENT-ROLE-WORLD` coordinates implementation of the Science-Fiction
 Event-Role-World extractor proposed in
-`project/design/proposals/proposed/lcats-event-role-world-extractor/00_proposal.md`,
+`project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md`,
 in support of the Worldcon "Shape of Science Fiction" paper
 (`FOCUS-WORLDCON-2026`). The proposal's own "Recommended staged pipeline"
 (`00_proposal.md`, stages 1-9) does not define an early/late split; this
@@ -221,4 +221,4 @@ whenever the workstream chooses to pick it up.
 ## Related Workstream and Designs
 
 - Workstream: `project/workstreams/proposed/WS-EVENT-ROLE-WORLD.md`
-- Design: `project/design/proposals/proposed/lcats-event-role-world-extractor/00_proposal.md`
+- Design: `project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md`

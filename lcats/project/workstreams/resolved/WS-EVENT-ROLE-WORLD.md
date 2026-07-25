@@ -2,14 +2,14 @@
 id: WS-EVENT-ROLE-WORLD
 kind: planning_node
 title: SF Event-Role-World Extractor Implementation
-status: proposed
-stage: designed
+status: resolved
+stage: closed
 origin: design_review
 summary: Implement the Science-Fiction Event-Role-World extractor proposed for the Worldcon "Shape of Science Fiction" paper, layered on the existing LCATS scene/sequel segment substrate.
 related_focus: []
 related_roadmap: []
 related_design:
-  - project/design/proposals/proposed/lcats-event-role-world-extractor/00_proposal.md
+  - project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md
 work_items:
   - WI-EVENT-0024
   - WI-EVENT-0025
@@ -138,4 +138,4 @@ the proposal itself prescribes:
 
 ## Relationship to Design
 
-- Design proposal: `project/design/proposals/proposed/lcats-event-role-world-extractor/00_proposal.md`
+- Design proposal: `project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md`

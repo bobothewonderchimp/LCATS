@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #152 (commit 6417086); adds the optional hypothesis pass (stage 8) - the last deferred pipeline stage - on top of WI-EVENT-0024/WI-EVENT-0026's stages 1-7 and 9."
 blocked_reason: null
 blocked: false
 id: WI-EVENT-0027
 title: Implement Event-Role-World extractor stage 8 (optional hypothesis pass)
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
@@ -17,7 +17,7 @@ related_roadmap:
 related_workstreams:
   - WS-EVENT-ROLE-WORLD
 related_design:
-  - project/design/proposals/proposed/lcats-event-role-world-extractor/00_proposal.md
+  - project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md
 depends_on:
   - WI-EVENT-0026
 blocked_by: []
@@ -64,7 +64,7 @@ built by `WI-EVENT-0024` and `WI-EVENT-0026`.
 
 `WS-EVENT-ROLE-WORLD` coordinates implementation of the Science-Fiction
 Event-Role-World extractor proposed in
-`project/design/proposals/proposed/lcats-event-role-world-extractor/00_proposal.md`,
+`project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md`,
 in support of the Worldcon "Shape of Science Fiction" paper
 (`FOCUS-WORLDCON-2026`). `WI-EVENT-0024` (stages 1-5) and `WI-EVENT-0026`
 (stages 6-7 and 9) both explicitly deferred stage 8 as optional, per the
@@ -195,4 +195,4 @@ recorded follow-up, and implements the pass itself.
 ## Related Workstream and Designs
 
 - Workstream: `project/workstreams/proposed/WS-EVENT-ROLE-WORLD.md`
-- Design: `project/design/proposals/proposed/lcats-event-role-world-extractor/00_proposal.md`
+- Design: `project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md`

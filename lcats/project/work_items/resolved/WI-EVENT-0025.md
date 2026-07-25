@@ -17,7 +17,7 @@ related_roadmap:
 related_workstreams:
   - WS-EVENT-ROLE-WORLD
 related_design:
-  - project/design/proposals/proposed/lcats-event-role-world-extractor/00_proposal.md
+  - project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md
 depends_on: []
 blocked_by: []
 expected_actions:
@@ -123,4 +123,4 @@ strictly after it.
 ## Related Workstream and Designs
 
 - Workstream: `project/workstreams/proposed/WS-EVENT-ROLE-WORLD.md`
-- Design: `project/design/proposals/proposed/lcats-event-role-world-extractor/00_proposal.md`
+- Design: `project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md`

@@ -1,9 +1,9 @@
 ---
 id: PROP-LCATS-EVENT-ROLE-WORLD-EXTRACTOR
 type: design_proposal
-status: proposed
-implementation_status: not_started
-implemented_by: []
+status: adopted
+implementation_status: implemented
+implemented_by: [WI-EVENT-0024, WI-EVENT-0025, WI-EVENT-0026, WI-EVENT-0027]
 evidence: []
 ---
 
