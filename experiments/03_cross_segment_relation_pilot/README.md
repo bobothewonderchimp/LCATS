@@ -10,8 +10,9 @@ convenience sample with a properly stratified measurement.
 script and this usage doc. No results exist yet: the session that wrote this
 tooling had no `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` configured, and this
 pilot's headline findings require real LLM pipeline output, not a fake
-backend. Whoever runs this pilot for real should append a "Results"
-section below this one, following the format sketched in
+backend. Whoever runs this pilot for real should follow
+[`running_the_pilot.md`](running_the_pilot.md)'s step-by-step runbook and
+append a "Results" section below this one, following the format sketched in
 [Expected Results Format](#expected-results-format).
 
 ## Purpose
@@ -86,6 +87,11 @@ python experiments/03_cross_segment_relation_pilot/run_pilot.py \
     --output experiments/03_cross_segment_relation_pilot/results
 ```
 
+Defaults to `--data-dir lcats/data` — populate it first via `lcats gather`
+if your checkout doesn't have it yet, or pass `--data-dir corpora` to use
+the released snapshot instead (see `running_the_pilot.md` for full
+environment-setup detail).
+
 Full flag reference is documented in `run_pilot.py`'s module docstring
 (`python experiments/03_cross_segment_relation_pilot/run_pilot.py --help`).
 Key flags:
@@ -98,25 +104,36 @@ Key flags:
 | `--seed` | 42 | Shuffle seed for candidate scan order (reproducibility) |
 | `--backend` | `anthropic` | `anthropic` or `openai` |
 | `--model` | provider default | Model string |
-| `--nlp-backend` | `spacy` | Stage-2 surface-feature NLP backend |
-| `--dry-run` | off | Zero-cost smoke test using a fake backend — produces meaningless (empty) results, never a real finding |
+| `--nlp-backend` | `spacy` (`fake` under `--dry-run`) | Stage-2 surface-feature NLP backend: `spacy`, `stanza`, or `fake` (zero dependencies) |
+| `--dry-run` | off | Zero-cost smoke test using fake LLM and (by default) fake NLP backends — produces meaningless (empty) results, never a real finding |
 
 ### Try it with zero API cost first
 
 ```bash
 python experiments/03_cross_segment_relation_pilot/run_pilot.py --dry-run \
-    --sample-size 2 --output /tmp/pilot_dry_run
+    --data-dir corpora --sample-size 2 --output /tmp/pilot_dry_run
 ```
 
+(`--data-dir corpora` is needed on a fresh checkout — `lcats/data`, the
+default, is gitignored working-corpus state and won't exist until you
+generate it. See `running_the_pilot.md` for details.)
+
 This exercises the full script — sample selection, a stubbed single-segment
-stage-1 segmentation, the actual Event-Role-World pipeline invocation, and
-output writing — with a `FakeBackend` and **no real API calls**, so you can
-confirm the script runs end to end in your environment before spending
-real cost on the full sample. Dry-run stories are not excluded (a fake
-backend's fixed response parses as valid-but-empty extraction output at
-every stage), so you'll see real output rows with zero counts everywhere —
-the point is verifying the control flow and output files, not producing
-real numbers.
+stage-1 segmentation (stages 2-7 of the Event-Role-World pipeline), and
+output writing — with fake LLM and NLP backends and **no real API calls or
+extra dependencies**, so you can confirm the script runs end to end in your
+environment before installing anything or spending real cost. It does
+**not** exercise the story-level cross-segment relation pass, which needs
+events in at least 2 distinct segments. Dry-run stories are not excluded,
+so you'll see real output rows with zero counts everywhere — the point is
+verifying the control flow and output files, not producing real numbers.
+
+**For the full developer runbook** — environment setup, smoke-testing a
+real spaCy or Stanza install with zero API cost, the real run, and closing
+out `WI-EVENT-0030` — see
+[`running_the_pilot.md`](running_the_pilot.md) in this directory. This
+README is the reference for what the pilot measures and how to interpret
+its output; that runbook is for actually executing it.
 
 ## Cost note
 
