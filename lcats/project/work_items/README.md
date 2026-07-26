@@ -15,7 +15,6 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 
 ## Proposed Items
 - `proposed/WI-PERSIST-0004.md`
-- `proposed/WI-EVENT-0029.md` — Implement story-level cross-segment relation pass for Event-Role-World extractor
 
 ## Abandoned Items
 - `abandoned/WI-META-0006.md` — superseded by native LRH functionality (`lrh meta register`); reversed by WI-META-0023
@@ -36,3 +35,4 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `resolved/WI-DOCS-0015.md` — Add a quickstart tutorial
 - `resolved/WI-META-0023.md` — Remove LRH meta-registry duplication from LCATS codebase and docs
 - `resolved/WI-EVENT-0028.md` — Investigate need and design for cross-segment causal relation extraction
+- `resolved/WI-EVENT-0029.md` — Implement story-level cross-segment relation pass for Event-Role-World extractor

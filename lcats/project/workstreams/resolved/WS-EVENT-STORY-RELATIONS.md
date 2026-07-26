@@ -2,8 +2,8 @@
 id: WS-EVENT-STORY-RELATIONS
 kind: planning_node
 title: Story-Level Cross-Segment Relation Extraction for Event-Role-World
-status: proposed
-stage: planned
+status: resolved
+stage: closed
 origin: design_review
 summary: Implement the recommended post-reconciliation story-level causal relation pass (option A) for the Event-Role-World extractor, so genuinely cross-segment causal/explanatory relations are captured for the Worldcon paper's analysis.
 related_focus:

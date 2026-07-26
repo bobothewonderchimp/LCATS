@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #156 (commit 8e256d4). Adds the option-A post-reconciliation story-level relation pass recommended by WI-EVENT-0028, keeping cross-segment relations in structurally separate StoryWorldAnnotation fields (cross_segment_relations/weakly_inferred_cross_segment_relations) so they never collide with per-segment relation IDs. Corpus story-length check found the hierarchical windowing mitigation is not needed (median 4,881 words, max 44,651 of 1,867 stories)."
 blocked_reason: null
 blocked: false
 id: WI-EVENT-0029
 title: Implement story-level cross-segment relation pass for Event-Role-World extractor
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
@@ -238,6 +238,6 @@ comparison, and recommended option A as the architecture to fix it.
 
 ## Related Workstream and Designs
 
-- Workstream: `project/workstreams/proposed/WS-EVENT-STORY-RELATIONS.md`
+- Workstream: `project/workstreams/resolved/WS-EVENT-STORY-RELATIONS.md`
 - Design: `project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md`
 - Design: `project/design/event-role-world-cross-segment-relations-evaluation.md`
