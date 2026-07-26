@@ -2,7 +2,7 @@
 execution_id: 2026_07_26_01_20_27_WI_EVENT_0030_PILOT_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0030_PILOT_CONFIRM)[2026-07-26T01:20:18-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_07_26_01_15_41_WI_EVENT_0030_PILOT_REVIEW_2
 pr: https://github.com/xenotaur/LCATS/pull/158
 commit: bea26502
