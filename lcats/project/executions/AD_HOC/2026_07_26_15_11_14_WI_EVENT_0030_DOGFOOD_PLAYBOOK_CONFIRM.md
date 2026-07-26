@@ -2,7 +2,7 @@
 execution_id: 2026_07_26_15_11_14_WI_EVENT_0030_DOGFOOD_PLAYBOOK_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0030_DOGFOOD_PLAYBOOK_CONFIRM)[2026-07-26T15:11:05-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_07_26_15_06_26_WI_EVENT_0030_DOGFOOD_PLAYBOOK_REVIEW
 pr: https://github.com/xenotaur/LCATS/pull/164
 commit: bc5dfc86

@@ -2,10 +2,10 @@
 execution_id: 2026_07_26_14_55_34_WI_EVENT_0030_DOGFOOD_PLAYBOOK
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0030_DOGFOOD_PLAYBOOK)[2026-07-26T14:52:57-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/164
-commit: 960f26ed
+commit: 3d2f786d
 agent: claude_app
 instruction_source: ad-hoc user request to save the WI-EVENT-0030 dogfood playbook and expand its smoke-test step into zero-dependency/spaCy/Stanza subsections
 session_transcript: pending
