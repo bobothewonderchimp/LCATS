@@ -2,10 +2,10 @@
 execution_id: 2026_07_26_18_37_26_WI_EVENT_0030_PILOT_NLP_BACKEND_REUSE
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0030_PILOT_NLP_BACKEND_REUSE)[2026-07-26T18:35:04-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/165
-commit: f991e45d
+commit: 3955265a
 agent: claude_app
 instruction_source: user report during live dogfooding of running_the_pilot.md Step 2c (Stanza) - "seems extremely slow, is the API reloading the models each time?"
 session_transcript: pending

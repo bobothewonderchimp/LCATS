@@ -2,7 +2,7 @@
 execution_id: 2026_07_26_18_52_05_WI_EVENT_0030_NLP_BACKEND_REUSE_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0030_NLP_BACKEND_REUSE_CONFIRM)[2026-07-26T18:51:51-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_07_26_18_46_52_WI_EVENT_0030_NLP_BACKEND_REUSE_REVIEW
 pr: https://github.com/xenotaur/LCATS/pull/165
 commit: 89c22f7f
