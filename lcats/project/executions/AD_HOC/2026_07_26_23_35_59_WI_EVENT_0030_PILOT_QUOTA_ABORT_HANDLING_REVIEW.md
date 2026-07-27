@@ -2,7 +2,7 @@
 execution_id: 2026_07_26_23_35_59_WI_EVENT_0030_PILOT_QUOTA_ABORT_HANDLING_REVIEW
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0030_PILOT_QUOTA_ABORT_HANDLING_REVIEW)[2026-07-26T23:35:32-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_07_26_23_24_58_WI_EVENT_0030_PILOT_QUOTA_ABORT_HANDLING
 pr: https://github.com/xenotaur/LCATS/pull/166
 commit: a6b768ff
