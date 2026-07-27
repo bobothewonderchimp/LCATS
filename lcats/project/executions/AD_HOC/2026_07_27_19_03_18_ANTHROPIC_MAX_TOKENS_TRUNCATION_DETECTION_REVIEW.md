@@ -2,13 +2,13 @@
 execution_id: 2026_07_27_19_03_18_ANTHROPIC_MAX_TOKENS_TRUNCATION_DETECTION_REVIEW
 prompt_id: PROMPT(AD_HOC:ANTHROPIC_MAX_TOKENS_TRUNCATION_DETECTION_REVIEW)[2026-07-27T19:03:06-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_07_27_18_54_02_ANTHROPIC_MAX_TOKENS_TRUNCATION_DETECTION
 pr: https://github.com/xenotaur/LCATS/pull/170
-commit: 1d9a14ed
+commit: bca6b1e3
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/170
-session_transcript: pending
+session_transcript: claude-app:pending
 created_at: 2026-07-27T19:03:18-04:00
 ---
 

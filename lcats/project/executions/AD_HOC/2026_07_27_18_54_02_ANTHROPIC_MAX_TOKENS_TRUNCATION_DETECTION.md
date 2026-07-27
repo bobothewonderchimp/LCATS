@@ -2,13 +2,13 @@
 execution_id: 2026_07_27_18_54_02_ANTHROPIC_MAX_TOKENS_TRUNCATION_DETECTION
 prompt_id: PROMPT(AD_HOC:ANTHROPIC_MAX_TOKENS_TRUNCATION_DETECTION)[2026-07-27T18:34:09-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/170
-commit: ad57425b
+commit: bca6b1e3
 agent: claude_app
 instruction_source: 2026-07-27-erw-pipeline-structured-output-reliability-audit.md, followed by a confirmed implementation plan presented in-session
-session_transcript: pending
+session_transcript: claude-app:pending
 created_at: 2026-07-27T18:54:02-04:00
 ---
 
