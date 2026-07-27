@@ -2,7 +2,7 @@
 execution_id: 2026_07_27_03_51_25_WI_EVENT_0030_STRICT_TOOL_SCHEMAS_REVIEW
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0030_STRICT_TOOL_SCHEMAS_REVIEW)[2026-07-27T03:50:59-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_07_27_03_18_44_WI_EVENT_0030_STRICT_TOOL_SCHEMAS
 pr: https://github.com/xenotaur/LCATS/pull/168
 commit: 98dcd6cf
