@@ -2,7 +2,7 @@
 execution_id: 2026_07_27_00_12_40_WI_EVENT_0030_SEGMENTATION_JSON_PARSE_CRASH
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0030_SEGMENTATION_JSON_PARSE_CRASH)[2026-07-27T00:12:32-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/167
 commit: 017346f1
