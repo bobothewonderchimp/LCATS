@@ -2,13 +2,13 @@
 execution_id: 2026_07_27_14_08_25_ERW_PIPELINE_STRUCTURED_OUTPUT_RELIABILITY_AUDIT_PR
 prompt_id: PROMPT(AD_HOC:ERW_PIPELINE_STRUCTURED_OUTPUT_RELIABILITY_AUDIT_PR)[2026-07-27T14:08:15-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/169
-commit: 4cdbe941
+commit: 7963cdb3
 agent: claude_app
 instruction_source: chat session (packaging the local-branch audit draft as a reviewable PR)
-session_transcript: pending
+session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
 created_at: 2026-07-27T14:08:25-04:00
 ---
 
