@@ -226,6 +226,14 @@ class JSONPromptExtractor:
             can_retry = True
             suggested_action = "retry_with_backoff"
 
+        # Truncated tool-use output — max_tokens hit mid-generation. Not
+        # retryable with the same request (would truncate identically);
+        # the caller must raise max_tokens and retry.
+        elif code == "truncated_output":
+            category = "truncated_output"
+            can_retry = False
+            suggested_action = "retry_with_higher_max_tokens"
+
         return {
             **payload,
             "category": category,
@@ -244,6 +252,25 @@ class JSONPromptExtractor:
         Returns:
             A normalized error dict.
         """
+        if isinstance(exc, llm_backend.TruncatedResponseError):
+            payload = {
+                "status": None,
+                "code": "truncated_output",
+                "type": "truncated_output",
+                "message": str(exc),
+                "raw": {
+                    "stop_reason": exc.stop_reason,
+                    "max_tokens": exc.max_tokens,
+                },
+                # The provider already billed these output tokens despite
+                # the call failing - surfaced so callers with usage/cost
+                # tracking (e.g. event_role_world.processor) don't silently
+                # record zero tokens for a truncated-but-charged call.
+                "input_tokens": exc.input_tokens,
+                "output_tokens": exc.output_tokens,
+            }
+            return self._classify_api_error(payload)
+
         # Best-effort defaults
         status = getattr(exc, "status_code", None) or getattr(exc, "http_status", None)
         code = getattr(exc, "code", None)
@@ -350,13 +377,19 @@ class JSONPromptExtractor:
 
         except Exception as exc:
             api_error = self._normalize_api_error(exc)
+            usage = None
+            if "input_tokens" in api_error and "output_tokens" in api_error:
+                usage = {
+                    "input_tokens": api_error["input_tokens"],
+                    "output_tokens": api_error["output_tokens"],
+                }
             return {
                 "story_text": story_text,
                 "model_name": model,
                 "messages": messages,
                 "response": None,
                 "response_id": None,
-                "usage": None,
+                "usage": usage,
                 "raw_output": "",
                 "parsed_output": None,
                 "extracted_output": None,
