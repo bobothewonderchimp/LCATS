@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #175 (commit 98148df0). Moved lcats/lcats/ to lcats/src/lcats/, updated pyproject.toml package-discovery config, scripts, secrets.py/test_utils.py parent-depth fixes, .pre-commit-config.yaml, tools/*, experiments/*/run_*.py sys.path bootstraps, and doc links caught in review."
 blocked_reason: null
 blocked: false
 id: WI-PACKAGING-0032
 title: Move lcats package from lcats/lcats/ to lcats/src/lcats/ (src-layout)
 type: deliverable
-status: proposed
+status: resolved
 owner: xenotaur
 contributors:
   - xenotaur

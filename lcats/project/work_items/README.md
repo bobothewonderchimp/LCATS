@@ -38,4 +38,5 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `resolved/WI-EVENT-0028.md` — Investigate need and design for cross-segment causal relation extraction
 - `resolved/WI-EVENT-0029.md` — Implement story-level cross-segment relation pass for Event-Role-World extractor
 - `resolved/WI-PACKAGING-0031.md` — Bring lcats/pyproject.toml metadata up to PEP 621/639 and CI-parity
+- `resolved/WI-PACKAGING-0032.md` — Move lcats package from lcats/lcats/ to lcats/src/lcats/ (src-layout)
 - `resolved/WI-PACKAGING-0034.md` — Fix and document environment.yml and pre-commit tool-version drift
