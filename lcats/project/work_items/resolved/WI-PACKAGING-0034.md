@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #174 (commit 79a39687). Fixed environment.yml setuptools/gutenbergpy drift, added scripts/utils/fix_pip_vcs_pins.py to preserve VCS pins on regeneration, documented both the active-env-dependent scripts/update behavior and the pre-commit black hook's tagless-clone limitation."
 blocked_reason: null
 blocked: false
 id: WI-PACKAGING-0034
 title: Fix and document environment.yml and pre-commit tool-version drift
 type: operation
-status: proposed
+status: resolved
 owner: xenotaur
 contributors:
   - xenotaur
