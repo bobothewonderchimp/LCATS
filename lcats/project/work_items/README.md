@@ -16,7 +16,6 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 ## Proposed Items
 - `proposed/WI-PERSIST-0004.md` — Design persistence layer for corpus state and operation history
 - `proposed/WI-EVENT-0030.md` — Run stratified cross-segment relation density pilot across genres
-- `proposed/WI-PACKAGING-0035.md` — Add setuptools-scm dynamic versioning and remove lcats/setup.py
 
 ## Abandoned Items
 - `abandoned/WI-META-0006.md` — superseded by native LRH functionality (`lrh meta register`); reversed by WI-META-0023
@@ -41,3 +40,4 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `resolved/WI-PACKAGING-0031.md` — Bring lcats/pyproject.toml metadata up to PEP 621/639 and CI-parity
 - `resolved/WI-PACKAGING-0032.md` — Move lcats package from lcats/lcats/ to lcats/src/lcats/ (src-layout)
 - `resolved/WI-PACKAGING-0034.md` — Fix and document environment.yml and pre-commit tool-version drift
+- `resolved/WI-PACKAGING-0035.md` — Add setuptools-scm dynamic versioning and remove lcats/setup.py

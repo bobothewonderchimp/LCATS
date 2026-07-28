@@ -2,8 +2,8 @@
 id: WS-PACKAGING
 kind: planning_node
 title: LCATS Python Packaging Modernization
-status: proposed
-stage: designed
+status: resolved
+stage: closed
 origin: design_review
 summary: Coordinate the three phased work items that bring lcats/pyproject.toml up to PyPA/PEP 621/PEP 639 best practice and parity with the sibling lrh project, per PROP-LCATS-PACKAGING-MODERNIZATION.
 related_focus: []

@@ -2,11 +2,14 @@
 id: PROP-LCATS-PACKAGING-MODERNIZATION
 type: design_proposal
 title: LCATS Python Packaging Modernization — src-layout, dynamic versioning, and PEP 621/639 metadata
-status: proposed
+status: adopted
 created_on: 2026-07-26
-updated_on: 2026-07-26
-implementation_status: not_started
-implemented_by: []
+updated_on: 2026-07-28
+implementation_status: implemented
+implemented_by:
+  - WI-PACKAGING-0031
+  - WI-PACKAGING-0032
+  - WI-PACKAGING-0035
 supersedes: []
 superseded_by: null
 related_design: []

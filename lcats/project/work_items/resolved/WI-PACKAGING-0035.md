@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #177 (commit fa9e9311). Added setuptools-scm dynamic versioning, cut and pushed the repo's first git tag (v0.1.0), removed lcats/setup.py. Discovered and fixed a real bug: setuptools_scm required root = \"..\" since lcats/ is a subdirectory of the repo."
 blocked_reason: null
 blocked: false
 id: WI-PACKAGING-0035
 title: Add setuptools-scm dynamic versioning and remove lcats/setup.py
 type: deliverable
-status: proposed
+status: resolved
 owner: xenotaur
 contributors:
   - xenotaur
