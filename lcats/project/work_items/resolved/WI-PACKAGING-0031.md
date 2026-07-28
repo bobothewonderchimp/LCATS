@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #173 (commit 82519693). Metadata-only pyproject.toml changes plus confirmed scope expansions (7-file mechanical reformat, .pre-commit-config.yaml ruff rev fix)."
 blocked_reason: null
 blocked: false
 id: WI-PACKAGING-0031
 title: Bring lcats/pyproject.toml metadata up to PEP 621/639 and CI-parity
 type: deliverable
-status: proposed
+status: resolved
 owner: xenotaur
 contributors:
   - xenotaur
