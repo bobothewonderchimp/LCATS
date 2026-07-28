@@ -2,10 +2,11 @@
 execution_id: 2026_07_28_17_49_16_WI_PACKAGING_0036_REVIEW_FIXES
 prompt_id: PROMPT(AD_HOC:WI_PACKAGING_0036_REVIEW_FIXES)[2026-07-28T17:49:10-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/178
-commit: e5c42e4b
+commit: aeec92901b04aeff08b5fae3d9930b15d1d9f2d0
+session_transcript: claude-app:a312416a-a3e9-405c-9ca2-6db48a061a8b
 created_at: 2026-07-28T17:49:16-04:00
 ---
 
