@@ -2,13 +2,13 @@
 execution_id: 2026_07_27_19_45_15_ERW_RELIABILITY_SCOPING
 prompt_id: PROMPT(AD_HOC:ERW_RELIABILITY_SCOPING)[2026-07-27T19:27:06-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/172
-commit: 2ac5a5e3
+commit: 6149acdf
 agent: claude_app
 instruction_source: user request, per the audit's own "Next steps" recommendation in lcats/project/audits/2026-07-27-erw-pipeline-structured-output-reliability-audit.md
-session_transcript: pending
+session_transcript: claude-app:pending
 created_at: 2026-07-27T19:45:15-04:00
 ---
 

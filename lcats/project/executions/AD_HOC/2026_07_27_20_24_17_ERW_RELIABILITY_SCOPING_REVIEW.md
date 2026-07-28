@@ -2,13 +2,13 @@
 execution_id: 2026_07_27_20_24_17_ERW_RELIABILITY_SCOPING_REVIEW
 prompt_id: PROMPT(AD_HOC:ERW_RELIABILITY_SCOPING_REVIEW)[2026-07-27T20:22:52-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_07_27_19_45_15_ERW_RELIABILITY_SCOPING
 pr: https://github.com/xenotaur/LCATS/pull/172
-commit: c99ba9ff
+commit: 6149acdf
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/172
-session_transcript: pending
+session_transcript: claude-app:pending
 created_at: 2026-07-27T20:24:17-04:00
 ---
 
