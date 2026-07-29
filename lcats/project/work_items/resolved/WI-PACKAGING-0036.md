@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #179 (commit 780cc5e9)."
 blocked_reason: null
 blocked: false
 id: WI-PACKAGING-0036
 title: Replace hardcoded parent-depth path counting with a pyproject.toml anchor
 type: operation
-status: proposed
+status: resolved
 owner: xenotaur
 contributors:
   - xenotaur
