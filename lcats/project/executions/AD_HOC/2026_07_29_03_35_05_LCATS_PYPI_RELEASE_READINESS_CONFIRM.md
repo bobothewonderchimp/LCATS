@@ -2,14 +2,14 @@
 execution_id: 2026_07_29_03_35_05_LCATS_PYPI_RELEASE_READINESS_CONFIRM
 prompt_id: PROMPT(AD_HOC:LCATS_PYPI_RELEASE_READINESS_CONFIRM)[2026-07-29T03:34:43-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/184
-commit: be57261d
+commit: f8db9b31c8d0e8aa3c231247e815be92fbf71616
 created_at: 2026-07-29T03:35:05-04:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/184
-session_transcript: pending
+session_transcript: claude-app:784bb58f-7dfc-4a15-b52e-ce882a3b1ba7
 ---
 
 # Summary
