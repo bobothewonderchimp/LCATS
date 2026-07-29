@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #183 (commit 2cc85d07)."
 blocked_reason: null
 blocked: false
 id: WI-RELEASE-0038
 title: Add lcats.version module, --version CLI flag, and scripts/version release helper
 type: deliverable
-status: proposed
+status: resolved
 owner: xenotaur
 contributors:
   - xenotaur
