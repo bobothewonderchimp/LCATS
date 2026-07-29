@@ -2,14 +2,14 @@
 execution_id: 2026_07_28_23_42_59_WI_RELEASE_0037_UPDATE_OPTIONS_REVIEW
 prompt_id: PROMPT(AD_HOC:WI_RELEASE_0037_UPDATE_OPTIONS_REVIEW)[2026-07-28T23:42:51-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/182
-commit: 77fdf162
+commit: 188592d0f62bb6c9e5d1bd0a72db8e4b0d24ef4a
 created_at: 2026-07-28T23:42:59-04:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/182
-session_transcript: pending
+session_transcript: claude-app:784bb58f-7dfc-4a15-b52e-ce882a3b1ba7
 ---
 
 # Summary
