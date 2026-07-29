@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #187 (commit 0a79dd52). Strict-mode schemas, defensive array-item checks, processor.py model-override/structured-error preservation, and run_pilot.py's uncaught-exception fix all landed; review caught and fixed a real regression in run_pilot.py's own build_story_relations() call site."
 blocked_reason: null
 blocked: false
 id: WI-EVENT-0032
 title: Harden Event-Role-World tool-schema reliability and processor error/model handling
 type: deliverable
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
