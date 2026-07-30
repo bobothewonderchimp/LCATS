@@ -2,10 +2,10 @@
 execution_id: 2026_07_29_22_26_19_LCATS_PIPELINE_CHECKPOINTING_REVIEW
 prompt_id: PROMPT(AD_HOC:LCATS_PIPELINE_CHECKPOINTING_REVIEW)[2026-07-29T22:25:58-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/190
-commit: 683202a8
+commit: 3fad8bf1
 agent: claude_app
 instruction_source: user request in-session ("Let's start the pipelining proposal via /lrh-proposal", confirmed draft, "Yes, proceed with review/merge/closeout.")
 session_transcript: pending
