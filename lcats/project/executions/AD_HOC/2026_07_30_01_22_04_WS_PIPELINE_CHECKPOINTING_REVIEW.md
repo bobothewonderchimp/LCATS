@@ -2,10 +2,10 @@
 execution_id: 2026_07_30_01_22_04_WS_PIPELINE_CHECKPOINTING_REVIEW
 prompt_id: PROMPT(AD_HOC:WS_PIPELINE_CHECKPOINTING_REVIEW)[2026-07-30T01:21:58-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/191
-commit:
+commit: fefbdea2
 agent: claude_app
 instruction_source: user request in-session ("Let's start the workstream via /lrh-workstream", confirmed draft, "Let's land PR 191 via ## Land an Open PR to Closeout")
 session_transcript: pending
