@@ -18,4 +18,4 @@ verification step.
 - [`00_proposal.md`](00_proposal.md) — background, PyPI upload-validation
   grounding, design decisions, non-goals, and implementation plan.
 
-Governed by [`WS-RELEASE`](../../../workstreams/proposed/WS-RELEASE.md).
+Governed by [`WS-RELEASE`](../../../../workstreams/proposed/WS-RELEASE.md).
