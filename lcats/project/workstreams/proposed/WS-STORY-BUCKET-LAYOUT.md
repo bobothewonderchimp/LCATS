@@ -5,7 +5,7 @@ title: Per-Story Bucket Directory Layout Migration for LCATS Corpus Storage
 status: proposed
 stage: designed
 origin: design_review
-summary: Deliver PROP-LCATS-STORY-BUCKET-LAYOUT's staged expand-contract migration from flat per-collection story files to per-story bucket directories, across three stages: read-path compatibility, write-path migration, and convergence-and-validation.
+summary: "Deliver PROP-LCATS-STORY-BUCKET-LAYOUT's staged expand-contract migration from flat per-collection story files to per-story bucket directories, across three stages: read-path compatibility, write-path migration, and convergence-and-validation."
 related_focus:
   - FOCUS-WORLDCON-2026
 related_roadmap: []
@@ -15,9 +15,9 @@ related_design:
   - lcats/project/design/proposals/adopted/lcats-pipeline-checkpointing/00_proposal.md
 work_items: []
 exit_criteria:
-  - Stage 1 (read-path compatibility) lands: discovery/identity logic is dual-layout-tolerant (Decisions 2-3), with a canonical story-file selector and dual-layout tests, writer output unchanged
-  - Stage 2 (write-path migration) lands: DataGatherer.ensure and parser.gather_story() both write <collection>/<story>/story.json (Decision 8); overrides story_id derivation fixed (Decision 7); output identifier semantics updated with new story_dir/story_slug column (Decision 5); lcats promote itself rejects zero-story-count collections (Decision 6)
-  - Stage 3 convergence work lands: tests/fixtures/docs normalized to the new layout, with an explicit end-to-end gather-then-promote validation pass confirmed
+  - "Stage 1 (read-path compatibility) lands: discovery/identity logic is dual-layout-tolerant (Decisions 2-3), with a canonical story-file selector and dual-layout tests, writer output unchanged"
+  - "Stage 2 (write-path migration) lands: DataGatherer.ensure and parser.gather_story() both write <collection>/<story>/story.json (Decision 8); overrides story_id derivation fixed (Decision 7); output identifier semantics updated with new story_dir/story_slug column (Decision 5); lcats promote itself rejects zero-story-count collections (Decision 6)"
+  - "Stage 3 convergence work lands: tests/fixtures/docs normalized to the new layout, with an explicit end-to-end gather-then-promote validation pass confirmed"
   - Dual-layout retraction (Decision 4) lands as its own follow-up, only after the tracked corpora/ snapshot is confirmed migrated via a separate gather-then-promote action
   - All work items resolved and lrh validate reports 0 errors
 ---
