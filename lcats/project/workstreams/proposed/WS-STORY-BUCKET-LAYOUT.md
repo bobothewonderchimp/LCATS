@@ -15,6 +15,7 @@ related_design:
   - lcats/project/design/proposals/adopted/lcats-pipeline-checkpointing/00_proposal.md
 work_items:
   - WI-STORY-0042
+  - WI-STORY-0043
 exit_criteria:
   - "Stage 1 (read-path compatibility) lands: discovery/identity logic is dual-layout-tolerant (Decisions 2-3), with a canonical story-file selector and dual-layout tests, writer output unchanged"
   - "Stage 2 (write-path migration) lands: DataGatherer.ensure and parser.gather_story() both write <collection>/<story>/story.json (Decision 8); overrides story_id derivation fixed (Decision 7); output identifier semantics updated with new story_dir/story_slug column (Decision 5); lcats promote itself rejects zero-story-count collections (Decision 6)"
@@ -82,12 +83,12 @@ to closeout.
 - **WI-STORY-0042** — Make story discovery/identity dual-layout-compatible:
   canonical story-file selector, dual-layout tests, no writer changes yet
   (Decisions 2-3).
-- **Stage 2 work item** (not yet created) — Migrate write paths to the
-  bucket layout: `DataGatherer.ensure` and `parser.gather_story()`
-  (Decision 8, the mass-quantities collection's writer, found during
-  proposal review); fix the overrides `story_id` derivation (Decision 7);
-  update output identifier semantics (Decision 5); add standing
-  zero-story-count rejection to `lcats promote` (Decision 6).
+- **WI-STORY-0043** — Migrate write paths to the bucket layout:
+  `DataGatherer.ensure` and `parser.gather_story()` (Decision 8, the
+  mass-quantities collection's writer, found during proposal review); fix
+  the overrides `story_id` derivation (Decision 7); update output
+  identifier semantics (Decision 5); add standing zero-story-count
+  rejection to `lcats promote` (Decision 6).
 - **Stage 3 work item** (not yet created) — Convergence: normalize
   tests/fixtures/docs to the new layout, run an explicit end-to-end
   gather-then-promote validation pass, and land dual-layout retraction
