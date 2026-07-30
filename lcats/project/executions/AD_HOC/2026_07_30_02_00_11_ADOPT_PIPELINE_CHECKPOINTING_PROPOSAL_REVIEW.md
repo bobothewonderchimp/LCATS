@@ -2,10 +2,10 @@
 execution_id: 2026_07_30_02_00_11_ADOPT_PIPELINE_CHECKPOINTING_PROPOSAL_REVIEW
 prompt_id: PROMPT(AD_HOC:ADOPT_PIPELINE_CHECKPOINTING_PROPOSAL_REVIEW)[2026-07-30T02:00:01-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/192
-commit:
+commit: ca93307a
 agent: claude_app
 instruction_source: user request in-session ("Save the memory and move the proposal status to adopted.", followed by "Let's land PR 192 via ## Land an Open PR to Closeout")
 session_transcript: pending
