@@ -89,14 +89,10 @@ to closeout.
   the overrides `story_id` derivation (Decision 7); update output
   identifier semantics (Decision 5); add standing zero-story-count
   rejection to `lcats promote` (Decision 6).
-- **Stage 3 work item** (not yet created) — Convergence: normalize
-  tests/fixtures/docs to the new layout, run an explicit end-to-end
-  gather-then-promote validation pass, and land dual-layout retraction
-  (Decision 4) as its own follow-up once the tracked `corpora/` snapshot
-  is confirmed migrated.
-
-None yet have `WI-*` IDs — offered as a follow-on after this workstream is
-created.
+- **WI-STORY-0044** — Convergence: normalize tests/fixtures/docs to the
+  new layout, run an explicit end-to-end gather-then-promote validation
+  pass, and land dual-layout retraction (Decision 4) as its own follow-up
+  once the tracked `corpora/` snapshot is confirmed migrated.
 
 ## Exit Criteria
 

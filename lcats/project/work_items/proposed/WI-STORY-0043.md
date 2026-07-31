@@ -35,7 +35,7 @@ acceptance:
   - DataGatherer.ensure (lcats/src/lcats/gatherers/downloaders.py:216) writes <collection>/<story>/story.json
   - parser.gather_story() (lcats/src/lcats/gatherers/parser.py:1468-1476) writes the same bucket layout for the mass-quantities collection, with its own tests updated
   - The overrides story_id derivation (downloaders.py:249) uses the canonical story name (directory slug), not a re-derivation from the new leaf filename, so per-story overrides no longer collapse onto one key
-  - output.py gains a new story_dir/story_slug column with a concrete, documented name; story_file/story_identifier semantics are not silently repurposed
+  - output.py gains a new story_dir column, appended to the end of TSV_COLUMNS (preserving existing column positions for positional consumers); story_file/story_identifier semantics are not silently repurposed; no formal schema-version field is introduced (explicit decision, not deferred)
   - promote.py's survey_collection/promote_collections reject a story_count==0 collection as a standing, always-on check (not a one-time step)
   - New/updated tests cover all of the above
   - lrh validate reports 0 errors
@@ -48,7 +48,10 @@ artifacts_expected:
   - lcats/src/lcats/gatherers/parser.py
   - lcats/src/lcats/analysis/corpus/output.py
   - lcats/src/lcats/analysis/corpus/promote.py
-  - lcats/tests
+  - lcats/tests/gatherers_tests/downloaders_test.py
+  - lcats/tests/gatherers_tests/parser_test.py
+  - lcats/tests/analysis_tests/promote_test.py
+  - lcats/tests/analysis_tests/output_test.py
 ---
 
 ## Summary
@@ -98,7 +101,7 @@ standing rejection, not a one-time check.
 - Migrate both writer sites (`DataGatherer.ensure`, `parser.gather_story()`)
   to the bucket layout.
 - Fix the overrides `story_id` derivation.
-- Add the `story_dir`/`story_slug` output column.
+- Add the `story_dir` output column.
 - Add standing zero-story-count rejection to `lcats promote`.
 - Update/add tests for all of the above.
 - Assumes Stage 1's dual-layout-tolerant discovery (`WI-STORY-0042`)
@@ -113,9 +116,13 @@ standing rejection, not a one-time check.
 3. Fix the `story_id` derivation at `downloaders.py:249` to use the
    canonical story name (directory slug), not a re-derivation from the new
    leaf filename.
-4. Add a `story_dir`/`story_slug` column to `output.py`'s TSV/human output
-   schema; keep `story_file` for the literal leaf filename (now low-value
-   but non-breaking).
+4. Add a `story_dir` column, appended to the end of `output.py`'s
+   `TSV_COLUMNS` list — appending (not inserting) preserves existing
+   column positions for any positional TSV consumer; only a consumer
+   requiring an exact total column count needs updating. Keep
+   `story_file` for the literal leaf filename (now low-value but
+   non-breaking). No formal schema-version field is introduced — this is
+   a bounded addition to an existing ad hoc TSV, not a versioned schema.
 5. Add zero-story-count rejection to `promote.py`'s
    `survey_collection`/`promote_collections` as a standing, always-on
    check.
@@ -133,10 +140,12 @@ standing rejection, not a one-time check.
 - Does not touch `lcats gather` incrementality/checkpointing,
   `notebooks/`, or `experiments/` — deferred in the governing proposal's
   own Non-Goals.
-- Does not finalize the `story_dir`/`story_slug` column name or TSV schema
-  version-bump policy beyond what's needed to ship Decision 5 — the
-  proposal's Open Questions defer full bikeshedding, but this item must
-  pick and document a concrete name.
+- Does not introduce a formal TSV schema-version field or a general
+  schema-versioning mechanism — decided, not deferred: this item's column
+  addition is bounded (append `story_dir` to the end of `TSV_COLUMNS`),
+  and a real version-negotiation mechanism is a separate, larger design
+  question only worth solving if a future change can't stay
+  append-only.
 - Does not change the overrides *file format* itself (directory-slug
   keying vs. filename-stem keying) — a call-site fix per Decision 7, not a
   schema change to `lcats/gatherers/overrides/<collection>.json`.
