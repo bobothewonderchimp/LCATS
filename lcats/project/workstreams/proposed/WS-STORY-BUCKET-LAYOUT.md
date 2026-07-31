@@ -13,7 +13,8 @@ related_design:
   - lcats/project/design/proposals/proposed/lcats-story-bucket-layout/00_proposal.md
   - lcats/project/design/flat_story_layout_migration_impact_report.md
   - lcats/project/design/proposals/adopted/lcats-pipeline-checkpointing/00_proposal.md
-work_items: []
+work_items:
+  - WI-STORY-0042
 exit_criteria:
   - "Stage 1 (read-path compatibility) lands: discovery/identity logic is dual-layout-tolerant (Decisions 2-3), with a canonical story-file selector and dual-layout tests, writer output unchanged"
   - "Stage 2 (write-path migration) lands: DataGatherer.ensure and parser.gather_story() both write <collection>/<story>/story.json (Decision 8); overrides story_id derivation fixed (Decision 7); output identifier semantics updated with new story_dir/story_slug column (Decision 5); lcats promote itself rejects zero-story-count collections (Decision 6)"
@@ -78,9 +79,9 @@ to closeout.
 
 ## Work Items
 
-- **Stage 1 work item** (not yet created) — Make story discovery/identity
-  dual-layout-compatible: canonical story-file selector, dual-layout
-  tests, no writer changes yet (Decisions 2-3).
+- **WI-STORY-0042** — Make story discovery/identity dual-layout-compatible:
+  canonical story-file selector, dual-layout tests, no writer changes yet
+  (Decisions 2-3).
 - **Stage 2 work item** (not yet created) — Migrate write paths to the
   bucket layout: `DataGatherer.ensure` and `parser.gather_story()`
   (Decision 8, the mass-quantities collection's writer, found during
