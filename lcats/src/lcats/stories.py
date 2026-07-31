@@ -1,8 +1,10 @@
 """Classes for working with stories and corpora of stories."""
 
 import json
-import os
+import pathlib
 import yaml
+
+from lcats.analysis.corpus import discovery
 
 
 class Corpora:
@@ -41,18 +43,30 @@ class Corpora:
         return stories
 
     def get_corpora(self):
-        """Utility function to load all corpora from the corpora root."""
+        """Utility function to load all corpora from the corpora root.
+
+        Tolerates both the flat (``<collection>/<story>.json``) and
+        per-story-bucket (``<collection>/<story>/story.json``) layouts, per
+        Decision 3 of PROP-LCATS-STORY-BUCKET-LAYOUT. Each immediate
+        subdirectory of the corpora root is treated as one collection;
+        story files within it are found via
+        ``discovery.iter_collection_story_files``, which does not recurse
+        past one level -- so a story's own bucket directory is never
+        mistaken for a second collection. Symlinked directories directly
+        under the corpora root are skipped, matching the discovery
+        helpers' own ``follow_symlinks=False`` convention.
+        """
         corpora = {}
-        for root, dirs, files in os.walk(self.corpora_root):
-            del files  # Unused
-            for dir_name in dirs:
-                corpora[dir_name] = []
-                dir_path = os.path.join(root, dir_name)
-                for file_name in os.listdir(dir_path):
-                    if file_name.endswith(".json"):
-                        file_path = os.path.join(dir_path, file_name)
-                        story = Story.from_json_file(file_path)
-                        corpora[dir_name].append(story)
+        root_path = pathlib.Path(self.corpora_root)
+        if not root_path.is_dir():
+            return corpora
+        for collection_dir in sorted(
+            p for p in root_path.iterdir() if p.is_dir() and not p.is_symlink()
+        ):
+            collection_stories = []
+            for story_path in discovery.iter_collection_story_files(collection_dir):
+                collection_stories.append(Story.from_json_file(str(story_path)))
+            corpora[collection_dir.name] = collection_stories
         return corpora
 
 

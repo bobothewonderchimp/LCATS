@@ -341,6 +341,95 @@ class TestCorpora(unittest.TestCase):
         names = {s.name for s in result}
         self.assertEqual(names, {"A1", "A2", "B1"})
 
+    def _make_bucket_story(self, corpus_dir, story_slug, data):
+        """Helper: create a per-story-bucket <story_slug>/story.json file."""
+        bucket_dir = os.path.join(corpus_dir, story_slug)
+        os.makedirs(bucket_dir)
+        path = os.path.join(bucket_dir, "story.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+
+    def test_get_corpora_loads_nested_bucket_story(self):
+        """get_corpora finds stories in <collection>/<story>/story.json."""
+        corpus_dir = os.path.join(self.tmp, "fantasy")
+        os.makedirs(corpus_dir)
+        self._make_bucket_story(
+            corpus_dir, "story1", {"name": "Bucket1", "body": "B1", "metadata": {}}
+        )
+        corpora = stories.Corpora(self.tmp)
+        result = corpora.get_corpora()
+        self.assertIn("fantasy", result)
+        self.assertEqual(len(result["fantasy"]), 1)
+        self.assertEqual(result["fantasy"][0].name, "Bucket1")
+
+    def test_get_corpora_mixed_flat_and_bucket_layout(self):
+        """get_corpora combines flat and bucket stories within one collection."""
+        corpus_dir = self._make_corpus_dir(
+            "mixed", [{"name": "Flat1", "body": "F1", "metadata": {}}]
+        )
+        self._make_bucket_story(
+            corpus_dir,
+            "bucket_story",
+            {"name": "Bucket1", "body": "B1", "metadata": {}},
+        )
+        corpora = stories.Corpora(self.tmp)
+        result = corpora.get_corpora()
+        self.assertEqual(len(result["mixed"]), 2)
+        names = {s.name for s in result["mixed"]}
+        self.assertEqual(names, {"Flat1", "Bucket1"})
+
+    def test_get_corpora_bucket_story_not_treated_as_new_collection(self):
+        """A nested story bucket is grouped under its real collection, not
+        spuriously surfaced as a new top-level collection key (regression
+        test for the original os.walk-based traversal bug)."""
+        corpus_dir = os.path.join(self.tmp, "sherlock")
+        os.makedirs(corpus_dir)
+        self._make_bucket_story(
+            corpus_dir, "story1", {"name": "S1", "body": "B1", "metadata": {}}
+        )
+        corpora = stories.Corpora(self.tmp)
+        result = corpora.get_corpora()
+        self.assertEqual(set(result.keys()), {"sherlock"})
+        self.assertNotIn("story1", result)
+
+    def test_get_corpora_ignores_sidecar_json_in_bucket_dir(self):
+        """A non-canonical JSON file inside a story's bucket directory (e.g.
+        analysis output) is not picked up as a second story."""
+        corpus_dir = os.path.join(self.tmp, "fantasy")
+        os.makedirs(corpus_dir)
+        self._make_bucket_story(
+            corpus_dir, "story1", {"name": "S1", "body": "B1", "metadata": {}}
+        )
+        sidecar_path = os.path.join(corpus_dir, "story1", "analysis.json")
+        with open(sidecar_path, "w", encoding="utf-8") as f:
+            json.dump({"unrelated": "data"}, f)
+        corpora = stories.Corpora(self.tmp)
+        result = corpora.get_corpora()
+        self.assertEqual(len(result["fantasy"]), 1)
+        self.assertEqual(result["fantasy"][0].name, "S1")
+
+    def test_get_corpora_skips_symlinked_collection_dirs(self):
+        """A symlinked directory directly under the corpora root is not
+        traversed as a collection, matching the discovery helpers'
+        follow_symlinks=False convention."""
+        outside = os.path.join(self.tmp, "..", "outside_collection")
+        outside = os.path.abspath(outside)
+        os.makedirs(outside, exist_ok=True)
+        with open(os.path.join(outside, "story1.json"), "w", encoding="utf-8") as f:
+            json.dump({"name": "Outside"}, f)
+        try:
+            os.symlink(outside, os.path.join(self.tmp, "linked_collection"))
+        except (OSError, NotImplementedError):
+            self.skipTest("symlinks not supported in this environment")
+        try:
+            corpora = stories.Corpora(self.tmp)
+            result = corpora.get_corpora()
+            self.assertEqual(result, {})
+        finally:
+            import shutil
+
+            shutil.rmtree(outside)
+
 
 if __name__ == "__main__":
     unittest.main()
