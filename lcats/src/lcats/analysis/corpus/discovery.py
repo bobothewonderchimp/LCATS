@@ -87,7 +87,7 @@ def iter_collection_story_files(
     if not path.is_dir():
         return
     for entry in sorted(path.iterdir()):
-        if entry.is_symlink():
+        if entry.is_symlink() and entry.is_dir():
             continue
         if entry.is_file():
             if entry.suffix == ".json":
@@ -111,12 +111,21 @@ def _walk_canonical_story_files(directory: pathlib.Path) -> Iterator[pathlib.Pat
 
     First checks whether ``directory`` is itself a story bucket (contains
     its own ``story.json``) -- if so, yields only that canonical file and
-    stops, regardless of what other JSON sidecars sit alongside it. This
-    only matters when ``directory`` is handed to this function directly, as
-    a top-level scan target (e.g. a caller pointing straight at one story's
-    bucket) -- reaching a bucket directory via recursion from a collection
-    is already handled by :func:`iter_collection_story_files`, which stops
-    at the bucket boundary and never recurses into it.
+    stops, regardless of what other JSON sidecars (``audit.json``,
+    ``scenes.json``, ``events.json``, and similar per-story analysis
+    artifacts) sit alongside it. This is a deliberate, unconditional rule,
+    not a best-effort heuristic: once a directory contains ``story.json``,
+    every other JSON file in it is treated as that story's own sidecar
+    content, never as an independent second story -- this is how bucket
+    directories are actually populated once the write path migrates (see
+    Decision 3 of PROP-LCATS-STORY-BUCKET-LAYOUT), so there is no
+    real-world case where "story.json plus another flat story" both belong
+    directly in the same directory. This only matters when ``directory``
+    is handed to this function directly, as a top-level scan target (e.g.
+    a caller pointing straight at one story's bucket) -- reaching a bucket
+    directory via recursion from a collection is already handled by
+    :func:`iter_collection_story_files`, which stops at the bucket
+    boundary and never recurses into it.
 
     Otherwise applies :func:`iter_collection_story_files`'s flat-vs-bucket
     predicate to ``directory``, then recurses into subdirectories that are

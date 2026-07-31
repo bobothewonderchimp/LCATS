@@ -77,7 +77,7 @@ class TestIterCollectionStoryFiles(test_utils.TestCaseWithData):
         self.assertEqual(found, [other])
         self.assertIn("reserved", captured.stderr.getvalue())
 
-    def test_skips_symlinked_entries(self):
+    def test_skips_symlinked_directories(self):
         real_target = self.root.parent / "outside_target"
         real_target.mkdir()
         (real_target / "story.json").write_text("{}", encoding="utf-8")
@@ -88,6 +88,17 @@ class TestIterCollectionStoryFiles(test_utils.TestCaseWithData):
             self.skipTest("symlinks not supported in this environment")
         found = list(discovery.iter_collection_story_files(self.root))
         self.assertEqual(found, [])
+
+    def test_preserves_symlinked_flat_files(self):
+        real_target = self.root.parent / "real_story.json"
+        real_target.write_text("{}", encoding="utf-8")
+        link = self.root / "linked_story.json"
+        try:
+            link.symlink_to(real_target)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlinks not supported in this environment")
+        found = list(discovery.iter_collection_story_files(self.root))
+        self.assertEqual(found, [link])
 
 
 class TestFindJsonFiles(test_utils.TestCaseWithData):
