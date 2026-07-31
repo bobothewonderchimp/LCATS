@@ -4,6 +4,8 @@ import os
 import json
 from torch.utils.data import Dataset
 
+from lcats.analysis.corpus import discovery
+
 # TODO(centaur): Do this in a more principled way.
 DEFAULT_ROOT_DIR = "data"
 
@@ -16,13 +18,14 @@ class JsonDataset(Dataset):
         else:
             self.data_dir = root_dir
 
-        # Gather all json files in the specified directory and its subdirectories
-        self.file_paths = []
-        for root, _, files in os.walk(self.data_dir):
-            for file in files:
-                if file.endswith(".json"):
-                    file_path = os.path.join(root, file)
-                    self.file_paths.append(file_path)
+        # Gather canonical story files (flat or per-story-bucket layout, per
+        # Decision 3 of PROP-LCATS-STORY-BUCKET-LAYOUT) in the specified
+        # directory and its subdirectories, via the same selector discovery.py
+        # uses -- so this dataset stays in sync with the rest of the corpus
+        # tooling instead of re-implementing its own traversal.
+        self.file_paths = [
+            str(path) for path in discovery.find_json_files([self.data_dir])
+        ]
 
     def __len__(self):
         return len(self.file_paths)

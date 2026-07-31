@@ -45,13 +45,22 @@ def read_story_text(file_path: pathlib.Path) -> str:
 
 
 def infer_story_title(data: dict, file_path: pathlib.Path) -> str:
-    """Infer stable title from story data, falling back to filename stem."""
+    """Infer stable title from story data, falling back to filename stem.
+
+    A canonical per-story-bucket file (``story.json``) always has the same
+    leaf stem ("story"), which is useless as an identifier -- fall back to
+    the enclosing directory's name (the story's slug) for that case instead,
+    per Decision 2 of PROP-LCATS-STORY-BUCKET-LAYOUT. Flat-layout files keep
+    the existing stem fallback unchanged.
+    """
     story_title = (
         data.get("name") or data.get("metadata", {}).get("name") or ""
     ).strip()
-    if not story_title:
-        return file_path.stem
-    return story_title
+    if story_title:
+        return story_title
+    if file_path.name == discovery.CANONICAL_STORY_FILENAME:
+        return file_path.parent.name
+    return file_path.stem
 
 
 def coerce_story_text(value) -> str:

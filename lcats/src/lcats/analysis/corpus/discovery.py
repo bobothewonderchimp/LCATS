@@ -7,6 +7,8 @@ import typing
 
 from typing import Iterable, Iterator, Union
 
+CANONICAL_STORY_FILENAME = "story.json"
+
 
 def find_corpus_stories(
     root: Union[str, pathlib.Path],
@@ -49,10 +51,64 @@ def find_corpus_stories(
     return results
 
 
+def iter_collection_story_files(
+    collection_dir: Union[str, pathlib.Path],
+) -> Iterator[pathlib.Path]:
+    """Yield canonical story files that are immediate entries of collection_dir.
+
+    The canonical story-file selector, per Decision 3 of
+    PROP-LCATS-STORY-BUCKET-LAYOUT. Tolerates both layouts:
+
+    - Flat: any ``<story>.json`` file directly in ``collection_dir``.
+    - Bucket: ``<story>/story.json`` -- a subdirectory of ``collection_dir``
+      containing a file literally named ``story.json``.
+
+    Applies only one level of nesting relative to ``collection_dir``. A
+    subdirectory without a canonical ``story.json`` is skipped, not searched
+    further -- ``collection_dir`` is assumed to already be a single
+    collection's own directory. Sibling JSON artifacts inside a story's own
+    bucket directory (analysis output, override sidecars) are intentionally
+    excluded once nested, since only the canonical leaf name is accepted.
+    """
+    path = pathlib.Path(collection_dir)
+    if not path.is_dir():
+        return
+    for entry in sorted(path.iterdir()):
+        if entry.is_file():
+            if entry.suffix == ".json":
+                yield entry
+        elif entry.is_dir():
+            nested = entry / CANONICAL_STORY_FILENAME
+            if nested.is_file():
+                yield nested
+
+
+def _walk_canonical_story_files(directory: pathlib.Path) -> Iterator[pathlib.Path]:
+    """Recursively yield canonical story files under directory.
+
+    Applies :func:`iter_collection_story_files`'s flat-vs-bucket predicate at
+    every directory level, then recurses into subdirectories that are not
+    themselves story buckets -- so this behaves correctly whether ``directory``
+    is a corpus root (immediate children are collection directories), a single
+    collection directory, or a single story's own directory.
+    """
+    yield from iter_collection_story_files(directory)
+    for entry in sorted(directory.iterdir()):
+        if entry.is_dir() and not (entry / CANONICAL_STORY_FILENAME).is_file():
+            yield from _walk_canonical_story_files(entry)
+
+
 def find_json_files(
     directories: Iterable[Union[str, pathlib.Path]],
 ) -> Iterator[pathlib.Path]:
-    """Yield JSON files from provided paths in deterministic order."""
+    """Yield canonical story files from provided paths in deterministic order.
+
+    Tolerates both the flat and per-story-bucket layouts (Decision 3 of
+    PROP-LCATS-STORY-BUCKET-LAYOUT) via :func:`_walk_canonical_story_files`:
+    a JSON file directly inside whatever directory is being scanned is always
+    eligible regardless of name; a JSON file reached by descending into a
+    subdirectory is eligible only if it is literally named ``story.json``.
+    """
     for directory in directories:
         path = pathlib.Path(directory)
         if not path.exists():
@@ -62,6 +118,4 @@ def find_json_files(
             if path.suffix == ".json":
                 yield path
             continue
-        for file_path in sorted(path.rglob("*.json")):
-            if file_path.is_file():
-                yield file_path
+        yield from _walk_canonical_story_files(path)
