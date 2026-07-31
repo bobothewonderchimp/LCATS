@@ -152,10 +152,19 @@ def find_json_files(
     """Yield canonical story files from provided paths in deterministic order.
 
     Tolerates both the flat and per-story-bucket layouts (Decision 3 of
-    PROP-LCATS-STORY-BUCKET-LAYOUT) via :func:`_walk_canonical_story_files`:
-    a JSON file directly inside whatever directory is being scanned is always
-    eligible regardless of name; a JSON file reached by descending into a
-    subdirectory is eligible only if it is literally named ``story.json``.
+    PROP-LCATS-STORY-BUCKET-LAYOUT) via :func:`_walk_canonical_story_files`,
+    with three exceptions to "any JSON file directly in a scanned directory
+    is eligible regardless of name":
+
+    - If the directory being scanned is itself a story bucket (contains its
+      own ``story.json``), only that canonical file is yielded -- every
+      other JSON sidecar alongside it is excluded, not just files reached
+      by descending further.
+    - A flat file literally named ``story.json`` directly in a directory
+      being scanned as a collection is reserved for the bucket marker and
+      is skipped (with a warning), not treated as an ordinary flat story.
+    - A JSON file reached by descending into a subdirectory is eligible
+      only if it is literally named ``story.json``.
     """
     for directory in directories:
         path = pathlib.Path(directory)

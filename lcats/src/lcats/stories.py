@@ -52,13 +52,17 @@ class Corpora:
         story files within it are found via
         ``discovery.iter_collection_story_files``, which does not recurse
         past one level -- so a story's own bucket directory is never
-        mistaken for a second collection.
+        mistaken for a second collection. Symlinked directories directly
+        under the corpora root are skipped, matching the discovery
+        helpers' own ``follow_symlinks=False`` convention.
         """
         corpora = {}
         root_path = pathlib.Path(self.corpora_root)
         if not root_path.is_dir():
             return corpora
-        for collection_dir in sorted(p for p in root_path.iterdir() if p.is_dir()):
+        for collection_dir in sorted(
+            p for p in root_path.iterdir() if p.is_dir() and not p.is_symlink()
+        ):
             collection_stories = []
             for story_path in discovery.iter_collection_story_files(collection_dir):
                 collection_stories.append(Story.from_json_file(str(story_path)))

@@ -408,6 +408,28 @@ class TestCorpora(unittest.TestCase):
         self.assertEqual(len(result["fantasy"]), 1)
         self.assertEqual(result["fantasy"][0].name, "S1")
 
+    def test_get_corpora_skips_symlinked_collection_dirs(self):
+        """A symlinked directory directly under the corpora root is not
+        traversed as a collection, matching the discovery helpers'
+        follow_symlinks=False convention."""
+        outside = os.path.join(self.tmp, "..", "outside_collection")
+        outside = os.path.abspath(outside)
+        os.makedirs(outside, exist_ok=True)
+        with open(os.path.join(outside, "story1.json"), "w", encoding="utf-8") as f:
+            json.dump({"name": "Outside"}, f)
+        try:
+            os.symlink(outside, os.path.join(self.tmp, "linked_collection"))
+        except (OSError, NotImplementedError):
+            self.skipTest("symlinks not supported in this environment")
+        try:
+            corpora = stories.Corpora(self.tmp)
+            result = corpora.get_corpora()
+            self.assertEqual(result, {})
+        finally:
+            import shutil
+
+            shutil.rmtree(outside)
+
 
 if __name__ == "__main__":
     unittest.main()
