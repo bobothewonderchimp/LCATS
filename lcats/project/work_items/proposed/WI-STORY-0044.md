@@ -19,6 +19,7 @@ related_design:
   - lcats/project/design/proposals/proposed/lcats-story-bucket-layout/00_proposal.md
   - lcats/project/design/flat_story_layout_migration_impact_report.md
   - lcats/docs/reference/corpus-promotion.md
+  - lcats/docs/reference/gather-overrides.md
 depends_on:
   - WI-STORY-0042
   - WI-STORY-0043
@@ -47,6 +48,7 @@ artifacts_expected:
   - lcats/tests/analysis_tests/corpus_survey_test.py
   - lcats/tests/analysis_tests/corpus_surveyor_test.py
   - lcats/tests/stories_test.py
+  - lcats/src/lcats/cli.py
   - lcats/tests/cli_test.py
   - lcats/docs/reference/corpus-promotion.md
   - lcats/docs/reference/gather-overrides.md
@@ -111,7 +113,7 @@ release snapshot entirely.
    remaining explicit filename/path expectations.
 4. Update `lcats/tests/stories_test.py` and gatherer tests — direct
    `*.json` file paths, output-path assertions.
-5. Update `lcats/lcats/cli.py` help examples and `lcats/tests/cli_test.py`
+5. Update `lcats/src/lcats/cli.py` help examples and `lcats/tests/cli_test.py`
    — `lcats survey data/ ...`-style example strings.
 6. Update `lcats/docs/reference/corpus-promotion.md` and
    `lcats/docs/reference/gather-overrides.md` if their examples reference
