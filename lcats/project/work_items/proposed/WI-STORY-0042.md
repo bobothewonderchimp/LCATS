@@ -33,7 +33,8 @@ forbidden_actions:
 acceptance:
   - A canonical story-file selector utility exists, recognizing both a flat <story>.json file and a nested <story>/story.json file as valid story sources
   - Corpora.get_corpora (lcats/src/lcats/stories.py:51-52) uses the selector instead of raw os.listdir + endswith(".json")
-  - find_json_files/find_corpus_stories (lcats/src/lcats/analysis/corpus/discovery.py:65) applies a canonical-filename predicate (story.json only) while remaining dual-layout tolerant, per Decision 3
+  - find_json_files/find_corpus_stories (lcats/src/lcats/analysis/corpus/discovery.py:65) requires the literal name story.json only for files nested inside a story-bucket directory, while flat <story>.json files at the collection root remain eligible as-is (Stage 1 does not change writers, so flat files must stay discoverable), per Decision 3
+  - JsonDataset (lcats/src/lcats/datasets/torchdata.py) applies the same selector/predicate as discovery.py, so it neither loads non-story JSON sidecars from bucket directories nor regresses flat-file discovery
   - infer_story_title (lcats/src/lcats/analysis/corpus/cli.py:53) derives identity from directory slug when present, not raw file_path.stem, per Decision 2
   - New dual-layout tests cover both flat-file and nested-bucket fixtures for all of the above
   - No changes to DataGatherer's writer output or any other writer behavior
@@ -46,6 +47,7 @@ artifacts_expected:
   - lcats/src/lcats/analysis/corpus/discovery.py
   - lcats/src/lcats/stories.py
   - lcats/src/lcats/analysis/corpus/cli.py
+  - lcats/src/lcats/datasets/torchdata.py
   - lcats/tests/stories_test.py
   - lcats/tests/analysis_tests/corpus_surveyor_test.py
 ---
@@ -91,7 +93,7 @@ not broad `*.json` schema-sniffing).
 - Add a single canonical story-file selector utility, recognizing both
   flat and nested-bucket story sources.
 - Update `Corpora.get_corpora`, `find_json_files`/`find_corpus_stories`,
-  and `infer_story_title` to use it.
+  `infer_story_title`, and `JsonDataset` to use it.
 - Add dual-layout tests for all of the above.
 - Do not touch any writer (`DataGatherer`, `parser.gather_story()`) —
   that's Stage 2.
@@ -104,12 +106,20 @@ not broad `*.json` schema-sniffing).
 2. Update `lcats/src/lcats/stories.py:51-52` (`Corpora.get_corpora`) to use
    the selector instead of raw `os.listdir` + `endswith(".json")`.
 3. Update `lcats/src/lcats/analysis/corpus/discovery.py:65`
-   (`find_json_files`) to apply the canonical-filename predicate while
-   remaining dual-layout tolerant.
-4. Update `lcats/src/lcats/analysis/corpus/cli.py:53`
+   (`find_json_files`) to require the literal name `story.json` only for
+   files nested inside a story-bucket directory, while continuing to
+   accept flat `<story>.json` files at the collection root as-is — Stage 1
+   does not change writers, so flat files must stay discoverable.
+4. Update `lcats/src/lcats/datasets/torchdata.py` (`JsonDataset`, which
+   currently does `os.walk` + `endswith(".json")`, accepting every JSON
+   file under its root) to apply the same selector/predicate as
+   `discovery.py`, so it neither loads non-story JSON sidecars from bucket
+   directories once nested layouts exist, nor regresses flat-file
+   discovery.
+5. Update `lcats/src/lcats/analysis/corpus/cli.py:53`
    (`infer_story_title`) to derive identity from directory slug when
    present, not raw `file_path.stem`.
-5. Add dual-layout tests (flat + nested-bucket fixtures) to
+6. Add dual-layout tests (flat + nested-bucket fixtures) to
    `lcats/tests/stories_test.py` and
    `lcats/tests/analysis_tests/corpus_surveyor_test.py`.
 
