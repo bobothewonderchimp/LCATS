@@ -27,13 +27,13 @@ expected_actions:
 forbidden_actions:
   - force_push
   - delete_branch
-  - retract_before_confirmed_corpus_migration
+  - retract_dual_layout_without_confirmed_corpus_migration
   - run_real_gather_or_promote
 acceptance:
   - An explicit, dated checklist confirmation is recorded (in this WI's execution record) that the production corpora/ snapshot has been migrated to bucket layout via a real lcats gather + lcats promote run, verified by 0 remaining flat *.json files under corpora/ (git ls-files corpora/ shows only story.json leaves) -- this must happen and be confirmed BEFORE any code in this WI is touched
   - discovery.py's selectors (iter_collection_story_files, find_json_files) no longer accept a flat <story>.json at the collection root -- only <story>/story.json is valid; the reserved-filename warning/skip logic becomes unreachable and is removed
   - infer_story_title's flat-file .stem fallback is removed; only the bucket-directory-slug path remains meaningful
-  - All flat-layout-specific tests and fixtures across discovery_test.py, stories_test.py, corpus_cli_test.py, torchdata_test.py are removed, not just left passing incidentally
+  - Representative flat-layout positive test cases across discovery_test.py, stories_test.py, corpus_cli_test.py, torchdata_test.py are converted to negative tests asserting rejection of flat-layout input, so a later regression cannot silently restore the retracted compatibility; redundant flat-layout fixtures are removed, not just left passing incidentally
   - find_corpus_stories (the broad recursive JSON finder used for corpus-wide stats) is explicitly confirmed out of scope -- it is not part of the flat/bucket duality and is unaffected
   - lrh validate reports 0 errors
 required_evidence:
@@ -117,10 +117,13 @@ action no WI in this workstream performs.
 3. Remove `infer_story_title`'s flat-file `.stem` fallback
    (`lcats/src/lcats/analysis/corpus/cli.py`) -- once flat files are no
    longer discoverable, that branch is unreachable.
-4. Remove flat-layout fixtures and test cases from `discovery_test.py`,
-   `stories_test.py`, `corpus_cli_test.py`, and `torchdata_test.py` that
-   specifically exercised the now-retracted tolerance; keep bucket-layout
-   coverage.
+4. Convert representative flat-layout positive test cases in
+   `discovery_test.py`, `stories_test.py`, `corpus_cli_test.py`, and
+   `torchdata_test.py` into negative tests asserting the selectors and
+   downstream consumers now reject or ignore flat-layout input -- do not
+   simply delete all flat-layout coverage, or a later regression could
+   silently restore the compatibility this item exists to remove. Remove
+   the remaining, now-redundant flat-layout fixtures/cases.
 5. Update any remaining docs/comments that describe dual-layout tolerance
    as current behavior.
 
@@ -142,11 +145,11 @@ action no WI in this workstream performs.
 
 ## Validation
 
-- scripts/version tools
-- lrh validate
-- scripts/format --check --diff
-- scripts/lint
-- scripts/test
+- `scripts/version tools`
+- `lrh validate`
+- `scripts/format --check --diff`
+- `scripts/lint`
+- `scripts/test`
 
 ## Risk Notes
 

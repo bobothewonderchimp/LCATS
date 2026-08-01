@@ -92,9 +92,13 @@ to closeout.
   identifier semantics (Decision 5); add standing zero-story-count
   rejection to `lcats promote` (Decision 6).
 - **WI-STORY-0044** — Convergence: normalize tests/fixtures/docs to the
-  new layout, run an explicit end-to-end gather-then-promote validation
-  pass, and land dual-layout retraction (Decision 4) as its own follow-up
-  once the tracked `corpora/` snapshot is confirmed migrated.
+  new layout and run an explicit end-to-end gather-then-promote validation
+  pass. Dual-layout retraction (Decision 4) was split out to
+  `WI-STORY-0045` rather than performed here.
+- **WI-STORY-0045** — Retraction (Decision 4), gated: remove dual-layout
+  read tolerance from story discovery once the tracked `corpora/`
+  snapshot is confirmed migrated to the bucket layout via a real
+  production `lcats gather` + `lcats promote` run.
 
 ## Exit Criteria
 
