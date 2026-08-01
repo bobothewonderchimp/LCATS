@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #202 (commit 9db5c45b)."
 blocked_reason: null
 blocked: false
 id: WI-STORY-0042
 title: Make LCATS story discovery and identity dual-layout-compatible
 type: deliverable
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
