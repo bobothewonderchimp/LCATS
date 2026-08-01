@@ -21,6 +21,7 @@ import unittest
 
 from lcats.analysis.corpus import promote
 from lcats.gatherers import downloaders
+from lcats.utils import capture
 
 
 def _make_fake_gatherer(
@@ -73,11 +74,12 @@ class TestGatherThenPromoteEndToEnd(unittest.TestCase):
         """A story written via the real DataGatherer write path lands in
         bucket layout and is discoverable/promotable end-to-end."""
         gatherer = self._gatherer("lovecraft")
-        gatherer.download(
-            "the_call_of_cthulhu",
-            "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn.",
-            _fake_handler,
-        )
+        with capture.suppress_output():
+            gatherer.download(
+                "the_call_of_cthulhu",
+                "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn.",
+                _fake_handler,
+            )
 
         bucket_file = (
             self.data_root / "lovecraft" / "the_call_of_cthulhu" / "story.json"
@@ -106,12 +108,13 @@ class TestGatherThenPromoteEndToEnd(unittest.TestCase):
         """Several stories gathered into the same collection all end up as
         separate promoted bucket directories."""
         gatherer = self._gatherer("wilde")
-        for slug, text in [
-            ("the_happy_prince", "High above the city..."),
-            ("the_selfish_giant", "Every afternoon..."),
-            ("the_nightingale_and_the_rose", "She said that..."),
-        ]:
-            gatherer.download(slug, text, _fake_handler)
+        with capture.suppress_output():
+            for slug, text in [
+                ("the_happy_prince", "High above the city..."),
+                ("the_selfish_giant", "Every afternoon..."),
+                ("the_nightingale_and_the_rose", "She said that..."),
+            ]:
+                gatherer.download(slug, text, _fake_handler)
 
         report = promote.promote_collections(self.data_root, self.corpora_root)
 
@@ -150,9 +153,10 @@ class TestGatherThenPromoteEndToEnd(unittest.TestCase):
         collection promotes while a broken one is blocked, matching
         promote_collections's documented independent-gating behavior."""
         clean_gatherer = self._gatherer("lovecraft")
-        clean_gatherer.download(
-            "the_shadow_over_innsmouth", "The Innsmouth look...", _fake_handler
-        )
+        with capture.suppress_output():
+            clean_gatherer.download(
+                "the_shadow_over_innsmouth", "The Innsmouth look...", _fake_handler
+            )
         broken_dir = self.data_root / "wilde" / "an_ideal_husband"
         broken_dir.mkdir(parents=True)
         (broken_dir / "audit.json").write_text("{}", encoding="utf-8")
