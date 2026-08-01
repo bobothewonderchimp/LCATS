@@ -39,7 +39,10 @@ where `<collection>` is the collection / target-directory name, e.g.
 }
 ```
 
-- `story_id` is the story's filename stem (e.g. `f_o_b_venus__bond`).
+- `story_id` is the story's canonical slug (e.g. `f_o_b_venus__bond`) — the
+  bucket directory name (`<collection>/<story_id>/story.json`), not the
+  on-disk leaf filename, which is always the reserved `story.json` under the
+  per-story-bucket layout.
 - `find` is a literal substring match, not a regex. Include enough surrounding
   context that it is unique within the story — a bare single character will
   misfire.
