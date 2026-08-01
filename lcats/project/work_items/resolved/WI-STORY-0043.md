@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #203 (commit 8509e1b1)."
 blocked_reason: null
 blocked: false
 id: WI-STORY-0043
 title: Migrate LCATS story write paths to the bucket layout
 type: deliverable
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
