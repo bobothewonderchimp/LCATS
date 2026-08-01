@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Part A implemented and merged in PR #205 (commit 8b579954). Part B (dual-layout retraction) split out to WI-STORY-0045, tracked separately, blocked on a real production corpora/ migration."
 blocked_reason: null
 blocked: false
 id: WI-STORY-0044
 title: Converge tests/fixtures/docs onto bucket layout and validate end-to-end
 type: deliverable
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
