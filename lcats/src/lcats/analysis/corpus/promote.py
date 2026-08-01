@@ -55,8 +55,16 @@ class CollectionSurveyResult:
 
     @property
     def clean(self) -> bool:
-        """Return True when the collection has no blocking findings."""
-        return not self.findings
+        """Return True when the collection has no blocking findings and at
+        least one story.
+
+        A zero-story collection is never clean, even with no findings -- a
+        writer regression or a stale/mid-migration collection would
+        otherwise report `findings=()` and be promoted (wholesale-copied)
+        undetected. This is a standing check on every survey, not a
+        one-time step (Decision 6 of PROP-LCATS-STORY-BUCKET-LAYOUT).
+        """
+        return not self.findings and self.story_count > 0
 
 
 def survey_collection(
@@ -81,7 +89,17 @@ def survey_collection(
         if allowlist is not None
         else specials.load_allowlist_config(specials.default_allowlist_config_path())
     )
-    story_paths = discovery.find_corpus_stories(collection_dir)
+    # Use the canonical dual-layout selector, not find_corpus_stories's
+    # broad recursive JSON match -- a bucket directory holding only
+    # sidecars (audit.json etc.) and no story.json is exactly the
+    # writer-regression case Decision 6's story_count > 0 check exists to
+    # catch, and find_corpus_stories would silently count the sidecar as
+    # a story instead. iter_collection_story_files still tolerates a flat
+    # collection mid-migration (Decision 3), so this is not a regression
+    # of that concern -- it's the same selector Corpora.get_corpora uses,
+    # applied here to a single known collection directory (no root-level
+    # ambiguity risk).
+    story_paths = list(discovery.iter_collection_story_files(collection_dir))
     findings: list[BlockingFinding] = []
     for story_path in story_paths:
         data = cli.read_story_data(story_path)

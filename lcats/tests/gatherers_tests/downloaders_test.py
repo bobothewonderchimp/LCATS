@@ -8,6 +8,7 @@ import unittest
 from unittest.mock import patch, Mock
 
 from lcats import constants
+from lcats.analysis.corpus import discovery
 from lcats.utils import test_utils
 from lcats.gatherers import downloaders
 from lcats.utils import capture
@@ -644,10 +645,22 @@ class TestDataGatherer(test_utils.TestCaseWithData):
         with open(license_path, encoding="utf-8") as f:
             self.assertEqual(f.read(), "MIT License")
 
+    def test_ensure_creates_story_bucket_directory(self):
+        """Test that ensure creates a per-story bucket subdirectory."""
+        _, file_path = self.gatherer.ensure("testfile")
+
+        story_dir = os.path.join(self.gatherer.path, "testfile")
+        self.assertTrue(os.path.isdir(story_dir))
+        self.assertEqual(
+            file_path, os.path.join(story_dir, discovery.CANONICAL_STORY_FILENAME)
+        )
+
     def test_ensure_returns_true_when_file_exists(self):
         """Test that ensure returns True for an already-present file."""
         self.gatherer.ensure("testfile")
-        file_path = os.path.join(self.gatherer.path, "testfile" + self.gatherer.suffix)
+        file_path = os.path.join(
+            self.gatherer.path, "testfile", discovery.CANONICAL_STORY_FILENAME
+        )
         with open(file_path, "w", encoding="utf-8") as f:
             f.write("content")
 
@@ -662,6 +675,24 @@ class TestDataGatherer(test_utils.TestCaseWithData):
             result = self.gatherer.resource("any_key")
         self.assertEqual(result, "hello")
 
+    def test_download_threads_filename_as_story_id(self):
+        """Test that download passes filename itself as story_id, not a
+        re-derivation from the write path's leaf name (Decision 7 of
+        PROP-LCATS-STORY-BUCKET-LAYOUT)."""
+        self.gatherer.resource_cache = self._make_lambda_cache()
+
+        def handler(contents):
+            del contents
+            return "Test Name", "Test body text", {}
+
+        with patch(
+            "lcats.gatherers.downloaders.normalization.normalize_story_dict"
+        ) as mock_normalize:
+            with capture.suppress_output():
+                self.gatherer.download("my_story_slug", "test_resource", handler)
+
+        self.assertEqual(mock_normalize.call_args.kwargs["story_id"], "my_story_slug")
+
     def test_download_creates_json_file(self):
         """Test that download writes a structured JSON file."""
         self.gatherer.resource_cache = self._make_lambda_cache()
@@ -673,7 +704,9 @@ class TestDataGatherer(test_utils.TestCaseWithData):
         with capture.suppress_output():
             self.gatherer.download("testfile", "test_resource", handler)
 
-        file_path = os.path.join(self.gatherer.path, "testfile" + self.gatherer.suffix)
+        file_path = os.path.join(
+            self.gatherer.path, "testfile", discovery.CANONICAL_STORY_FILENAME
+        )
         self.assertTrue(os.path.exists(file_path))
         with open(file_path, encoding="utf-8") as f:
             data = json.load(f)
@@ -697,7 +730,9 @@ class TestDataGatherer(test_utils.TestCaseWithData):
     def test_download_skips_existing_file(self):
         """Test that download does not overwrite an existing file."""
         self.gatherer.ensure("testfile")
-        file_path = os.path.join(self.gatherer.path, "testfile" + self.gatherer.suffix)
+        file_path = os.path.join(
+            self.gatherer.path, "testfile", discovery.CANONICAL_STORY_FILENAME
+        )
         original_data = {"name": "Original", "body": "original", "metadata": {}}
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(original_data, f)
@@ -736,7 +771,9 @@ class TestDataGatherer(test_utils.TestCaseWithData):
         with capture.suppress_output():
             self.gatherer.download("testfile", "test_resource", handler2, force=True)
 
-        file_path = os.path.join(self.gatherer.path, "testfile" + self.gatherer.suffix)
+        file_path = os.path.join(
+            self.gatherer.path, "testfile", discovery.CANONICAL_STORY_FILENAME
+        )
         with open(file_path, encoding="utf-8") as f:
             data = json.load(f)
         self.assertEqual(data["name"], "New Name")
@@ -744,7 +781,9 @@ class TestDataGatherer(test_utils.TestCaseWithData):
     def test_get_returns_existing_file(self):
         """Test that get reads and returns an existing JSON file."""
         self.gatherer.ensure("testfile")
-        file_path = os.path.join(self.gatherer.path, "testfile" + self.gatherer.suffix)
+        file_path = os.path.join(
+            self.gatherer.path, "testfile", discovery.CANONICAL_STORY_FILENAME
+        )
         saved = {"name": "Test", "body": "content", "metadata": {}}
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(saved, f)

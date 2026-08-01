@@ -6,6 +6,7 @@ import pathlib
 
 from typing import Mapping, Sequence
 
+from lcats.analysis.corpus import discovery
 from lcats.analysis.corpus import models
 
 DEFAULT_OUTPUT_FORMAT = "human"
@@ -28,6 +29,14 @@ TSV_COLUMNS = [
     # "story_file",
     # "path",
     "story_identifier",
+    # Appended (not inserted) so positional TSV consumers keep existing
+    # column positions -- see Decision 5 of PROP-LCATS-STORY-BUCKET-LAYOUT.
+    # story_file (a row-dict field, not part of this schema list -- see
+    # the commented placeholder above) is the leaf filename, always
+    # "story.json" for a canonical bucket file post-migration and
+    # therefore non-unique; story_dir is the actual per-story identity
+    # for that case.
+    "story_dir",
 ]
 IDENTIFIER_FIELDS = ("path", "filename", "title")
 DEFAULT_IDENTIFIER_FIELD = "path"
@@ -82,6 +91,28 @@ def severity_from_classification(classification: str) -> str:
     return "warning"
 
 
+def story_dir_value(file_path: pathlib.Path) -> str:
+    """Return the story's bucket directory name, or "" for a flat file.
+
+    Only meaningful for a canonical per-story-bucket file (``story.json``),
+    whose own leaf name is always the same reserved string and therefore not
+    a usable identifier on its own (Decision 5 of
+    PROP-LCATS-STORY-BUCKET-LAYOUT).
+
+    Falls back to the resolved (absolute) path when the lexical parent has
+    no name -- e.g. a bare relative ``story.json`` invoked from inside the
+    bucket directory itself, whose ``pathlib.Path(...).parent`` is ``.``
+    and therefore has an empty ``.name``. Resolving recovers the real
+    directory name in that case instead of leaving the column blank.
+    """
+    if file_path.name != discovery.CANONICAL_STORY_FILENAME:
+        return ""
+    parent_name = file_path.parent.name
+    if parent_name:
+        return parent_name
+    return file_path.resolve().parent.name
+
+
 def parse_special_character_rows(
     tsv_output: str, file_path: pathlib.Path, story_title: str = ""
 ) -> list[dict[str, str]]:
@@ -103,6 +134,7 @@ def parse_special_character_rows(
             {
                 "story_title": story_title,
                 "story_file": file_path.name,
+                "story_dir": story_dir_value(file_path),
                 "path": str(file_path),
                 "check": compact_value("special-characters", CHECK_VALUE_MAP),
                 "kind": compact_value("special-character", KIND_VALUE_MAP),
@@ -140,6 +172,7 @@ def finding_to_row(
         {
             "story_title": story_title,
             "story_file": file_path.name,
+            "story_dir": story_dir_value(file_path),
             "path": str(file_path),
             "check": compact_value(check_name, CHECK_VALUE_MAP),
             "kind": compact_value(finding.kind, KIND_VALUE_MAP),
@@ -161,6 +194,7 @@ def clean_row(file_path: pathlib.Path, story_title: str = "") -> dict[str, str]:
         {
             "story_title": story_title,
             "story_file": file_path.name,
+            "story_dir": story_dir_value(file_path),
             "path": str(file_path),
             "check": "summary",
             "kind": "clean",
