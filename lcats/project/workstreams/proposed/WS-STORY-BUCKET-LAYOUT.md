@@ -17,6 +17,7 @@ work_items:
   - WI-STORY-0042
   - WI-STORY-0043
   - WI-STORY-0044
+  - WI-STORY-0045
 exit_criteria:
   - "Stage 1 (read-path compatibility) lands: discovery/identity logic is dual-layout-tolerant (Decisions 2-3), with a canonical story-file selector and dual-layout tests, writer output unchanged"
   - "Stage 2 (write-path migration) lands: DataGatherer.ensure and parser.gather_story() both write <collection>/<story>/story.json (Decision 8); overrides story_id derivation fixed (Decision 7); output identifier semantics updated with new story_dir/story_slug column (Decision 5); lcats promote itself rejects zero-story-count collections (Decision 6)"
