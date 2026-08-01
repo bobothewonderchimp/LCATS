@@ -98,10 +98,19 @@ def story_dir_value(file_path: pathlib.Path) -> str:
     whose own leaf name is always the same reserved string and therefore not
     a usable identifier on its own (Decision 5 of
     PROP-LCATS-STORY-BUCKET-LAYOUT).
+
+    Falls back to the resolved (absolute) path when the lexical parent has
+    no name -- e.g. a bare relative ``story.json`` invoked from inside the
+    bucket directory itself, whose ``pathlib.Path(...).parent`` is ``.``
+    and therefore has an empty ``.name``. Resolving recovers the real
+    directory name in that case instead of leaving the column blank.
     """
-    if file_path.name == discovery.CANONICAL_STORY_FILENAME:
-        return file_path.parent.name
-    return ""
+    if file_path.name != discovery.CANONICAL_STORY_FILENAME:
+        return ""
+    parent_name = file_path.parent.name
+    if parent_name:
+        return parent_name
+    return file_path.resolve().parent.name
 
 
 def parse_special_character_rows(

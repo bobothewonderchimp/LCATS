@@ -1,6 +1,8 @@
 """Unit tests for lcats.analysis.corpus.output."""
 
+import os
 import pathlib
+import tempfile
 import unittest
 
 from lcats.analysis.corpus import models
@@ -17,6 +19,22 @@ class TestStoryDirValue(unittest.TestCase):
     def test_flat_file_returns_empty_string(self):
         path = pathlib.Path("collection/my_story.json")
         self.assertEqual("", output.story_dir_value(path))
+
+    def test_bare_relative_canonical_file_resolves_parent_name(self):
+        """A bare `story.json` (e.g. `lcats survey story.json` run from
+        inside the bucket directory) has a lexically empty parent name
+        (`Path(".").name == ""`) -- must resolve to recover the real
+        bucket directory name instead of leaving story_dir blank."""
+        original_cwd = os.getcwd()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bucket_dir = os.path.join(tmpdir, "my_story")
+            os.makedirs(bucket_dir)
+            os.chdir(bucket_dir)
+            try:
+                path = pathlib.Path("story.json")
+                self.assertEqual("my_story", output.story_dir_value(path))
+            finally:
+                os.chdir(original_cwd)
 
 
 class TestTsvColumns(unittest.TestCase):
