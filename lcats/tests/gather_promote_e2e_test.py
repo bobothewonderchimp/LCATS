@@ -16,6 +16,7 @@ isolated temporary directories, never the real ``data/``/``corpora/``.
 import hashlib
 import json
 import pathlib
+import shutil
 import tempfile
 import unittest
 
@@ -66,8 +67,6 @@ class TestGatherThenPromoteEndToEnd(unittest.TestCase):
         return _make_fake_gatherer(collection_name, self.data_root, self.cache_root)
 
     def tearDown(self):
-        import shutil
-
         shutil.rmtree(self.tmp)
 
     def test_clean_collection_gathers_writes_bucket_layout_and_promotes(self):
