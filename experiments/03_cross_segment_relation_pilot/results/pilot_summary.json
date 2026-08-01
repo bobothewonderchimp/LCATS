@@ -1,0 +1,41 @@
+{
+  "backend": "anthropic",
+  "by_genre": {
+    "horror": {
+      "excluded_count": 4,
+      "included_count": 1,
+      "mean_cross_segment_density_per_1000_words": 2.8011204481792715,
+      "mean_folded_relations_per_1000_words": 3.5014005602240896,
+      "mean_folded_weakly_inferred_relations_per_1000_words": 0.0,
+      "mean_weakly_inferred_cross_segment_density_per_1000_words": 0.0
+    },
+    "romance": {
+      "excluded_count": 1,
+      "included_count": 4,
+      "mean_cross_segment_density_per_1000_words": 1.7612089097000934,
+      "mean_folded_relations_per_1000_words": 2.1609032353147124,
+      "mean_folded_weakly_inferred_relations_per_1000_words": 0.5827531569701545,
+      "mean_weakly_inferred_cross_segment_density_per_1000_words": 0.5827531569701545
+    },
+    "science fiction": {
+      "excluded_count": 4,
+      "included_count": 1,
+      "mean_cross_segment_density_per_1000_words": 0.0,
+      "mean_folded_relations_per_1000_words": 0.0,
+      "mean_folded_weakly_inferred_relations_per_1000_words": 0.0,
+      "mean_weakly_inferred_cross_segment_density_per_1000_words": 0.0
+    },
+    "western": {
+      "excluded_count": 2,
+      "included_count": 0,
+      "mean_cross_segment_density_per_1000_words": 0.0,
+      "mean_folded_relations_per_1000_words": 0.0,
+      "mean_folded_weakly_inferred_relations_per_1000_words": 0.0,
+      "mean_weakly_inferred_cross_segment_density_per_1000_words": 0.0
+    }
+  },
+  "candidates_scanned": 200,
+  "dry_run": false,
+  "model": "claude-haiku-4-5-20251001",
+  "sample_size_target": 5
+}
