@@ -788,8 +788,62 @@ class TestDataGatherer(test_utils.TestCaseWithData):
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(saved, f)
 
-        result = self.gatherer.get("testfile", None)
+        result = self.gatherer.get("testfile", "some_resource", None)
         self.assertEqual(result, saved)
+
+    def test_get_downloads_and_writes_new_file(self):
+        """Test that get threads resource and handler through to download
+        correctly (not scrambled), by exercising the real download path
+        rather than mocking download out, and returns the newly downloaded
+        contents rather than None."""
+        self.gatherer.resource_cache = self._make_lambda_cache("raw contents")
+
+        def handler(contents):
+            return "Test Name", f"processed: {contents}", {"key": "value"}
+
+        with capture.suppress_output():
+            result = self.gatherer.get("testfile", "test_resource", handler)
+
+        file_path = os.path.join(
+            self.gatherer.path, "testfile", discovery.CANONICAL_STORY_FILENAME
+        )
+        with open(file_path, encoding="utf-8") as f:
+            data = json.load(f)
+        self.assertEqual(data["name"], "Test Name")
+        self.assertEqual(data["body"], "processed: raw contents")
+        self.assertEqual(data["metadata"], {"key": "value"})
+        self.assertEqual(result, data)
+
+    def test_get_force_redownloads_existing_file(self):
+        """Test that get(force=True) actually reaches download()'s own
+        force parameter, so a forced re-download overwrites the existing
+        file instead of silently being skipped, and returns the refreshed
+        contents."""
+        self.gatherer.resource_cache = self._make_lambda_cache("raw contents")
+
+        def handler(contents):
+            del contents
+            return "Name", "Body", {}
+
+        with capture.suppress_output():
+            self.gatherer.get("testfile", "test_resource", handler)
+
+        def handler2(contents):
+            del contents
+            return "New Name", "New Body", {}
+
+        with capture.suppress_output():
+            result = self.gatherer.get(
+                "testfile", "test_resource", handler2, force=True
+            )
+
+        file_path = os.path.join(
+            self.gatherer.path, "testfile", discovery.CANONICAL_STORY_FILENAME
+        )
+        with open(file_path, encoding="utf-8") as f:
+            data = json.load(f)
+        self.assertEqual(data["name"], "New Name")
+        self.assertEqual(result, data)
 
     def test_clear_removes_path(self):
         """Test that clear removes the gatherer's directory."""
@@ -816,10 +870,28 @@ class TestDataGatherer(test_utils.TestCaseWithData):
         self.assertTrue(os.path.isdir(gatherer.path))
 
     def test_get_when_file_missing_delegates_to_download(self):
-        """Test that get calls download when the file does not yet exist."""
-        with patch.object(self.gatherer, "download") as mock_download:
-            self.gatherer.get("missing", "some_resource")
-            mock_download.assert_called_once()
+        """Test that get calls download with filename, resource, and handler
+        passed straight through, unscrambled, when the file does not yet
+        exist."""
+        handler = Mock()
+        file_path = os.path.join(
+            self.gatherer.path, "missing", discovery.CANONICAL_STORY_FILENAME
+        )
+        saved = {"name": "Written by download", "body": "body", "metadata": {}}
+
+        def fake_download(filename, resource, handler_arg, force):
+            del filename, resource, handler_arg, force
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(saved, f)
+
+        with patch.object(
+            self.gatherer, "download", side_effect=fake_download
+        ) as mock_download:
+            result = self.gatherer.get("missing", "some_resource", handler)
+            mock_download.assert_called_once_with(
+                "missing", "some_resource", handler, False
+            )
+        self.assertEqual(result, saved)
 
     def test_clear_exception_during_removal(self):
         """Test that clear catches exceptions raised while removing items."""
