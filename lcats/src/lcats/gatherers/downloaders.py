@@ -8,6 +8,7 @@ import shutil
 import requests
 
 from lcats import constants
+from lcats.analysis.corpus import discovery
 from lcats.gatherers import normalization
 from lcats.utils import env
 from lcats.utils import names
@@ -197,7 +198,14 @@ class DataGatherer:
         return os.path.join(self.root, self.name)
 
     def ensure(self, filename):
-        """Ensure the directory tree exists and whether the file is there."""
+        """Ensure the story's bucket directory exists and whether its canonical
+        file is there.
+
+        Writes to ``<collection>/<filename>/story.json`` (Decision 8 of
+        PROP-LCATS-STORY-BUCKET-LAYOUT) rather than the old flat
+        ``<collection>/<filename><suffix>`` path -- ``filename`` names the
+        story's own subdirectory now, not a leaf file stem.
+        """
         # Create the root directory if it doesn't exist
         paths.makedirs(self.root)
 
@@ -212,8 +220,12 @@ class DataGatherer:
                     self.license if self.license else "No license provided."
                 )
 
-        # Check if the file exists
-        file_path = os.path.join(self.path, filename + self.suffix)
+        # Create the story's own bucket directory and point at its canonical
+        # file -- the leaf filename is always the reserved canonical name,
+        # not filename + self.suffix.
+        story_dir = os.path.join(self.path, filename)
+        paths.makedirs(story_dir)
+        file_path = os.path.join(story_dir, discovery.CANONICAL_STORY_FILENAME)
         return os.path.exists(file_path), file_path
 
     def resource(self, resource, force=False):
@@ -242,11 +254,16 @@ class DataGatherer:
 
             # Apply replayable gather-time repairs (rules + per-story overrides)
             # before the first write so the fix is reproduced on every
-            # regeneration, not stored as a one-off.
+            # regeneration, not stored as a one-off. story_id is the
+            # canonical story name (filename) itself, threaded straight
+            # through -- never re-derived from the write path's leaf name,
+            # which is always the reserved canonical filename post-migration
+            # and would collapse every story onto one overrides key
+            # (Decision 7 of PROP-LCATS-STORY-BUCKET-LAYOUT).
             normalization.normalize_story_dict(
                 data_to_save,
                 collection=self.name,
-                story_id=os.path.splitext(filename)[0],
+                story_id=filename,
             )
 
             # Write data to JSON file

@@ -369,7 +369,10 @@ class CorpusSurveyCliHelpersTest(unittest.TestCase):
 
         self.assertEqual(1, len(rows))
         row = rows[0]
-        self.assertEqual(corpus_survey.TSV_COLUMNS, list(row.keys())[:15])
+        self.assertEqual(
+            corpus_survey.TSV_COLUMNS,
+            list(row.keys())[: len(corpus_survey.TSV_COLUMNS)],
+        )
         self.assertEqual("Story Title", row["story_title"])
         self.assertEqual("story.json", row["story_file"])
         self.assertEqual("story.json", row["path"])
@@ -470,7 +473,8 @@ class CorpusSurveyCliHelpersTest(unittest.TestCase):
         self.assertTrue(all(not line.startswith("#check=") for line in lines[1:]))
         first_data = lines[1].split("\t")
         self.assertEqual("spchar", first_data[0])
-        self.assertEqual("story.json", first_data[-1])
+        first_row = dict(zip(corpus_survey.TSV_COLUMNS, first_data))
+        self.assertEqual("story.json", first_row["story_identifier"])
 
     def test_main_tsv_output_file_writes_and_skips_stdout(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -559,7 +563,8 @@ class CorpusSurveyCliHelpersTest(unittest.TestCase):
 
         output = "".join(call.args[0] for call in fake_stdout.write.call_args_list)
         lines = [line for line in output.splitlines() if line]
-        self.assertEqual("story.json", lines[1].split("\t")[-1])
+        first_row = dict(zip(corpus_survey.TSV_COLUMNS, lines[1].split("\t")))
+        self.assertEqual("story.json", first_row["story_identifier"])
 
     def test_compact_human_tsv_row_truncates_unicode_name(self):
         row = corpus_survey.compact_human_tsv_row(

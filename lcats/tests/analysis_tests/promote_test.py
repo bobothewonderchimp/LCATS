@@ -74,6 +74,21 @@ class SurveyCollectionTest(unittest.TestCase):
 
             self.assertTrue(result.clean)
 
+    def test_zero_story_collection_is_not_clean(self):
+        """A collection with no stories is never clean, even with no
+        findings -- a writer regression or stale collection must not be
+        promoted wholesale undetected (Decision 6 of
+        PROP-LCATS-STORY-BUCKET-LAYOUT)."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            collection_dir = pathlib.Path(tmpdir) / "empty_collection"
+            collection_dir.mkdir(parents=True)
+
+            result = promote.survey_collection(collection_dir)
+
+            self.assertEqual(0, result.story_count)
+            self.assertEqual((), result.findings)
+            self.assertFalse(result.clean)
+
 
 class PromoteCollectionsTest(unittest.TestCase):
     """Tests for the survey-gated promotion pass (acceptance criteria)."""
@@ -116,6 +131,23 @@ class PromoteCollectionsTest(unittest.TestCase):
                 "A clean sentence.",
                 json.loads(promoted_story.read_text(encoding="utf-8"))["body"],
             )
+
+    def test_zero_story_collection_is_blocked_not_promoted(self):
+        with (
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+            (source_root / "empty").mkdir(parents=True)
+
+            report = promote.promote_collections(source_root, dest_root)
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.blocked))
+            self.assertEqual("empty", report.blocked[0].collection)
+            self.assertEqual(0, report.blocked[0].story_count)
+            self.assertFalse((dest_root / "empty").exists())
 
     def test_mixed_collections_promote_clean_and_block_damaged_independently(self):
         with (

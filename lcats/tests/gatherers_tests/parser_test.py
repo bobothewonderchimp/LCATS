@@ -727,6 +727,7 @@ class TestGatherStory(unittest.TestCase):
     def test_happy_path_saves_story(self):
         """A valid story is saved and the function returns the story ID and path."""
         gatherer = mock.MagicMock()
+        gatherer.ensure.return_value = (False, "/fake/path/the_bell__smith/story.json")
         side_effect = _make_metadata_side_effect(
             subject=["PS", "Short stories"],
             language=["en"],
@@ -752,7 +753,11 @@ class TestGatherStory(unittest.TestCase):
                             result = parser.gather_story(gatherer, 42)
         self.assertEqual(result[0], 42)
         self.assertIsNone(result[2])
-        self.assertIsNotNone(result[1])
+        self.assertEqual(result[1], "/fake/path/the_bell__smith/story.json")
+        # gatherer.ensure is called with the extension-free slug (the bucket
+        # subdirectory name), not the leaf filename with its .json suffix.
+        called_slug = gatherer.ensure.call_args[0][0]
+        self.assertFalse(called_slug.endswith(".json"))
 
 
 class TestTestStories(unittest.TestCase):

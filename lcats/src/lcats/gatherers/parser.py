@@ -1430,6 +1430,12 @@ def gather_story(gatherer, story):
     file_name = names.title_and_author_to_filename(
         title, author, ext=constants.FILE_SUFFIX, max_len=50
     )
+    # The story's canonical slug (no extension): names the bucket
+    # subdirectory (Decision 8 of PROP-LCATS-STORY-BUCKET-LAYOUT) and is
+    # threaded straight through as the overrides story_id -- never
+    # re-derived from the write path's leaf name, which is always the
+    # reserved canonical filename post-migration (Decision 7).
+    story_slug = os.path.splitext(file_name)[0]
 
     print(f"Gathering story {story}: {title}")
     print(f" - File name: {file_name}")
@@ -1460,16 +1466,15 @@ def gather_story(gatherer, story):
     normalization.normalize_story_dict(
         data_to_save,
         collection=storymap.TARGET_DIRECTORY,
-        story_id=os.path.splitext(file_name)[0],
+        story_id=story_slug,
     )
 
     # Move all of this code up into the API so it is done consistently.
-    # Ensure the data directory exists
-    path = os.path.join(constants.DATA_ROOT, storymap.TARGET_DIRECTORY)
-
-    # Ensure the file path exists.
-    file_path = os.path.join(path, file_name)
-    gatherer.ensure(file_name)
+    # Ensure the story's bucket directory exists and get its canonical file
+    # path -- use gatherer.ensure()'s own returned path (respects
+    # gatherer.root / env.data_root(), rather than reconstructing a
+    # possibly-diverging path from constants.DATA_ROOT independently).
+    _, file_path = gatherer.ensure(story_slug)
 
     # Write data to JSON file
     with open(file_path, "w", encoding="utf-8") as json_file:

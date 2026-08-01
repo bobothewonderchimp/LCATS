@@ -55,8 +55,16 @@ class CollectionSurveyResult:
 
     @property
     def clean(self) -> bool:
-        """Return True when the collection has no blocking findings."""
-        return not self.findings
+        """Return True when the collection has no blocking findings and at
+        least one story.
+
+        A zero-story collection is never clean, even with no findings -- a
+        writer regression or a stale/mid-migration collection would
+        otherwise report `findings=()` and be promoted (wholesale-copied)
+        undetected. This is a standing check on every survey, not a
+        one-time step (Decision 6 of PROP-LCATS-STORY-BUCKET-LAYOUT).
+        """
+        return not self.findings and self.story_count > 0
 
 
 def survey_collection(
