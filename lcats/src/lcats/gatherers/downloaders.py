@@ -278,11 +278,11 @@ class DataGatherer:
         else:
             print(f"File {file_path} exists, skipping download.")
 
-    def get(self, filename, callback, force=False):
+    def get(self, filename, resource, handler, force=False):
         """Get the contents of a file if it exists, otherwise download it."""
         file_exists, file_path = self.ensure(filename)
         if not file_exists or force:
-            self.download(filename, callback, force)
+            self.download(filename, resource, handler, force)
         else:
             with open(file_path, "r", encoding="utf-8") as json_file:
                 return json.load(json_file)
