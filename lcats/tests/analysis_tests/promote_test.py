@@ -89,6 +89,24 @@ class SurveyCollectionTest(unittest.TestCase):
             self.assertEqual((), result.findings)
             self.assertFalse(result.clean)
 
+    def test_bucket_with_only_sidecar_is_not_clean(self):
+        """A story bucket directory holding only a sidecar (no story.json)
+        must not count as a story -- this is exactly the writer-regression
+        case Decision 6's story_count > 0 check exists to catch, and
+        counting the sidecar would silently defeat it."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            collection_dir = pathlib.Path(tmpdir) / "broken_collection"
+            bucket_dir = collection_dir / "broken_story"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "audit.json").write_text(
+                json.dumps({"unrelated": "audit data"}), encoding="utf-8"
+            )
+
+            result = promote.survey_collection(collection_dir)
+
+            self.assertEqual(0, result.story_count)
+            self.assertFalse(result.clean)
+
 
 class PromoteCollectionsTest(unittest.TestCase):
     """Tests for the survey-gated promotion pass (acceptance criteria)."""

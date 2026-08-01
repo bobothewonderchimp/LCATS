@@ -204,7 +204,11 @@ class DataGatherer:
         Writes to ``<collection>/<filename>/story.json`` (Decision 8 of
         PROP-LCATS-STORY-BUCKET-LAYOUT) rather than the old flat
         ``<collection>/<filename><suffix>`` path -- ``filename`` names the
-        story's own subdirectory now, not a leaf file stem.
+        story's own subdirectory now, not a leaf file stem. ``self.suffix``
+        no longer affects the write path at all: the leaf filename is
+        always the reserved canonical name, never ``filename + self.suffix``
+        -- ``suffix`` is retained only as a constructor parameter/attribute
+        for backward compatibility, not consulted here.
         """
         # Create the root directory if it doesn't exist
         paths.makedirs(self.root)

@@ -31,9 +31,11 @@ TSV_COLUMNS = [
     "story_identifier",
     # Appended (not inserted) so positional TSV consumers keep existing
     # column positions -- see Decision 5 of PROP-LCATS-STORY-BUCKET-LAYOUT.
-    # story_file (below) is the leaf filename, always "story.json" for a
-    # canonical bucket file post-migration and therefore non-unique;
-    # story_dir is the actual per-story identity for that case.
+    # story_file (a row-dict field, not part of this schema list -- see
+    # the commented placeholder above) is the leaf filename, always
+    # "story.json" for a canonical bucket file post-migration and
+    # therefore non-unique; story_dir is the actual per-story identity
+    # for that case.
     "story_dir",
 ]
 IDENTIFIER_FIELDS = ("path", "filename", "title")
