@@ -283,9 +283,8 @@ class DataGatherer:
         file_exists, file_path = self.ensure(filename)
         if not file_exists or force:
             self.download(filename, resource, handler, force)
-        else:
-            with open(file_path, "r", encoding="utf-8") as json_file:
-                return json.load(json_file)
+        with open(file_path, "r", encoding="utf-8") as json_file:
+            return json.load(json_file)
 
     def clear(self):
         """Remove the gatherer's directory (and everything in it)."""
