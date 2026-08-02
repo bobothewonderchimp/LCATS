@@ -191,6 +191,28 @@ own design guidance warns against (see
 `survey`/`assess`, and add a regression test asserting sidecar files are
 excluded from stats output.
 
+### `assess_story`'s error-path title fallback uses the stem-collision pattern — P3, cosmetic
+
+Surfaced 2026-08-02 while scoping a Batch-3 follow-up, then verified
+directly against the code before concluding anything (an initial
+misreading of `assess.assess_story` looked like a much bigger bug before
+reading the whole function): `lcats/src/lcats/analysis/corpus/assess.py`'s
+`assess_story` pre-initializes `title = file_path.stem` before calling
+`run_preflight(file_path)` (which correctly uses the fixed
+`infer_story_title`). In the success path `title` is immediately
+reassigned from `run_preflight`'s return, so **the real `lcats assess`
+CLI is not broadly broken** — titles are correct in normal operation.
+The only surviving gap is the `except Exception` fallback: if
+`run_preflight` raises (a genuine file-read/parse error unrelated to
+identity), the resulting error `AssessmentResult`'s `title` field falls
+back to the stale `file_path.stem` value — literally `"story"` for a
+bucket file — instead of the real story slug, making it harder to tell
+from the output alone which story actually failed. Cosmetic, not a data
+or correctness bug (the record already carries `file_path` and
+`error`). **Next step:** initialize the fallback `title` from
+`file_path.parent.name` instead of `file_path.stem`, matching the
+identity convention used everywhere else.
+
 ### `VALID_GENRES` still has 4 genres, not the reconciled 8 — P3, needs cost estimate first
 
 `lcats/src/lcats/analysis/corpus/assess.py`'s `VALID_GENRES` is
