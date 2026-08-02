@@ -87,38 +87,63 @@ def iter_collection_story_files(
                 yield nested
 
 
+def _is_leaf_story_bucket(directory: pathlib.Path) -> bool:
+    """True if ``directory`` is unambiguously one story's own bucket.
+
+    A directory containing an immediate ``story.json`` is ambiguous on its
+    own: it might be a story's own bucket, or it might be a collection
+    whose layout happens to include a stray flat file literally named
+    ``story.json`` -- the two look identical from that single check alone
+    (see Decision 3 of PROP-LCATS-STORY-BUCKET-LAYOUT). A subdirectory
+    that is itself a real story bucket (has its own immediate
+    ``story.json``) settles it: genuine story buckets never contain other
+    story buckets, so that sibling evidence means ``directory`` is
+    actually a collection, not a leaf bucket -- its ``story.json`` is the
+    stray file, not the marker.
+    """
+    if not (directory / CANONICAL_STORY_FILENAME).is_file():
+        return False
+    for entry in directory.iterdir():
+        if entry.is_symlink():
+            continue
+        if entry.is_dir() and (entry / CANONICAL_STORY_FILENAME).is_file():
+            return False
+    return True
+
+
 def _walk_canonical_story_files(directory: pathlib.Path) -> Iterator[pathlib.Path]:
     """Recursively yield canonical story files under directory.
 
-    First checks whether ``directory`` is itself a story bucket (contains
-    its own ``story.json``) -- if so, yields only that canonical file and
-    stops, regardless of what other JSON sidecars (``audit.json``,
-    ``scenes.json``, ``events.json``, and similar per-story analysis
-    artifacts) sit alongside it. Every other JSON file in a bucket
-    directory is that story's own sidecar content, never an independent
-    second story. This only matters when ``directory`` is handed to this
-    function directly, as a top-level scan target (e.g. a caller pointing
-    straight at one story's bucket) -- reaching a bucket directory via
-    recursion from a collection is already handled by
-    :func:`iter_collection_story_files`, which stops at the bucket
-    boundary and never recurses into it.
+    First checks whether ``directory`` is unambiguously a leaf story
+    bucket (see :func:`_is_leaf_story_bucket`) -- if so, yields only its
+    ``story.json`` and stops, regardless of what other JSON sidecars
+    (``audit.json``, ``scenes.json``, ``events.json``, and similar
+    per-story analysis artifacts) sit alongside it.
 
-    Otherwise applies :func:`iter_collection_story_files`'s bucket-only
-    predicate to ``directory``, then recurses into subdirectories that are
-    not themselves story buckets -- so this behaves correctly whether
-    ``directory`` is a corpus root (immediate children are collection
-    directories), a single collection directory, or a single story's own
-    directory.
+    Otherwise treats ``directory`` as a collection and recurses into every
+    subdirectory, letting the recursive call's own
+    :func:`_is_leaf_story_bucket` check decide whether that subdirectory is
+    a leaf bucket or another collection level to descend through. This
+    behaves correctly whether ``directory`` is a corpus root (immediate
+    children are collection directories), a single collection directory,
+    or a single story's own bucket directory -- without relying on
+    presence-of-story.json alone to decide which, since a collection
+    directory can itself hold a stray flat file literally named
+    ``story.json`` alongside real nested buckets. Flat files are never
+    yielded here, per Decision 4's bucket-only retraction -- the only
+    file ever eligible is a directory's own canonical ``story.json``,
+    reached via the leaf-bucket check above.
+
+    Directory entries reached via a symlink are skipped, matching
+    :func:`find_corpus_stories`'s default ``follow_symlinks=False``.
     """
-    canonical = directory / CANONICAL_STORY_FILENAME
-    if canonical.is_file():
-        yield canonical
+    if _is_leaf_story_bucket(directory):
+        yield directory / CANONICAL_STORY_FILENAME
         return
-    yield from iter_collection_story_files(directory)
     for entry in sorted(directory.iterdir()):
         if entry.is_symlink():
             continue
-        if entry.is_dir() and not (entry / CANONICAL_STORY_FILENAME).is_file():
+        if entry.is_dir():
             yield from _walk_canonical_story_files(entry)
 
 
@@ -136,6 +161,11 @@ def find_json_files(
     the same rule a directory scan applies; there is no longer a
     caller-knows-best exception, since the retraction's whole point is that
     ``story.json`` is the one and only valid marker everywhere.
+
+    A directory scan additionally resolves an ambiguity presence-of-
+    ``story.json`` alone cannot: see :func:`_is_leaf_story_bucket` for how a
+    directory is told apart from a collection whose layout happens to
+    include a stray flat file literally named ``story.json``.
     """
     for directory in directories:
         path = pathlib.Path(directory)
