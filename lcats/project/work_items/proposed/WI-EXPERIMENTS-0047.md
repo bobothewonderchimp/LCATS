@@ -31,6 +31,7 @@ forbidden_actions:
 acceptance:
   - "run_comparison.py's story_files selection uses discovery.iter_collection_story_files, not corpus_dir.iterdir() filtered by suffix"
   - "smoke_test.py's _actual_sample uses the same selector, not corpus_dir.glob('*.json')"
+  - "smoke_test.py's _RUNS point at the always-present corpora/lovecraft and corpora/london, not lcats/data/lovecraft and lcats/data/london, which do not exist without a prior lcats gather run"
   - "Both scripts correctly find real bucket-layout story files (<collection>/<story>/story.json) under a single collection directory"
   - "run_comparison.py's per-story progress print no longer shows the literal string \"story.json\" for every story"
   - "A new regression test proves both scripts find bucket-layout stories correctly, and that the prior flat-layout-only behavior is gone"
@@ -76,6 +77,27 @@ leaf-filename-collapse issue as the identity problem elsewhere, but
 purely cosmetic here (log readability, not correctness) -- fixed in the
 same pass since it's directly adjacent to the line being changed.
 
+**One additional gap found via review of this work item's own creation
+PR, before any implementation was written:** `smoke_test.py`'s `_RUNS`
+config (lines 93-103) points `corpus_dir` at
+`_LCATS_ROOT / "data/lovecraft"` and `_LCATS_ROOT / "data/london"`
+(`_LCATS_ROOT` = the `lcats/` directory, line 183). `data/` is the
+gitignored, regenerable working cache -- it does not exist at all in a
+fresh checkout until someone runs a real `lcats gather`. Fixing the
+file-selector bug alone would not make the smoke test runnable: without
+`data/lovecraft` existing at all, `run_comparison.run()`'s own
+`if not corpus_dir.is_dir(): return 1` check fails first, for a
+different, pre-existing reason unrelated to the bucket-layout bug. The
+real, always-present, tracked collections for these two genres are
+`corpora/lovecraft` and `corpora/london` (repo root, confirmed present).
+Since either corpus source serves the smoke test's actual purpose
+(sanity-checking the assess pipeline against a small real sample)
+equally well, this work item also repoints `_RUNS` at the tracked
+`corpora/` snapshot, so the documented smoke test invocation
+(`python experiments/02_llm_backend_comparison/smoke_test.py`) actually
+works out of the box in any checkout, not just one where `lcats gather`
+has already been run.
+
 ### Duplication search
 - In-repo: No existing implementation found. Two adopted design
   proposals (`lcats-packaging-modernization/00_proposal.md`,
@@ -100,6 +122,9 @@ same pass since it's directly adjacent to the line being changed.
 
 - Fix file selection in both scripts to correctly find bucket-layout
   story files under a single collection directory.
+- Fix `smoke_test.py`'s configured corpus roots so the documented
+  invocation actually runs against the always-present tracked `corpora/`
+  snapshot, not the gitignored, gather-populated `data/` directory.
 - Fix the resulting cosmetic progress-print issue in `run_comparison.py`.
 - Add a regression test.
 - Do not touch `check_segmentation_reliability.py`
@@ -120,12 +145,21 @@ same pass since it's directly adjacent to the line being changed.
 3. In `smoke_test.py`, replace `sorted(corpus_dir.glob("*.json"))` in
    `_actual_sample` with the same
    `discovery.iter_collection_story_files(corpus_dir)` call.
-4. Create `experiments/02_llm_backend_comparison/run_comparison_test.py`
-   (matching the existing `run_pilot_test.py`/
-   `check_segmentation_reliability_test.py` sibling-test convention)
-   asserting: both scripts find real bucket-layout story files under a
-   fixture collection directory; the old flat-layout assumption is gone
-   (a flat `.json` file alongside a real bucket story is not found).
+4. In `smoke_test.py`, change `_RUNS`'s `corpus_subdir` values from
+   `"data/lovecraft"`/`"data/london"` to `"lovecraft"`/`"london"`, and
+   change line 183's `corpus_dir = _LCATS_ROOT / run_cfg["corpus_subdir"]`
+   to resolve against `_REPO_ROOT / "corpora" / run_cfg["corpus_subdir"]`
+   instead (`_REPO_ROOT` is already defined at line 42), so the smoke
+   test runs against the tracked, always-present `corpora/lovecraft` and
+   `corpora/london` collections.
+5. Create `experiments/02_llm_backend_comparison/run_comparison_test.py`
+   (matching the existing `run_pilot_test.py` sibling-test convention --
+   `check_segmentation_reliability_test.py` is planned by
+   `WI-EXPERIMENTS-0046` but does not exist yet, so it is not itself a
+   precedent to match) asserting: both scripts find real bucket-layout
+   story files under a fixture collection directory; the old
+   flat-layout assumption is gone (a flat `.json` file alongside a real
+   bucket story is not found).
 
 ## Non-Goals
 
@@ -145,8 +179,15 @@ same pass since it's directly adjacent to the line being changed.
   `corpus_dir.iterdir()` filtered by suffix.
 - `smoke_test.py`'s `_actual_sample` uses the same selector, not
   `corpus_dir.glob('*.json')`.
+- `smoke_test.py`'s `_RUNS` point at `corpora/lovecraft`/`corpora/london`,
+  not `lcats/data/lovecraft`/`lcats/data/london`.
 - Both scripts correctly find real bucket-layout story files under a
   single collection directory.
+- Running `python experiments/02_llm_backend_comparison/smoke_test.py`
+  in a fresh checkout (no prior `lcats gather` run) reaches the
+  file-discovery step -- i.e. it no longer fails at the
+  `corpus_dir.is_dir()` precondition check for a missing `data/`
+  directory.
 - `run_comparison.py`'s per-story progress print no longer shows the
   literal string `"story.json"` for every story.
 - A new regression test proves both scripts find bucket-layout stories
@@ -169,3 +210,9 @@ same pass since it's directly adjacent to the line being changed.
 - Neither script currently has any test coverage at all (confirmed: no
   `run_comparison_test.py`/`smoke_test_test.py` exist today), so this
   regression test is new coverage, not a modification to existing tests.
+- Repointing `smoke_test.py` from `data/` to `corpora/` changes which
+  corpus content the smoke test exercises (the promoted release
+  snapshot instead of a live-gathered working copy). This is an
+  intentional trade for actually being runnable out of the box; the
+  smoke test's purpose (sanity-checking the assess pipeline against a
+  small real sample) is served equally well by either source.
