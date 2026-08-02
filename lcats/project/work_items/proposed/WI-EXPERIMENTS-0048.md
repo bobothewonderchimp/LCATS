@@ -27,7 +27,7 @@ forbidden_actions:
   - modify_rename_and_fix_json_files_behavior
   - regenerate_notebook_outputs_wholesale
 acceptance:
-  - "12_extract_scenes.ipynb's SAMPLE_OF_10/SAMPLE_OF_100 are generated via a seeded random.sample(json_stories, N) call, not hardcoded literal flat-layout paths"
+  - "12_extract_scenes.ipynb's SAMPLE_OF_10/SAMPLE_OF_100 are generated via a seeded random.sample() call over the canonical bucket-only selector (discovery.find_json_files), not the broad json_stories (which can include sidecar JSON) and not hardcoded literal flat-layout paths"
   - "13_clean_corpus.ipynb's missing_stories points at the real, current bucket-layout paths for the same two stories"
   - "Neither notebook's remaining literal path examples reference the retracted flat <collection>/<story>.json layout"
   - "lrh validate reports 0 errors"
@@ -75,6 +75,26 @@ and cell 47 has commented-out code (`random.sample(json_stories, 100)`)
 showing the original intent was a regenerable sample, not permanently
 frozen literals.
 
+**One additional gap found via review of this work item's own creation
+PR, before any implementation was written:** `json_stories` (cell 25) is
+`corpus_surveyor.find_corpus_stories(CORPORA_ROOT)`, a direct re-export
+of `discovery.find_corpus_stories` -- the *broad* recursive finder that
+includes every `.json` file, not just canonical `story.json` (confirmed
+against `discovery.py:13-51`). It happens to work correctly *today* only
+because the real `corpora/` tree currently has zero sidecar files
+(confirmed earlier this session). The original scope (drawing
+`SAMPLE_OF_10`/`SAMPLE_OF_100` from `json_stories` via `random.sample`)
+would have made these samples depend on that broad selector for the
+first time -- previously the hardcoded literals were always manually
+curated, genuine story files, never sidecars. If a bucket sidecar
+(`analysis.json` etc.) is ever added, this code would start silently
+sampling it as if it were an independent story. Fixed by drawing the
+sample from `discovery.find_json_files([CORPORA_ROOT])` instead (the
+canonical, sidecar-excluding selector already established across this
+codebase), as a separate variable -- not by changing `json_stories`
+itself, which cell 27's `compute_corpus_stats(json_stories)` also
+depends on and is out of this work item's scope to touch.
+
 `13_clean_corpus.ipynb`'s `missing_stories` (cell 45, only 2 specific
 paths, not a bulk sample) is updated directly to the confirmed real
 bucket paths, preserving the same two specific stories.
@@ -107,23 +127,31 @@ untouched -- a Non-Goal, not a bug.
 ## Scope
 
 - Replace `12_extract_scenes.ipynb`'s hardcoded `SAMPLE_OF_10`/
-  `SAMPLE_OF_100` with a live, seeded `random.sample(json_stories, N)`
-  call.
+  `SAMPLE_OF_100` with a live, seeded sample drawn from the canonical,
+  sidecar-excluding selector (`discovery.find_json_files`).
 - Update `13_clean_corpus.ipynb`'s `missing_stories` to the confirmed
   real bucket paths for the same two stories.
-- Do not touch `rename_and_fix_json_files`'s behavior or defaults.
+- Do not touch `rename_and_fix_json_files`'s behavior or defaults, or
+  `json_stories`'s existing broad-selector definition (cell 25, also
+  used by `compute_corpus_stats` -- out of scope to change here).
 - Do not regenerate or re-run either notebook's existing saved cell
   outputs wholesale -- edit source cells only.
 
 ## Required Changes
 
-1. In `12_extract_scenes.ipynb`, replace the
-   `SAMPLE_OF_10 = pathify([...])` and `SAMPLE_OF_100 = pathify([...])`
-   cells with `SAMPLE_OF_10 = random.Random(42).sample(json_stories, 10)`
-   / `SAMPLE_OF_100 = random.Random(42).sample(json_stories, 100)` (a
-   fixed seed preserves the original lists' reproducibility intent;
-   `json_stories` from cell 25 is already correctly bucket-aware).
-2. In `13_clean_corpus.ipynb`, update `missing_stories` (cell 45) to
+1. In `12_extract_scenes.ipynb`, add
+   `from lcats.analysis.corpus import discovery` to the existing
+   `lcats.analysis` import cell (cell 8).
+2. In the same notebook, add a new cell (near cell 25, alongside
+   `json_stories`) computing
+   `canonical_story_files = list(discovery.find_json_files([CORPORA_ROOT]))`
+   -- a separate variable, not a replacement for `json_stories`.
+3. Replace the `SAMPLE_OF_10 = pathify([...])` and
+   `SAMPLE_OF_100 = pathify([...])` cells with
+   `SAMPLE_OF_10 = random.Random(42).sample(canonical_story_files, 10)`
+   / `SAMPLE_OF_100 = random.Random(42).sample(canonical_story_files, 100)`
+   (a fixed seed preserves the original lists' reproducibility intent).
+4. In `13_clean_corpus.ipynb`, update `missing_stories` (cell 45) to
    `[CORPORA_ROOT / 'mass_quantities/george_walker_at_suez__trollope/story.json', CORPORA_ROOT / 'mass_quantities/give_back_a_world__gallun/story.json']`.
 
 ## Non-Goals
@@ -139,8 +167,10 @@ untouched -- a Non-Goal, not a bug.
 ## Acceptance Criteria
 
 - `12_extract_scenes.ipynb`'s `SAMPLE_OF_10`/`SAMPLE_OF_100` are
-  generated via a seeded `random.sample(json_stories, N)` call, not
-  hardcoded literal flat-layout paths.
+  generated via a seeded `random.sample()` call over the canonical
+  `discovery.find_json_files` selector (a new `canonical_story_files`
+  variable, not the broad `json_stories`), not hardcoded literal
+  flat-layout paths.
 - `13_clean_corpus.ipynb`'s `missing_stories` points at the real,
   current bucket-layout paths for the same two stories.
 - Neither notebook's remaining literal path examples reference the
