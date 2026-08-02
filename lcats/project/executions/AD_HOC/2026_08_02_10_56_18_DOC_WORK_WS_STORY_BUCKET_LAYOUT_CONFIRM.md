@@ -2,10 +2,10 @@
 execution_id: 2026_08_02_10_56_18_DOC_WORK_WS_STORY_BUCKET_LAYOUT_CONFIRM
 prompt_id: PROMPT(AD_HOC:DOC_WORK_WS_STORY_BUCKET_LAYOUT_CONFIRM)[2026-08-02T10:55:40-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_02_10_38_54_DOC_WORK_WS_STORY_BUCKET_LAYOUT
 pr: https://github.com/xenotaur/LCATS/pull/209
-commit: f3e8ffa20fef6dc46fd236b5512007e13bb2f7e4
+commit: d322a5e2c44e2f3884b6921ab4d01fd4fb918653
 created_at: 2026-08-02T10:56:18-04:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/209
