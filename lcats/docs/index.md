@@ -32,5 +32,6 @@ cd LCATS/lcats
 
 ### Explanation
 
+- [Why stories live in per-story bucket directories](explanation/story-bucket-layout.md) — the storage-layout migration, what changed, and why
 - Control-plane concepts live in [`project/README.md`](../project/README.md).
 - Corpus-analysis architecture details live in [`lcats/analysis/corpus/README.md`](../src/lcats/analysis/corpus/README.md).

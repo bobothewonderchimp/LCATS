@@ -136,10 +136,16 @@ lcats survey --mode specials data/ --no-progress
 **Problem result:** one block per flagged file, e.g.:
 
 ```
-data/mass_quantities/deny_the_slake__wilson.json
+data/mass_quantities/deny_the_slake__wilson/story.json
   [spchar] error: Special character finding. (U+00C3, 'Ã')
     context: em a resumÃ©.\n\n"As I s
 ```
+
+> **Note:** the path reflects the current per-story-bucket layout
+> (`<collection>/<story>/story.json`). This specific illustrative finding
+> no longer reproduces — the real corpus has since been cleaned by a
+> separate workstream (`WS-SPECIALS-CLEANUP`) — but the output *shape* is
+> otherwise still accurate. See `project/design/backlog.md`.
 
 and a non-zero exit code. If you see findings after a genuine fresh
 regeneration (step 2 done first), that's real information, not a false
@@ -153,7 +159,7 @@ For any flagged file, this shows exactly what the repair pipeline would
 propose, without changing anything:
 
 ```bash
-lcats repair-specials data/mass_quantities/deny_the_slake__wilson.json --format jsonl
+lcats repair-specials data/mass_quantities/deny_the_slake__wilson/story.json --format jsonl
 ```
 
 Each line is one proposed fix (`rule_id`, `original_text`, `replacement_text`,
