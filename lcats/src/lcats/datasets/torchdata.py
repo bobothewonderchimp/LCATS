@@ -18,8 +18,8 @@ class JsonDataset(Dataset):
         else:
             self.data_dir = root_dir
 
-        # Gather canonical story files (flat or per-story-bucket layout, per
-        # Decision 3 of PROP-LCATS-STORY-BUCKET-LAYOUT) in the specified
+        # Gather canonical story files (per-story-bucket layout only, per
+        # Decision 4 of PROP-LCATS-STORY-BUCKET-LAYOUT) in the specified
         # directory and its subdirectories, via the same selector discovery.py
         # uses -- so this dataset stays in sync with the rest of the corpus
         # tooling instead of re-implementing its own traversal.

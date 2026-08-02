@@ -45,11 +45,11 @@ class Corpora:
     def get_corpora(self):
         """Utility function to load all corpora from the corpora root.
 
-        Tolerates both the flat (``<collection>/<story>.json``) and
-        per-story-bucket (``<collection>/<story>/story.json``) layouts, per
-        Decision 3 of PROP-LCATS-STORY-BUCKET-LAYOUT. Each immediate
-        subdirectory of the corpora root is treated as one collection;
-        story files within it are found via
+        Only the per-story-bucket layout (``<collection>/<story>/story.json``)
+        is accepted; a flat ``<collection>/<story>.json`` file is not a valid
+        story source, per Decision 4 of PROP-LCATS-STORY-BUCKET-LAYOUT (dual-
+        layout retraction). Each immediate subdirectory of the corpora root
+        is treated as one collection; story files within it are found via
         ``discovery.iter_collection_story_files``, which does not recurse
         past one level -- so a story's own bucket directory is never
         mistaken for a second collection. Symlinked directories directly

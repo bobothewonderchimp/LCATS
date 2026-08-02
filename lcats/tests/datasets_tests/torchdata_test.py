@@ -9,7 +9,7 @@ from lcats.datasets import torchdata
 
 
 class TestJsonDataset(unittest.TestCase):
-    """Tests for JsonDataset's dual-layout file discovery."""
+    """Tests for JsonDataset's bucket-only file discovery."""
 
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
