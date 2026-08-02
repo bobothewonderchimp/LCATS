@@ -2,10 +2,10 @@
 execution_id: 2026_08_02_16_15_32_WI_EXPERIMENTS_0047_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_EXPERIMENTS_0047_CONFIRM)[2026-08-02T16:08:43-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_02_15_58_31_WI_EXPERIMENTS_0047
 pr: https://github.com/xenotaur/LCATS/pull/214
-commit: 572cf51c3a29ed89cbcd6bfc7c7d11eb3ad4925f
+commit: c8e9ba94d35884166e55776dde0969b4030f812b
 created_at: 2026-08-02T16:15:32-04:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/214
