@@ -1,5 +1,115 @@
 # Decision Log
 
+## 2026-08-02: Pipeline-checkpointing helper redesigned for the bucket world — dual-root API, write-guarded
+
+### Summary
+- `PROP-LCATS-PIPELINE-CHECKPOINTING` (adopted 2026-07-30) was designed
+  and its two work items (`WI-PIPELINE-0040`, `WI-PIPELINE-0041`, both
+  still `status: proposed`, unimplemented) were scoped before
+  `PROP-LCATS-STORY-BUCKET-LAYOUT` landed. That migration changed the
+  ground the checkpointing design stands on: `DataGatherer.ensure()`
+  (`lcats/src/lcats/gatherers/downloaders.py:200-233`), the exact
+  precedent `WI-PIPELINE-0040` cites, now writes to
+  `<collection>/<story>/story.json` bucket directories, not the flat
+  cache layout it was written against, and the corpus itself now expects
+  sidecar files (`audit.json`, `scenes.json`, `events.json`, etc.)
+  alongside `story.json` as normal content (`discovery.py:9-72`).
+- Decided **not** to reopen or rewrite `PROP-LCATS-PIPELINE-CHECKPOINTING`'s
+  Decision 1 text in place — per the `/lrh-proposal` skill's own
+  `references/proposal-schema.md:34` (a skill reference file, not an
+  LCATS repo file: "`adopted`: ... edits go through new proposals or
+  canonical doc updates"), and per this repo having no precedent for
+  post-adoption amendment of an adopted proposal's decision prose (checked: both
+  `lcats-packaging-modernization` and `lcats-story-bucket-layout`'s
+  `updated_on` bumps correspond to their own adoption-transition commits,
+  not a later amendment). This entry is the "canonical doc update" path
+  the schema names as the lighter alternative to a new superseding
+  proposal — appropriate here because this refines Decision 1's scope
+  rather than reversing it.
+
+### Decisions
+- **The shared checkpoint helper (`WI-PIPELINE-0040`) takes two roots,
+  not one: a required `working_root` (where checkpoint files are
+  written) and an optional `source_root` (where upstream/input content
+  lives), with `source_root` defaulting to `working_root` when omitted
+  (implying in-place checkpointing).** This is precedented in the exact
+  function the helper generalizes — `DataGatherer.__init__`
+  (`downloaders.py:167-195`) already keeps two independently-defaulted
+  roots, `root` (destination bucket) and `cache` (resource cache) — and
+  matches the general read-only-source/writable-output separation used
+  in out-of-tree build systems (CMake, Bazel) and Kaggle's
+  `/kaggle/input` (read-only) vs. `/kaggle/working` convention.
+- **The checkpoint predicate (is this stage already done?) checks only
+  `working_root`; `source_root` is never consulted by it.** `source_root`
+  exists purely for the caller's own input-reading logic (e.g. via
+  `discovery.iter_collection_story_files` for a single collection
+  directory, or `discovery.find_json_files` for a multi-collection
+  corpus root — see below) — this keeps Decision 2's
+  already-adopted success/failure-plus-fingerprint predicate completely
+  unchanged.
+- **The write-guard applies to `working_root` only, never `source_root`.**
+  Reading from `corpora/`/`data/` as an immutable source is one of the
+  two legitimate use cases motivating the dual-root split in the first
+  place; guarding it would block the good case, not just the bad one.
+  If a resolved `working_root` falls under the canonical `data/` or
+  `corpora/` root, the helper must reject the call unless an explicit
+  override is passed — modeled on `promote.py`'s existing
+  `_validate_distinct_roots` (`lcats/src/lcats/analysis/corpus/promote.py:144-170`),
+  this repo's established pattern for "resolve both paths, check
+  containment, refuse the dangerous case," even though the specific
+  condition differs (there: must-be-distinct; here:
+  must-not-resolve-under-protected-roots). **The protected roots must
+  not be `env.data_root()`/`env.corpora_root()` as-is** — both resolve
+  their defaults relative to the *process's* current working directory
+  (`lcats/src/lcats/utils/env.py:21-36`), and `run_pilot.py` is
+  documented to run from the repo root with a default `--data-dir` of
+  `lcats/data` (`experiments/03_cross_segment_relation_pilot/run_pilot.py:3-4,11`)
+  — a different directory than `env.data_root()` would resolve to from
+  that same CWD. A guard built directly on `env.data_root()`/
+  `env.corpora_root()` would silently fail to recognize the real data
+  tree for the documented invocation pattern, defeating the guard.
+  Anchor the protected roots the same CWD-independent way
+  `lcats.utils.secrets`/`lcats.utils.test_utils` already do —
+  `paths.find_pyproject_root(__file__)` (`lcats/src/lcats/utils/paths.py:81-114`)
+  — rather than trusting `env.py`'s CWD-relative defaults.
+  This guard exists because `lcats promote`'s `_copy_collection`
+  (`promote.py:172-176`) does an unfiltered `shutil.copytree` of an
+  entire bucket directory — any sidecar present in a `data/` bucket at
+  promote time ships to `corpora/` with no filtering — and because
+  `data/` is documented as a disposable, regenerable cache, not durable
+  storage (`project/design/design.md:38`: "`data/` regenerates from
+  cache").
+- **Per-story checkpoint directories under `working_root` reuse the same
+  directory slug `discovery.py`'s canonical selector already uses for
+  `<collection>/<story>/`** (`PROP-LCATS-STORY-BUCKET-LAYOUT`'s Decision
+  2, directory-slug identity), rather than inventing a second identity
+  scheme. Directory creation reuses `lcats.utils.paths.makedirs()`
+  (symlink-safe), matching `downloaders.py:214,217,231`'s own usage,
+  not bare `os.makedirs`.
+- **`run_pilot.py`'s own story-input discovery
+  (`experiments/03_cross_segment_relation_pilot/run_pilot.py:201-202`,
+  `data_dir.rglob("*.json")`) needs to move to `discovery.find_json_files([data_dir])`
+  as part of `WI-PIPELINE-0041`** — not `discovery.iter_collection_story_files`,
+  which only examines one collection directory's immediate children and
+  yields nothing when called on `data_dir` itself, a corpus root
+  containing multiple collection directories (review finding, PR #210).
+  This is not just a checkpointing change — once `data/` is regenerated under
+  the new writer, the current recursive glob will pick up sidecar files
+  as spurious stories, the exact over-broad-matching problem
+  `PROP-LCATS-STORY-BUCKET-LAYOUT`'s Decision 3 fixed in the core
+  package but explicitly left unfixed in `experiments/` scripts.
+
+### Evidence
+- `project/design/proposals/adopted/lcats-pipeline-checkpointing/00_proposal.md`
+  — `related_design` updated to cross-reference
+  `PROP-LCATS-STORY-BUCKET-LAYOUT` back.
+- `project/work_items/proposed/WI-PIPELINE-0040.md`,
+  `project/work_items/proposed/WI-PIPELINE-0041.md` — updated acceptance
+  criteria/scope/required changes to reflect the decisions above.
+
+### Status
+- Accepted
+
 ## 2026-07-20: WS-DOCS documentation cleanup workstream completed
 
 ### Summary
