@@ -2,10 +2,10 @@
 execution_id: 2026_08_02_11_19_20_PIPELINE_CHECKPOINTING_BUCKET_REDESIGN_REVIEW
 prompt_id: PROMPT(AD_HOC:PIPELINE_CHECKPOINTING_BUCKET_REDESIGN_REVIEW)[2026-08-02T11:19:11-04:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/210
-commit:
+commit: ffa342f3
 agent: claude_app
 instruction_source: user request in-session (/lrh-design session covering the bucket-world impact on WI-PIPELINE-0040/0041, "Boom! Nice work, I approve. Please draft all four now.", then "/lrh-land PR 210")
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
