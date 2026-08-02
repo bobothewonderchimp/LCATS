@@ -12,8 +12,9 @@ from lcats.analysis.corpus import promote_cli
 
 
 def _write_story(collection_dir: pathlib.Path, name: str, body: str) -> None:
-    collection_dir.mkdir(parents=True, exist_ok=True)
-    story_path = collection_dir / f"{name}.json"
+    bucket_dir = collection_dir / name
+    bucket_dir.mkdir(parents=True, exist_ok=True)
+    story_path = bucket_dir / "story.json"
     story_path.write_text(
         json.dumps({"name": name, "body": body, "metadata": {}}),
         encoding="utf-8",
@@ -143,7 +144,7 @@ class PromoteCollectionsTest(unittest.TestCase):
             self.assertEqual(("clean",), report.promoted)
             self.assertEqual((), report.blocked)
             self.assertTrue(report.all_promoted)
-            promoted_story = dest_root / "clean" / "story_one.json"
+            promoted_story = dest_root / "clean" / "story_one" / "story.json"
             self.assertTrue(promoted_story.exists())
             self.assertEqual(
                 "A clean sentence.",
@@ -209,14 +210,15 @@ class PromoteCollectionsTest(unittest.TestCase):
             source_root = pathlib.Path(source_tmp)
             dest_root = pathlib.Path(dest_tmp)
             stale_dest = dest_root / "clean"
-            stale_dest.mkdir(parents=True)
-            (stale_dest / "removed_story.json").write_text("{}", encoding="utf-8")
+            stale_bucket = stale_dest / "removed_story"
+            stale_bucket.mkdir(parents=True)
+            (stale_bucket / "story.json").write_text("{}", encoding="utf-8")
             _write_story(source_root / "clean", "story_one", "A clean sentence.")
 
             promote.promote_collections(source_root, dest_root)
 
-            self.assertFalse((dest_root / "clean" / "removed_story.json").exists())
-            self.assertTrue((dest_root / "clean" / "story_one.json").exists())
+            self.assertFalse((dest_root / "clean" / "removed_story").exists())
+            self.assertTrue((dest_root / "clean" / "story_one" / "story.json").exists())
 
     def test_collection_names_scopes_to_requested_collections(self):
         with (
@@ -246,7 +248,7 @@ class PromoteCollectionsTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 promote.promote_collections(root, root)
 
-            self.assertTrue((root / "clean" / "story_one.json").exists())
+            self.assertTrue((root / "clean" / "story_one" / "story.json").exists())
 
     def test_refuses_when_dest_is_nested_inside_source(self):
         with tempfile.TemporaryDirectory() as tmp:

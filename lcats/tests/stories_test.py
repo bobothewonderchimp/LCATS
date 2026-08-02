@@ -259,26 +259,32 @@ class TestCorpora(unittest.TestCase):
         result = corpora.get_corpora()
         self.assertEqual(result, {})
 
-    def test_get_corpora_loads_stories(self):
-        """get_corpora finds JSON files within subdirectories."""
+    def test_get_corpora_rejects_flat_stories(self):
+        """Regression test for Decision 4 (dual-layout retraction):
+        get_corpora no longer finds a flat <story>.json file, now that the
+        production corpora/ snapshot is confirmed fully migrated to the
+        bucket layout."""
         story_data = {"name": "S1", "body": "Body1", "metadata": {}}
         self._make_corpus_dir("fantasy", [story_data])
         corpora = stories.Corpora(self.tmp)
         result = corpora.get_corpora()
         self.assertIn("fantasy", result)
-        self.assertEqual(len(result["fantasy"]), 1)
-        self.assertIsInstance(result["fantasy"][0], stories.Story)
-        self.assertEqual(result["fantasy"][0].name, "S1")
+        self.assertEqual(result["fantasy"], [])
 
     def test_get_corpora_multiple_corpora(self):
-        """get_corpora handles multiple subdirectories."""
-        self._make_corpus_dir("scifi", [{"name": "S2", "body": "B2", "metadata": {}}])
-        self._make_corpus_dir(
-            "horror",
-            [
-                {"name": "S3", "body": "B3", "metadata": {}},
-                {"name": "S4", "body": "B4", "metadata": {}},
-            ],
+        """get_corpora handles multiple subdirectories (bucket layout)."""
+        scifi_dir = os.path.join(self.tmp, "scifi")
+        os.makedirs(scifi_dir)
+        self._make_bucket_story(
+            scifi_dir, "story1", {"name": "S2", "body": "B2", "metadata": {}}
+        )
+        horror_dir = os.path.join(self.tmp, "horror")
+        os.makedirs(horror_dir)
+        self._make_bucket_story(
+            horror_dir, "story1", {"name": "S3", "body": "B3", "metadata": {}}
+        )
+        self._make_bucket_story(
+            horror_dir, "story2", {"name": "S4", "body": "B4", "metadata": {}}
         )
         corpora = stories.Corpora(self.tmp)
         result = corpora.get_corpora()
@@ -302,7 +308,11 @@ class TestCorpora(unittest.TestCase):
 
     def test_corpora_property_lazy_loads(self):
         """corpora property is loaded once and cached."""
-        self._make_corpus_dir("mystery", [{"name": "M1", "body": "B", "metadata": {}}])
+        mystery_dir = os.path.join(self.tmp, "mystery")
+        os.makedirs(mystery_dir)
+        self._make_bucket_story(
+            mystery_dir, "story1", {"name": "M1", "body": "B", "metadata": {}}
+        )
         corpora = stories.Corpora(self.tmp)
         self.assertIsNone(corpora._corpora)
         first = corpora.corpora
@@ -312,7 +322,11 @@ class TestCorpora(unittest.TestCase):
 
     def test_stories_property_lazy_loads(self):
         """stories property is loaded once and cached."""
-        self._make_corpus_dir("drama", [{"name": "D1", "body": "B", "metadata": {}}])
+        drama_dir = os.path.join(self.tmp, "drama")
+        os.makedirs(drama_dir)
+        self._make_bucket_story(
+            drama_dir, "story1", {"name": "D1", "body": "B", "metadata": {}}
+        )
         corpora = stories.Corpora(self.tmp)
         self.assertIsNone(corpora._stories)
         first = corpora.stories
@@ -322,18 +336,18 @@ class TestCorpora(unittest.TestCase):
 
     def test_get_stories_returns_flat_list(self):
         """get_stories returns a flat list of all Story objects."""
-        self._make_corpus_dir(
-            "corpA",
-            [
-                {"name": "A1", "body": "BA1", "metadata": {}},
-                {"name": "A2", "body": "BA2", "metadata": {}},
-            ],
+        corp_a_dir = os.path.join(self.tmp, "corpA")
+        os.makedirs(corp_a_dir)
+        self._make_bucket_story(
+            corp_a_dir, "story1", {"name": "A1", "body": "BA1", "metadata": {}}
         )
-        self._make_corpus_dir(
-            "corpB",
-            [
-                {"name": "B1", "body": "BB1", "metadata": {}},
-            ],
+        self._make_bucket_story(
+            corp_a_dir, "story2", {"name": "A2", "body": "BA2", "metadata": {}}
+        )
+        corp_b_dir = os.path.join(self.tmp, "corpB")
+        os.makedirs(corp_b_dir)
+        self._make_bucket_story(
+            corp_b_dir, "story1", {"name": "B1", "body": "BB1", "metadata": {}}
         )
         corpora = stories.Corpora(self.tmp)
         result = corpora.get_stories()
@@ -362,8 +376,11 @@ class TestCorpora(unittest.TestCase):
         self.assertEqual(len(result["fantasy"]), 1)
         self.assertEqual(result["fantasy"][0].name, "Bucket1")
 
-    def test_get_corpora_mixed_flat_and_bucket_layout(self):
-        """get_corpora combines flat and bucket stories within one collection."""
+    def test_get_corpora_ignores_flat_sibling_finds_bucket_story(self):
+        """Regression test for Decision 4 (dual-layout retraction): a flat
+        sibling file is ignored, while a real bucket story in the same
+        collection is still found -- get_corpora no longer combines the
+        two layouts."""
         corpus_dir = self._make_corpus_dir(
             "mixed", [{"name": "Flat1", "body": "F1", "metadata": {}}]
         )
@@ -374,9 +391,9 @@ class TestCorpora(unittest.TestCase):
         )
         corpora = stories.Corpora(self.tmp)
         result = corpora.get_corpora()
-        self.assertEqual(len(result["mixed"]), 2)
+        self.assertEqual(len(result["mixed"]), 1)
         names = {s.name for s in result["mixed"]}
-        self.assertEqual(names, {"Flat1", "Bucket1"})
+        self.assertEqual(names, {"Bucket1"})
 
     def test_get_corpora_bucket_story_not_treated_as_new_collection(self):
         """A nested story bucket is grouped under its real collection, not
