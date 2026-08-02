@@ -15,6 +15,28 @@ first concrete next step would be — not a full design.
 
 ---
 
+## `quickstart.md` and `prepare-corpora-release.md` show mojibake examples that no longer reproduce
+
+Surfaced during `/lrh-doc-work` on `WS-STORY-BUCKET-LAYOUT` (2026-08-02).
+Both docs' "expected output" blocks claim specific mojibake findings
+(`corpora/sherlock/boscombe_valley`'s two findings in `quickstart.md`;
+`data/mass_quantities/deny_the_slake__wilson`'s finding in
+`prepare-corpora-release.md`) that no longer occur — verified by running
+`lcats survey --mode specials` against the entire real `corpora/` tree:
+zero mojibake findings anywhere. This isn't caused by the bucket-layout
+migration (the file *paths* in these examples were fixed as part of that
+doc-work run) — it's stale content, caused by the separate, already-closed
+`WS-SPECIALS-CLEANUP` workstream cleaning up the real corpus since these
+docs were written. Both blocks currently carry a stale-content notice
+rather than a fix. **Next step:** find or construct a genuinely
+reproducible current example (either a real remaining finding, if any
+collection still has one, or a deliberately-seeded fixture) and replace
+both illustrative blocks with output that actually reproduces today. Best
+scoped as its own `/lrh-doc-work` run against `WS-SPECIALS-CLEANUP` as the
+work reference, not the bucket-layout one.
+
+---
+
 ## From WS-STORY-BUCKET-LAYOUT's Non-Goals (closed 2026-08-02)
 
 These three were explicitly deferred in `WS-STORY-BUCKET-LAYOUT`'s Non-Goals
