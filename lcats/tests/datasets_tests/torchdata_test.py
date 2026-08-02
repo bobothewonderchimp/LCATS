@@ -9,7 +9,7 @@ from lcats.datasets import torchdata
 
 
 class TestJsonDataset(unittest.TestCase):
-    """Tests for JsonDataset's dual-layout file discovery."""
+    """Tests for JsonDataset's bucket-only file discovery."""
 
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
@@ -26,11 +26,14 @@ class TestJsonDataset(unittest.TestCase):
             json.dump(data, f)
         return path
 
-    def test_finds_flat_story(self):
+    def test_rejects_flat_story(self):
+        """Regression test for Decision 4 (dual-layout retraction):
+        JsonDataset no longer discovers a flat <story>.json file, now that
+        the production corpora/ snapshot is confirmed fully migrated to the
+        bucket layout."""
         self._write("collection/story1.json", {"name": "Flat1"})
         dataset = torchdata.JsonDataset(root_dir=self.tmp)
-        self.assertEqual(len(dataset), 1)
-        self.assertEqual(dataset[0]["name"], "Flat1")
+        self.assertEqual(len(dataset), 0)
 
     def test_finds_nested_bucket_story(self):
         self._write("collection/story1/story.json", {"name": "Bucket1"})
@@ -45,8 +48,8 @@ class TestJsonDataset(unittest.TestCase):
         self.assertEqual(len(dataset), 1)
 
     def test_subdirectory_argument_scopes_search(self):
-        self._write("collectionA/story1.json", {"name": "A1"})
-        self._write("collectionB/story2.json", {"name": "B1"})
+        self._write("collectionA/story1/story.json", {"name": "A1"})
+        self._write("collectionB/story2/story.json", {"name": "B1"})
         dataset = torchdata.JsonDataset(root_dir=self.tmp, subdirectory="collectionA")
         self.assertEqual(len(dataset), 1)
         self.assertEqual(dataset[0]["name"], "A1")

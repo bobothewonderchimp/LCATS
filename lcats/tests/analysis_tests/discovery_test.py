@@ -3,7 +3,6 @@
 import pathlib
 import unittest
 
-from lcats.utils import capture
 from lcats.utils import test_utils
 from lcats.analysis.corpus import discovery
 
@@ -22,21 +21,27 @@ class TestIterCollectionStoryFiles(test_utils.TestCaseWithData):
         p.write_text("{}", encoding="utf-8")
         return p
 
-    def test_finds_flat_story_any_name(self):
-        p = self._write("story1.json")
+    def test_rejects_flat_story_any_name(self):
+        """Regression test for Decision 4 (dual-layout retraction): a flat
+        <story>.json file directly in a collection is no longer a valid
+        story source, now that the production corpora/ snapshot is
+        confirmed fully migrated to the bucket layout."""
+        self._write("story1.json")
         found = list(discovery.iter_collection_story_files(self.root))
-        self.assertEqual(found, [p])
+        self.assertEqual(found, [])
 
     def test_finds_nested_bucket_story(self):
         p = self._write("story1/story.json")
         found = list(discovery.iter_collection_story_files(self.root))
         self.assertEqual(found, [p])
 
-    def test_mixed_flat_and_bucket(self):
-        flat = self._write("flat_story.json")
+    def test_ignores_flat_sibling_and_finds_bucket(self):
+        """A flat file alongside a real bucket story: the flat file is
+        rejected, the bucket story is still found."""
+        self._write("flat_story.json")
         bucket = self._write("bucket_story/story.json")
-        found = set(discovery.iter_collection_story_files(self.root))
-        self.assertEqual(found, {flat, bucket})
+        found = list(discovery.iter_collection_story_files(self.root))
+        self.assertEqual(found, [bucket])
 
     def test_ignores_sidecar_json_in_bucket_dir(self):
         self._write("story1/story.json")
@@ -64,18 +69,13 @@ class TestIterCollectionStoryFiles(test_utils.TestCaseWithData):
         found = list(discovery.iter_collection_story_files(self.root / "nonexistent"))
         self.assertEqual(found, [])
 
-    def test_flat_file_literally_named_story_json_is_reserved(self):
-        """story.json is reserved for the bucket marker; a flat file with
-        that literal name is skipped (with a warning), not treated as an
-        ordinary flat story -- otherwise a directory one level up could
-        never tell "collection with an oddly-named flat file" apart from
-        "story's own bucket directory"."""
+    def test_rejects_flat_file_literally_named_story_json(self):
+        """A flat file directly in a collection, even if literally named
+        story.json, is not a bucket -- story.json only counts when nested
+        one level inside its own story subdirectory."""
         self._write("story.json")
-        other = self._write("other_story.json")
-        with capture.capture_output() as captured:
-            found = list(discovery.iter_collection_story_files(self.root))
-        self.assertEqual(found, [other])
-        self.assertIn("reserved", captured.stderr.getvalue())
+        found = list(discovery.iter_collection_story_files(self.root))
+        self.assertEqual(found, [])
 
     def test_skips_symlinked_directories(self):
         real_target = self.root.parent / "outside_target"
@@ -89,7 +89,9 @@ class TestIterCollectionStoryFiles(test_utils.TestCaseWithData):
         found = list(discovery.iter_collection_story_files(self.root))
         self.assertEqual(found, [])
 
-    def test_preserves_symlinked_flat_files(self):
+    def test_rejects_symlinked_flat_files(self):
+        """A symlinked flat file is still a flat file -- rejected the same
+        as any other flat file, not a special case."""
         real_target = self.root.parent / "real_story.json"
         real_target.write_text("{}", encoding="utf-8")
         link = self.root / "linked_story.json"
@@ -98,7 +100,7 @@ class TestIterCollectionStoryFiles(test_utils.TestCaseWithData):
         except (OSError, NotImplementedError):
             self.skipTest("symlinks not supported in this environment")
         found = list(discovery.iter_collection_story_files(self.root))
-        self.assertEqual(found, [link])
+        self.assertEqual(found, [])
 
 
 class TestFindJsonFiles(test_utils.TestCaseWithData):
@@ -115,10 +117,10 @@ class TestFindJsonFiles(test_utils.TestCaseWithData):
         p.write_text("{}", encoding="utf-8")
         return p
 
-    def test_finds_flat_story_at_collection_root(self):
+    def test_rejects_flat_story_at_collection_root(self):
         p = self._write("fantasy/story1.json")
         found = list(discovery.find_json_files([self.root]))
-        self.assertIn(p, found)
+        self.assertNotIn(p, found)
 
     def test_finds_nested_bucket_story(self):
         p = self._write("fantasy/story1/story.json")
@@ -131,14 +133,25 @@ class TestFindJsonFiles(test_utils.TestCaseWithData):
         found = list(discovery.find_json_files([self.root]))
         self.assertNotIn(sidecar, found)
 
-    def test_mixed_layout_across_collections(self):
+    def test_only_bucket_layout_survives_mixed_collections(self):
         flat = self._write("fantasy/story1.json")
         bucket = self._write("horror/story2/story.json")
         found = set(discovery.find_json_files([self.root]))
-        self.assertEqual(found, {flat, bucket})
+        self.assertEqual(found, {bucket})
+        self.assertNotIn(flat, found)
 
-    def test_single_json_file_path_is_yielded(self):
+    def test_rejects_literal_flat_file_path(self):
+        """A literal file path passed directly is only accepted if it is
+        literally named story.json -- there is no caller-knows-best
+        exception once dual-layout support is retracted."""
         p = self._write("standalone.json")
+        found = list(discovery.find_json_files([p]))
+        self.assertEqual(found, [])
+
+    def test_finds_literal_story_json_path(self):
+        """A literal path directly naming story.json is still accepted,
+        unlike an arbitrarily-named literal path."""
+        p = self._write("fantasy/story1/story.json")
         found = list(discovery.find_json_files([p]))
         self.assertEqual(found, [p])
 
@@ -146,10 +159,15 @@ class TestFindJsonFiles(test_utils.TestCaseWithData):
         found = list(discovery.find_json_files([self.root / "nonexistent"]))
         self.assertEqual(found, [])
 
-    def test_works_when_pointed_directly_at_collection_dir(self):
-        p = self._write("fantasy/story1.json")
+    def test_bucket_layout_survives_pointing_directly_at_collection_dir(self):
+        p = self._write("fantasy/story1/story.json")
         found = list(discovery.find_json_files([self.root / "fantasy"]))
         self.assertEqual(found, [p])
+
+    def test_flat_layout_rejected_when_pointed_directly_at_collection_dir(self):
+        self._write("fantasy/story1.json")
+        found = list(discovery.find_json_files([self.root / "fantasy"]))
+        self.assertEqual(found, [])
 
     def test_works_when_pointed_directly_at_story_bucket_dir(self):
         p = self._write("fantasy/story1/story.json")
@@ -165,15 +183,17 @@ class TestFindJsonFiles(test_utils.TestCaseWithData):
         found = list(discovery.find_json_files([self.root / "fantasy" / "story1"]))
         self.assertEqual(found, [p])
 
-    def test_ordinary_flat_filenames_survive_root_level_scan(self):
-        """Regression test: a collection with plainly-named flat stories
-        (no collision with the reserved story.json name) is fully found
-        when scanning starts at the corpus root, not just at the
-        collection itself."""
+    def test_flat_filenames_are_rejected_at_every_scan_depth(self):
+        """Regression test for Decision 4 (dual-layout retraction): plainly
+        named flat stories, with no reserved-name collision, are still
+        rejected at every scan depth (root, collection, direct file) --
+        confirming the retraction is not just a narrow special case."""
         s1 = self._write("sherlock/story1.json")
         s2 = self._write("sherlock/story2.json")
         found = set(discovery.find_json_files([self.root]))
-        self.assertEqual(found, {s1, s2})
+        self.assertEqual(found, set())
+        self.assertNotIn(s1, found)
+        self.assertNotIn(s2, found)
 
 
 if __name__ == "__main__":

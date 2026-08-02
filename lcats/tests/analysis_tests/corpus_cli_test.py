@@ -9,26 +9,6 @@ from lcats.analysis.corpus import cli
 class TestInferStoryTitle(unittest.TestCase):
     """Tests for cli.infer_story_title."""
 
-    def test_flat_layout_uses_name_field_when_present(self):
-        data = {"name": "Explicit Title"}
-        path = pathlib.Path("collection/my_story.json")
-        self.assertEqual(cli.infer_story_title(data, path), "Explicit Title")
-
-    def test_flat_layout_uses_metadata_name_when_top_level_name_absent(self):
-        data = {"metadata": {"name": "Metadata Title"}}
-        path = pathlib.Path("collection/my_story.json")
-        self.assertEqual(cli.infer_story_title(data, path), "Metadata Title")
-
-    def test_flat_layout_falls_back_to_file_stem(self):
-        data = {}
-        path = pathlib.Path("collection/my_story.json")
-        self.assertEqual(cli.infer_story_title(data, path), "my_story")
-
-    def test_flat_layout_blank_name_field_falls_back_to_stem(self):
-        data = {"name": "   "}
-        path = pathlib.Path("collection/my_story.json")
-        self.assertEqual(cli.infer_story_title(data, path), "my_story")
-
     def test_bucket_layout_falls_back_to_directory_slug(self):
         data = {}
         path = pathlib.Path("collection/my_story/story.json")
@@ -46,6 +26,23 @@ class TestInferStoryTitle(unittest.TestCase):
     def test_bucket_layout_prefers_directory_slug_over_metadata_name(self):
         data = {"metadata": {"name": "Mutable Metadata Title"}}
         path = pathlib.Path("collection/my_story/story.json")
+        self.assertEqual(cli.infer_story_title(data, path), "my_story")
+
+    def test_data_argument_is_entirely_ignored(self):
+        """Regression test for Decision 4 (dual-layout retraction):
+        infer_story_title no longer has any conditional flat-vs-bucket
+        logic -- it always returns the parent directory slug, regardless
+        of story data content."""
+        data = {"name": "Anything At All", "metadata": {"name": "Also Anything"}}
+        path = pathlib.Path("collection/my_story/story.json")
+        self.assertEqual(cli.infer_story_title(data, path), "my_story")
+
+    def test_returns_parent_directory_name_regardless_of_leaf_filename(self):
+        """infer_story_title no longer branches on the leaf filename at
+        all -- every discoverable file is a bucket file post-retraction, so
+        the parent directory name is returned unconditionally."""
+        data = {}
+        path = pathlib.Path("collection/my_story/anything.json")
         self.assertEqual(cli.infer_story_title(data, path), "my_story")
 
 
