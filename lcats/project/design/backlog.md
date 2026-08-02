@@ -112,15 +112,14 @@ vetting pass's 3 additional gaps (a bounded small-scale trial, call-count
 estimation, rate-limit/retry classification) alongside the audit's original
 scope.
 
-### Pre-existing masking bug in `discovery.py`'s recursive selector — actively being fixed, not a TODO
+~~### Pre-existing masking bug in `discovery.py`'s recursive selector~~ — **fixed, [PR #208](https://github.com/xenotaur/LCATS/pull/208), merged 2026-08-02**
 
-Not really a backlog item — flagged here only so it isn't lost track of.
-A stray flat file literally named `story.json` sitting directly in a
-collection directory can make `_walk_canonical_story_files` treat the whole
-collection as a single story bucket, masking real nested `<story>/story.json`
-buckets underneath (found via Copilot review on PR #207, confirmed by
-manual trace, deliberately left out of that PR's scope). A fix is already
-in progress via a spawned background task, not yet its own formal work
-item. If that task lands a PR without going through `/lrh-work-item` first,
-consider backfilling one at closeout so the fix is discoverable the same
-way everything else in this codebase is.
+Resolved: `_walk_canonical_story_files` no longer mistakes a stray flat
+`story.json` at a collection root for a leaf story bucket. Fixed via a new
+`_is_leaf_story_bucket` helper that breaks the ambiguity with a domain
+rule — a directory is only a real leaf bucket if none of its own
+subdirectories are themselves buckets (genuine story buckets never nest
+inside each other). No work item was created for this fix; it landed as
+an ad hoc PR with its own backfilled execution records. Left here as a
+record of resolution rather than deleted outright, since the PR itself
+carries no pointer back to this backlog entry.
