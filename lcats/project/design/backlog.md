@@ -89,17 +89,32 @@ and **silently reuses story #1's cached result as its own** — including a
 normally, prints what looks like per-story progress, and produces a
 fully-formed report where every number after the first story is silently
 wrong. No exception, no non-zero exit code, nothing to catch in a log.
-This script's own file *discovery* (line 149,
-`pathlib.Path(args.data_dir).rglob("*.json")`) is fine — only the
-output-naming is broken. Confirmed **not** touched by the currently
-proposed `WI-PIPELINE-0041`, which explicitly excludes changing this
-script's "existing, narrower persistence approach." No committed output
-from a real run was found in-repo, so this looks like a live, untriggered
-bug rather than damage already done — but it's the single highest-priority
+**Correction (found during `WI-EXPERIMENTS-0046`'s own creation-PR review,
+2026-08-02):** this script's file discovery (line 149,
+`pathlib.Path(args.data_dir).rglob("*.json")`) is **not** fine on its own
+— it was incorrectly cleared above. Two gaps, both folded into
+`WI-EXPERIMENTS-0046`'s scope: (1) `path.parent.name` alone is only
+unique *per collection* (per the governing proposal's own Decision 2),
+not globally, and `--data-dir` defaults to the whole multi-collection
+`corpora/` root, so two collections sharing a story slug would still
+collide — the cache key must be collection-qualified, not just
+directory-slug-qualified; (2) `rglob("*.json")` has no sidecar filter, so
+a bucket sidecar file (`analysis.json` etc.) could be sampled as if it
+were an independent story, and after fix (1) would collide with its own
+real story's cache entry too — the canonical `discovery.find_json_files`
+selector should be used instead. As of 2026-08-02 the real `corpora/`
+tree has zero sidecar JSON files (1,868 tracked files, all `story.json`),
+so gap (2) is a defensive/future-proofing fix, not a currently-triggered
+one. Confirmed **not** touched by the currently proposed
+`WI-PIPELINE-0041`, which explicitly excludes changing this script's
+"existing, narrower persistence approach." No committed output from a
+real run was found in-repo, so this looks like a live, untriggered bug
+rather than damage already done — but it's the single highest-priority
 item in this backlog precisely because a silent failure gives no signal
 to prompt anyone to notice it, unlike the two loud failures below.
-**Next step:** its own small WI — key the cache/output path off the
-directory slug (`path.parent.name`), not `path.stem`.
+**Next step:** in progress — see
+[WI-EXPERIMENTS-0046](https://github.com/xenotaur/LCATS/pull/212)
+(work-item creation PR, not yet implemented).
 
 ### Non-recursive glob bugs in two experiment scripts — P1, loud but blocking
 
