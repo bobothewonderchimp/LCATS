@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #213 (commit 17b47edd). Dual-root, atomic-publication, fingerprinted checkpoint helper (lcats.utils.checkpoint); 2 review rounds fixed a path-injection gap, a recorded-failure-treated-as-done bug, and a fingerprint JSON round-trip issue."
 blocked_reason: null
 blocked: false
 id: WI-PIPELINE-0040
 title: Implement shared checkpoint helper for LCATS batch scripts
 type: deliverable
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
