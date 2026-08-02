@@ -1,8 +1,8 @@
 ---
 id: PROP-LCATS-STORY-BUCKET-LAYOUT
 type: design_proposal_set
-status: proposed
-implementation_status: not_started
+status: adopted
+implementation_status: implemented
 ---
 
 # Per-Story Bucket Directory Layout for LCATS Corpus Storage
