@@ -92,15 +92,12 @@ Expected output:
 > (`WS-SPECIALS-CLEANUP`) — this block is under review for a fresh worked
 > example; see `project/design/backlog.md`.
 
-Exit code `1`. That's expected, not a failure — `boscombe_valley.json` genuinely has two
-mojibake findings (mangled accented characters from a bad encoding round-trip somewhere upstream),
-and `survey`'s exit code reflects that. Each finding shows the Unicode codepoint involved and a
-snippet of surrounding text so you can see exactly where it occurs.
-
-**What just happened:** `survey`'s `[spchar]` check flagged two spots where accented characters
-(`é` in "métier" and "outré") were mangled into `Ã©` sequences — a classic UTF-8-decoded-as-Latin-1
-mojibake pattern. This was real, pre-existing content in the bundled corpus when this tutorial was
-written (see the note above). For the full flag reference, see
+The output block above shows exit code `1` and two mojibake findings — that was the real,
+reproducible result when this tutorial was written: `boscombe_valley`'s story text had two
+mangled accented characters (`é` in "métier" and "outré", corrupted into `Ã©` sequences, a classic
+UTF-8-decoded-as-Latin-1 pattern) that `survey`'s `[spchar]` check flagged. As the note above says,
+running this exact command today no longer reproduces these findings — see the note for why. For
+the full flag reference, see
 [`docs/reference/cli-commands.md`](../reference/cli-commands.md#survey).
 
 ## 4. An alternative first command: `lcats assess --dry-run`
@@ -133,8 +130,9 @@ Expected output:
 
 Exit code `0` on this run — a dry run doesn't call the API, so it succeeds for any valid input
 (it can still exit non-zero for invalid arguments or an unexpected runtime error, just not for QA
-findings). Here it's reporting the same two findings `survey` found, just as a curation pre-check
-rather than a standalone report.
+findings). The output above was reporting the same two findings `survey` found, as a curation
+pre-check rather than a standalone report — see the note above for why running this today looks
+different.
 
 ## 5. Next steps
 

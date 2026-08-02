@@ -45,15 +45,19 @@ data/<collection>/<story>/story.json
   collection — it's simply the old flat filename's stem, promoted from a
   filename convention to an actual directory name.
 - **`story.json` is a reserved, canonical name** — the one and only file
-  in a story's bucket that discovery tooling (`lcats survey`, `lcats
-  assess`, `lcats stats`, `lcats promote`) treats as *the* story. Every
-  other file in that directory is sidecar content: expected, not an
-  ambiguity to resolve case by case.
-- **Output that reports a story's identity** (survey/assess TSV output)
-  gained a dedicated `story_dir` column for this directory-slug identifier,
+  in a story's bucket that `lcats survey`, `lcats assess`, and `lcats
+  promote` treat as *the* story. Every other file in that directory is
+  sidecar content: expected, not an ambiguity to resolve case by case.
+  (`lcats stats` is a partial exception — it still uses the broader,
+  older `find_corpus_stories` selector rather than this canonical one, so
+  it can pick up sidecar files too; this is a known, unresolved gap, not
+  part of the migration's own design.)
+- **`lcats survey`'s output that reports a story's identity** gained a
+  dedicated `story_dir` column for this directory-slug identifier,
   alongside the existing columns — rather than repurposing an existing
   column's meaning, which would have silently broken anything already
-  parsing it.
+  parsing it. (`lcats assess`'s separate TSV schema does not have this
+  column.)
 - **`lcats promote`** (the `data/` → `corpora/` release-promotion gate)
   now standingly rejects a collection where zero canonical stories are
   found — not just a collection with mojibake findings — so a writer
@@ -95,7 +99,7 @@ evidence-backed migration closed that gap.
 
 As of the migration's completion, the flat layout is fully retracted: it
 is not read, written, or tolerated anywhere in LCATS's story-discovery or
--writing code. Every story under `data/` and `corpora/` is a bucket
+story-writing code. Every story under `data/` and `corpora/` is a bucket
 directory. If you're looking for a specific story file on disk or in a
 command's output, it's always `<collection>/<story>/story.json` — never a
 flat `<collection>/<story>.json`.
