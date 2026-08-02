@@ -72,18 +72,25 @@ contamination, and similar defects — without changing anything. Point it at a 
 from the bundled `corpora/` collection:
 
 ```bash
-lcats survey ../corpora/sherlock/boscombe_valley.json --no-progress
+lcats survey ../corpora/sherlock/boscombe_valley/story.json --no-progress
 ```
 
 Expected output:
 
 ```
-../corpora/sherlock/boscombe_valley.json
+../corpora/sherlock/boscombe_valley/story.json
   [spchar] error: Special character finding. (U+00A9, '©')
     context: lies my mÃ©tier,\nand
   [spchar] error: Special character finding. (U+00A9, '©')
     context: g so outrÃ© as a dyin
 ```
+
+> **Note:** the path above reflects the current per-story-bucket layout
+> (`<collection>/<story>/story.json`, per `PROP-LCATS-STORY-BUCKET-LAYOUT`).
+> The findings shown are no longer reproducible as-is — the underlying
+> mojibake was cleaned up by a separate, later workstream
+> (`WS-SPECIALS-CLEANUP`) — this block is under review for a fresh worked
+> example; see `project/design/backlog.md`.
 
 Exit code `1`. That's expected, not a failure — `boscombe_valley.json` genuinely has two
 mojibake findings (mangled accented characters from a bad encoding round-trip somewhere upstream),
@@ -92,8 +99,8 @@ snippet of surrounding text so you can see exactly where it occurs.
 
 **What just happened:** `survey`'s `[spchar]` check flagged two spots where accented characters
 (`é` in "métier" and "outré") were mangled into `Ã©` sequences — a classic UTF-8-decoded-as-Latin-1
-mojibake pattern. This is real, pre-existing content in the bundled corpus, not a fabricated
-example. For the full flag reference, see
+mojibake pattern. This was real, pre-existing content in the bundled corpus when this tutorial was
+written (see the note above). For the full flag reference, see
 [`docs/reference/cli-commands.md`](../reference/cli-commands.md#survey).
 
 ## 4. An alternative first command: `lcats assess --dry-run`
@@ -103,13 +110,13 @@ quality and genre fit. `--dry-run` runs only the pre-flight checks (file discove
 without calling the API, so it costs nothing and needs no key:
 
 ```bash
-lcats assess ../corpora/sherlock/boscombe_valley.json --dry-run
+lcats assess ../corpora/sherlock/boscombe_valley/story.json --dry-run
 ```
 
 Expected output:
 
 ```
-[dry-run] ../corpora/sherlock/boscombe_valley.json
+[dry-run] ../corpora/sherlock/boscombe_valley/story.json
   Title:    Sherlock Holmes - The Boscombe Valley Mystery
   Author:   Arthur Conan Doyle
   Genre:    (detect mode)
@@ -117,6 +124,12 @@ Expected output:
     [ERROR] mojibake-sequence: Likely mojibake sequence.
     [ERROR] mojibake-sequence: Likely mojibake sequence.
 ```
+
+> **Note:** same as the `survey` example above — the path reflects the
+> current bucket layout, but the QA findings and displayed title no longer
+> match current output verbatim (content cleanup plus an unrelated title-
+> display change since this was written). Under review; see
+> `project/design/backlog.md`.
 
 Exit code `0` on this run — a dry run doesn't call the API, so it succeeds for any valid input
 (it can still exit non-zero for invalid arguments or an unexpected runtime error, just not for QA
