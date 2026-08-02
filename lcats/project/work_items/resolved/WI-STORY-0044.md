@@ -16,7 +16,7 @@ related_roadmap: []
 related_workstreams:
   - WS-STORY-BUCKET-LAYOUT
 related_design:
-  - lcats/project/design/proposals/proposed/lcats-story-bucket-layout/00_proposal.md
+  - lcats/project/design/proposals/adopted/lcats-story-bucket-layout/00_proposal.md
   - lcats/project/design/flat_story_layout_migration_impact_report.md
   - lcats/docs/reference/corpus-promotion.md
   - lcats/docs/reference/gather-overrides.md
@@ -172,4 +172,4 @@ Stage 2 lands.
 ## Related Workstream and Designs
 
 - Workstream: `project/workstreams/proposed/WS-STORY-BUCKET-LAYOUT.md`
-- Design: `project/design/proposals/proposed/lcats-story-bucket-layout/00_proposal.md`
+- Design: `project/design/proposals/adopted/lcats-story-bucket-layout/00_proposal.md`

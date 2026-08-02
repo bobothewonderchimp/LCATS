@@ -16,7 +16,7 @@ related_roadmap: []
 related_workstreams:
   - WS-STORY-BUCKET-LAYOUT
 related_design:
-  - lcats/project/design/proposals/proposed/lcats-story-bucket-layout/00_proposal.md
+  - lcats/project/design/proposals/adopted/lcats-story-bucket-layout/00_proposal.md
   - lcats/project/design/flat_story_layout_migration_impact_report.md
 depends_on: []
 blocked_by: []
@@ -167,4 +167,4 @@ writer migration assumes dual-layout-tolerant discovery already exists).
 ## Related Workstream and Designs
 
 - Workstream: `project/workstreams/proposed/WS-STORY-BUCKET-LAYOUT.md`
-- Design: `project/design/proposals/proposed/lcats-story-bucket-layout/00_proposal.md`
+- Design: `project/design/proposals/adopted/lcats-story-bucket-layout/00_proposal.md`

@@ -2,11 +2,15 @@
 id: PROP-LCATS-STORY-BUCKET-LAYOUT
 type: design_proposal
 title: Per-Story Bucket Directory Layout for LCATS Corpus Storage
-status: proposed
+status: adopted
 created_on: 2026-07-30
-updated_on: 2026-07-30
-implementation_status: not_started
-implemented_by: []
+updated_on: 2026-08-02
+implementation_status: implemented
+implemented_by:
+  - WI-STORY-0042
+  - WI-STORY-0043
+  - WI-STORY-0044
+  - WI-STORY-0045
 supersedes: []
 superseded_by: null
 related_design:

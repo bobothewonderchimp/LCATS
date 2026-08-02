@@ -16,7 +16,7 @@ related_roadmap: []
 related_workstreams:
   - WS-STORY-BUCKET-LAYOUT
 related_design:
-  - lcats/project/design/proposals/proposed/lcats-story-bucket-layout/00_proposal.md
+  - lcats/project/design/proposals/adopted/lcats-story-bucket-layout/00_proposal.md
   - lcats/docs/reference/gather-overrides.md
   - lcats/docs/reference/corpus-promotion.md
 depends_on:
@@ -185,6 +185,6 @@ start implementation before Stage 1 lands.
 ## Related Workstream and Designs
 
 - Workstream: `project/workstreams/proposed/WS-STORY-BUCKET-LAYOUT.md`
-- Design: `project/design/proposals/proposed/lcats-story-bucket-layout/00_proposal.md`
+- Design: `project/design/proposals/adopted/lcats-story-bucket-layout/00_proposal.md`
 - Reference: `lcats/docs/reference/gather-overrides.md`,
   `lcats/docs/reference/corpus-promotion.md`

@@ -2,15 +2,15 @@
 id: WS-STORY-BUCKET-LAYOUT
 kind: planning_node
 title: Per-Story Bucket Directory Layout Migration for LCATS Corpus Storage
-status: proposed
-stage: designed
+status: resolved
+stage: closed
 origin: design_review
 summary: "Deliver PROP-LCATS-STORY-BUCKET-LAYOUT's staged expand-contract migration from flat per-collection story files to per-story bucket directories, across three stages: read-path compatibility, write-path migration, and convergence-and-validation."
 related_focus:
   - FOCUS-WORLDCON-2026
 related_roadmap: []
 related_design:
-  - lcats/project/design/proposals/proposed/lcats-story-bucket-layout/00_proposal.md
+  - lcats/project/design/proposals/adopted/lcats-story-bucket-layout/00_proposal.md
   - lcats/project/design/flat_story_layout_migration_impact_report.md
   - lcats/project/design/proposals/adopted/lcats-pipeline-checkpointing/00_proposal.md
 work_items:
@@ -31,7 +31,7 @@ exit_criteria:
 ## Purpose
 
 This workstream delivers `PROP-LCATS-STORY-BUCKET-LAYOUT`
-(`lcats/project/design/proposals/proposed/lcats-story-bucket-layout/00_proposal.md`),
+(`lcats/project/design/proposals/adopted/lcats-story-bucket-layout/00_proposal.md`),
 a staged expand-contract migration from LCATS's flat per-collection story
 storage (`data/<collection>/<story>.json`) to per-story bucket directories
 (`data/<collection>/<story>/story.json`). It coordinates the three

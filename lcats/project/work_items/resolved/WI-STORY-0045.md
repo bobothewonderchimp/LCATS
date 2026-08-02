@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: Implemented and merged in PR #207 (commit 4bc7b7eb) -- discovery.py/cli.py story-file selectors retracted to bucket-only per Decision 4 of PROP-LCATS-STORY-BUCKET-LAYOUT.
 blocked_reason: null
 blocked: false
 id: WI-STORY-0045
 title: Retract dual-layout story discovery support once corpora/ migration is confirmed
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
@@ -16,7 +16,7 @@ related_roadmap: []
 related_workstreams:
   - WS-STORY-BUCKET-LAYOUT
 related_design:
-  - lcats/project/design/proposals/proposed/lcats-story-bucket-layout/00_proposal.md
+  - lcats/project/design/proposals/adopted/lcats-story-bucket-layout/00_proposal.md
 depends_on:
   - WI-STORY-0044
 blocked_by: []
@@ -176,4 +176,4 @@ described above, which has not happened as of this work item's creation.
 ## Related Workstream and Designs
 
 - Workstream: `project/workstreams/proposed/WS-STORY-BUCKET-LAYOUT.md`
-- Design: `project/design/proposals/proposed/lcats-story-bucket-layout/00_proposal.md`
+- Design: `project/design/proposals/adopted/lcats-story-bucket-layout/00_proposal.md`
