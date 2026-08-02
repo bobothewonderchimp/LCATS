@@ -13,9 +13,18 @@ or when review/investigation surfaces a real gap that isn't worth blocking
 the current PR on. Each entry should say what's known now and what the
 first concrete next step would be — not a full design.
 
+**Priority tags** (added 2026-08-02, per a resolution-plan review):
+`P0` = silent/data-corrupting, fix first; `P1` = silent-but-lower-impact or
+loud-but-blocking; `P2` = loud failure and/or low-frequency use, or purely
+cosmetic; `P3` = a decision or cost estimate is needed before any code gets
+written, not an implementable fix on its own. Ranked by failure-mode
+severity first (silent > loud > cosmetic), then effort-to-fix — a silent
+failure gives no signal to prompt anyone to notice it, so it's worth fixing
+before a loud one even if the loud one blocks more use cases.
+
 ---
 
-## `quickstart.md` and `prepare-corpora-release.md` show mojibake examples that no longer reproduce
+## `quickstart.md` and `prepare-corpora-release.md` show mojibake examples that no longer reproduce — P2, cosmetic
 
 Surfaced during `/lrh-doc-work` on `WS-STORY-BUCKET-LAYOUT` (2026-08-02).
 Both docs' "expected output" blocks claim specific mojibake findings
@@ -49,7 +58,7 @@ gather` incremental/restartable checkpointing" is tracked via
 `PROP-LCATS-PIPELINE-CHECKPOINTING` (adopted) → `WS-PIPELINE-CHECKPOINTING`
 + `WI-PIPELINE-0040`/`0041` (all still `proposed`).
 
-### Hardcoded flat-layout paths in two notebooks
+### Hardcoded flat-layout paths in two notebooks — P2, loud but low-frequency
 
 `lcats/notebooks/12_extract_scenes.ipynb` and `13_clean_corpus.ipynb` still
 assume the retracted flat `<collection>/<story>.json` layout — re-verified
@@ -65,37 +74,62 @@ deliberately left for a dedicated follow-up. **Next step:** scope a small WI
 to update both notebooks' path construction to the bucket layout
 (`<collection>/<story>/story.json`).
 
-### Non-recursive/stem-collision bugs in three experiment scripts — confirmed worse than originally flagged
+### `check_segmentation_reliability.py`'s stem-collision bug — P0, silent data corruption
 
-Re-verified 2026-08-02, all three still present, and the first two are now
-more severe than when the proposal flagged them:
+Re-verified 2026-08-02 (severity corrected from the original framing —
+this is worse than "an output-naming bug," and worse than the two glob
+bugs below, which was not obvious until the actual downstream code path
+was traced): `experiments/03_cross_segment_relation_pilot/check_segmentation_reliability.py:193`
+writes each story's result to `output_dir / f"{path.stem}.json"`.
+`path.stem` is literally `"story"` for every bucket file now, so after
+the *first* story writes `output_dir/story.json`, every subsequent story
+hits the cache-check (`if result_path.exists(): cached = ...`, line 194)
+and **silently reuses story #1's cached result as its own** — including a
+`story_id` field also collapsed to `"story"`. The script completes
+normally, prints what looks like per-story progress, and produces a
+fully-formed report where every number after the first story is silently
+wrong. No exception, no non-zero exit code, nothing to catch in a log.
+This script's own file *discovery* (line 149,
+`pathlib.Path(args.data_dir).rglob("*.json")`) is fine — only the
+output-naming is broken. Confirmed **not** touched by the currently
+proposed `WI-PIPELINE-0041`, which explicitly excludes changing this
+script's "existing, narrower persistence approach." No committed output
+from a real run was found in-repo, so this looks like a live, untriggered
+bug rather than damage already done — but it's the single highest-priority
+item in this backlog precisely because a silent failure gives no signal
+to prompt anyone to notice it, unlike the two loud failures below.
+**Next step:** its own small WI — key the cache/output path off the
+directory slug (`path.parent.name`), not `path.stem`.
+
+### Non-recursive glob bugs in two experiment scripts — P1, loud but blocking
+
+Re-verified 2026-08-02 (severity corrected: these fail **loud**, not
+silently, contrary to how this entry originally read):
 
 - `experiments/02_llm_backend_comparison/run_comparison.py:57` —
   `story_files = sorted(f for f in corpus_dir.iterdir() if f.suffix == ".json")`.
   Under bucket layout, `corpus_dir`'s immediate children are story
-  *directories*, not `.json` files, so this now silently finds **zero**
-  files against any real bucket-layout collection — a total, silent
-  failure, not just a partial miss.
+  *directories*, not `.json` files, so this now finds **zero** files
+  against any real bucket-layout collection — but `run()` (line 56-57)
+  explicitly checks `if not story_files:` and exits 1 with
+  `"error: no .json files found in {corpus_dir}"`. A real, blocking bug
+  (the script is currently unusable against real bucket-layout data, and
+  the error message is confusing since files clearly do exist, just as
+  subdirectories) — but not a silent one.
 - `experiments/02_llm_backend_comparison/smoke_test.py:109` —
-  `corpus_dir.glob("*.json")`, the same non-recursive pattern, same
-  now-total-failure severity.
-- `experiments/03_cross_segment_relation_pilot/check_segmentation_reliability.py:193` —
-  `output_dir / f"{path.stem}.json"`. `path.stem` is literally `"story"`
-  for every bucket file now, so every story's cached result collides into
-  the same `output_dir/story.json`, silently overwriting each prior
-  result. This script's own file *discovery* (line 149,
-  `pathlib.Path(args.data_dir).rglob("*.json")`) is fine — only the
-  output-naming is broken. Confirmed **not** touched by the currently
-  proposed `WI-PIPELINE-0041`, which explicitly excludes changing this
-  script's "existing, narrower persistence approach."
+  `corpus_dir.glob("*.json")`, the same non-recursive pattern. Verified
+  the downstream path: `_actual_sample`'s result feeds into `_run_leg`,
+  which calls into `run_comparison.py`'s own `run()` and therefore hits
+  the same loud `error: no .json files found` exit — `smoke_test.py`
+  correctly reports the leg as `FAILED` and the overall run as
+  `Smoke test INCOMPLETE`. Loud, same as above.
 
-**Next step:** scope one small WI covering all three (same root-cause
-family: `path.stem`/non-recursive assumptions baked in before the bucket
-migration). The first two are worth prioritizing over the notebooks item —
-they don't just produce wrong output, they silently produce *no* output
-against real bucket-layout data.
+**Next step:** one small WI covering both (same root-cause bug shape,
+`smoke_test.py` exists specifically to exercise `run_comparison.py`, so
+they're naturally coupled) — switch both to a recursive selector, ideally
+reusing `discovery.find_json_files` rather than re-implementing traversal.
 
-### Whether notebooks/ and experiments/ should be librarized
+### Whether notebooks/ and experiments/ should be librarized — P3, decision not a fix
 
 Open architecture question: should `notebooks/` and `experiments/`
 implementation code move into the installable `lcats` package with unit
@@ -109,7 +143,7 @@ wants to press on it.
 
 ## Other known gaps worth following up on
 
-### `lcats survey` and `lcats promote` disagree on which mojibake findings to flag
+### `lcats survey` and `lcats promote` disagree on which mojibake findings to flag — P3, decision not a fix
 
 `lcats survey --mode specials` applies the legacy `unicode.DEFAULT_EXCLUDED_CHARS`
 list (via `cli.py`'s `run_survey`), which silently lets through some
@@ -126,7 +160,7 @@ applying `unicode.DEFAULT_EXCLUDED_CHARS` by default (or sharing one
 exclusion path between both commands) — scope as a WI under
 `WS-SPECIALS-CLEANUP` when that workstream is next picked up.
 
-### `lcats stats` uses the wrong (broad) story-file selector
+### `lcats stats` uses the wrong (broad) story-file selector — P1, silent
 
 Surfaced during PR #209's review, confirmed 2026-08-02: `cli.py`'s
 `run_stats` calls `discovery.find_corpus_stories` — the broad recursive
@@ -142,7 +176,7 @@ own design guidance warns against (see
 `survey`/`assess`, and add a regression test asserting sidecar files are
 excluded from stats output.
 
-### `VALID_GENRES` still has 4 genres, not the reconciled 8
+### `VALID_GENRES` still has 4 genres, not the reconciled 8 — P3, needs cost estimate first
 
 `lcats/src/lcats/analysis/corpus/assess.py`'s `VALID_GENRES` is
 `("science fiction", "horror", "western", "romance")` (confirmed current as
@@ -164,7 +198,7 @@ Both carry real API cost and should get cost estimates before being scoped
 as work items, per `project/design/event-role-world-genre-target-reconciliation.md`'s
 own recommendation.
 
-### ERW pipeline audit's Category E (cost/checkpointing/local-model options) never promoted to a proposal
+### ERW pipeline audit's Category E (cost/checkpointing/local-model options) never promoted to a proposal — P3, decision not a fix
 
 `project/audits/2026-07-27-erw-pipeline-structured-output-reliability-audit.md`'s
 Category E — cost/logging/checkpointing/local-model options, plus a
