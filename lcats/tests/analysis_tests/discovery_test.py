@@ -195,6 +195,33 @@ class TestFindJsonFiles(test_utils.TestCaseWithData):
         self.assertNotIn(s1, found)
         self.assertNotIn(s2, found)
 
+    def test_stray_collection_story_json_does_not_mask_nested_buckets(self):
+        """Regression test: a collection directory with a stray flat file
+        literally named story.json alongside real nested <story>/story.json
+        buckets must not be mistaken for a single story's own bucket -- the
+        real buckets underneath must still be found, when the collection
+        directory itself is the scan target. Since Decision 4's retraction,
+        the stray file is simply ignored (it's an ordinary rejected flat
+        file, not a reserved name needing a warning)."""
+        self._write("fantasy/story.json")
+        s1 = self._write("fantasy/story1/story.json")
+        s2 = self._write("fantasy/story2/story.json")
+        found = set(discovery.find_json_files([self.root / "fantasy"]))
+        self.assertEqual(found, {s1, s2})
+
+    def test_stray_collection_story_json_does_not_mask_nested_buckets_from_corpus_root(
+        self,
+    ):
+        """Same ambiguity as above, but reached by recursion from a corpus
+        root that contains multiple collections -- the realistic call
+        pattern (e.g. scanning the whole corpora/ directory)."""
+        self._write("fantasy/story.json")
+        s1 = self._write("fantasy/story1/story.json")
+        s2 = self._write("fantasy/story2/story.json")
+        other = self._write("horror/story3/story.json")
+        found = set(discovery.find_json_files([self.root]))
+        self.assertEqual(found, {s1, s2, other})
+
 
 if __name__ == "__main__":
     unittest.main()
