@@ -5,7 +5,7 @@ work_item: AD_HOC
 status: in_progress
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/208
-commit: 1d6e3ea674c56d86a1fd3590d69fe5adb49996d3
+commit: 3f076228b437da548113d736f0f3d78a83137c1e
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/208
 session_transcript: pending
@@ -71,10 +71,19 @@ was applied; re-ran to confirm the branch is still clean):
 
 # Follow-up
 
-The flat-sibling variant of this ambiguity (`collection/story.json` +
-`collection/<other>.json`, no subdirectories) remains unresolved and is a
-candidate for a future work item: it needs either an explicit hint from
-the caller about which directory level it's pointing at, or a domain
-convention that removes the ambiguity by definition -- the same class of
-gap this PR's fix addressed for the nested-subdirectory case, per
-`feedback_recursive_selector_ambiguity_needs_convention`.
+Superseded by events, not left open: `WI-STORY-0045` (dual-layout
+retraction) merged into `main` via PR #207 while this `/lrh-land` chain
+was running, requiring PR #208 to be rebased (see commit note below). Per
+the retraction, a collection directory can only ever contain bucket
+subdirectories -- there is no such thing as a legitimate flat story
+anymore, so `collection/story.json` + `collection/<other>.json` stops
+being ambiguous: `<other>.json` is simply not a story, full stop. The
+flat-sibling gap this comment flagged is therefore structurally resolved
+by the retraction, not left as an open follow-up. No new work item was
+filed (a WI-STORY-0046 draft was considered and discarded for this
+reason).
+
+**Commit note:** the `commit:` field above is the post-rebase SHA. The
+original commit this review addressed was `1d6e3ea674c56d86a1fd3590d69fe5adb49996d3`
+(now rewritten); the reply URL, thread ID, and all triage content above
+are unchanged and still accurate against the rebased code.
