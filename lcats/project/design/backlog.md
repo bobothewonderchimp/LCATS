@@ -39,31 +39,61 @@ work reference, not the bucket-layout one.
 
 ## From WS-STORY-BUCKET-LAYOUT's Non-Goals (closed 2026-08-02)
 
-These three were explicitly deferred in `WS-STORY-BUCKET-LAYOUT`'s Non-Goals
-section. Now that the workstream is closed and archived
-(`project/workstreams/resolved/WS-STORY-BUCKET-LAYOUT.md`), they have no
-active tracker at all.
+Full audit of the governing proposal's Non-Goals section re-run 2026-08-02
+(all 4 WI files' own Non-Goals just defer to the proposal — no additional
+items found there). Three items below have no active tracker now that the
+workstream is closed and archived
+(`project/workstreams/resolved/WS-STORY-BUCKET-LAYOUT.md`). One proposal
+Non-Goal is **not** listed here because it already has a home: "`lcats
+gather` incremental/restartable checkpointing" is tracked via
+`PROP-LCATS-PIPELINE-CHECKPOINTING` (adopted) → `WS-PIPELINE-CHECKPOINTING`
++ `WI-PIPELINE-0040`/`0041` (all still `proposed`).
 
 ### Hardcoded flat-layout paths in two notebooks
 
-`lcats/notebooks/12_extract_scenes.ipynb` and `13_clean_corpus.ipynb` were
-called out as still assuming the retracted flat `<collection>/<story>.json`
-layout. Per `AGENTS.md`, notebooks aren't edited as a matter of course, so
-this was deliberately left for a dedicated follow-up. **Next step:** confirm
-which cells actually construct flat-style paths (a fresh read against
-current notebook content, not this note), then scope a small WI to update
-them to the bucket layout.
+`lcats/notebooks/12_extract_scenes.ipynb` and `13_clean_corpus.ipynb` still
+assume the retracted flat `<collection>/<story>.json` layout — re-verified
+2026-08-02, still present. `12_extract_scenes.ipynb` has hardcoded absolute
+local-machine paths ending in flat `.json` filenames (e.g.
+`corpora/sherlock/noble_bachelor.json`, `corpora/massQuantities/...json` —
+note the stale `massQuantities` casing too, a separate naming-drift signal).
+`13_clean_corpus.ipynb` has a function parameter defaulting to
+`ext: str = ".json"` and literal flat example paths
+(`CORPORA_ROOT / 'mass_quantities/george_walker_at_suez.json'`). Per
+`AGENTS.md`, notebooks aren't edited as a matter of course, so this was
+deliberately left for a dedicated follow-up. **Next step:** scope a small WI
+to update both notebooks' path construction to the bucket layout
+(`<collection>/<story>/story.json`).
 
-### Non-recursive glob bugs in two experiment scripts
+### Non-recursive/stem-collision bugs in three experiment scripts — confirmed worse than originally flagged
 
-`experiments/02_llm_backend_comparison/run_comparison.py` and
-`experiments/02_llm_backend_comparison/smoke_test.py` were flagged as having
-non-recursive glob bugs; `experiments/03_cross_segment_relation_pilot/check_segmentation_reliability.py`
-has a related stem-collision output-naming bug. Described as more pressing
-than the notebooks item (silent failure mode) but still deferred so all
-three get fixed once against the final (now-retracted) layout. **Next
-step:** re-verify each bug is still present, then scope one small WI
-covering all three (same root cause family).
+Re-verified 2026-08-02, all three still present, and the first two are now
+more severe than when the proposal flagged them:
+
+- `experiments/02_llm_backend_comparison/run_comparison.py:57` —
+  `story_files = sorted(f for f in corpus_dir.iterdir() if f.suffix == ".json")`.
+  Under bucket layout, `corpus_dir`'s immediate children are story
+  *directories*, not `.json` files, so this now silently finds **zero**
+  files against any real bucket-layout collection — a total, silent
+  failure, not just a partial miss.
+- `experiments/02_llm_backend_comparison/smoke_test.py:109` —
+  `corpus_dir.glob("*.json")`, the same non-recursive pattern, same
+  now-total-failure severity.
+- `experiments/03_cross_segment_relation_pilot/check_segmentation_reliability.py:193` —
+  `output_dir / f"{path.stem}.json"`. `path.stem` is literally `"story"`
+  for every bucket file now, so every story's cached result collides into
+  the same `output_dir/story.json`, silently overwriting each prior
+  result. This script's own file *discovery* (line 149,
+  `pathlib.Path(args.data_dir).rglob("*.json")`) is fine — only the
+  output-naming is broken. Confirmed **not** touched by the currently
+  proposed `WI-PIPELINE-0041`, which explicitly excludes changing this
+  script's "existing, narrower persistence approach."
+
+**Next step:** scope one small WI covering all three (same root-cause
+family: `path.stem`/non-recursive assumptions baked in before the bucket
+migration). The first two are worth prioritizing over the notebooks item —
+they don't just produce wrong output, they silently produce *no* output
+against real bucket-layout data.
 
 ### Whether notebooks/ and experiments/ should be librarized
 
@@ -95,6 +125,22 @@ meant to revisit this architecture, but no specific WI covers it yet.
 applying `unicode.DEFAULT_EXCLUDED_CHARS` by default (or sharing one
 exclusion path between both commands) — scope as a WI under
 `WS-SPECIALS-CLEANUP` when that workstream is next picked up.
+
+### `lcats stats` uses the wrong (broad) story-file selector
+
+Surfaced during PR #209's review, confirmed 2026-08-02: `cli.py`'s
+`run_stats` calls `discovery.find_corpus_stories` — the broad recursive
+JSON finder — rather than the canonical-only selector (`find_json_files`)
+that `lcats survey` and `lcats assess` both use. This means `lcats stats`
+can silently include sidecar files (`audit.json`, `scenes.json`, etc.) as
+if they were stories, inflating or corrupting story-level statistics. Not
+caused by the bucket-layout migration itself, but it's exactly the
+"wrong tool for the canonical-presence question" pattern that migration's
+own design guidance warns against (see
+`project_story_bucket_proposal_status` memory). **Next step:** switch
+`run_stats`'s file discovery to `discovery.find_json_files`, matching
+`survey`/`assess`, and add a regression test asserting sidecar files are
+excluded from stats output.
 
 ### `VALID_GENRES` still has 4 genres, not the reconciled 8
 
