@@ -165,9 +165,13 @@ WI-EVENT-0030's scope).
 Every story's genre-detection, segmentation, ERW-extraction, and
 cross-segment-relation stages are checkpointed independently under
 `--output` (via `lcats.utils.checkpoint`), each keyed by model/backend
-configuration plus, for the two downstream stages, a hash of the upstream
-stage's own output — so correcting an earlier stage under an unchanged
-model configuration still invalidates the stages that depended on it.
+configuration plus a hash of that stage's own relevant input: the raw
+story text for genre-detection, the segmentation input text for
+segmentation, and the upstream stage's own output for the two downstream
+stages (ERW-extraction's fingerprint also includes the NLP backend
+choice, since that affects its output too) — so correcting a story, or
+its output at an earlier stage, under an unchanged model configuration
+still invalidates every stage that depended on it.
 
 This means:
 
