@@ -2,8 +2,8 @@
 id: WS-PIPELINE-CHECKPOINTING
 kind: planning_node
 title: Staged, checkpointed pipeline execution for LCATS batch scripts
-status: proposed
-stage: designed
+status: resolved
+stage: closed
 origin: design_review
 summary: Deliver PROP-LCATS-PIPELINE-CHECKPOINTING's shared checkpoint helper and migrate run_pilot.py to staged, checkpointed execution, so a crash or interruption no longer discards already-paid-for LLM calls.
 related_focus:
@@ -94,6 +94,19 @@ attempted.
 ## Exit Criteria
 
 (see frontmatter `exit_criteria:` above)
+
+**Closeout confirmation (2026-08-03):** all four exit criteria met.
+`lcats.utils.checkpoint` (WI-PIPELINE-0040, PR #213, commit `17b47edd`)
+implements Decision 1's atomic publication and Decision 2's
+success/failure predicate plus configuration-identity fingerprint, with
+28 unit tests. `run_pilot.py` (WI-PIPELINE-0041, PR #217, commit
+`44e7a3e2`) is migrated to staged, checkpointed execution with four
+independently checkpointed stages per Decision 3 (genre_detect, segment,
+erw_extract, cross_segment_relation), and re-vetted against this
+session's 8 operational criteria with both hard blockers (bounded
+small-scale trial, crash/interrupt recovery) confirmed resolved via a
+real `KeyboardInterrupt` test. Both work items are `resolved` and
+`lrh validate` reports 0 errors.
 
 ## Non-Goals
 

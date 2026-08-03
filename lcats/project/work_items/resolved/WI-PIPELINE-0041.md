@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via PR #217 (commit 44e7a3e2): run_pilot.py migrated to staged, checkpointed execution (genre_detect, segment, erw_extract, cross_segment_relation, each independently checkpointed per Decision 3), discovery selector fixed to use discovery.find_json_files, and re-vetted against this session's 8 operational criteria - both hard blockers (bounded small-scale trial, crash/interrupt recovery) confirmed resolved via a real KeyboardInterrupt test. See execution record project/executions/WI-PIPELINE-0041/2026_08_03_05_47_27_WI_PIPELINE_0041.md."
 blocked_reason: null
 blocked: false
 id: WI-PIPELINE-0041
 title: Migrate run_pilot.py to staged, checkpointed execution and re-vet against operational criteria
 type: deliverable
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
