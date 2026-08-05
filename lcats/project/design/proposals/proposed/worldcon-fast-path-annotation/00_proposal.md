@@ -150,12 +150,20 @@ it right. *(User decision, recorded 2026-08-05.)* Exact validation depth
   gain an override (parameter, or a higher default), fixed in
   `assess.py` itself — not worked around per-caller.
 - `scene_analysis.py`'s `make_segment_extractor` has no `max_tokens`
-  override at all (inherits the library's bare 4096 default). The
-  correct fix already exists as a one-line override stranded inside
-  `experiments/03_cross_segment_relation_pilot/run_pilot.py`'s
-  `_segment_story()`; it must be lifted into `scene_analysis.py` itself
-  so `lcats annotate` (which calls `scene_analysis` directly) isn't left
-  duplicating a fix that already exists elsewhere.
+  override at all (inherits the library's bare 4096 default), and — this
+  proposal's original draft mis-cited a fix that does not actually
+  exist: `run_pilot.py`'s `_segment_story()` calls
+  `scene_analysis.make_segment_extractor(backend)` and `.extract(...)`
+  with no `max_tokens` override of its own (verified directly against
+  the current `experiments/03_cross_segment_relation_pilot/run_pilot.py`,
+  correcting a review finding on this PR). The only existing precedent
+  for overriding `max_tokens` on an extractor instance is
+  `_build_erw_extractors`'s `extractor.max_tokens = _ERW_MAX_TOKENS`
+  (same file), which applies to the five ERW extractors, not to
+  segmentation. The fix must therefore be written fresh directly in
+  `scene_analysis.py`'s `make_segment_extractor` (a parameter or a
+  raised default), following that same override-pattern precedent, not
+  lifted from anywhere.
 
 Both are real, already-observed failures (confirmed this session on
 real candidate stories), not speculative — `lcats annotate` would hit
@@ -164,11 +172,23 @@ them immediately at even small scale without these fixes.
 ### Decision 6: File discovery convention for `lcats annotate`
 
 **Chosen:** `lcats annotate` iterates story buckets via
-`discovery.iter_collection_story_files` (the narrower bucket-only
-selector `promote`'s `survey_collection` already uses), not the broader
-`find_json_files`. This avoids ever miscounting a sidecar as a story
-bucket to annotate, matching the same convention `promote` already
-established for the same reason.
+`discovery.iter_collection_story_files`, one collection directory at a
+time — the same narrower bucket-only selector `promote`'s
+`survey_collection` already uses, applied the same way `promote` applies
+it: per collection, never directly against a multi-collection corpus
+root. `iter_collection_story_files` only checks the immediate children
+of the path it's given for a `story.json` (per its own docstring:
+"Applies only one level of nesting relative to `collection_dir`");
+called directly on a `data/`/`corpora/` root — whose immediate children
+are collections, not story buckets — it silently yields nothing (review
+finding, PR #226). `lcats annotate` must therefore enumerate collection
+directories first (e.g. the immediate children of its `--source` root)
+and call `iter_collection_story_files` once per collection, exactly
+mirroring how `promote_collections` already drives `survey_collection`
+per collection rather than across the whole root at once. `find_json_files`
+remains the right tool only for call sites that genuinely need a single
+recursive sidecar-safe sweep across an entire multi-collection root in
+one call; `lcats annotate`'s per-collection loop does not need it.
 
 ### Decision 7: Fix `lcats stats`'s selector as part of this proposal's implementation plan
 
@@ -231,11 +251,18 @@ run + stats collection), mirroring how
 - `lcats/project/design/proposals/proposed/erw-local-model-evaluation/00_proposal.md`
   — related but independent ERW-track fallback effort; not a dependency
   of this proposal
-- `experiments/03_cross_segment_relation_pilot/run_pilot.py` — source of
-  the `max_tokens` fix to lift (Decision 5)
+- `experiments/03_cross_segment_relation_pilot/run_pilot.py` —
+  `_build_erw_extractors`'s `extractor.max_tokens = _ERW_MAX_TOKENS` is
+  the closest existing override precedent to follow (Decision 5); its
+  `_segment_story()` has no override of its own, contrary to this
+  proposal's original draft
 - `lcats/src/lcats/analysis/corpus/discovery.py` —
-  `iter_collection_story_files`/`find_json_files` selector convention
+  `iter_collection_story_files`/`find_json_files` selector convention,
+  and `iter_collection_story_files`'s single-level-of-nesting docstring
   (Decision 6)
+- `lcats/src/lcats/analysis/corpus/promote.py`'s `promote_collections` —
+  precedent for per-collection iteration driving a per-collection
+  selector (Decision 6)
 - `lcats/project/design/proposals/adopted/lcats-pipeline-checkpointing/00_proposal.md`
   — sibling proposal→workstream precedent for scope/structure
 
