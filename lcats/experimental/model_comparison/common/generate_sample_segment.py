@@ -36,14 +36,17 @@ import sys
 
 _HERE = pathlib.Path(__file__).resolve().parent
 _MODEL_COMPARISON = _HERE.parent
-_LCATS_SRC = _MODEL_COMPARISON.parent / "src"
+# _HERE is common/; parents[0]=model_comparison, [1]=experimental, [2]=lcats
+# - matches harness.py's parents[3]-from-harness.py convention (one level
+# deeper there since it starts from the file, not the containing dir).
+_LCATS_SRC = _HERE.parents[2] / "src"
 for _path in (_LCATS_SRC, _MODEL_COMPARISON):
     if str(_path) not in sys.path:
         sys.path.insert(0, str(_path))
 
 from lcats.analysis import scene_analysis  # noqa: E402
 from lcats.llm import anthropic_backend  # noqa: E402
-from lcats.utils.secrets import load_secrets  # noqa: E402
+from lcats.utils import secrets as secrets_module  # noqa: E402
 
 from common import harness  # noqa: E402
 
@@ -57,9 +60,18 @@ OUTPUT_PATH = _HERE / "sample_segment.json"
 # narrative_scene segments are less representative of a typical call).
 _PREFERRED_TYPES = ("dramatic_scene", "dramatic_sequel")
 
+# A rough character-length target used only to break ties among candidate
+# segments (closest wins) - not a hard target the picked segment will
+# actually hit, since real scene/sequel segments in a "prefer FEWER,
+# LARGER segments" story (see scene_analysis.py) can all run well past
+# it. The checked-in sample_segment.json this produced is ~3150 chars
+# (~584 words), the closest available candidate to this target in that
+# story, not a segment trimmed to exactly this length.
+_TARGET_CHAR_LENGTH = 1000
+
 
 def _pick_segment(segments: list) -> dict:
-    """Pick one aligned, moderate-length segment closest to a few hundred words."""
+    """Pick one aligned segment with a char span closest to _TARGET_CHAR_LENGTH."""
     aligned = [
         s
         for s in segments
@@ -70,16 +82,14 @@ def _pick_segment(segments: list) -> dict:
     preferred = [s for s in aligned if s.get("segment_type") in _PREFERRED_TYPES]
     candidates = preferred or aligned
 
-    def word_count(seg: dict) -> int:
+    def char_span(seg: dict) -> int:
         return seg["end_char"] - seg["start_char"]
 
-    # Closest to a 1000-character segment (~150-200 words) - representative
-    # of a single coarse scene/sequel, not a whole story.
-    return min(candidates, key=lambda s: abs(word_count(s) - 1000))
+    return min(candidates, key=lambda s: abs(char_span(s) - _TARGET_CHAR_LENGTH))
 
 
 def main() -> None:
-    load_secrets()
+    secrets_module.load_secrets()
     story_name, story_body = harness.load_sample_story()
 
     backend = anthropic_backend.AnthropicBackend()
