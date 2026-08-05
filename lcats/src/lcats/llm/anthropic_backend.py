@@ -97,9 +97,16 @@ class AnthropicBackend:
             )
             if tool_block is None:
                 content_types = [b.type for b in message.content]
+                # Include the model's own free-text response (if any) in the
+                # error rather than discarding it - see OpenAIBackend's
+                # identical fix for the rationale (BackendResponse is never
+                # constructed on this path, so nothing else captures it).
+                text_preview = "".join(
+                    block.text for block in message.content if block.type == "text"
+                )[:2000]
                 raise ValueError(
                     f"API returned no tool_use block for tool {tool['name']!r}; "
-                    f"content types: {content_types}"
+                    f"content types: {content_types}; text: {text_preview!r}"
                 )
             tool_result = tool_block.input
             text = ""

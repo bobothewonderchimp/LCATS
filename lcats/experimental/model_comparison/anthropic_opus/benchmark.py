@@ -1,8 +1,9 @@
 """Frontier-model baseline candidate: claude-opus-4-8 via AnthropicBackend.
 
 Run setup.py first. This makes ONE real, billable Anthropic API call (the
-entity-extraction tool-schema stage against a single sample story) - see
-this directory's README.md for expected cost.
+entity-extraction tool-schema stage against a single real scene/sequel
+segment - see common/sample_segment.json) - see this directory's
+README.md for expected cost.
 
 Usage:
     python lcats/experimental/model_comparison/anthropic_opus/benchmark.py

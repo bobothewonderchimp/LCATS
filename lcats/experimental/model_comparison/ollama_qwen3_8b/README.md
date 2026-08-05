@@ -27,18 +27,23 @@ python benchmark.py
 ```
 
 Runs the ERW pipeline's real stage-3 entity-extraction tool-schema call
-(same schema, same story, same `max_tokens=16384` ceiling as
-`../anthropic_opus/`) against the local model. No API cost once the model
-is pulled. Writes `results.json` in this directory (the most recent run;
-see `results_run1_failed.json`/`results_run2_succeeded.json` for the two
-real runs behind the numbers below).
+against a real ~600-word scene/sequel segment (`../common/sample_segment.json`
+- see `../common/generate_sample_segment.py` for how it was produced),
+`temperature=0.6` (Qwen3's own recommended value - see "Methodology fix"
+below), `max_tokens=8192`. No API cost once the model is pulled. Writes
+`results.json` in this directory (the most recent run; see
+`results_segment_run1.json`/`run2.json`/`run3.json` for three real runs
+against the corrected methodology, and `results_fullstory_run1_failed.json`/
+`results_fullstory_run2_succeeded.json` for the two runs against the prior,
+oversized whole-story input - kept for transparency, not representative of
+current results).
 
 ## What this tests
 
 Whether Ollama's grammar-constrained JSON-schema decoding (XGrammar-backed
 since Ollama 0.3+) actually produces a valid, schema-conformant
-`extract_entities` tool call for a real, content-dense story - the same
-question Categories A-C of
+`extract_entities` tool call for a real story segment - the same question
+Categories A-C of
 `project/audits/2026-07-27-erw-pipeline-structured-output-reliability-audit.md`
 raised for hosted backends, now asked of a local one. A local model
 excelling at conversational chat but failing this call (empty/malformed
@@ -46,21 +51,56 @@ excelling at conversational chat but failing this call (empty/malformed
 it out for the pipeline's extraction stages specifically, even if it's fine
 for lighter stages like genre detection.
 
-## Actual results (two runs, identical input)
+## Methodology fix (this candidate's first two runs were measuring the wrong thing)
 
-- **Run 1: failed.** `finish_reason='stop'` with no tool call at all,
-  despite `tool_choice` forcing `extract_entities` - Ollama's logs show
-  ~3699 output tokens generated (likely chain-of-thought "thinking"
-  content) over ~259s before stopping without ever calling the tool.
-- **Run 2: succeeded**, but took **1727s (~29 minutes)** - ~8.5x
-  `../anthropic_opus/`'s 202s - generating 7996 output tokens before
-  finally producing a valid call (20 entities, vs. `claude-opus-4-8`'s
-  28).
+The first two runs against this candidate (`results_fullstory_run1_failed.json`,
+`results_fullstory_run2_succeeded.json`) sent the model the **entire**
+~7,300-word source story instead of a single segment, at
+`temperature=0.2` - a setting inherited from `entity_extractor.py`'s
+Anthropic/OpenAI-tuned default, well below Qwen3's own official
+recommendation (0.6 thinking-mode / 0.7 non-thinking - see
+[Qwen3-8B's model card](https://huggingface.co/Qwen/Qwen3-8B), which
+explicitly warns **"Do NOT use greedy decoding, as it can lead to
+performance degradation and endless repetitions"**) and below Ollama's
+own bundled default for this model (`ollama show qwen3:8b --parameters`
+reports `temperature 0.6, top_k 20, top_p 0.95` - i.e. our own explicit
+`temperature=0.2` was overriding an already-correct default). Both
+issues are fixed as of this candidate's current `benchmark.py`/`../common/harness.py`.
 
-Same model, same story, same schema, two different outcomes: `qwen3:8b`
-via Ollama is not just slower than the frontier baseline, it is
-*unreliable* on this exact call shape. See
+## Actual results
+
+**Fixed methodology (real segment, `temperature=0.6`), 3 runs:**
+
+| Run | Result | Latency | Output tokens | Entities |
+|---|---|---|---|---|
+| 1 | success | 74.4s | 1477 | 11 |
+| 2 | success | 100.3s | 2318 | 13 |
+| 3 | success | 105.7s | 2301 | 14 |
+
+`../anthropic_opus/` on the identical segment: success, 49.3s, 5439
+output tokens, 21 entities. So on the corrected methodology, `qwen3:8b`
+succeeds consistently (3/3) at roughly **1.5-2.2x** Opus's latency, with
+lower recall (11-14 vs. 21 entities - not evaluated for precision here,
+see Non-Goals) - a real cost/latency tradeoff, not the outright
+unreliability the prior methodology suggested.
+
+**Prior methodology (whole story, `temperature=0.2`), for comparison -
+not representative of current results:**
+
+- Run 1: **failed** - `finish_reason='stop'` with no tool call at all,
+  despite `tool_choice` forcing `extract_entities`.
+- Run 2: **succeeded**, but took 1727s (~29 minutes) generating 7996
+  output tokens before finally producing a valid call.
+
+This reversal is itself the finding: the original "qwen3:8b is
+unreliable" conclusion in
 `project/design/proposals/proposed/erw-local-model-evaluation/00_proposal.md`
-Decision 3 for the resulting recommendation (hold the current default;
-Qwen3's default "thinking" mode is the leading suspect and worth testing
-with `think: false` before drawing further conclusions).
+was substantially an artifact of benchmarking against the wrong input
+size and an unsuited sampling temperature, not a stable property of the
+model. See that proposal's "Update" section for the corrected
+conclusion. One remaining, unfixed candidate cause of the *original*
+run 1's total non-call: community reports on Ollama's own GitHub
+(e.g. [issue #4386](https://github.com/ollama/ollama/issues/4386))
+describe gaps in how Ollama's OpenAI-compatible `tool_choice` forces a
+specific function name - not reproduced across 3 fixed-methodology runs
+here, but not ruled out as a residual risk either.

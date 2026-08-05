@@ -86,9 +86,18 @@ class OpenAIBackend:
                 )
             tool_calls = choice.message.tool_calls
             if not tool_calls:
+                # Include the model's own free-text response (if any) in the
+                # error rather than discarding it - a forced tool_choice
+                # that a backend/model silently ignores (e.g. some local
+                # OpenAI-compatible runtimes) still often produces real text
+                # explaining what it did instead, which is otherwise lost:
+                # BackendResponse is never constructed on this path, so
+                # nothing else captures choice.message.content.
+                content_preview = (choice.message.content or "")[:2000]
                 raise ValueError(
                     f"API returned no tool calls for tool {tool['name']!r}; "
-                    f"finish_reason: {choice.finish_reason!r}"
+                    f"finish_reason: {choice.finish_reason!r}; "
+                    f"content: {content_preview!r}"
                 )
             raw_arguments = tool_calls[0].function.arguments
             tool_result = json.loads(raw_arguments)
