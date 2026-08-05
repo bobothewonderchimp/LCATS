@@ -112,9 +112,12 @@ real run was found in-repo, so this looks like a live, untriggered bug
 rather than damage already done — but it's the single highest-priority
 item in this backlog precisely because a silent failure gives no signal
 to prompt anyone to notice it, unlike the two loud failures below.
-**Next step:** in progress — see
-[WI-EXPERIMENTS-0046](https://github.com/xenotaur/LCATS/pull/212)
-(work-item creation PR, not yet implemented).
+**Resolved 2026-08-05:** implemented and merged via
+[WI-EXPERIMENTS-0046](https://github.com/xenotaur/LCATS/pull/220). Both
+correction gaps above were folded into the fix, including a
+review-round addendum (Copilot finding on PR #220) that routed
+`--story-list` entries through `discovery.find_json_files` too, not just
+the directory-scan sample path.
 
 ### Non-recursive glob bugs in two experiment scripts — P1, loud but blocking
 

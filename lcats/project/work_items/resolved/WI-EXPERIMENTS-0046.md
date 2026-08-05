@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via https://github.com/xenotaur/LCATS/pull/220 (squash commit 5460f440b8e1772b74ba3c3ddb7a583162e7d2cc)."
 blocked_reason: null
 blocked: false
 id: WI-EXPERIMENTS-0046
 title: Fix stem-collision bug in check_segmentation_reliability.py's result caching
 type: deliverable
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
