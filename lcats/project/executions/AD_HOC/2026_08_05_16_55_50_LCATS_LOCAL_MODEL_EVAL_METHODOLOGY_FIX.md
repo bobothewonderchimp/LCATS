@@ -2,10 +2,10 @@
 execution_id: 2026_08_05_16_55_50_LCATS_LOCAL_MODEL_EVAL_METHODOLOGY_FIX
 prompt_id: PROMPT(AD_HOC:LCATS_LOCAL_MODEL_EVAL_METHODOLOGY_FIX)[2026-08-05T16:54:31+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/223
-commit: b40a352f
+commit: 04092c7acf2e151de3e5ee859bb42d353ec72ff8
 created_at: 2026-08-05T16:55:50+00:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/223
