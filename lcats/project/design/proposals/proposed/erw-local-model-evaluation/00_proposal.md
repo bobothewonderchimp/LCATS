@@ -26,14 +26,17 @@ rather than a new backend class - as how any OpenAI-compatible local
 runtime (Ollama, vLLM, LM Studio) plugs into the pipeline, and (b) a
 checked-in benchmarking harness (`lcats/experimental/model_comparison/`)
 as the durable, reusable way to evaluate model/runtime candidates against
-the pipeline's real tool-schema calls going forward. Based on two real
-spike runs against that harness (same model, same story, same schema), it
-explicitly recommends **against** changing `run_pilot.py`'s default model
-yet - the sole local candidate tested so far is unreliable (one run
-failed outright, a rerun succeeded but took ~8.5x longer than the
-frontier baseline) - and defines the narrow next evaluation steps
-required before a hybrid (local-for-cheap-stages,
-frontier-for-extraction) pipeline can be seriously considered.
+the pipeline's real tool-schema calls going forward. **Update
+2026-08-05:** the harness's first methodology (whole story as input,
+`temperature=0.2`) produced an apparent "unreliable" verdict for
+`qwen3:8b` that turned out to be substantially an artifact of that
+methodology, not the model - see "Decision 3 update" below. With the
+corrected methodology (a real single segment, `temperature=0.6` matching
+Qwen3's own recommendation), `qwen3:8b` succeeded consistently across 3
+runs at ~1.5-2.2x `claude-opus-4-8`'s latency. This still does not
+justify a default-model change on its own (see the updated Decision 3),
+but the evidence base is now meaningfully different from this proposal's
+original recommendation.
 
 ## Background / Motivation
 
@@ -203,6 +206,86 @@ but unproven - it needs its own spike (a local model tested against the
 genre-detection or segmentation stage specifically) before being
 adopted, not inferred from mixed results on a different, harder stage.
 
+### Decision 3 update (2026-08-05, corrected methodology)
+
+A structural review of the harness itself (prompted by the question "are
+we setting `qwen3:8b` - or even Opus - up for success?") found two
+concrete, grounded problems with the runs above, independent of the
+model:
+
+1. **Wrong input size.** `entity_extractor.py`'s system prompt describes
+   its input as "a segment of a story," but `harness.py` was feeding it
+   the *entire* ~7,300-word story - something the real pipeline
+   (`run_pilot.py`'s `_run_erw_extraction`) never does; it always passes
+   one scene/sequel segment. This inflated cost/latency for **both**
+   candidates and gave the smaller model a harder, more diffuse task than
+   it will ever face in production.
+2. **Wrong sampling temperature for this model.** The harness sent
+   `temperature=0.2` (inherited from `entity_extractor.py`'s
+   Anthropic/OpenAI-tuned default) to every candidate, including
+   `qwen3:8b`. `ollama show qwen3:8b --parameters` on the test machine
+   reports Ollama's own bundled default for this model as `temperature
+   0.6, top_k 20, top_p 0.95` - matching
+   [Qwen3-8B's official model card](https://huggingface.co/Qwen/Qwen3-8B)
+   recommendation, which explicitly warns: **"Do NOT use greedy decoding,
+   as it can lead to performance degradation and endless repetitions."**
+   0.2 is much closer to greedy than to Qwen3's own tuned value - our
+   explicit override was replacing an already-correct default with a
+   worse one.
+
+Both are now fixed: `common/harness.py` uses a real, single ~600-word
+segment (`common/sample_segment.json`, produced once by an actual
+stage-1 segmentation call - see `common/generate_sample_segment.py`),
+and `ollama_qwen3_8b/benchmark.py` now overrides `temperature=0.6`
+instead of inheriting the pipeline's Anthropic/OpenAI-tuned 0.2. A
+harness bug was also fixed alongside these: `BenchmarkResult` never
+captured the model's raw text response, so a failed run's actual output
+(e.g. whether `<think>` tags were present) was unrecoverable without a
+live rerun - `results.json` now includes a truncated
+`raw_output_preview`.
+
+**Re-run with the corrected methodology, 3 consecutive runs:**
+
+| Run | Result | Latency | Output tokens | Entities |
+|---|---|---|---|---|
+| 1 | success | 74.4s | 1477 | 11 |
+| 2 | success | 100.3s | 2318 | 13 |
+| 3 | success | 105.7s | 2301 | 14 |
+
+`anthropic_opus` on the identical segment: success, 49.3s, 5439 output
+tokens, 21 entities. `qwen3:8b` now succeeds **consistently (3/3)** at
+roughly 1.5-2.2x Opus's latency, with lower recall (11-14 vs. 21 entities
+- not evaluated for precision, see Non-Goals) - a real, quantifiable
+cost/latency/quality tradeoff, not the outright unreliability the
+original two runs suggested.
+
+**Also corrected:** the original Decision 3 text named Qwen3's "thinking"
+mode as the leading suspect for the failure/latency, based on a
+misreading of Ollama's server logs. Direct inspection of
+`ollama show qwen3:8b --modelfile` shows Ollama uses a proper,
+Qwen3-aware Go template (not a broken generic one, as briefly suspected
+mid-session) - so the template-mismatch and thinking-mode hypotheses are
+both **not supported** by available evidence and are retracted, not
+confirmed. What the evidence does support: (a) the temperature/input-size
+issues above, both fixed and re-tested; (b) a still-open, independently
+corroborated risk that Ollama's OpenAI-compatible `tool_choice`
+forced-function-name support has real gaps (community reports on
+[Ollama's own GitHub, e.g. issue #4386](https://github.com/ollama/ollama/issues/4386))
+- not reproduced across the 3 fixed-methodology runs above, but not ruled
+out either, since a forced-tool_choice failure would look identical to
+what the original run 1 showed.
+
+**Recommendation, updated:** still hold the current default - one
+corrected-methodology candidate at one model size succeeding 3/3 is
+better evidence than the original mixed 1-fail/1-slow-success result, but
+it is still one model/size/stage combination, not enough to justify a
+pipeline-wide change. The hybrid-pipeline hypothesis is now *more*
+plausible than the original write-up suggested (a model that reliably
+succeeds at ~2x latency on the hardest stage is a stronger hybrid
+candidate than one that appeared to fail outright), but still needs the
+genre-detection/segmentation-stage spike named in the Implementation Plan
+before being adopted.
+
 ### Landscape context (not itself decision-grade evidence)
 
 A web survey (Aug 2026) of runtimes and models informs which candidates to
@@ -231,10 +314,11 @@ only, not cited as justification for any decision above:
 
 - Does not change `run_pilot.py`'s default model or add a `--backend
   local`/similar flag - see Decision 3.
-- Does not implement a fix for the observed `qwen3:8b` unreliability
-  (intermittent failure, ~29-minute latency when it does succeed) - e.g.
-  disabling Ollama's `think` parameter - flagged as the immediate next
-  step, not done here.
+- Does not test Ollama's `think: false` parameter, since the fixed
+  methodology (real segment + Qwen3's own recommended temperature)
+  already produces consistent success without it - the original
+  "thinking mode" hypothesis was retracted (see Decision 3 update), not
+  confirmed, and testing it further is deferred, not ruled in or out.
 - Does not evaluate the Kubuntu Focus/NVIDIA hardware profile - not
   available in this session.
 - Does not extend the benchmark harness to the genre-detection,
@@ -246,28 +330,39 @@ only, not cited as justification for any decision above:
 
 ## Implementation Plan
 
-Already done in this session (this PR):
+Already done (across two PRs):
 1. `OpenAIBackend.base_url` support + test
    (`src/lcats/llm/openai_backend.py`,
    `tests/llm_tests/openai_backend_test.py`).
 2. `lcats/experimental/model_comparison/` harness, `anthropic_opus` and
    `ollama_qwen3_8b` candidates, `benchmark_summary.py`.
-3. One real spike run per candidate (results committed as each
-   candidate's `results.json`).
+3. Initial spike run per candidate (whole-story input, `temperature=0.2`)
+   - kept as `results_fullstory_*.json` for transparency.
+4. Methodology fix (2026-08-05): real single-segment input
+   (`common/sample_segment.json` + `common/generate_sample_segment.py`),
+   per-candidate temperature override capability
+   (`harness.run_entity_extraction(temperature=...)`), raw-output capture
+   in `results.json` (`raw_output_preview`), and a re-tuned
+   `DEFAULT_MAX_TOKENS` (8192, replacing both the too-low 4096 factory
+   default and the whole-story-tuned 16384).
+5. Three consecutive re-runs of `ollama_qwen3_8b` against the corrected
+   methodology, all successful - see Decision 3 update.
 
 Follow-on work (proposed as separate work items once this proposal is
-adopted - offered at the end of this skill run):
-1. Retry `ollama_qwen3_8b` with Ollama's `think` parameter disabled, to
-   isolate whether "thinking" mode consuming the output budget was the
-   actual cause of the observed failure.
-2. Add an `ollama_qwen3_30b_a3b` candidate (MoE, higher quality ceiling)
-   to test whether a larger local model clears the same bar.
-3. Extend `common/harness.py` to cover the genre-detection and
+adopted):
+1. Add an `ollama_qwen3_30b_a3b` candidate (MoE, higher quality ceiling)
+   to test whether a larger local model narrows the entity-recall gap
+   (11-14 vs. Opus's 21) at a still-acceptable latency.
+2. Extend `common/harness.py` to cover the genre-detection and
    segmentation stages, and add a candidate run against those - this is
-   the evidence needed to actually assess the hybrid-pipeline hypothesis,
-   which entity-extraction failure alone does not settle either way.
-4. Only after (1)-(3) produce a passing local candidate on at least one
-   stage: revisit Decision 3 in a follow-on proposal or amendment.
+   the evidence still needed to actually assess the hybrid-pipeline
+   hypothesis, which entity-extraction results alone do not settle.
+3. Investigate the residual Ollama `tool_choice` forced-function-name gap
+   (see Decision 3 update) - not reproduced here, but not ruled out;
+   consider adding a retry-once-on-empty-tool-result path to the harness
+   if it recurs.
+4. Only after (1)-(3): revisit Decision 3 in a follow-on proposal or
+   amendment.
 
 ## Cross-References
 
@@ -282,13 +377,16 @@ adopted - offered at the end of this skill run):
 
 ## Open Questions
 
-- Does Ollama's `think: false` API parameter actually resolve the
-  observed `qwen3:8b` unreliability (intermittent failure, ~29-minute
-  latency when it succeeds), or is there a deeper tool-choice-forcing gap
-  in Ollama's OpenAI-compatibility layer? (Next spike, see Implementation
-  Plan #1.)
+- Does Ollama's OpenAI-compatible `tool_choice` forced-function-name
+  support have a real gap (per community reports), and if so, would it
+  recur at scale (more stories, more candidates) even though it did not
+  reproduce across 3 fixed-methodology runs here?
 - Is MLX (native Apple Silicon) meaningfully more reliable than
   Ollama/llama.cpp for this pipeline's tool-schema calls? Not yet tested.
 - What is the actual VRAM-bound model-size sweet spot on the Kubuntu Focus
   hardware profile? Not testable in this session; needs a run on that
   machine.
+- How much of `qwen3:8b`'s lower entity recall (11-14 vs. Opus's 21) is a
+  real precision/recall gap versus an artifact of this harness's
+  single-run, no-ground-truth measurement? Needs the quality comparison
+  named in Non-Goals.

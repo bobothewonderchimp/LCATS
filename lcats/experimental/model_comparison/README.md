@@ -22,11 +22,13 @@ model) before assuming any cost-reduction lever is viable.
 
 ```
 model_comparison/
-  common/harness.py       - shared single-stage benchmark logic, reused by every candidate
-  benchmark_summary.py    - prints a comparison table across every candidate/results.json
-  anthropic_opus/         - frontier baseline (claude-opus-4-8, AnthropicBackend)
-  ollama_qwen3_8b/        - local "cheap tier" candidate (qwen3:8b via Ollama, OpenAIBackend+base_url)
-  <new_candidate>/        - add more by copying an existing candidate's shape
+  common/harness.py               - shared single-stage benchmark logic, reused by every candidate
+  common/sample_segment.json      - real scene/sequel segment, the actual benchmark input
+  common/generate_sample_segment.py - regenerates sample_segment.json (real stage-1 segmentation call)
+  benchmark_summary.py            - prints a comparison table across every candidate/results.json
+  anthropic_opus/                 - frontier baseline (claude-opus-4-8, AnthropicBackend)
+  ollama_qwen3_8b/                - local "cheap tier" candidate (qwen3:8b via Ollama, OpenAIBackend+base_url)
+  <new_candidate>/                - add more by copying an existing candidate's shape
 ```
 
 Each candidate directory has:
@@ -61,16 +63,33 @@ Each candidate directory has:
   synthetic schema. Segmentation, event/relation/discourse extraction, and
   the cross-segment relation pass are not yet covered; add stages to
   `common/harness.py` the same way if/when needed.
-- **One fixed sample story**: `corpora/sherlock/five_orange_pips/story.json`
-  - moderately content-dense, multiple named entities/aliases, so results
-  are comparable across candidates. Not a stratified sample; see
+- **One fixed sample segment**: `common/sample_segment.json` - a real
+  ~600-word scene/sequel segment drawn from
+  `corpora/sherlock/five_orange_pips/story.json` by an actual run of the
+  real stage-1 segmenter (`common/generate_sample_segment.py`), not the
+  whole story. This corrects an earlier version of this harness that fed
+  entity_extractor.py the entire ~7,300-word story - inflating cost/
+  latency for every candidate and mismatching entity_extractor.py's own
+  system prompt, which describes its input as "a segment of a story." See
+  `ollama_qwen3_8b/README.md`'s "Methodology fix" section for the before/
+  after comparison this caused. Not a stratified sample; see
   `run_pilot.py`'s own stratified genre sampling for that.
 - **What's measured**: did the call succeed at all, did it return a
   well-formed `tool_result` matching the schema, latency, token counts, and
   entity count as a crude sanity signal - not extraction *quality*
   (precision/recall against ground-truth entities). Quality comparison
   needs human review of the actual extracted entities, which this harness
-  surfaces via `results.json` but does not itself judge.
+  surfaces via `results.json` but does not itself judge. `results.json`
+  also includes a truncated `raw_output_preview` of the model's free-text
+  response when no valid tool call was made, so a failure can be
+  diagnosed from the file alone rather than needing a live rerun.
+- **Sampling parameters**: `common.harness.DEFAULT_TEMPERATURE` (0.2)
+  matches the real pipeline's own `entity_extractor.py` default, tuned for
+  Anthropic/OpenAI. Candidates for a model with its own documented
+  sampling recommendation should override `temperature=` in their
+  `benchmark.py` rather than inherit this default silently - see
+  `ollama_qwen3_8b/benchmark.py` for an example (Qwen3 recommends 0.6,
+  not 0.2).
 
 ## Research context (no download/execution - see individual candidates for real runs)
 
