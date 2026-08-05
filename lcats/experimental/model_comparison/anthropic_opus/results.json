@@ -1,0 +1,14 @@
+{
+  "candidate": "anthropic_opus",
+  "backend_kind": "anthropic",
+  "model": "claude-opus-4-8",
+  "story_name": "Sherlock Holmes - The Five Orange Pips",
+  "stage": "entity_extraction",
+  "success": true,
+  "latency_seconds": 202.3621397089446,
+  "input_tokens": 14385,
+  "output_tokens": 7941,
+  "entity_count": 28,
+  "error_type": null,
+  "error_message": null
+}

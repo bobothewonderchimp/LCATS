@@ -1,0 +1,104 @@
+# model_comparison
+
+Lightweight, checked-in infrastructure for comparing LLM backends/models
+against the Event-Role-World (ERW) pipeline's actual tool-schema extraction
+path - not a one-off script, meant to be reused whenever a new candidate
+model or runtime shows up. Lives under `lcats/experimental/` (Google's
+`experimental/` convention: real, runnable code that isn't a production
+dependency yet) - not `notebooks/` (exploratory, not meant to be re-run as
+a suite) or `KMo/` (a collaborator's separate test code).
+
+Context: `experiments/03_cross_segment_relation_pilot/run_pilot.py` costs
+$10-40+ per real run against the default frontier model
+(`claude-opus-4-8`). See
+`project/audits/2026-07-27-erw-pipeline-structured-output-reliability-audit.md`'s
+Category E and `project/design/backlog.md`'s "ERW pipeline audit's
+Category E ... never promoted to a proposal" entry for the full cost
+history and the audit's own recommendation: a cheap, targeted spike
+(run one story through the real tool-schema path against a candidate
+model) before assuming any cost-reduction lever is viable.
+
+## Layout
+
+```
+model_comparison/
+  common/harness.py       - shared single-stage benchmark logic, reused by every candidate
+  benchmark_summary.py    - prints a comparison table across every candidate/results.json
+  anthropic_opus/         - frontier baseline (claude-opus-4-8, AnthropicBackend)
+  ollama_qwen3_8b/        - local "cheap tier" candidate (qwen3:8b via Ollama, OpenAIBackend+base_url)
+  <new_candidate>/        - add more by copying an existing candidate's shape
+```
+
+Each candidate directory has:
+- `README.md` - what it is, expected cost/setup, what a good/bad result looks like
+- `setup.py` - prerequisite check only (API key present, or local server
+  reachable + model pulled). Never downloads/installs anything itself -
+  downloading model weights or a new runtime is a deliberate step a human
+  (or an agent with explicit permission) takes, documented in the
+  candidate's own README, not a side effect of running a check.
+- `benchmark.py` - runs `common.harness.run_entity_extraction()` with that
+  candidate's backend + model, writes `results.json` in its own directory
+
+## Adding a new candidate
+
+1. `mkdir model_comparison/<candidate_name>/`
+2. Write `setup.py` (prerequisite check - no downloads)
+3. Write `benchmark.py` that builds an `LLMBackend` instance
+   (`lcats.llm.anthropic_backend.AnthropicBackend`,
+   `lcats.llm.openai_backend.OpenAIBackend` - works for any OpenAI-
+   compatible local server via its `base_url` parameter, e.g. Ollama,
+   vLLM, LM Studio - or a new backend implementing the
+   `lcats.llm.backend.LLMBackend` protocol) and calls
+   `common.harness.run_entity_extraction(candidate=..., backend_kind=..., backend=..., model=...)`
+4. `python <candidate_name>/setup.py && python <candidate_name>/benchmark.py`
+5. `python benchmark_summary.py` to compare against existing candidates
+
+## Current scope (deliberately narrow - widen once this proves useful)
+
+- **One ERW stage**: stage-3 entity extraction
+  (`lcats.analysis.event_role_world.entity_extractor`) - the same real tool
+  schema and `extract()` call path `run_pilot.py`'s pipeline uses, not a
+  synthetic schema. Segmentation, event/relation/discourse extraction, and
+  the cross-segment relation pass are not yet covered; add stages to
+  `common/harness.py` the same way if/when needed.
+- **One fixed sample story**: `corpora/sherlock/five_orange_pips/story.json`
+  - moderately content-dense, multiple named entities/aliases, so results
+  are comparable across candidates. Not a stratified sample; see
+  `run_pilot.py`'s own stratified genre sampling for that.
+- **What's measured**: did the call succeed at all, did it return a
+  well-formed `tool_result` matching the schema, latency, token counts, and
+  entity count as a crude sanity signal - not extraction *quality*
+  (precision/recall against ground-truth entities). Quality comparison
+  needs human review of the actual extracted entities, which this harness
+  surfaces via `results.json` but does not itself judge.
+
+## Research context (no download/execution - see individual candidates for real runs)
+
+A web survey of the local-model landscape (Aug 2026) found:
+
+- **Runtimes**: Ollama and vLLM both have first-class OpenAI-compatible
+  tool-calling support; Ollama additionally does grammar-constrained JSON-
+  schema decoding (XGrammar-backed since 0.3+), which is the actual
+  mechanism analogous to Anthropic's/OpenAI's `strict: true`. MLX
+  (Apple-Silicon-native, via `mlx-lm`) also has native tool-calling support
+  and several OpenAI-compatible-server wrappers exist for it. llama.cpp is
+  the engine under Ollama/many other tools; direct tool-calling support
+  varies by which wrapper is used.
+- **Model sizing**: Qwen3 ships Ollama-library sizes from 0.6b up through
+  235b, including an 8b (fits comfortably in 8GB+ VRAM/unified memory - the
+  "cheap tier" target for lighter stages) and 30b-a3b (a mixture-of-experts
+  model, ~30B total/~3B active params - lower compute cost than a dense 30B
+  while still targeting a higher quality ceiling, a plausible "quality
+  tier" candidate for extraction stages). Similar tiers exist for Gemma 4
+  and Llama 4.
+- **Caveat**: most "2026 benchmark" search results were SEO-farm content
+  with suspiciously precise, hard-to-verify numbers (e.g. specific BFCL/
+  SWE-bench percentages) - treated as landscape orientation only, not as a
+  substitute for this directory's own real, checked-in benchmark runs. Per
+  this repo's own standing guidance to ground external claims rather than
+  cite benchmark-leaderboard position uncritically.
+
+This is orientation for choosing which candidates to add next, not a
+substitute for actually running `benchmark.py` against a real local model -
+that step (installing Ollama, pulling model weights) is a deliberate,
+explicit action taken separately, per each candidate's own README.
