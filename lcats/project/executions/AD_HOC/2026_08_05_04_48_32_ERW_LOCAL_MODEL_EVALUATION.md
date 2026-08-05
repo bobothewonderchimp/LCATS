@@ -9,7 +9,7 @@ commit: 770f5068
 created_at: 2026-08-05T04:48:32+00:00
 agent: claude_app
 instruction_source: project/design/proposals/proposed/erw-local-model-evaluation/00_proposal.md
-session_transcript: pending
+session_transcript: claude-app:6d988910-ee4a-4ccc-af0b-2fb13d91ddc5
 ---
 
 # Summary
