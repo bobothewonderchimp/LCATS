@@ -12,19 +12,24 @@ from lcats.llm import backend
 class OpenAIBackend:
     """LLMBackend implementation backed by the OpenAI chat completions API."""
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None):
         """Construct an OpenAI-backed LLMBackend.
 
         Args:
             api_key: Optional API key. When omitted, the OpenAI SDK reads
                 the OPENAI_API_KEY environment variable.
+            base_url: Optional API base URL override. Local runtimes that
+                expose an OpenAI-compatible chat completions endpoint
+                (Ollama's `http://localhost:11434/v1`, vLLM, LM Studio, ...)
+                can be driven through this same backend by pointing it here
+                instead of api.openai.com - no separate backend class needed.
 
         Raises:
             ImportError: If the `openai` package is not installed.
         """
         import openai
 
-        self._client = openai.OpenAI(api_key=api_key)
+        self._client = openai.OpenAI(api_key=api_key, base_url=base_url)
 
     def complete(
         self,

@@ -57,6 +57,19 @@ class TestOpenAIBackend(unittest.TestCase):
             mock_ctor.return_value = _StubOpenAIClient(_make_response(content="{}"))
             self.assertIsInstance(openai_backend.OpenAIBackend(), backend.LLMBackend)
 
+    def test_constructor_forwards_base_url(self):
+        """base_url is forwarded to the OpenAI SDK client, so OpenAIBackend
+        can point at an OpenAI-compatible local runtime (Ollama, vLLM, LM
+        Studio, ...) instead of api.openai.com."""
+        with patch("openai.OpenAI") as mock_ctor:
+            mock_ctor.return_value = _StubOpenAIClient(_make_response(content="{}"))
+            openai_backend.OpenAIBackend(
+                api_key="ollama", base_url="http://localhost:11434/v1"
+            )
+        mock_ctor.assert_called_once_with(
+            api_key="ollama", base_url="http://localhost:11434/v1"
+        )
+
     def test_complete_without_tool_uses_json_object_mode(self):
         """complete(tool=None) requests response_format=json_object."""
         stub_client = _StubOpenAIClient(_make_response(content='{"a": 1}'))
