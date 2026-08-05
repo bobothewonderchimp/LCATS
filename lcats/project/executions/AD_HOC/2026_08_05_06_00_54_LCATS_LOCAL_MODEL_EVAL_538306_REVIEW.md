@@ -2,10 +2,10 @@
 execution_id: 2026_08_05_06_00_54_LCATS_LOCAL_MODEL_EVAL_538306_REVIEW
 prompt_id: PROMPT(AD_HOC:LCATS_LOCAL_MODEL_EVAL_538306_REVIEW)[2026-08-05T05:22:32+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_05_04_48_32_ERW_LOCAL_MODEL_EVALUATION
 pr: https://github.com/xenotaur/LCATS/pull/219
-commit: 26ee0662
+commit: 98ae706b09ee1d9d406e92ec8ba3c6beed2ba18a
 created_at: 2026-08-05T06:00:54+00:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/219
