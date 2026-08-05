@@ -127,19 +127,37 @@ def run_entity_extraction(
     entities = parsed.get("entities") if isinstance(parsed, dict) else None
     usage = result.get("usage") or {}
 
+    # A tool call can come back schema-conformant enough to avoid api_error
+    # (parses as JSON, no truncation) while still not matching
+    # ENTITY_TOOL_SCHEMA - e.g. "entities" missing or not a list. That is
+    # exactly the local-runtime tool-schema unreliability this harness
+    # exists to catch, so it must not read as success.
+    schema_error = None
+    if api_error is None and not isinstance(entities, list):
+        schema_error = "malformed_tool_result"
+
     return BenchmarkResult(
         candidate=candidate,
         backend_kind=backend_kind,
         model=model,
         story_name=story_name,
         stage="entity_extraction",
-        success=api_error is None,
+        success=api_error is None and schema_error is None,
         latency_seconds=latency,
         input_tokens=usage.get("input_tokens", 0) or 0,
         output_tokens=usage.get("output_tokens", 0) or 0,
         entity_count=len(entities) if isinstance(entities, list) else None,
-        error_type=(api_error or {}).get("code") if api_error else None,
-        error_message=(api_error or {}).get("message") if api_error else None,
+        error_type=(api_error or {}).get("code") if api_error else schema_error,
+        error_message=(
+            (api_error or {}).get("message")
+            if api_error
+            else (
+                "Tool result parsed but 'entities' was missing or not a "
+                f"list (got {type(entities).__name__ if entities is not None else 'None'})."
+                if schema_error
+                else None
+            )
+        ),
     )
 
 

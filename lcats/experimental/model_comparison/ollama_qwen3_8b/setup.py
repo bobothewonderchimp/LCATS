@@ -29,11 +29,10 @@ def main() -> int:
         )
         return 1
 
-    installed = {m.get("name") for m in payload.get("models", [])}
-    if not any(
-        name == MODEL or name.startswith(f"{MODEL.split(':')[0]}:")
-        for name in installed
-    ):
+    # Filter out entries with no "name" (unexpected /api/tags payload shape)
+    # rather than let a None into the set and crash the exact-match check.
+    installed = {m.get("name") for m in payload.get("models", []) if m.get("name")}
+    if MODEL not in installed:
         print(
             f"FAIL: {MODEL} not found among installed models: {sorted(installed) or '(none)'}\n"
             f"  Pull it with: ollama pull {MODEL}"

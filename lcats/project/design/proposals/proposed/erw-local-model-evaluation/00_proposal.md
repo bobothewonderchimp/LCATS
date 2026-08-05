@@ -26,11 +26,13 @@ rather than a new backend class - as how any OpenAI-compatible local
 runtime (Ollama, vLLM, LM Studio) plugs into the pipeline, and (b) a
 checked-in benchmarking harness (`lcats/experimental/model_comparison/`)
 as the durable, reusable way to evaluate model/runtime candidates against
-the pipeline's real tool-schema calls going forward. Based on one real
-spike run against that harness, it explicitly recommends **against**
-changing `run_pilot.py`'s default model yet - the sole local candidate
-tested so far failed outright - and defines the narrow next evaluation
-steps required before a hybrid (local-for-cheap-stages,
+the pipeline's real tool-schema calls going forward. Based on two real
+spike runs against that harness (same model, same story, same schema), it
+explicitly recommends **against** changing `run_pilot.py`'s default model
+yet - the sole local candidate tested so far is unreliable (one run
+failed outright, a rerun succeeded but took ~8.5x longer than the
+frontier baseline) - and defines the narrow next evaluation steps
+required before a hybrid (local-for-cheap-stages,
 frontier-for-extraction) pipeline can be seriously considered.
 
 ## Background / Motivation
@@ -158,33 +160,48 @@ Options considered:
 - Hold the current default (`claude-opus-4-8`) and treat this proposal as
   infrastructure-only, pending more evaluation.
 
-**Chosen: hold the current default.** The real spike run in this session
+**Chosen: hold the current default.** Two real spike runs in this session
 (candidate `ollama_qwen3_8b`, model `qwen3:8b` served by Ollama 0.32.5 on
-an Apple M1 Max/32GB Mac, via `OpenAIBackend(base_url="http://localhost:11434/v1")`)
-**failed**: despite `tool_choice` forcing the `extract_entities` function,
-the response came back with `finish_reason='stop'` and no tool call at
-all. Ollama's server logs show it generated 3699 output tokens (most
-likely Qwen3's default chain-of-thought "thinking" content) over ~252
-seconds before stopping without ever invoking the tool. The
-`claude_opus` baseline candidate, run against the identical call in the
-same session, succeeded (202s latency, 14385 input / 7941 output tokens,
-28 entities extracted).
+an Apple M1 Max/32GB Mac, via `OpenAIBackend(base_url="http://localhost:11434/v1")`,
+identical schema/story/`max_tokens` each time) produced two different
+outcomes:
 
-This is one data point on the hardest stage (entity extraction, not the
+- **Run 1: failed.** Despite `tool_choice` forcing the `extract_entities`
+  function, the response came back with `finish_reason='stop'` and no
+  tool call at all. Ollama's server logs show it generated 3699 output
+  tokens (most likely Qwen3's default chain-of-thought "thinking"
+  content) over ~259 seconds before stopping without ever invoking the
+  tool.
+- **Run 2 (rerun, after the review-response fixes below): succeeded,**
+  but generated 7996 output tokens over **1727 seconds (~29 minutes)**
+  before finally producing a valid `extract_entities` call (20 entities).
+
+The `anthropic_opus` baseline candidate, run once against the identical
+call in the same session, succeeded in 202 seconds (14385 input / 7941
+output tokens, 28 entities extracted) - so even `qwen3:8b`'s successful
+run took ~8.5x longer than the frontier baseline, and its failure mode
+(when it fails) is a silent non-call, not an error the caller can retry
+against.
+
+This is two data points on the hardest stage (entity extraction, not the
 "comparatively simple" genre-detection/segmentation stages flagged as
 better hybrid candidates) for one model at one size, with one untested
 and likely-relevant confound (Qwen3's "thinking" mode was not disabled -
 Ollama's `think` API parameter is a plausible one-line fix not yet
-tried). It is real evidence that the audit's flagged concern is not
-hypothetical on this pipeline's actual call shape, but it is not enough
-evidence to justify a pipeline-wide or even single-stage default change.
-The hybrid-pipeline hypothesis (cheap local model for genre
-detection/segmentation, frontier model retained for
-entity/event/relation/discourse extraction and the cross-segment pass) is
-still plausible and consistent with this result, but unproven - it needs
-its own spike (a local model tested against the genre-detection or
-segmentation stage specifically) before being adopted, not inferred from
-a failure on a different, harder stage.
+tried, and is the most likely explanation for both the failure and the
+~29-minute latency in the successful run: the model appears to spend
+most of its budget on chain-of-thought content before ever reaching the
+tool call). It is real evidence that the audit's flagged concern is not
+hypothetical on this pipeline's actual call shape - the local candidate
+is not just slower, it is *unreliable*, succeeding and failing on
+identical input - and this is not enough evidence to justify a
+pipeline-wide or even single-stage default change. The hybrid-pipeline
+hypothesis (cheap local model for genre detection/segmentation, frontier
+model retained for entity/event/relation/discourse extraction and the
+cross-segment pass) is still plausible and consistent with this result,
+but unproven - it needs its own spike (a local model tested against the
+genre-detection or segmentation stage specifically) before being
+adopted, not inferred from mixed results on a different, harder stage.
 
 ### Landscape context (not itself decision-grade evidence)
 
@@ -214,8 +231,9 @@ only, not cited as justification for any decision above:
 
 - Does not change `run_pilot.py`'s default model or add a `--backend
   local`/similar flag - see Decision 3.
-- Does not implement a fix for the observed `qwen3:8b` failure (e.g.
-  disabling Ollama's `think` parameter) - flagged as the immediate next
+- Does not implement a fix for the observed `qwen3:8b` unreliability
+  (intermittent failure, ~29-minute latency when it does succeed) - e.g.
+  disabling Ollama's `think` parameter - flagged as the immediate next
   step, not done here.
 - Does not evaluate the Kubuntu Focus/NVIDIA hardware profile - not
   available in this session.
@@ -265,9 +283,10 @@ adopted - offered at the end of this skill run):
 ## Open Questions
 
 - Does Ollama's `think: false` API parameter actually resolve the
-  observed `qwen3:8b` failure, or is there a deeper tool-choice-forcing
-  gap in Ollama's OpenAI-compatibility layer? (Next spike, see
-  Implementation Plan #1.)
+  observed `qwen3:8b` unreliability (intermittent failure, ~29-minute
+  latency when it succeeds), or is there a deeper tool-choice-forcing gap
+  in Ollama's OpenAI-compatibility layer? (Next spike, see Implementation
+  Plan #1.)
 - Is MLX (native Apple Silicon) meaningfully more reliable than
   Ollama/llama.cpp for this pipeline's tool-schema calls? Not yet tested.
 - What is the actual VRAM-bound model-size sweet spot on the Kubuntu Focus
