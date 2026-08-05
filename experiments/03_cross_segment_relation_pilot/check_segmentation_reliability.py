@@ -113,6 +113,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "lcats" / "
 
 from lcats.analysis import scene_analysis
 from lcats.analysis import story_analysis
+from lcats.analysis.corpus import discovery
 from lcats.utils.secrets import load_secrets
 
 
@@ -141,12 +142,17 @@ def select_files(args) -> list[pathlib.Path]:
     """Return the story files to run, per --story-list or the shuffle sample."""
     if args.story_list:
         lines = pathlib.Path(args.story_list).read_text("utf-8").splitlines()
-        return [
-            pathlib.Path(line.strip())
+        listed = [
+            line.strip()
             for line in lines
             if line.strip() and not line.strip().startswith("#")
         ]
-    files = sorted(pathlib.Path(args.data_dir).rglob("*.json"))
+        # Route through find_json_files() too, not just the sampled path:
+        # a --story-list entry could name a non-canonical sidecar (or a
+        # directory), and story_id/result_path derivation below assumes
+        # every selected path is a canonical <collection>/<story>/story.json.
+        return sorted(discovery.find_json_files(listed))
+    files = sorted(discovery.find_json_files([args.data_dir]))
     random.Random(args.seed).shuffle(files)
     return files[: args.sample_size]
 
@@ -190,7 +196,18 @@ def main() -> int:
     word_counts: list[int] = []
 
     for i, path in enumerate(files, 1):
-        result_path = output_dir / f"{path.stem}.json"
+        # story_id is collection-qualified (<collection>/<story-slug>), not
+        # path.stem: under the bucket layout every canonical leaf filename
+        # is literally "story.json", so path.stem is "story" for every
+        # story - not a usable identifier. path.parent.name is the story's
+        # own bucket directory slug; path.parent.parent.name is its
+        # collection. A directory slug is only guaranteed unique per
+        # collection (PROP-LCATS-STORY-BUCKET-LAYOUT Decision 2), and this
+        # script's --data-dir scans multiple collections at once, so the
+        # collection must be included too, or two different collections
+        # sharing a story slug would still collide.
+        story_id = f"{path.parent.parent.name}/{path.parent.name}"
+        result_path = output_dir / path.parent.parent.name / f"{path.parent.name}.json"
         if result_path.exists():
             cached = json.loads(result_path.read_text("utf-8"))
             counts[cached["outcome"]] += 1
@@ -198,15 +215,17 @@ def main() -> int:
                 llm_calls_made += 1
             if cached.get("word_count") is not None:
                 word_counts.append(cached["word_count"])
-            print(f"[{i}/{len(files)}] {path.stem}: {cached['outcome']} (cached)")
+            print(f"[{i}/{len(files)}] {story_id}: {cached['outcome']} (cached)")
             continue
+
+        result_path.parent.mkdir(parents=True, exist_ok=True)
 
         try:
             data = json.loads(path.read_text("utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
             outcome = "story_json_error"
             record = {
-                "story_id": path.stem,
+                "story_id": story_id,
                 "outcome": outcome,
                 "llm_call_made": False,
                 "word_count": None,
@@ -214,7 +233,7 @@ def main() -> int:
             }
             counts[outcome] += 1
             result_path.write_text(json.dumps(record, indent=2), encoding="utf-8")
-            print(f"[{i}/{len(files)}] {path.stem}: {outcome}")
+            print(f"[{i}/{len(files)}] {story_id}: {outcome}")
             continue
 
         body = story_analysis.coerce_text(data.get("body", ""))
@@ -222,14 +241,14 @@ def main() -> int:
         if not body.strip():
             outcome = "empty_story_body"
             record = {
-                "story_id": path.stem,
+                "story_id": story_id,
                 "outcome": outcome,
                 "llm_call_made": False,
                 "word_count": word_count,
             }
             counts[outcome] += 1
             result_path.write_text(json.dumps(record, indent=2), encoding="utf-8")
-            print(f"[{i}/{len(files)}] {path.stem}: {outcome}")
+            print(f"[{i}/{len(files)}] {story_id}: {outcome}")
             continue
 
         result = extractor.extract(body, model_name=args.model)
@@ -247,7 +266,7 @@ def main() -> int:
         # debugging a non-"included" outcome) - so an interrupted run keeps
         # every already-paid-for result.
         record = {
-            "story_id": path.stem,
+            "story_id": story_id,
             "outcome": outcome,
             "llm_call_made": True,
             "word_count": word_count,
@@ -261,11 +280,11 @@ def main() -> int:
         result_path.write_text(
             json.dumps(record, indent=2, default=str), encoding="utf-8"
         )
-        print(f"[{i}/{len(files)}] {path.stem}: {outcome} ({len(segments)} segments)")
+        print(f"[{i}/{len(files)}] {story_id}: {outcome} ({len(segments)} segments)")
 
         if api_error and api_error.get("should_abort_batch"):
             print(
-                f"\nfatal: {path.name}: {api_error.get('message', api_error)}",
+                f"\nfatal: {story_id}: {api_error.get('message', api_error)}",
                 file=sys.stderr,
             )
             print(
