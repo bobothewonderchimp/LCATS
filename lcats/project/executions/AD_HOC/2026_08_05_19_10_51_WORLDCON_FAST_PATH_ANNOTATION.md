@@ -5,7 +5,7 @@ work_item: AD_HOC
 status: in_progress
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/226
-commit: edb8ace9
+commit: edb8ace959e11af108696d4380d31f2014de3cf5
 created_at: 2026-08-05T19:10:51+00:00
 agent: claude_app
 instruction_source: lcats/project/design/proposals/proposed/worldcon-fast-path-annotation/00_proposal.md
