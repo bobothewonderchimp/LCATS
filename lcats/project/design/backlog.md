@@ -70,9 +70,17 @@ note the stale `massQuantities` casing too, a separate naming-drift signal).
 `ext: str = ".json"` and literal flat example paths
 (`CORPORA_ROOT / 'mass_quantities/george_walker_at_suez.json'`). Per
 `AGENTS.md`, notebooks aren't edited as a matter of course, so this was
-deliberately left for a dedicated follow-up. **Next step:** scope a small WI
-to update both notebooks' path construction to the bucket layout
-(`<collection>/<story>/story.json`).
+deliberately left for a dedicated follow-up. **Resolved 2026-08-05:**
+implemented and merged via
+[WI-EXPERIMENTS-0048](https://github.com/xenotaur/LCATS/pull/225).
+`12_extract_scenes.ipynb`'s `SAMPLE_OF_10`/`SAMPLE_OF_100` now draw a
+seeded `random.sample()` from a new `canonical_story_files` variable
+(`discovery.find_json_files`), not hardcoded literals.
+`13_clean_corpus.ipynb`'s `missing_stories` now points at the real
+current bucket directories. `rename_and_fix_json_files`'s `ext` default
+was left untouched as a deliberate Non-Goal (moot but not broken).
+This was the last item from the `WS-STORY-BUCKET-LAYOUT` follow-up
+resolution plan; all four scoped batches are now merged.
 
 ### `check_segmentation_reliability.py`'s stem-collision bug — P0, silent data corruption
 

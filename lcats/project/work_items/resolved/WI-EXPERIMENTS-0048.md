@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via https://github.com/xenotaur/LCATS/pull/225 (squash commit 37c277c3d0057e6237da45112a1481ce0ab37926)."
 blocked_reason: null
 blocked: false
 id: WI-EXPERIMENTS-0048
 title: Fix hardcoded flat-layout paths in the two extract-scenes/clean-corpus notebooks
 type: deliverable
-status: proposed
+status: resolved
 priority: low
 owner: unassigned
 contributors: []
