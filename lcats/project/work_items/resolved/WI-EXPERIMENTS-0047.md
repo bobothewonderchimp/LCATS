@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via https://github.com/xenotaur/LCATS/pull/222 (squash commit 262cbed5d0f6e262f0a33e1a8355c0c36decfd78)."
 blocked_reason: null
 blocked: false
 id: WI-EXPERIMENTS-0047
 title: Fix non-recursive file discovery in run_comparison.py and smoke_test.py
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []

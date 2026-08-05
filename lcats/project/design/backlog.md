@@ -142,10 +142,13 @@ silently, contrary to how this entry originally read):
   correctly reports the leg as `FAILED` and the overall run as
   `Smoke test INCOMPLETE`. Loud, same as above.
 
-**Next step:** one small WI covering both (same root-cause bug shape,
-`smoke_test.py` exists specifically to exercise `run_comparison.py`, so
-they're naturally coupled) — switch both to a recursive selector, ideally
-reusing `discovery.find_json_files` rather than re-implementing traversal.
+**Resolved 2026-08-05:** implemented and merged via
+[WI-EXPERIMENTS-0047](https://github.com/xenotaur/LCATS/pull/222). Both
+scripts switched to `discovery.iter_collection_story_files`; also fixed
+`run_comparison.py`'s per-story progress print and repointed
+`smoke_test.py`'s `_RUNS` at the tracked `corpora/` snapshot instead of
+the gitignored `lcats/data/`. A Copilot review round further clarified
+the error message and made `smoke_test.py`'s sample-count check lazy.
 
 ### Whether notebooks/ and experiments/ should be librarized — P3, decision not a fix
 
