@@ -2,10 +2,10 @@
 execution_id: 2026_08_06_05_10_03_WS_WORLDCON_FAST_PATH_ANNOTATION_REVIEW
 prompt_id: PROMPT(AD_HOC:WS_WORLDCON_FAST_PATH_ANNOTATION_REVIEW)[2026-08-06T05:09:55+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_06_04_46_51_WS_WORLDCON_FAST_PATH_ANNOTATION
 pr: https://github.com/xenotaur/LCATS/pull/230
-commit: 88d0d867b345207f5f63f5bf3ff0870c5bcbed48
+commit: 3d6b4721d1c185c3e89b46e3e1ae4e0b24d17602
 created_at: 2026-08-06T05:10:03+00:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/230
