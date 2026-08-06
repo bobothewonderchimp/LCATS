@@ -2,9 +2,9 @@
 id: PROP-LCATS-PILOT-COST-SUSTAINABILITY
 type: design_proposal
 title: Making the Event-Role-World Pilot Sustainable to Run — Test Harness, Caching, Batching, and Model Tiering
-status: proposed
+status: adopted
 created_on: 2026-08-05
-updated_on: 2026-08-05
+updated_on: 2026-08-06
 implementation_status: not_started
 implemented_by: []
 supersedes: []
@@ -334,7 +334,8 @@ harness and on each other's findings) — large enough for a governing
 workstream, not a single work item. Proposed shape:
 
 1. **Governing workstream** (`WS-*`, to be created via `/lrh-workstream`
-   after this proposal is adopted) coordinating the work items below.
+   — the next pending action now that this proposal is adopted)
+   coordinating the work items below.
 2. **WI 1 — targeted test harness** (Decision 2): `--story`/`--story-list`
    flag on `run_pilot.py`, fixture set, per-stage cost reporting.
 3. **WI 2 — prompt caching evaluation** (Decision 3): measure the real,
