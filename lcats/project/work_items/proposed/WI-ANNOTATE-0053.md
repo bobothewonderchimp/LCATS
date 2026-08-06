@@ -36,7 +36,7 @@ required_evidence:
   - lrh_validate
   - test_output
 artifacts_expected:
-  - src/lcats/analysis/corpus/cli.py
+  - lcats/src/lcats/analysis/corpus/cli.py
 ---
 
 ## Summary
@@ -49,7 +49,7 @@ sidecars would silently trigger for the first time.
 
 ## Problem / Context
 
-`src/lcats/analysis/corpus/cli.py:376-402`'s `run_stats` calls
+`lcats/src/lcats/analysis/corpus/cli.py:376-402`'s `run_stats` calls
 `discovery.find_corpus_stories(directory, ignore_dir_names=("cache",),
 sort=True)` (line 387) — the broad recursive JSON finder — rather than
 the canonical-only selector (`discovery.find_json_files`) that `lcats
@@ -96,14 +96,20 @@ workstream's own output.
 
 ## Required Changes
 
-1. `src/lcats/analysis/corpus/cli.py:387`: replace
+1. `lcats/src/lcats/analysis/corpus/cli.py:387`: replace
    `discovery.find_corpus_stories(directory, ignore_dir_names=("cache",),
    sort=True)` with `discovery.find_json_files([directory])` (or the
    equivalent call signature `find_json_files` actually exposes — verify
    against its current definition before wiring the call).
 2. Add a test fixture with a collection containing both `story.json`
-   files and at least one sidecar (`genre.json`/`scenes.json`), asserting
-   `compute_corpus_stats` only counts the `story.json` files.
+   files and at least one sidecar (`genre.json`/`scenes.json`), and
+   assert against `run_stats`'s own output (or `run_stats`'s selected
+   file list before it's passed to `compute_corpus_stats`) — not against
+   `compute_corpus_stats` alone. `compute_corpus_stats` performs no file
+   discovery of its own; a test that pre-filters with
+   `find_json_files` and only asserts on `compute_corpus_stats` can pass
+   without the `cli.py:387` fix actually being applied (review finding,
+   PR #233), since it would never exercise the buggy call site.
 3. Mark the matching `project/design/backlog.md` entry resolved, per this
    project's convention for closing out backlog items.
 

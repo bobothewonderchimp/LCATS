@@ -37,7 +37,7 @@ required_evidence:
   - lrh_validate
   - test_output
 artifacts_expected:
-  - src/lcats/analysis/corpus/promote.py
+  - lcats/src/lcats/analysis/corpus/promote.py
 ---
 
 ## Summary
@@ -49,7 +49,7 @@ silently copied to `corpora/`.
 
 ## Problem / Context
 
-`survey_collection` (`src/lcats/analysis/corpus/promote.py:70-125`)
+`survey_collection` (`lcats/src/lcats/analysis/corpus/promote.py:70-125`)
 today only reads each story's `body` field for mojibake scanning — it
 has no concept of validating a sidecar's own content before promotion.
 Once WI-ANNOTATE-0051 lands, story buckets will contain
@@ -91,7 +91,7 @@ than trust `lcats annotate` alone to have validated its own output —
 
 ## Required Changes
 
-1. In `src/lcats/analysis/corpus/promote.py`, add sidecar-content
+1. In `lcats/src/lcats/analysis/corpus/promote.py`, add sidecar-content
    validation to `survey_collection`'s per-story loop (or a helper it
    calls), checking `genre.json`/`scenes.json` when present in a story's
    bucket directory.

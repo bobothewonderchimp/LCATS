@@ -17,6 +17,7 @@ related_workstreams:
   - WS-WORLDCON-FAST-PATH-ANNOTATION
 related_design:
   - project/design/proposals/adopted/worldcon-fast-path-annotation/00_proposal.md
+  - project/work_items/resolved/WI-ASSESS-0031.md
 depends_on:
   - WI-ANNOTATE-0051
   - WI-ANNOTATE-0052
@@ -31,7 +32,7 @@ forbidden_actions:
   - delete_branch
   - implement_erw_extraction
 acceptance:
-  - lcats annotate has been run against a small subset of stories across all 4 current VALID_GENRES
+  - lcats annotate has been run against a small subset of stories across all 8 current VALID_GENRES
   - Output sidecars (genre.json, scenes.json, README.md) validated by hand against a sample
   - Per-genre statistics collected and reported
   - lrh validate reports 0 errors
@@ -46,10 +47,10 @@ artifacts_expected:
 ## Summary
 
 Run `lcats annotate` over a small per-genre subset of stories across
-the current 4 `VALID_GENRES` (science fiction, horror, western,
-romance), validate the output, and collect per-genre statistics —
-delivering the first real dataset slice for the Worldcon 2026 paper via
-the fast-path annotation pipeline.
+all 8 current `VALID_GENRES` (science fiction, horror, humor, western,
+romance, mystery, fantasy, adventure), validate the output, and collect
+per-genre statistics — delivering the first real dataset slice for the
+Worldcon 2026 paper via the fast-path annotation pipeline.
 
 ## Problem / Context
 
@@ -64,10 +65,17 @@ and the stats-selector fix — since a real, paid run should not proceed
 against code with known truncation, corpus-root, or stats-corruption
 bugs still open.
 
-Expansion to the full 8-genre Worldcon target is explicitly out of
-scope here — `WI-ASSESS-0031` (4→8 genre extension) is being worked in
-a separate, parallel session, and this item works with today's 4
-genres, per the proposal's own Step 7 gating.
+`WI-ASSESS-0031` (4→8 genre extension) — originally a parallel,
+in-progress effort this workstream's Step 7 was gated on — landed via
+PR #224 and closed out before this work item was drafted (confirmed via
+`assess.VALID_GENRES` on `main`, which now lists all 8 target genres:
+science fiction, horror, humor, western, romance, mystery, fantasy,
+adventure). That gate is therefore already satisfied: this item covers
+all 8 genres directly rather than deferring 4 of them to a later
+expansion (review finding, PR #233 — an earlier draft of this item
+scoped only the original 4 genres, based on the state of `main` at the
+time the proposal/workstream were drafted, which had since gone stale
+by the time this item was written).
 
 ### Duplication search
 - In-repo: No existing per-genre annotation run or stats report for
@@ -77,8 +85,8 @@ genres, per the proposal's own Step 7 gating.
 - Recommendation: Proceed.
 
 ### Demand search
-- Work items: `WI-ASSESS-0031` is related (future 8-genre expansion) but
-  explicitly not a prerequisite for this item's current-4-genre scope.
+- Work items: `WI-ASSESS-0031` (resolved) is the reason this item's
+  scope covers 8 genres rather than 4 — no further action needed there.
 - Proposals: `PROP-WORLDCON-FAST-PATH-ANNOTATION`'s plan Steps 6 and 8
   request exactly this run and stats collection.
 - Backlog: No matching entry.
@@ -103,22 +111,22 @@ genres, per the proposal's own Step 7 gating.
    `README.md` output for correctness.
 4. Produce a stats report (format left to implementation — could reuse
    `lcats stats` output plus custom per-genre aggregation, or a small
-   script/notebook) summarizing results across the 4 genres.
+   script/notebook) summarizing results across all 8 genres.
 5. Record real run cost/timing, following this project's convention of
    surfacing cost data (see `PROP-LCATS-PIPELINE-CHECKPOINTING`'s
    motivation around `run_pilot.py`'s prior cost-visibility gaps).
 
 ## Non-Goals
 
-- Does not implement the 8-genre expansion — gated on `WI-ASSESS-0031`
-  landing in its own parallel session.
 - Does not touch ERW event/relation extraction.
 - Does not implement the specials/mojibake audit sidecar.
+- Does not attempt full-corpus-scale annotation — this item is a small,
+  bounded first run across all 8 genres, not the eventual full dataset.
 
 ## Acceptance Criteria
 
 - `lcats annotate` has been run successfully against a subset spanning
-  all 4 current `VALID_GENRES`.
+  all 8 current `VALID_GENRES`.
 - Sample output validated by hand, not just assumed correct from a
   clean exit code.
 - A per-genre statistics report/artifact exists and is committed
@@ -152,6 +160,8 @@ must all land first. This is the last item in
 - Workstream: `project/workstreams/proposed/WS-WORLDCON-FAST-PATH-ANNOTATION.md`
 - Design: `project/design/proposals/adopted/worldcon-fast-path-annotation/00_proposal.md`
   (Implementation Plan, Step 5; original plan Steps 6 and 8)
+- Resolved: `project/work_items/resolved/WI-ASSESS-0031.md` (4→8 genre
+  extension; the reason this item's scope is 8 genres, not 4)
 
 ## Open Questions
 

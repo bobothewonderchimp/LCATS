@@ -37,8 +37,8 @@ required_evidence:
   - lrh_validate
   - test_output
 artifacts_expected:
-  - src/lcats/analysis/corpus/assess.py
-  - src/lcats/analysis/scene_analysis.py
+  - lcats/src/lcats/analysis/corpus/assess.py
+  - lcats/src/lcats/analysis/scene_analysis.py
 ---
 
 ## Summary
@@ -50,16 +50,16 @@ hardcoded `max_tokens=2048`, and `make_segment_extractor`'s missing
 
 ## Problem / Context
 
-`src/lcats/analysis/corpus/assess.py:328` calls `backend.complete(...,
+`lcats/src/lcats/analysis/corpus/assess.py:328` calls `backend.complete(...,
 max_tokens=2048, ...)` inside `assess_story()` with no way to override
 it — confirmed to truncate on longer/messier real candidate stories
 during this session's design work.
 
-`src/lcats/analysis/scene_analysis.py`'s `make_segment_extractor()`
+`lcats/src/lcats/analysis/scene_analysis.py`'s `make_segment_extractor()`
 (around line 326) constructs `llm_extractor.JSONPromptExtractor(backend,
 ...)` without passing `max_tokens`, so it silently inherits
 `JSONPromptExtractor.__init__`'s bare `max_tokens: int = 4096` default
-(`src/lcats/analysis/llm_extractor.py:69`) — also confirmed to truncate
+(`lcats/src/lcats/analysis/llm_extractor.py:69`) — also confirmed to truncate
 on real corpus stories. An earlier draft of
 `PROP-WORLDCON-FAST-PATH-ANNOTATION` mistakenly claimed a working
 override already existed, stranded inside
@@ -103,12 +103,12 @@ failures immediately.
 
 ## Required Changes
 
-1. `src/lcats/analysis/corpus/assess.py`: change `assess_story`'s
+1. `lcats/src/lcats/analysis/corpus/assess.py`: change `assess_story`'s
    `backend.complete(..., max_tokens=2048, ...)` (line 328) to accept an
    overridable value — either a new `max_tokens` parameter on
    `assess_story`/`assess_collection` threaded through to this call, or
    a raised module-level default if no caller-level override is needed.
-2. `src/lcats/analysis/scene_analysis.py`: change `make_segment_extractor`
+2. `lcats/src/lcats/analysis/scene_analysis.py`: change `make_segment_extractor`
    to accept a `max_tokens` parameter (default higher than the library's
    bare 4096) and pass it to `llm_extractor.JSONPromptExtractor(backend,
    ..., max_tokens=max_tokens)`.

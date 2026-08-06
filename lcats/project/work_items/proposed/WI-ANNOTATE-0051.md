@@ -32,7 +32,7 @@ forbidden_actions:
   - delete_branch
   - implement_specials_audit_sidecar
 acceptance:
-  - lcats annotate exists as a registered subcommand in src/lcats/cli.py, following the assess/promote parent-parser + _handle_<name> pattern
+  - lcats annotate exists as a registered subcommand in lcats/src/lcats/cli.py, following the assess/promote parent-parser + _handle_<name> pattern
   - It iterates collection directories, then calls discovery.iter_collection_story_files once per collection - never directly against a multi-collection root
   - It writes genre.json and scenes.json sidecars plus a per-bucket README.md summarizing them
   - Each sidecar write goes through lcats.utils.checkpoint's read_checkpoint/write_checkpoint, keyed per story-bucket and per stage, with the model/prompt configuration in the fingerprint
@@ -42,9 +42,9 @@ required_evidence:
   - lrh_validate
   - test_output
 artifacts_expected:
-  - src/lcats/analysis/corpus/annotate.py
-  - src/lcats/analysis/corpus/annotate_cli.py
-  - src/lcats/cli.py
+  - lcats/src/lcats/analysis/corpus/annotate.py
+  - lcats/src/lcats/analysis/corpus/annotate_cli.py
+  - lcats/src/lcats/cli.py
 ---
 
 ## Summary
@@ -70,16 +70,16 @@ Two design constraints from PR review rounds on the proposal/workstream
 apply directly to this item's implementation, not just its design:
 
 1. **Per-collection iteration only.** `discovery.iter_collection_story_files`
-   (`src/lcats/analysis/corpus/discovery.py:54`) only checks the
+   (`lcats/src/lcats/analysis/corpus/discovery.py:54`) only checks the
    immediate children of the path it's given for a `story.json` — called
    directly against a multi-collection root (`data/`/`corpora/`), it
    silently yields nothing, since a root's immediate children are
    collections, not story buckets (PR #226 review finding). `lcats
    annotate` must enumerate collection directories first (mirroring
-   `promote.py`'s `promote_collections`, `src/lcats/analysis/corpus/promote.py`)
+   `promote.py`'s `promote_collections`, `lcats/src/lcats/analysis/corpus/promote.py`)
    and call the selector once per collection.
 2. **Checkpoint-safe writes.** `lcats.utils.checkpoint`
-   (`src/lcats/utils/checkpoint.py`) — from the already-adopted,
+   (`lcats/src/lcats/utils/checkpoint.py`) — from the already-adopted,
    already-implemented `PROP-LCATS-PIPELINE-CHECKPOINTING` — provides
    `read_checkpoint`/`write_checkpoint` with atomic publication and a
    fingerprint-based staleness check. Without it, an interruption
@@ -105,7 +105,7 @@ apply directly to this item's implementation, not just its design:
 ## Scope
 
 - Implement `lcats annotate` as a new subcommand, registered in
-  `src/lcats/cli.py` following the `assess`/`promote` pattern (a
+  `lcats/src/lcats/cli.py` following the `assess`/`promote` pattern (a
   `build_parser()` in a new `annotate_cli.py`, a `_handle_annotate`
   dispatcher, `command_parsers["annotate"]`).
 - Write `genre.json`, `scenes.json`, and a per-bucket `README.md` into
@@ -116,7 +116,7 @@ apply directly to this item's implementation, not just its design:
 
 ## Required Changes
 
-1. Create `src/lcats/analysis/corpus/annotate.py` (or similarly-named
+1. Create `lcats/src/lcats/analysis/corpus/annotate.py` (or similarly-named
    module) implementing the core annotation logic: given a collection
    directory, enumerate story buckets via
    `discovery.iter_collection_story_files`, run `lcats assess`'s
@@ -135,9 +135,9 @@ apply directly to this item's implementation, not just its design:
    directory under a given root (mirroring
    `promote.promote_collections`'s pattern) and calls the per-collection
    annotation logic once per collection.
-5. Create `src/lcats/analysis/corpus/annotate_cli.py` with `build_parser()`
+5. Create `lcats/src/lcats/analysis/corpus/annotate_cli.py` with `build_parser()`
    following `assess_cli.py`/`promote_cli.py`'s shape.
-6. Register the `annotate` subcommand in `src/lcats/cli.py`, following
+6. Register the `annotate` subcommand in `lcats/src/lcats/cli.py`, following
    the exact `assess`/`promote` registration pattern (parent parser +
    `subparsers.add_parser` + `set_defaults(handler=_handle_annotate)` +
    `command_parsers["annotate"] = annotate_parser`).
@@ -153,8 +153,10 @@ apply directly to this item's implementation, not just its design:
 - Does not fix `lcats stats`'s selector — that is WI-ANNOTATE-0053.
 - Does not run the actual per-genre annotation pass — that is
   WI-ANNOTATE-0054.
-- Does not implement the 8-genre expansion — gated on `WI-ASSESS-0031`
-  landing separately.
+- Does not depend on genre count — `WI-ASSESS-0031`'s 4→8 genre
+  extension landed via PR #224 before this item was drafted; `lcats
+  annotate` works against whatever `assess.VALID_GENRES` currently
+  contains, with no genre-count-specific logic of its own.
 
 ## Acceptance Criteria
 
