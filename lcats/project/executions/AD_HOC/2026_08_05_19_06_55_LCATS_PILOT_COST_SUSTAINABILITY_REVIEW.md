@@ -2,10 +2,10 @@
 execution_id: 2026_08_05_19_06_55_LCATS_PILOT_COST_SUSTAINABILITY_REVIEW
 prompt_id: PROMPT(AD_HOC:LCATS_PILOT_COST_SUSTAINABILITY_REVIEW)[2026-08-05T19:06:42+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_05_06_40_38_LCATS_PILOT_COST_SUSTAINABILITY
 pr: https://github.com/xenotaur/LCATS/pull/221
-commit:
+commit: e292acd5700aecb4f65e91fb1d052a73c447810b
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/221
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
