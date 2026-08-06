@@ -15,7 +15,7 @@ related_workstreams: []
 related_design:
   - lcats/project/design/proposals/proposed/erw-local-model-evaluation/00_proposal.md
   - lcats/experimental/model_comparison/README.md
-  - lcats/experiments/03_cross_segment_relation_pilot/run_pilot.py
+  - experiments/03_cross_segment_relation_pilot/run_pilot.py
 depends_on: []
 blocked_by: []
 expected_actions:
@@ -32,7 +32,7 @@ acceptance:
   - "PROP-ERW-LOCAL-MODEL-EVALUATION's hybrid-pipeline hypothesis (Decision 3) is explicitly re-assessed against this new evidence, not left as an open question"
 artifacts_expected:
   - lcats/experimental/model_comparison/common/harness.py (extended)
-  - lcats/experimental/model_comparison/*/results_genre*.json or results_segmentation*.json
+  - lcats/experimental/model_comparison/*/results.json (per-candidate, per this harness's existing convention)
   - lcats/project/design/proposals/proposed/erw-local-model-evaluation/00_proposal.md (updated with new evidence)
 required_evidence:
   - lrh_validate
