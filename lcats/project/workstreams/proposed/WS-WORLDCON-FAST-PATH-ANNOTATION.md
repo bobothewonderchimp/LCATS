@@ -11,11 +11,13 @@ related_focus:
 related_roadmap: []
 related_design:
   - lcats/project/design/proposals/adopted/worldcon-fast-path-annotation/00_proposal.md
+  - lcats/project/design/proposals/adopted/lcats-pipeline-checkpointing/00_proposal.md
   - lcats/project/work_items/proposed/WI-ASSESS-0031.md
 work_items: []
 exit_criteria:
   - assess.py's max_tokens=2048 hardcode and scene_analysis.py's missing max_tokens override are both fixed, with real-story evidence the truncation failures no longer reproduce
   - lcats annotate exists, writes genre.json/scenes.json + per-bucket README.md, and iterates story buckets per-collection (never directly against a multi-collection corpus root)
+  - lcats annotate writes each sidecar (genre.json, scenes.json) through lcats.utils.checkpoint's atomic-publication + fingerprint pattern, so an interrupted run neither repeats a paid call nor combines sidecars produced under mismatched model/prompt configurations
   - lcats promote's survey_collection validates sidecar content as part of the release gate
   - lcats stats's file-discovery selector is fixed to the canonical find_json_files, with a regression test asserting sidecars are excluded from stats
   - lcats annotate has been run over a small per-genre subset across the current 4 VALID_GENRES, output validated, and per-genre statistics collected
@@ -53,7 +55,17 @@ sidecars would otherwise silently corrupt.
   `discovery.iter_collection_story_files` once per collection (mirroring
   `promote.py`'s `promote_collections`, never calling that selector
   directly against a multi-collection corpus root), writing
-  `genre.json`/`scenes.json` + per-bucket `README.md`.
+  `genre.json`/`scenes.json` + per-bucket `README.md`. Each sidecar write
+  goes through `lcats.utils.checkpoint` (`read_checkpoint`/
+  `write_checkpoint`, from the adopted, already-implemented
+  `PROP-LCATS-PIPELINE-CHECKPOINTING`/`WS-PIPELINE-CHECKPOINTING`), keyed
+  per story-bucket and per sidecar stage, with the model/prompt
+  configuration in the fingerprint — an interruption between writing
+  `genre.json` and `scenes.json` for a story must not silently pair a
+  valid `genre.json` with a `scenes.json` from a resumed run under a
+  different configuration, and a resumed run must not re-pay for a stage
+  already completed under the same configuration (review finding, PR
+  #230).
 - Extend `lcats promote`'s `survey_collection` (`promote.py:70-125`)
   with sidecar-content validation as part of the release gate.
 - Fix `lcats stats`'s file-discovery selector (`run_stats` currently
@@ -97,7 +109,8 @@ workstream lands. Planned breakdown and sequencing:
 
 1. **Prerequisite bug fixes** — `assess.py`'s and `scene_analysis.py`'s
    `max_tokens` overrides. No dependencies; blocks everything else.
-2. **`lcats annotate` command** — depends on (1).
+2. **`lcats annotate` command** — depends on (1). Includes wiring
+   per-sidecar writes through `lcats.utils.checkpoint` (see Scope).
 3. **`lcats promote` sidecar validation** — depends on (2) (needs the
    real sidecar shape to validate against).
 4. **`lcats stats` selector fix** — independent of (1)-(3); can run in
