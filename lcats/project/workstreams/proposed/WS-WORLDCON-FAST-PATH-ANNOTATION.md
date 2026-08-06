@@ -12,15 +12,20 @@ related_roadmap: []
 related_design:
   - lcats/project/design/proposals/adopted/worldcon-fast-path-annotation/00_proposal.md
   - lcats/project/design/proposals/adopted/lcats-pipeline-checkpointing/00_proposal.md
-  - lcats/project/work_items/proposed/WI-ASSESS-0031.md
-work_items: []
+  - lcats/project/work_items/resolved/WI-ASSESS-0031.md
+work_items:
+  - WI-ANNOTATE-0050
+  - WI-ANNOTATE-0051
+  - WI-ANNOTATE-0052
+  - WI-ANNOTATE-0053
+  - WI-ANNOTATE-0054
 exit_criteria:
   - assess.py's max_tokens=2048 hardcode and scene_analysis.py's missing max_tokens override are both fixed, with real-story evidence the truncation failures no longer reproduce
   - lcats annotate exists, writes genre.json/scenes.json + per-bucket README.md, and iterates story buckets per-collection (never directly against a multi-collection corpus root)
   - lcats annotate writes each sidecar (genre.json, scenes.json) through lcats.utils.checkpoint's atomic-publication + fingerprint pattern, so an interrupted run neither repeats a paid call nor combines sidecars produced under mismatched model/prompt configurations
   - lcats promote's survey_collection validates sidecar content as part of the release gate
   - lcats stats's file-discovery selector is fixed to the canonical find_json_files, with a regression test asserting sidecars are excluded from stats
-  - lcats annotate has been run over a small per-genre subset across the current 4 VALID_GENRES, output validated, and per-genre statistics collected
+  - lcats annotate has been run over a small per-genre subset across all 8 current VALID_GENRES, output validated, and per-genre statistics collected
   - All work items resolved and lrh validate reports 0 errors
 ---
 
@@ -71,9 +76,11 @@ sidecars would otherwise silently corrupt.
 - Fix `lcats stats`'s file-discovery selector (`run_stats` currently
   calls the broad `find_corpus_stories`; must use the canonical
   `find_json_files`, matching `survey`/`assess`).
-- Run `lcats annotate` over a small per-genre subset (current 4
-  `VALID_GENRES`: science fiction, horror, western, romance), validate
-  output, and collect per-genre statistics.
+- Run `lcats annotate` over a small per-genre subset (all 8 current
+  `VALID_GENRES`: science fiction, horror, humor, western, romance,
+  mystery, fantasy, adventure — `WI-ASSESS-0031`'s 4→8 extension landed
+  via PR #224 before this workstream's own work items were drafted),
+  validate output, and collect per-genre statistics.
 - Land all work items through the standard LRH execution lifecycle
   (`/lrh-implement` → `/lrh-review-response` → `/lrh-confirm-fixes` →
   `/lrh-closeout`).
@@ -92,9 +99,9 @@ sidecars would otherwise silently corrupt.
 
 ### Demand search
 - Work items: None found requesting this workstream directly.
-  `WI-ASSESS-0031` (4→8 genre extension) is related but explicitly out
-  of this workstream's scope — a future dependency of a later expansion,
-  not duplicated here.
+  `WI-ASSESS-0031` (4→8 genre extension) is related and has since
+  resolved (PR #224) — this workstream's per-genre run now covers all 8
+  genres directly rather than deferring to a later expansion.
 - Proposals: `PROP-WORLDCON-FAST-PATH-ANNOTATION` (adopted this session)
   requests this workstream directly in its own Implementation Plan.
 - Backlog (`project/design/backlog.md`): `lcats stats` selector bug
@@ -104,18 +111,21 @@ sidecars would otherwise silently corrupt.
 
 ## Work Items
 
-Not yet created — to be scoped via `/lrh-work-item` after this
-workstream lands. Planned breakdown and sequencing:
-
-1. **Prerequisite bug fixes** — `assess.py`'s and `scene_analysis.py`'s
-   `max_tokens` overrides. No dependencies; blocks everything else.
-2. **`lcats annotate` command** — depends on (1). Includes wiring
-   per-sidecar writes through `lcats.utils.checkpoint` (see Scope).
-3. **`lcats promote` sidecar validation** — depends on (2) (needs the
-   real sidecar shape to validate against).
-4. **`lcats stats` selector fix** — independent of (1)-(3); can run in
-   parallel, but must land before (5).
-5. **Run + stats collection** — depends on (2), (3), (4).
+1. [`WI-ANNOTATE-0050`](../../work_items/proposed/WI-ANNOTATE-0050.md) —
+   Fix max_tokens truncation in `assess_story` and
+   `make_segment_extractor`. No dependencies; blocks everything else.
+2. [`WI-ANNOTATE-0051`](../../work_items/proposed/WI-ANNOTATE-0051.md) —
+   Build `lcats annotate` command with checkpoint-safe sidecar writes.
+   `depends_on: [WI-ANNOTATE-0050]`.
+3. [`WI-ANNOTATE-0052`](../../work_items/proposed/WI-ANNOTATE-0052.md) —
+   Validate sidecar content in `lcats promote`'s release gate.
+   `depends_on: [WI-ANNOTATE-0051]`.
+4. [`WI-ANNOTATE-0053`](../../work_items/proposed/WI-ANNOTATE-0053.md) —
+   Fix `lcats stats` file-discovery selector. No dependencies; can run
+   in parallel with (2)/(3), but must land before (5).
+5. [`WI-ANNOTATE-0054`](../../work_items/proposed/WI-ANNOTATE-0054.md) —
+   Run `lcats annotate` over a per-genre subset and collect statistics.
+   `depends_on: [WI-ANNOTATE-0051, WI-ANNOTATE-0052, WI-ANNOTATE-0053]`.
 
 ## Exit Criteria
 
@@ -126,9 +136,9 @@ workstream lands. Planned breakdown and sequencing:
 - Does not implement the specials/mojibake audit sidecar — deferred per
   the proposal's own Decision 1; whether it belongs in this project at
   all is still an open, separate design question.
-- Does not implement `WI-ASSESS-0031`'s 4→8 genre extension — tracked
-  and in progress in a separate parallel session/worktree; this
-  workstream's item 5 only consumes it once landed, not before.
+- Does not implement `WI-ASSESS-0031`'s 4→8 genre extension itself —
+  that work item is already resolved (PR #224); this workstream only
+  consumes its result (`assess.VALID_GENRES`'s 8-genre list).
 - Does not touch ERW event/relation extraction in any way — explicitly
   out of scope, per the parallel cost-sustainability finding motivating
   this whole workstream.
@@ -141,9 +151,8 @@ workstream lands. Planned breakdown and sequencing:
 
 ## Open Questions
 
-- Exact work-item granularity (5 items as listed above vs. further
-  splitting, e.g. separating the two bug fixes) — left to
-  `/lrh-work-item` scoping.
-- Exact `lcats annotate` CLI flags, story-subset selection criteria, and
-  stats-collection approach — left to work-item design, per the
-  proposal's own Open Questions.
+- Exact `lcats annotate` CLI flags — left to WI-ANNOTATE-0051's own
+  implementation, per the proposal's own Open Questions.
+- Exact story-subset selection criteria and stats-collection approach —
+  left to WI-ANNOTATE-0054's own implementation, per the proposal's own
+  Open Questions.
