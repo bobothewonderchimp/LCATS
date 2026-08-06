@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #224 (commit 914db394)"
 blocked_reason: null
 blocked: false
 id: WI-ASSESS-0031
 title: Extend VALID_GENRES from 4 to 8 target genres
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []

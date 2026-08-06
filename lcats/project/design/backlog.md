@@ -362,16 +362,12 @@ or correctness bug (the record already carries `file_path` and
 `file_path.parent.name` instead of `file_path.stem`, matching the
 identity convention used everywhere else.
 
-### `VALID_GENRES` still has 4 genres, not the reconciled 8 — P3, needs cost estimate first
+### ~~`VALID_GENRES` still has 4 genres, not the reconciled 8~~ — **fixed, [PR #224](https://github.com/xenotaur/LCATS/pull/224), merged 2026-08-06** — two related gaps remain, P3, needs cost estimate first
 
-`lcats/src/lcats/analysis/corpus/assess.py`'s `VALID_GENRES` is
-`("science fiction", "horror", "western", "romance")` (confirmed current as
-of 2026-08-02) — the Worldcon 2026 paper's actual target is 8: science
-fiction, horror, humor, western, romance, mystery, fantasy, adventure. This
-gap already has a work item, `WI-ASSESS-0031` (`status: proposed`, not yet
-implemented) — not a backlog item on its own, listed here only as a
-pointer. Two related gaps from the same reconciliation genuinely have no
-work item yet:
+Resolved: `VALID_GENRES` now has all 8 reconciled genres (science fiction,
+horror, humor, western, romance, mystery, fantasy, adventure), via
+`WI-ASSESS-0031` (`status: resolved`). Two related gaps from the same
+reconciliation genuinely still have no work item:
 
 - **Current-classifier full-corpus survey** under the 8-genre scheme —
   needed before sizing any stratified annotation pilot; do not reuse the
@@ -383,6 +379,36 @@ work item yet:
 Both carry real API cost and should get cost estimates before being scoped
 as work items, per `project/design/event-role-world-genre-target-reconciliation.md`'s
 own recommendation.
+
+### `lrh request review-response` (and the skills that call it) don't reliably surface every reviewer finding — P1, real and recurring
+
+Surfaced during `WI-ASSESS-0031`'s 5-round review-response loop on
+[PR #224](https://github.com/xenotaur/LCATS/pull/224) (2026-08-06).
+`chatgpt-codex-connector` posted its actual findings via two different,
+inconsistent surfaces across the PR's rounds — sometimes a formal GitHub
+`reviews`/`reviewThreads` entry (queryable via the GraphQL API this
+tooling already uses), sometimes a plain PR *issue comment*
+(`gh api repos/.../issues/<n>/comments`, a surface `lrh request
+review_response` does not appear to check at all based on this session's
+observed behavior) — even for the same kind of message (a clean-pass
+confirmation landed as an issue comment in three separate rounds of this
+same PR). Separately, the reviewer's formal review *body* text was
+boilerplate-only in every round that had real findings; the actual
+findings lived exclusively in separate `reviewThreads` entries not
+reflected in the review body summary at all. Relying on `reviews`/review
+*body* text alone — the natural place to look first — would have missed
+real findings, or missed a clean pass and kept waiting unnecessarily,
+several times in a single PR.
+
+**Next step:** audit `lrh request review-response`'s actual data source(s)
+against both gaps — (1) does it check PR issue comments in addition to
+`reviewThreads`/formal reviews, and (2) does it ever surface review body
+*text* as if it were the finding list, rather than always resolving to
+the actual `reviewThreads` entries regardless of what the body says. Fix
+whichever gap(s) are confirmed, and propagate the fix to any skill that
+wraps this command (`/lrh-review-response`, `/lrh-confirm-fixes`,
+`/lrh-land`'s inlined Steps 4-5) rather than only patching around it in
+one call site.
 
 ### ERW pipeline audit's Category E (cost/checkpointing/local-model options) never promoted to a proposal — P3, decision not a fix
 
