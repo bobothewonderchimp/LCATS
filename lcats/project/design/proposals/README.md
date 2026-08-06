@@ -18,4 +18,6 @@ short index plus the proposal document.
 - [`PROP-WORLDCON-FAST-PATH-ANNOTATION`](adopted/worldcon-fast-path-annotation/README.md)
   — adopted; implementation not started (governed by
   `WS-WORLDCON-FAST-PATH-ANNOTATION`).
+- [`PROP-LCATS-PILOT-COST-SUSTAINABILITY`](proposed/lcats-pilot-cost-sustainability/README.md)
+  — proposed; implementation not started.
 
