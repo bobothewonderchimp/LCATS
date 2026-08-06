@@ -13,7 +13,12 @@ related_design:
   - lcats/project/design/proposals/adopted/worldcon-fast-path-annotation/00_proposal.md
   - lcats/project/design/proposals/adopted/lcats-pipeline-checkpointing/00_proposal.md
   - lcats/project/work_items/proposed/WI-ASSESS-0031.md
-work_items: []
+work_items:
+  - WI-ANNOTATE-0050
+  - WI-ANNOTATE-0051
+  - WI-ANNOTATE-0052
+  - WI-ANNOTATE-0053
+  - WI-ANNOTATE-0054
 exit_criteria:
   - assess.py's max_tokens=2048 hardcode and scene_analysis.py's missing max_tokens override are both fixed, with real-story evidence the truncation failures no longer reproduce
   - lcats annotate exists, writes genre.json/scenes.json + per-bucket README.md, and iterates story buckets per-collection (never directly against a multi-collection corpus root)
@@ -104,18 +109,21 @@ sidecars would otherwise silently corrupt.
 
 ## Work Items
 
-Not yet created — to be scoped via `/lrh-work-item` after this
-workstream lands. Planned breakdown and sequencing:
-
-1. **Prerequisite bug fixes** — `assess.py`'s and `scene_analysis.py`'s
-   `max_tokens` overrides. No dependencies; blocks everything else.
-2. **`lcats annotate` command** — depends on (1). Includes wiring
-   per-sidecar writes through `lcats.utils.checkpoint` (see Scope).
-3. **`lcats promote` sidecar validation** — depends on (2) (needs the
-   real sidecar shape to validate against).
-4. **`lcats stats` selector fix** — independent of (1)-(3); can run in
-   parallel, but must land before (5).
-5. **Run + stats collection** — depends on (2), (3), (4).
+1. [`WI-ANNOTATE-0050`](../../work_items/proposed/WI-ANNOTATE-0050.md) —
+   Fix max_tokens truncation in `assess_story` and
+   `make_segment_extractor`. No dependencies; blocks everything else.
+2. [`WI-ANNOTATE-0051`](../../work_items/proposed/WI-ANNOTATE-0051.md) —
+   Build `lcats annotate` command with checkpoint-safe sidecar writes.
+   `depends_on: [WI-ANNOTATE-0050]`.
+3. [`WI-ANNOTATE-0052`](../../work_items/proposed/WI-ANNOTATE-0052.md) —
+   Validate sidecar content in `lcats promote`'s release gate.
+   `depends_on: [WI-ANNOTATE-0051]`.
+4. [`WI-ANNOTATE-0053`](../../work_items/proposed/WI-ANNOTATE-0053.md) —
+   Fix `lcats stats` file-discovery selector. No dependencies; can run
+   in parallel with (2)/(3), but must land before (5).
+5. [`WI-ANNOTATE-0054`](../../work_items/proposed/WI-ANNOTATE-0054.md) —
+   Run `lcats annotate` over a per-genre subset and collect statistics.
+   `depends_on: [WI-ANNOTATE-0051, WI-ANNOTATE-0052, WI-ANNOTATE-0053]`.
 
 ## Exit Criteria
 
@@ -141,9 +149,6 @@ workstream lands. Planned breakdown and sequencing:
 
 ## Open Questions
 
-- Exact work-item granularity (5 items as listed above vs. further
-  splitting, e.g. separating the two bug fixes) — left to
-  `/lrh-work-item` scoping.
 - Exact `lcats annotate` CLI flags, story-subset selection criteria, and
-  stats-collection approach — left to work-item design, per the
-  proposal's own Open Questions.
+  stats-collection approach — left to WI-ANNOTATE-0051/0054's own
+  implementation, per the proposal's own Open Questions.
