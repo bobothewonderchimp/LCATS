@@ -19,13 +19,15 @@ depends_on: []
 blocked_by: []
 expected_actions:
   - create_file
+  - edit_file
+  - run_tests
   - create_pr
 forbidden_actions:
   - force_push
   - delete_branch
   - merge_pr
 acceptance:
-  - "lcats/experimental/model_comparison/ollama_qwen3_30b_a3b/ exists with README.md, setup.py, benchmark.py following ollama_qwen3_8b/'s shape"
+  - "lcats/experimental/model_comparison/ollama_qwen3_30b_a3b/ exists with README.md, setup.py, benchmark.py, following the shape of ollama_qwen3_8b/"
   - "setup.py verifies Ollama is running and qwen3:30b-a3b is pulled (exact tag match), without downloading/installing anything itself"
   - "At least 2 real benchmark.py runs completed and committed as results.json/results_*.json, comparing entity-recall and latency against anthropic_opus and ollama_qwen3_8b on the identical sample_segment.json"
   - "README.md documents the real results and whether the entity-recall gap (11-14 vs. Opus's 21) narrows"
@@ -83,20 +85,23 @@ that request; link back to the proposal in the PR.
 ## Scope
 
 - Add `lcats/experimental/model_comparison/ollama_qwen3_30b_a3b/` with
-  `README.md`, `setup.py`, `benchmark.py`, following
-  `ollama_qwen3_8b/`'s existing shape (see that directory for the
-  pattern: `setup.py` checks Ollama reachability + exact model tag,
-  never installs/downloads; `benchmark.py` builds an `OpenAIBackend`
-  pointed at Ollama's `base_url` and calls
-  `common.harness.run_entity_extraction()`).
+  `README.md`, `setup.py`, `benchmark.py`, following the existing shape
+  of `ollama_qwen3_8b/` (see that directory for the pattern: `setup.py`
+  checks Ollama reachability + exact model tag, never
+  installs/downloads; `benchmark.py` builds an `OpenAIBackend` pointed at
+  Ollama's `base_url` and calls `common.harness.run_entity_extraction()`).
 - Explicit, deliberate step (not automated by this work item): install
   Ollama if not already present, `ollama pull qwen3:30b-a3b` (a larger
   download, ~18-20GB - confirm current size before pulling), with
   the implementer's explicit permission before downloading.
-- Run `benchmark.py` at least twice (per this repo's own finding that a
-  single local-model run is not decision-grade - see
-  `feedback_local_model_single_run_not_decision_grade` session memory),
-  commit real results.
+- Run `benchmark.py` at least twice. A single local-model run is not
+  decision-grade evidence: `ollama_qwen3_8b`'s own first run against
+  this harness failed outright, while an identical rerun succeeded but
+  took ~8.5x the frontier baseline's latency - see the three real,
+  committed runs at
+  `lcats/experimental/model_comparison/ollama_qwen3_8b/results_segment_run1.json`
+  through `results_segment_run3.json` (PR #223) for the committed
+  evidence behind this requirement.
 - Set an appropriate `temperature` override in `benchmark.py` if this
   model's own documented sampling recommendation differs from the
   pipeline's default (0.2) - do not assume `qwen3:8b`'s 0.6 applies
@@ -119,8 +124,9 @@ that request; link back to the proposal in the PR.
   configuration - this is benchmark-only, per
   `PROP-ERW-LOCAL-MODEL-EVALUATION`'s own Decision 3.
 - Does not extend the harness to any stage beyond stage-3 entity
-  extraction (see `WI-LLM-0050` for the genre-detection/segmentation
-  extension).
+  extraction - see `PROP-ERW-LOCAL-MODEL-EVALUATION`'s Implementation
+  Plan follow-on item #2 (the genre-detection/segmentation extension) for
+  that separate scope.
 - Does not perform a formal precision/recall comparison against
   ground-truth entities - only call-success, latency, and raw entity
   count, matching the existing harness's stated scope.
@@ -139,9 +145,9 @@ that request; link back to the proposal in the PR.
 
 ## Validation
 
-- `python -m pytest tests/llm_tests/ -q`
-- `black --check experimental/model_comparison` (CI-pinned version)
-- `ruff check experimental/model_comparison` (CI-pinned version)
+- `scripts/test` (canonical full suite - do not claim tests passed on a
+  raw `pytest` invocation instead, per `AGENTS.md`)
+- `scripts/format --check` and `scripts/lint`
 - `lrh validate`
 - `python experimental/model_comparison/ollama_qwen3_30b_a3b/setup.py`
 - `python experimental/model_comparison/ollama_qwen3_30b_a3b/benchmark.py` (run at least twice)
