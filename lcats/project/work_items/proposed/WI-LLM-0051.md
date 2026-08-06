@@ -20,6 +20,7 @@ blocked_by: []
 expected_actions:
   - create_file
   - edit_file
+  - run_tests
   - create_pr
   - write_docs
 forbidden_actions:
@@ -31,8 +32,10 @@ acceptance:
   - "A written verdict in PROP-ERW-LOCAL-MODEL-EVALUATION or a follow-on note: either the gap is reproduced and characterized (frequency, trigger conditions), or a good-faith attempt found no reproduction and that is stated plainly, not silently dropped"
   - "If reproduced: common/harness.py gains a documented retry-once-on-empty-tool-result path, or an explicit decision not to add one with rationale"
 artifacts_expected:
-  - lcats/project/design/proposals/proposed/erw-local-model-evaluation/00_proposal.md (updated) OR a new AD_HOC finding note
-  - lcats/experimental/model_comparison/common/harness.py (only if a retry path is added)
+  # Updated in place, or a new AD_HOC finding note - see Scope.
+  - lcats/project/design/proposals/proposed/erw-local-model-evaluation/00_proposal.md
+  # Only if the gap is reproduced with meaningful frequency - see Scope.
+  - lcats/experimental/model_comparison/common/harness.py
 required_evidence:
   - manual_review
   - test_output
@@ -131,7 +134,7 @@ work item satisfies that request.
 
 ## Validation
 
-- `python -m pytest tests/llm_tests/ -q`
+- `scripts/test tests/llm_tests`
 - `lrh validate`
 - Multiple real benchmark runs (varied segments/candidates) attempting
   reproduction, with `raw_output_preview` inspected on any failure
