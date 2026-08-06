@@ -2,10 +2,10 @@
 execution_id: 2026_08_06_04_56_13_ADOPT_PILOT_COST_SUSTAINABILITY_PROPOSAL
 prompt_id: PROMPT(AD_HOC:ADOPT_PILOT_COST_SUSTAINABILITY_PROPOSAL)[2026-08-06T04:54:46+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/231
-commit:
+commit: 7bb38ee44a62784bd2d80b2bd3ac264a360ddcd6
 agent: claude_app
 instruction_source: user request in-session ("Adopt the proposal, then /lrh-workstream")
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
