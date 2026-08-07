@@ -24,16 +24,14 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import json
+import os
 import pathlib
+import tempfile
 from typing import Any, Optional
 
 from lcats.analysis import scene_analysis
 from lcats.analysis.corpus import assess, discovery
-from lcats.analysis.corpus.cli import (
-    coerce_story_text,
-    infer_story_title,
-    read_story_data,
-)
+from lcats.analysis.corpus import cli as corpus_cli
 from lcats.utils import checkpoint
 
 
@@ -80,11 +78,21 @@ def _hash_json(obj: Any) -> str:
     ).hexdigest()
 
 
-def _genre_fingerprint(model: str, body: str) -> dict:
+def _genre_fingerprint(model: str, story_data: dict, body: str) -> dict:
+    """Fingerprint the complete effective assessment input, not just body
+    -- assess_story also sends author/url (from metadata) to the model
+    and stores them in AssessmentResult, so a metadata-only change (no
+    body change) must still invalidate the checkpoint (review finding,
+    PR #241). Title is intentionally excluded: infer_story_title derives
+    it purely from the bucket directory name, already encoded in
+    item_id -- it cannot change independently of that."""
+    metadata = story_data.get("metadata") or {}
     return {
         "model": model,
         "system_prompt_hash": _hash_text(assess.DETECT_SYSTEM_PROMPT),
         "tool_schema_hash": _hash_json(assess.ASSESSMENT_TOOL),
+        "author": metadata.get("author", "Unknown"),
+        "url": metadata.get("url", ""),
         "body_hash": _hash_text(body),
     }
 
@@ -93,6 +101,9 @@ def _scenes_fingerprint(model: str, body: str) -> dict:
     return {
         "model": model,
         "system_prompt_hash": _hash_text(scene_analysis.SCENE_SEQUEL_SYSTEM_PROMPT),
+        "user_prompt_template_hash": _hash_text(
+            scene_analysis.SCENE_SEQUEL_USER_PROMPT_TEMPLATE
+        ),
         "tool_schema_hash": _hash_json(scene_analysis.SEGMENT_TOOL_SCHEMA),
         "body_hash": _hash_text(body),
     }
@@ -102,6 +113,7 @@ def _annotate_genre(
     *,
     story_path: pathlib.Path,
     item_id: str,
+    story_data: dict,
     body: str,
     backend: Any,
     model: str,
@@ -110,7 +122,7 @@ def _annotate_genre(
     """Return (genre_data, error). genre_data is the sidecar payload to
     write; error is set (genre_data is None) only on an unrecoverable
     failure. A checkpoint hit skips the paid assess_story call entirely."""
-    fingerprint = _genre_fingerprint(model, body)
+    fingerprint = _genre_fingerprint(model, story_data, body)
     cached = checkpoint.read_checkpoint(
         roots.working_root, item_id, "genre", fingerprint
     )
@@ -159,7 +171,17 @@ def _annotate_scenes(
 
     seg_extractor = scene_analysis.make_segment_extractor(backend)
     seg_result = seg_extractor.extract(body, model_name=model)
-    error = seg_result.get("api_error") or seg_result.get("extraction_error")
+    # Check alignment_error/validation_error too, not just api_error/
+    # extraction_error -- JSONPromptExtractor.extract() still sets
+    # extracted_output on an alignment/validation exception (the raw,
+    # un-aligned parsed value), which is truthy and would otherwise be
+    # recorded as a successful checkpoint (review finding, PR #241).
+    error = (
+        seg_result.get("api_error")
+        or seg_result.get("extraction_error")
+        or seg_result.get("alignment_error")
+        or seg_result.get("validation_error")
+    )
     segments = seg_result.get("extracted_output") or []
     if error or not segments:
         error_message = str(error) if error else "segmentation produced no segments"
@@ -186,7 +208,27 @@ def _annotate_scenes(
 
 
 def _write_json(path: pathlib.Path, data: dict) -> None:
-    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    """Atomically publish a sidecar file -- a plain write_text can leave
+    torn JSON if interrupted mid-write even though the success checkpoint
+    was already published (review finding, PR #241), the same failure
+    mode checkpoint.write_checkpoint's own tempfile+os.replace pattern
+    exists to prevent."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(
+        dir=path.parent, prefix=f".{path.name}.", suffix=".tmp"
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as tmp_file:
+            json.dump(data, tmp_file, indent=2)
+        os.replace(tmp_name, path)
+    except BaseException:
+        if os.path.exists(tmp_name):
+            os.unlink(tmp_name)
+        raise
+
+
+def _remove_if_exists(path: pathlib.Path) -> None:
+    path.unlink(missing_ok=True)
 
 
 def _write_readme(
@@ -196,7 +238,7 @@ def _write_readme(
     whatever sidecars exist. Never matched by any JSON-only selector
     (find_json_files, iter_collection_story_files), so this is purely
     additive -- no discovery/promote/stats changes needed."""
-    title = infer_story_title(story_data, story_path)
+    title = corpus_cli.infer_story_title(story_data, story_path)
     lines = [f"# {title}", ""]
 
     genre_path = bucket_dir / "genre.json"
@@ -236,19 +278,26 @@ def annotate_story(
     bucket_dir = story_path.parent
     item_id = story_item_id(collection_name, bucket_dir.name)
 
-    story_data = read_story_data(story_path)
-    body = coerce_story_text(story_data.get("body", ""))
+    story_data = corpus_cli.read_story_data(story_path)
+    body = corpus_cli.coerce_story_text(story_data.get("body", ""))
 
     genre_data, genre_error = _annotate_genre(
         story_path=story_path,
         item_id=item_id,
+        story_data=story_data,
         body=body,
         backend=backend,
         model=model,
         roots=roots,
     )
+    # A failed recompute must not leave a stale sidecar from a prior,
+    # differently-configured run in place -- the bucket would otherwise
+    # silently mix a new-config scenes.json with an old-config genre.json
+    # (review finding, PR #241).
     if genre_data is not None:
         _write_json(bucket_dir / "genre.json", genre_data)
+    elif genre_error is not None:
+        _remove_if_exists(bucket_dir / "genre.json")
 
     scenes_data, scenes_error = _annotate_scenes(
         item_id=item_id,
@@ -259,6 +308,8 @@ def annotate_story(
     )
     if scenes_data is not None:
         _write_json(bucket_dir / "scenes.json", scenes_data)
+    elif scenes_error is not None:
+        _remove_if_exists(bucket_dir / "scenes.json")
 
     _write_readme(bucket_dir, story_data, story_path)
 

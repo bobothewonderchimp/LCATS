@@ -54,10 +54,17 @@ class _DualToolFakeBackend:
     """Test double dispatching on tool["name"] -- annotate_story calls
     both assess_story (record_story_assessment) and make_segment_extractor
     (record_segments) through the same backend, so a single fixed
-    tool_result (what FakeBackend provides) can't serve both."""
+    tool_result (what FakeBackend provides) can't serve both.
 
-    def __init__(self):
+    fail_genre_calls_after, if set, makes the Nth-and-later genre call
+    return tool_result=None (assess_story's own "no tool result" failure
+    path), for testing stale-sidecar-removal on a failed recompute.
+    """
+
+    def __init__(self, fail_genre_calls_after=None):
         self.calls = []
+        self.fail_genre_calls_after = fail_genre_calls_after
+        self._genre_call_count = 0
 
     def complete(
         self, *, system, messages, model, temperature=0.2, max_tokens=4096, tool=None
@@ -66,7 +73,14 @@ class _DualToolFakeBackend:
 
         self.calls.append({"tool_name": tool["name"] if tool else None, "model": model})
         if tool and tool["name"] == "record_story_assessment":
-            result = _GENRE_TOOL_RESULT
+            self._genre_call_count += 1
+            if (
+                self.fail_genre_calls_after is not None
+                and self._genre_call_count > self.fail_genre_calls_after
+            ):
+                result = None
+            else:
+                result = _GENRE_TOOL_RESULT
         elif tool and tool["name"] == "record_segments":
             result = _SEGMENT_TOOL_RESULT
         else:
@@ -248,6 +262,44 @@ class AnnotateStoryTest(unittest.TestCase):
 
         self.assertEqual(call_count, len(backend.calls))
         self.assertTrue((story_path.parent / "genre.json").is_file())
+
+    def test_stale_genre_sidecar_removed_when_recompute_fails(self):
+        """A failed recompute must not leave a stale genre.json from a
+        prior, differently-configured run in place -- the bucket would
+        otherwise silently mix a new-config scenes.json with an
+        old-config genre.json (review finding, PR #241)."""
+        story_path = _write_story(
+            self.source_root / "collection_a", "story_one", "A dragon story."
+        )
+        backend = _DualToolFakeBackend(fail_genre_calls_after=1)
+        annotate.annotate_story(
+            story_path,
+            collection_name="collection_a",
+            backend=backend,
+            model="fake-model",
+            roots=self.roots,
+        )
+        self.assertTrue((story_path.parent / "genre.json").is_file())
+
+        # A body change invalidates the checkpoint, forcing a real
+        # recompute -- which this backend is configured to fail.
+        story_path.write_text(
+            json.dumps(
+                {"name": "story_one", "body": "A different story now.", "metadata": {}}
+            ),
+            encoding="utf-8",
+        )
+        result = annotate.annotate_story(
+            story_path,
+            collection_name="collection_a",
+            backend=backend,
+            model="fake-model",
+            roots=self.roots,
+        )
+
+        self.assertFalse(result.clean)
+        self.assertIsNotNone(result.genre_error)
+        self.assertFalse((story_path.parent / "genre.json").exists())
 
 
 class AnnotateCollectionTest(unittest.TestCase):
