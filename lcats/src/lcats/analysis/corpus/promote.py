@@ -21,22 +21,26 @@ import json
 import pathlib
 import shutil
 
-from lcats.analysis.corpus import annotate
 from lcats.analysis.corpus import cli
 from lcats.analysis.corpus import discovery
 from lcats.analysis.corpus import specials
 
 BLOCKING_CLASSIFICATION = "likely_repairable"
 
-# (sidecar filename, required top-level key) -- parse/shape-level checks
-# only (per WI-ANNOTATE-0052's Non-Goals: no schema-validation library),
-# but enough to catch a truncated/corrupted/wrong-shape sidecar before
-# it's wholesale-copied to corpora/. Filenames come from annotate.py's
-# own named constants, not duplicated string literals, so the two
-# modules' conventions can't silently drift apart.
+# (sidecar filename, required top-level key, expected value type) --
+# parse/shape-level checks only (per WI-ANNOTATE-0052's Non-Goals: no
+# schema-validation library), but enough to catch a truncated/corrupted/
+# wrong-shape sidecar before it's wholesale-copied to corpora/. Filenames
+# come from discovery.py's own named constants (not annotate.py's -- that
+# module pulls in the full extractor/LLM dependency chain, unnecessary
+# just to promote already-computed files; review finding, PR #248), so
+# the two modules' conventions can't silently drift apart. The value
+# type check (not just key presence) catches e.g. {"segments": null} or
+# {"detected_genre": 42}, which the writer never produces but a
+# presence-only check would still wave through (review finding, PR #248).
 _SIDECAR_REQUIRED_KEYS = (
-    (annotate.GENRE_SIDECAR_FILENAME, "detected_genre"),
-    (annotate.SCENES_SIDECAR_FILENAME, "segments"),
+    (discovery.GENRE_SIDECAR_FILENAME, "detected_genre", str),
+    (discovery.SCENES_SIDECAR_FILENAME, "segments", list),
 )
 
 
@@ -103,11 +107,13 @@ def _validate_sidecars(story_path: pathlib.Path) -> list[MalformedSidecarFinding
     for basic parse/shape validity. Not a schema-validation pass (per
     WI-ANNOTATE-0052's Non-Goals): parses as JSON, is a dict, and has the
     one required top-level key each sidecar's real writer (annotate.py)
-    always populates. A missing sidecar is not itself a finding -- most
-    of data/ predates lcats annotate and has no sidecars at all."""
+    always populates, with the expected value type -- key presence alone
+    would still wave through e.g. {"segments": null} (review finding, PR
+    #248). A missing sidecar is not itself a finding -- most of data/
+    predates lcats annotate and has no sidecars at all."""
     bucket_dir = story_path.parent
     findings: list[MalformedSidecarFinding] = []
-    for sidecar_name, required_key in _SIDECAR_REQUIRED_KEYS:
+    for sidecar_name, required_key, expected_type in _SIDECAR_REQUIRED_KEYS:
         sidecar_path = bucket_dir / sidecar_name
         if not sidecar_path.is_file():
             continue
@@ -137,6 +143,17 @@ def _validate_sidecars(story_path: pathlib.Path) -> list[MalformedSidecarFinding
                     story_path=story_path,
                     sidecar_name=sidecar_name,
                     error=f"missing required key {required_key!r}",
+                )
+            )
+        elif not isinstance(data[required_key], expected_type):
+            findings.append(
+                MalformedSidecarFinding(
+                    story_path=story_path,
+                    sidecar_name=sidecar_name,
+                    error=(
+                        f"{required_key!r} expected {expected_type.__name__}, "
+                        f"got {type(data[required_key]).__name__}"
+                    ),
                 )
             )
     return findings

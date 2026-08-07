@@ -176,6 +176,37 @@ class SurveyCollectionTest(unittest.TestCase):
             self.assertEqual(1, len(result.sidecar_findings))
             self.assertIn("detected_genre", result.sidecar_findings[0].error)
 
+    def test_null_required_value_sidecar_blocks(self):
+        """Key presence alone isn't enough -- {"segments": null} passes an
+        `in`-only check even though the real writer never emits null
+        (review finding, PR #248)."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            collection_dir = pathlib.Path(tmpdir) / "broken_sidecar_collection"
+            _write_story(collection_dir, "story_one", "A clean sentence.")
+            (collection_dir / "story_one" / "scenes.json").write_text(
+                json.dumps({"segments": None}), encoding="utf-8"
+            )
+
+            result = promote.survey_collection(collection_dir)
+
+            self.assertFalse(result.clean)
+            self.assertEqual(1, len(result.sidecar_findings))
+            self.assertIn("list", result.sidecar_findings[0].error)
+
+    def test_wrong_value_type_sidecar_blocks(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            collection_dir = pathlib.Path(tmpdir) / "broken_sidecar_collection"
+            _write_story(collection_dir, "story_one", "A clean sentence.")
+            (collection_dir / "story_one" / "genre.json").write_text(
+                json.dumps({"detected_genre": 42}), encoding="utf-8"
+            )
+
+            result = promote.survey_collection(collection_dir)
+
+            self.assertFalse(result.clean)
+            self.assertEqual(1, len(result.sidecar_findings))
+            self.assertIn("str", result.sidecar_findings[0].error)
+
     def test_no_sidecars_unaffected(self):
         """Today's normal case: a story bucket with neither sidecar must
         promote exactly as before this change."""

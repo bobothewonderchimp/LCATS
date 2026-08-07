@@ -41,11 +41,11 @@ from lcats.utils import checkpoint
 DEFAULT_GENRE_MAX_TOKENS = 4096
 DEFAULT_SCENES_MAX_TOKENS = 16384
 
-# Named sidecar filenames, referenced here and by promote.py's
-# sidecar-content validation (WI-ANNOTATE-0052) -- a single source of
-# truth avoids the two modules' literal strings silently drifting apart.
-GENRE_SIDECAR_FILENAME = "genre.json"
-SCENES_SIDECAR_FILENAME = "scenes.json"
+# Sidecar filename constants live in discovery.py, not here, so
+# promote.py can reference them without importing this module's own
+# extractor/LLM dependency chain (review finding, PR #248).
+GENRE_SIDECAR_FILENAME = discovery.GENRE_SIDECAR_FILENAME
+SCENES_SIDECAR_FILENAME = discovery.SCENES_SIDECAR_FILENAME
 
 
 class EmptyCollectionError(ValueError):
