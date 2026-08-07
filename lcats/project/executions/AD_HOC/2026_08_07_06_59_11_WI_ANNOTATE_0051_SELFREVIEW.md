@@ -5,7 +5,7 @@ work_item: AD_HOC
 status: in_progress
 rerun_of: 
 pr: 
-commit: c94b51def903be0427efff5fd8519fdcd98dfef2
+commit: 534ad5c8e5505dba9bbb2e8150fe06e12de791a9
 created_at: 2026-08-07T06:59:11+00:00
 agent: claude_app
 instruction_source: project/work_items/proposed/WI-ANNOTATE-0051.md
