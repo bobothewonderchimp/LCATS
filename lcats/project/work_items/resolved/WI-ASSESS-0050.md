@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via https://github.com/xenotaur/LCATS/pull/242 (squash commit 98b4cf6702b2e5ea0aab5d28543c9c443f836d83). Two review-response rounds folded in: bare-relative-path resolve fallback, and a follow-on resolve()-failure guard plus a new backlog item covering the same unguarded pattern elsewhere in the codebase."
 blocked_reason: null
 blocked: false
 id: WI-ASSESS-0050
 title: Fix assess_story's error-path title fallback
 type: deliverable
-status: proposed
+status: resolved
 priority: low
 owner: unassigned
 contributors: []

@@ -378,7 +378,7 @@ child directory could mask a real leaf story bucket; `ignore_dir_names`
 wasn't safe to pass as a one-shot iterable) — both fixed in the same
 PR.
 
-### `assess_story`'s error-path title fallback uses the stem-collision pattern — P3, cosmetic
+### ~~`assess_story`'s error-path title fallback uses the stem-collision pattern~~ — **fixed, [PR #242](https://github.com/xenotaur/LCATS/pull/242), merged 2026-08-07** — P3, cosmetic
 
 Surfaced 2026-08-02 while scoping a Batch-3 follow-up, then verified
 directly against the code before concluding anything (an initial
@@ -396,9 +396,14 @@ back to the stale `file_path.stem` value — literally `"story"` for a
 bucket file — instead of the real story slug, making it harder to tell
 from the output alone which story actually failed. Cosmetic, not a data
 or correctness bug (the record already carries `file_path` and
-`error`). **Next step:** initialize the fallback `title` from
-`file_path.parent.name` instead of `file_path.stem`, matching the
-identity convention used everywhere else.
+`error`). **Resolved 2026-08-07:** implemented and merged via
+[WI-ASSESS-0050](https://github.com/xenotaur/LCATS/pull/242). The
+fallback now initializes from `file_path.parent.name`, matching the
+identity convention used everywhere else; a review round found and
+fixed a bare-relative-path edge case (empty lexical parent name) and a
+follow-on robustness gap (an unguarded `resolve()` call that could have
+crashed the fallback itself) — see the new backlog entry above on
+unguarded `.resolve()` calls elsewhere in the codebase.
 
 ### ~~`VALID_GENRES` still has 4 genres, not the reconciled 8~~ — **fixed, [PR #224](https://github.com/xenotaur/LCATS/pull/224), merged 2026-08-06** — two related gaps remain, P3, needs cost estimate first
 
