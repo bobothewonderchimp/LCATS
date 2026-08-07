@@ -8,8 +8,9 @@ property). This script exercises the real AnthropicBackend end to end so
 that regression is caught by more than unit tests, which use FakeBackend
 and don't validate against Anthropic's real schema constraints.
 
-Requires ANTHROPIC_API_KEY (env var or .secrets/anthropic_api_keys.env -
-see lcats/docs/secrets-setup.md). Makes one real API call.
+Requires ANTHROPIC_API_KEY (env var or <repo_root>/.secrets/anthropic_api_keys.env,
+i.e. the repo root's .secrets/, not lcats/.secrets/ - see
+lcats/docs/secrets-setup.md). Makes one real API call.
 """
 
 from __future__ import annotations
@@ -43,7 +44,9 @@ def main() -> int:
         default=_DEFAULT_STORY,
         help=f"Corpus story JSON to assess (default: {_DEFAULT_STORY})",
     )
-    parser.add_argument("--genre", default="", help="Claimed genre (default: detect-only mode)")
+    parser.add_argument(
+        "--genre", default="", help="Claimed genre (default: detect-only mode)"
+    )
     parser.add_argument("--max-tokens", type=int, default=16384)
     args = parser.parse_args()
 
@@ -51,7 +54,7 @@ def main() -> int:
     if not os.environ.get("ANTHROPIC_API_KEY"):
         print(
             "FAIL: ANTHROPIC_API_KEY not set. Export it, or add it to "
-            ".secrets/anthropic_api_keys.env (see lcats/docs/secrets-setup.md)."
+            "<repo_root>/.secrets/anthropic_api_keys.env (see lcats/docs/secrets-setup.md)."
         )
         return 1
 
