@@ -88,6 +88,12 @@ def build_parser(add_help: bool = True) -> argparse.ArgumentParser:
         help="Max story body characters sent to the API (default: 100000).",
     )
     parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=4096,
+        help="Max response tokens for the assessment API call (default: 4096).",
+    )
+    parser.add_argument(
         "--format",
         choices=["jsonl", "json", "tsv", "human"],
         default="jsonl",
@@ -200,6 +206,10 @@ def run(
         )
         return 1
 
+    if args.max_tokens <= 0:
+        print("error: --max-tokens must be > 0", file=sys.stderr)
+        return 1
+
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not args.dry_run and not api_key:
         print(
@@ -260,6 +270,7 @@ def run(
                 backend=backend,
                 model=args.model,
                 max_body_chars=args.max_body_chars,
+                max_tokens=args.max_tokens,
             )
 
             if args.format == "jsonl":

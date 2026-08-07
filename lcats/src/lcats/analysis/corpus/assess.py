@@ -316,6 +316,7 @@ def assess_story(
     backend=None,
     model: str = "claude-opus-4-8",
     max_body_chars: int = 100_000,
+    max_tokens: int = 4096,
 ) -> AssessmentResult:
     """Assess a single corpus JSON file for quality and genre fit.
 
@@ -323,6 +324,10 @@ def assess_story(
     independently and sets genre_verdict to "detected". When genre is provided,
     runs in lens mode: the model detects genre independently then evaluates
     whether the story matches the claimed genre.
+
+    max_tokens caps the assessment response (findings summary, issues list,
+    etc.); the previous hardcoded 2048 ceiling truncated on longer/messier
+    real stories (WI-ANNOTATE-0050).
     """
     if backend is None:
         raise ValueError("assess_story requires a backend instance")
@@ -361,7 +366,7 @@ def assess_story(
             messages=[{"role": "user", "content": user_message}],
             model=model,
             temperature=0.2,
-            max_tokens=2048,
+            max_tokens=max_tokens,
             tool=ASSESSMENT_TOOL,
         )
         a = backend_response.tool_result
