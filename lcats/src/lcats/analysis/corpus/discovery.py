@@ -9,6 +9,15 @@ from typing import Iterable, Iterator, Union
 
 CANONICAL_STORY_FILENAME = "story.json"
 
+# Canonical sidecar filenames written by lcats annotate (WI-ANNOTATE-0051)
+# and validated by lcats promote (WI-ANNOTATE-0052). Live here, not in
+# annotate.py, so promote.py can reference them without importing
+# annotate's own extractor/LLM dependency chain (review finding, PR
+# #248) -- this module is already the shared home for canonical
+# story-bucket filename conventions (see CANONICAL_STORY_FILENAME above).
+GENRE_SIDECAR_FILENAME = "genre.json"
+SCENES_SIDECAR_FILENAME = "scenes.json"
+
 
 def find_corpus_stories(
     root: Union[str, pathlib.Path],

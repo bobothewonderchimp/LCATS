@@ -41,6 +41,12 @@ from lcats.utils import checkpoint
 DEFAULT_GENRE_MAX_TOKENS = 4096
 DEFAULT_SCENES_MAX_TOKENS = 16384
 
+# Sidecar filename constants live in discovery.py, not here, so
+# promote.py can reference them without importing this module's own
+# extractor/LLM dependency chain (review finding, PR #248).
+GENRE_SIDECAR_FILENAME = discovery.GENRE_SIDECAR_FILENAME
+SCENES_SIDECAR_FILENAME = discovery.SCENES_SIDECAR_FILENAME
+
 
 class EmptyCollectionError(ValueError):
     """Raised when a requested collection directory is missing or
@@ -289,7 +295,7 @@ def _write_readme(
     title = corpus_cli.infer_story_title(story_data, story_path)
     lines = [f"# {title}", ""]
 
-    genre_path = bucket_dir / "genre.json"
+    genre_path = bucket_dir / GENRE_SIDECAR_FILENAME
     if genre_path.is_file():
         genre_data = json.loads(genre_path.read_text(encoding="utf-8"))
         lines.append("## genre.json")
@@ -300,7 +306,7 @@ def _write_readme(
         lines.append(f"- verdict: {genre_data.get('verdict', '')}")
         lines.append("")
 
-    scenes_path = bucket_dir / "scenes.json"
+    scenes_path = bucket_dir / SCENES_SIDECAR_FILENAME
     if scenes_path.is_file():
         scenes_data = json.loads(scenes_path.read_text(encoding="utf-8"))
         lines.append("## scenes.json")
@@ -346,9 +352,9 @@ def annotate_story(
     # silently mix a new-config scenes.json with an old-config genre.json
     # (review finding, PR #241).
     if genre_data is not None:
-        _write_json(bucket_dir / "genre.json", genre_data)
+        _write_json(bucket_dir / GENRE_SIDECAR_FILENAME, genre_data)
     elif genre_error is not None:
-        _remove_if_exists(bucket_dir / "genre.json")
+        _remove_if_exists(bucket_dir / GENRE_SIDECAR_FILENAME)
 
     scenes_data, scenes_error = _annotate_scenes(
         item_id=item_id,
@@ -359,9 +365,9 @@ def annotate_story(
         roots=roots,
     )
     if scenes_data is not None:
-        _write_json(bucket_dir / "scenes.json", scenes_data)
+        _write_json(bucket_dir / SCENES_SIDECAR_FILENAME, scenes_data)
     elif scenes_error is not None:
-        _remove_if_exists(bucket_dir / "scenes.json")
+        _remove_if_exists(bucket_dir / SCENES_SIDECAR_FILENAME)
 
     _write_readme(bucket_dir, story_data, story_path)
 

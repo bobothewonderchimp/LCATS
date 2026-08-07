@@ -17,6 +17,7 @@ this implies at the first gated promotion.
 """
 
 import dataclasses
+import json
 import pathlib
 import shutil
 
@@ -25,6 +26,22 @@ from lcats.analysis.corpus import discovery
 from lcats.analysis.corpus import specials
 
 BLOCKING_CLASSIFICATION = "likely_repairable"
+
+# (sidecar filename, required top-level key, expected value type) --
+# parse/shape-level checks only (per WI-ANNOTATE-0052's Non-Goals: no
+# schema-validation library), but enough to catch a truncated/corrupted/
+# wrong-shape sidecar before it's wholesale-copied to corpora/. Filenames
+# come from discovery.py's own named constants (not annotate.py's -- that
+# module pulls in the full extractor/LLM dependency chain, unnecessary
+# just to promote already-computed files; review finding, PR #248), so
+# the two modules' conventions can't silently drift apart. The value
+# type check (not just key presence) catches e.g. {"segments": null} or
+# {"detected_genre": 42}, which the writer never produces but a
+# presence-only check would still wave through (review finding, PR #248).
+_SIDECAR_REQUIRED_KEYS = (
+    (discovery.GENRE_SIDECAR_FILENAME, "detected_genre", str),
+    (discovery.SCENES_SIDECAR_FILENAME, "segments", list),
+)
 
 
 def destination_name(source_collection_name: str) -> str:
@@ -46,12 +63,25 @@ class BlockingFinding:
 
 
 @dataclasses.dataclass(frozen=True)
+class MalformedSidecarFinding:
+    """One malformed genre.json/scenes.json sidecar that blocks a
+    collection from promotion, distinct from a mojibake BlockingFinding
+    (WI-ANNOTATE-0052) so CollectionSurveyResult reporting stays clear
+    about which kind of problem blocked promotion."""
+
+    story_path: pathlib.Path
+    sidecar_name: str
+    error: str
+
+
+@dataclasses.dataclass(frozen=True)
 class CollectionSurveyResult:
     """Survey outcome for one collection directory."""
 
     collection: str
     story_count: int
     findings: tuple[BlockingFinding, ...]
+    sidecar_findings: tuple[MalformedSidecarFinding, ...] = ()
 
     @property
     def clean(self) -> bool:
@@ -63,8 +93,70 @@ class CollectionSurveyResult:
         otherwise report `findings=()` and be promoted (wholesale-copied)
         undetected. This is a standing check on every survey, not a
         one-time step (Decision 6 of PROP-LCATS-STORY-BUCKET-LAYOUT).
+
+        A malformed sidecar blocks promotion the same way a mojibake
+        finding does (WI-ANNOTATE-0052) -- a story with valid prose but a
+        corrupted genre.json/scenes.json is not safe to wholesale-copy
+        into corpora/ either.
         """
-        return not self.findings and self.story_count > 0
+        return not self.findings and not self.sidecar_findings and self.story_count > 0
+
+
+def _validate_sidecars(story_path: pathlib.Path) -> list[MalformedSidecarFinding]:
+    """Check a story bucket's genre.json/scenes.json -- when present --
+    for basic parse/shape validity. Not a schema-validation pass (per
+    WI-ANNOTATE-0052's Non-Goals): parses as JSON, is a dict, and has the
+    one required top-level key each sidecar's real writer (annotate.py)
+    always populates, with the expected value type -- key presence alone
+    would still wave through e.g. {"segments": null} (review finding, PR
+    #248). A missing sidecar is not itself a finding -- most of data/
+    predates lcats annotate and has no sidecars at all."""
+    bucket_dir = story_path.parent
+    findings: list[MalformedSidecarFinding] = []
+    for sidecar_name, required_key, expected_type in _SIDECAR_REQUIRED_KEYS:
+        sidecar_path = bucket_dir / sidecar_name
+        if not sidecar_path.is_file():
+            continue
+        try:
+            data = json.loads(sidecar_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            findings.append(
+                MalformedSidecarFinding(
+                    story_path=story_path,
+                    sidecar_name=sidecar_name,
+                    error=f"could not parse as JSON: {exc}",
+                )
+            )
+            continue
+        if not isinstance(data, dict):
+            findings.append(
+                MalformedSidecarFinding(
+                    story_path=story_path,
+                    sidecar_name=sidecar_name,
+                    error=f"expected a JSON object, got {type(data).__name__}",
+                )
+            )
+            continue
+        if required_key not in data:
+            findings.append(
+                MalformedSidecarFinding(
+                    story_path=story_path,
+                    sidecar_name=sidecar_name,
+                    error=f"missing required key {required_key!r}",
+                )
+            )
+        elif not isinstance(data[required_key], expected_type):
+            findings.append(
+                MalformedSidecarFinding(
+                    story_path=story_path,
+                    sidecar_name=sidecar_name,
+                    error=(
+                        f"{required_key!r} expected {expected_type.__name__}, "
+                        f"got {type(data[required_key]).__name__}"
+                    ),
+                )
+            )
+    return findings
 
 
 def survey_collection(
@@ -99,6 +191,7 @@ def survey_collection(
     # directory (no root-level ambiguity risk).
     story_paths = list(discovery.iter_collection_story_files(collection_dir))
     findings: list[BlockingFinding] = []
+    sidecar_findings: list[MalformedSidecarFinding] = []
     for story_path in story_paths:
         data = cli.read_story_data(story_path)
         text = cli.coerce_story_text(data.get("body", ""))
@@ -120,11 +213,13 @@ def survey_collection(
                     context=result.context,
                 )
             )
+        sidecar_findings.extend(_validate_sidecars(story_path))
 
     return CollectionSurveyResult(
         collection=collection_dir.name,
         story_count=len(story_paths),
         findings=tuple(findings),
+        sidecar_findings=tuple(sidecar_findings),
     )
 
 
