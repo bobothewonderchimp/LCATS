@@ -1,0 +1,17 @@
+{
+  "candidate": "ollama_qwen3_8b",
+  "backend_kind": "openai_compatible_local",
+  "model": "qwen3:8b",
+  "story_name": "Sherlock Holmes - The Five Orange Pips",
+  "stage": "segmentation",
+  "success": false,
+  "latency_seconds": 382.99865424999734,
+  "input_tokens": 13403,
+  "output_tokens": 5089,
+  "entity_count": null,
+  "segment_count": null,
+  "detected_genre": null,
+  "error_type": "no_tool_call",
+  "error_message": "API returned no tool calls for tool 'record_segments'; finish_reason: 'stop'; content: '{\\n  \"segments\": [\\n    {\\n      \"segment_id\": 1,\\n      \"segment_type\": \"narrative_scene\",\\n      \"start_par_id\": 1,\\n      \"end_par_id\": 3,\\n      \"start_exact\": \"When I glance over my\\\\nnotes and records of the Sherlock Holmes cases between the years \u201982 and\\\\n\u201990, I am faced by so many which present strange and interesting features\",\\n      \"end_exact\": \"the presence of those great elemental forces which shriek at mankind through the bars of his civilisation, like untamed beasts in a cage.\",\\n      \"start_prefix\": \"\",\\n      \"end_suffix\": \"the heart of great, hand-made London we were forced to raise our minds for the instant from the routine of life and to recognise the presence of those great elemental forces which shriek at mankind through the bars of his civilisation, like untamed beasts in a cage.\",\\n      \"start_char\": 0,\\n      \"end_char\": 247,\\n      \"summary\": \"Narrator introduces the collection of Sherlock Holmes cases, setting the scene in London during a storm.\",\\n      \"cohesion\": {\\n        \"time\": \"September, 1887\",\\n        \"place\": \"London\",\\n        \"characters\": [\"Narrator\", \"Sherlock Holmes\"]\\n      },\\n      \"gacd\": null,\\n      \"erac\": null,\\n      \"reason\": \"Narrative setup with time/place unity, no clear GACD/ERAC structure.\",\\n      \"confidence\": 0.95\\n    },\\n    {\\n      \"segment_id\": 2,\\n      \"segment_type\": \"dramatic_scene\",\\n      \"start_par_id\": 4,\\n      \"end_par_id\": 10,\\n      \"start_exact\": \"\u201cWhy,\u201d said I, glancing up at my companion, \u201cthat was surely\\\\nthe bell. Who could come to-night? Some friend of yours, perhaps?\u201d\",\\n      \"end_exact\": \"He looked about him anxiously in the glare of the lamp, and I could see that his face was pale and his eyes heavy, like those of a man who is weighed down with some great\\\\nanxiety.\",\\n      \"start_prefix\": \"When I glance over my\\\\nnotes and records of the Sherlock Holmes cases between the years \u201982 and\\\\n\u201990, I am faced by so many which present strange and interesting features\",\\n      \"end_suffix\": \"like those of a man who is'",
+  "raw_output_preview": null
+}
