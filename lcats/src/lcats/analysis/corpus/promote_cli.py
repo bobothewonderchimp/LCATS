@@ -65,13 +65,21 @@ def run(argv=None, parsed_args=None) -> int:
         for result in report.blocked:
             print(
                 f"blocked: {result.collection} "
-                f"({len(result.findings)} finding(s) across {result.story_count} stories)",
+                f"({len(result.findings)} mojibake finding(s), "
+                f"{len(result.sidecar_findings)} malformed sidecar(s) "
+                f"across {result.story_count} stories)",
                 file=sys.stderr,
             )
             for finding in result.findings:
                 print(
                     f"  {finding.story_path}: {finding.codepoint} {finding.character!r} "
                     f"context={finding.context!r}",
+                    file=sys.stderr,
+                )
+            for sidecar_finding in result.sidecar_findings:
+                print(
+                    f"  {sidecar_finding.story_path}: {sidecar_finding.sidecar_name}: "
+                    f"{sidecar_finding.error}",
                     file=sys.stderr,
                 )
 

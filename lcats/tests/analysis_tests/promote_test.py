@@ -108,6 +108,86 @@ class SurveyCollectionTest(unittest.TestCase):
             self.assertEqual(0, result.story_count)
             self.assertFalse(result.clean)
 
+    def test_valid_genre_sidecar_does_not_block(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            collection_dir = pathlib.Path(tmpdir) / "annotated_collection"
+            _write_story(collection_dir, "story_one", "A clean sentence.")
+            (collection_dir / "story_one" / "genre.json").write_text(
+                json.dumps({"detected_genre": "horror"}), encoding="utf-8"
+            )
+
+            result = promote.survey_collection(collection_dir)
+
+            self.assertTrue(result.clean)
+            self.assertEqual((), result.sidecar_findings)
+
+    def test_valid_scenes_sidecar_does_not_block(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            collection_dir = pathlib.Path(tmpdir) / "annotated_collection"
+            _write_story(collection_dir, "story_one", "A clean sentence.")
+            (collection_dir / "story_one" / "scenes.json").write_text(
+                json.dumps({"segments": []}), encoding="utf-8"
+            )
+
+            result = promote.survey_collection(collection_dir)
+
+            self.assertTrue(result.clean)
+            self.assertEqual((), result.sidecar_findings)
+
+    def test_malformed_json_sidecar_blocks(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            collection_dir = pathlib.Path(tmpdir) / "broken_sidecar_collection"
+            _write_story(collection_dir, "story_one", "A clean sentence.")
+            (collection_dir / "story_one" / "genre.json").write_text(
+                "{not valid json", encoding="utf-8"
+            )
+
+            result = promote.survey_collection(collection_dir)
+
+            self.assertFalse(result.clean)
+            self.assertEqual(1, len(result.sidecar_findings))
+            self.assertEqual("genre.json", result.sidecar_findings[0].sidecar_name)
+
+    def test_wrong_top_level_type_sidecar_blocks(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            collection_dir = pathlib.Path(tmpdir) / "broken_sidecar_collection"
+            _write_story(collection_dir, "story_one", "A clean sentence.")
+            (collection_dir / "story_one" / "scenes.json").write_text(
+                json.dumps(["not", "a", "dict"]), encoding="utf-8"
+            )
+
+            result = promote.survey_collection(collection_dir)
+
+            self.assertFalse(result.clean)
+            self.assertEqual(1, len(result.sidecar_findings))
+            self.assertIn("JSON object", result.sidecar_findings[0].error)
+
+    def test_missing_required_key_sidecar_blocks(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            collection_dir = pathlib.Path(tmpdir) / "broken_sidecar_collection"
+            _write_story(collection_dir, "story_one", "A clean sentence.")
+            (collection_dir / "story_one" / "genre.json").write_text(
+                json.dumps({"unrelated_key": "value"}), encoding="utf-8"
+            )
+
+            result = promote.survey_collection(collection_dir)
+
+            self.assertFalse(result.clean)
+            self.assertEqual(1, len(result.sidecar_findings))
+            self.assertIn("detected_genre", result.sidecar_findings[0].error)
+
+    def test_no_sidecars_unaffected(self):
+        """Today's normal case: a story bucket with neither sidecar must
+        promote exactly as before this change."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            collection_dir = pathlib.Path(tmpdir) / "unannotated_collection"
+            _write_story(collection_dir, "story_one", "A clean sentence.")
+
+            result = promote.survey_collection(collection_dir)
+
+            self.assertTrue(result.clean)
+            self.assertEqual((), result.sidecar_findings)
+
 
 class PromoteCollectionsTest(unittest.TestCase):
     """Tests for the survey-gated promotion pass (acceptance criteria)."""
@@ -129,6 +209,28 @@ class PromoteCollectionsTest(unittest.TestCase):
             self.assertEqual(1, len(report.blocked))
             self.assertEqual("damaged", report.blocked[0].collection)
             self.assertFalse((dest_root / "damaged").exists())
+
+    def test_malformed_sidecar_blocks_promotion(self):
+        """WI-ANNOTATE-0052 acceptance: a malformed sidecar is blocked
+        from promotion, the same way a mojibake finding is -- not
+        silently wholesale-copied to corpora/."""
+        with (
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+            _write_story(source_root / "annotated", "story_one", "A clean sentence.")
+            (source_root / "annotated" / "story_one" / "genre.json").write_text(
+                "{not valid json", encoding="utf-8"
+            )
+
+            report = promote.promote_collections(source_root, dest_root)
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.blocked))
+            self.assertEqual(1, len(report.blocked[0].sidecar_findings))
+            self.assertFalse((dest_root / "annotated").exists())
 
     def test_clean_collection_is_promoted(self):
         with (
