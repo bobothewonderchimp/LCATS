@@ -115,13 +115,13 @@ sidecars would otherwise silently corrupt.
 
 ## Work Items
 
-1. [`WI-ANNOTATE-0050`](../../work_items/proposed/WI-ANNOTATE-0050.md) —
+1. [`WI-ANNOTATE-0050`](../../work_items/resolved/WI-ANNOTATE-0050.md) —
    Fix max_tokens truncation in `assess_story` and
    `make_segment_extractor`. No dependencies; blocks everything else.
-2. [`WI-ANNOTATE-0051`](../../work_items/proposed/WI-ANNOTATE-0051.md) —
+2. [`WI-ANNOTATE-0051`](../../work_items/resolved/WI-ANNOTATE-0051.md) —
    Build `lcats annotate` command with checkpoint-safe sidecar writes.
    `depends_on: [WI-ANNOTATE-0050]`.
-3. [`WI-ANNOTATE-0052`](../../work_items/proposed/WI-ANNOTATE-0052.md) —
+3. [`WI-ANNOTATE-0052`](../../work_items/resolved/WI-ANNOTATE-0052.md) —
    Validate sidecar content in `lcats promote`'s release gate.
    `depends_on: [WI-ANNOTATE-0051]`.
 4. [`WI-ANNOTATE-0053`](../../work_items/abandoned/WI-ANNOTATE-0053.md) —

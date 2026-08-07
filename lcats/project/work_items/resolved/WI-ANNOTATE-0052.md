@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: Merged via https://github.com/xenotaur/LCATS/pull/248 (merge commit 6756195849484991d1386cff33abe799b723b571). survey_collection now validates genre.json/scenes.json content (parse, shape, required-key type) and blocks promotion of a malformed sidecar.
 blocked_reason: null
 blocked: false
 id: WI-ANNOTATE-0052
 title: Validate sidecar content in lcats promote's release gate
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
