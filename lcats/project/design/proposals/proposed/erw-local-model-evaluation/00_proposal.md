@@ -302,9 +302,21 @@ only, not cited as justification for any decision above:
   too, and several OpenAI-compatible-server wrappers exist for it - an
   unexplored alternative to Ollama on Apple Silicon specifically.
 - Qwen3 ships Ollama-library sizes from 0.6b to 235b; `30b-a3b` (a
-  mixture-of-experts model, ~30B total/~3B active parameters) is a
-  plausible "quality tier" candidate for extraction-grade stages, not yet
-  tested. Similar tiers exist for Gemma 4 and Llama 4.
+  mixture-of-experts model, ~30B total/~3B active parameters) was named
+  here as a plausible "quality tier" candidate for extraction-grade
+  stages, not yet tested. **Update (`WI-LLM-0049`):** now tested - the
+  hypothesis was **not supported**. 2 of 3 real runs against the same
+  entity-extraction call returned near-empty or malformed results
+  (structurally valid tool calls with essentially no useful content)
+  despite `temperature=0.6` matching Qwen3's own documented
+  recommendation (ruling out the temperature-mismatch cause that
+  explained `qwen3:8b`'s earlier unreliability); `qwen3:30b-a3b` proved
+  both slower and less reliable than the smaller `qwen3:8b` on this exact
+  call. See
+  `lcats/experimental/model_comparison/ollama_qwen3_30b_a3b/README.md`
+  for the full real results and root-cause discussion (not conclusively
+  diagnosed). Similar tiers exist for Gemma 4 and Llama 4, still
+  untested.
 - The two target hardware profiles differ meaningfully: Apple Silicon
   unified memory (tested here, M1 Max/32GB) versus a Kubuntu Focus
   laptop's discrete NVIDIA GPU (not available in this session - untested,
@@ -350,9 +362,14 @@ Already done (across two PRs):
 
 Follow-on work (proposed as separate work items once this proposal is
 adopted):
-1. Add an `ollama_qwen3_30b_a3b` candidate (MoE, higher quality ceiling)
-   to test whether a larger local model narrows the entity-recall gap
-   (11-14 vs. Opus's 21) at a still-acceptable latency.
+1. ~~Add an `ollama_qwen3_30b_a3b` candidate (MoE, higher quality
+   ceiling) to test whether a larger local model narrows the
+   entity-recall gap (11-14 vs. Opus's 21) at a still-acceptable
+   latency.~~ **Done (`WI-LLM-0049`).** The hypothesis was **not
+   supported** - `qwen3:30b-a3b` proved both slower and less reliable
+   than `qwen3:8b` on this exact call (2 of 3 real runs returned
+   essentially empty results). See
+   `lcats/experimental/model_comparison/ollama_qwen3_30b_a3b/README.md`.
 2. Extend `common/harness.py` to cover the genre-detection and
    segmentation stages, and add a candidate run against those - this is
    the evidence still needed to actually assess the hybrid-pipeline

@@ -1,0 +1,15 @@
+{
+  "candidate": "ollama_qwen3_30b_a3b",
+  "backend_kind": "openai_compatible_local",
+  "model": "qwen3:30b-a3b",
+  "story_name": "Sherlock Holmes - The Five Orange Pips [segment 3, dramatic_sequel]",
+  "stage": "entity_extraction",
+  "success": true,
+  "latency_seconds": 192.08193058399775,
+  "input_tokens": 1233,
+  "output_tokens": 6808,
+  "entity_count": 1,
+  "error_type": null,
+  "error_message": null,
+  "raw_output_preview": null
+}

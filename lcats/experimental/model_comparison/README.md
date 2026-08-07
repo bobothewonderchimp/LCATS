@@ -28,6 +28,7 @@ model_comparison/
   benchmark_summary.py            - prints a comparison table across every candidate/results.json
   anthropic_opus/                 - frontier baseline (claude-opus-4-8, AnthropicBackend)
   ollama_qwen3_8b/                - local "cheap tier" candidate (qwen3:8b via Ollama, OpenAIBackend+base_url)
+  ollama_qwen3_30b_a3b/           - local "quality tier" MoE candidate (qwen3:30b-a3b via Ollama, OpenAIBackend+base_url)
   <new_candidate>/                - add more by copying an existing candidate's shape
 ```
 
@@ -107,9 +108,14 @@ A web survey of the local-model landscape (Aug 2026) found:
   235b, including an 8b (fits comfortably in 8GB+ VRAM/unified memory - the
   "cheap tier" target for lighter stages) and 30b-a3b (a mixture-of-experts
   model, ~30B total/~3B active params - lower compute cost than a dense 30B
-  while still targeting a higher quality ceiling, a plausible "quality
-  tier" candidate for extraction stages). Similar tiers exist for Gemma 4
-  and Llama 4.
+  while still targeting a higher quality ceiling). **Update:** now tested
+  (`ollama_qwen3_30b_a3b/`, `WI-LLM-0049`) - the "narrows the recall gap"
+  hypothesis was **not supported**: 2 of 3 real runs returned
+  near-empty/malformed results despite structural success, worse
+  reliability than the smaller `qwen3:8b`. See
+  `ollama_qwen3_30b_a3b/README.md`'s "Actual results" for the real,
+  surprising findings. Similar tiers exist for Gemma 4 and Llama 4, not
+  yet tested.
 - **Caveat**: most "2026 benchmark" search results were SEO-farm content
   with suspiciously precise, hard-to-verify numbers (e.g. specific BFCL/
   SWE-bench percentages) - treated as landscape orientation only, not as a
