@@ -23,7 +23,6 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `proposed/WI-RELEASE-0039.md` — Pre-launch verification of the gutenbergpy dependency resolution before real PyPI publish
 - `proposed/WI-STORY-0042.md` — Make LCATS story discovery and identity dual-layout-compatible
 - `proposed/WI-LLM-0049.md` — Add qwen3:30b-a3b (MoE) candidate to the local-model benchmark harness
-- `proposed/WI-ANNOTATE-0050.md` — Fix max_tokens truncation in assess_story and make_segment_extractor
 - `proposed/WI-ANNOTATE-0051.md` — Build lcats annotate command with checkpoint-safe sidecar writes
 - `proposed/WI-ANNOTATE-0052.md` — Validate sidecar content in lcats promote's release gate
 - `proposed/WI-ANNOTATE-0053.md` — Fix lcats stats file-discovery selector
@@ -55,3 +54,4 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `resolved/WI-PACKAGING-0035.md` — Add setuptools-scm dynamic versioning and remove lcats/setup.py
 - `resolved/WI-PACKAGING-0036.md` — Replace hardcoded parent-depth path counting with a pyproject.toml anchor
 - `resolved/WI-RELEASE-0038.md` — Add lcats.version module, --version CLI flag, and scripts/version release helper
+- `resolved/WI-ANNOTATE-0050.md` — Fix max_tokens truncation in assess_story and make_segment_extractor

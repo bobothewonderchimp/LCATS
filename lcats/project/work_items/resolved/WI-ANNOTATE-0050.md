@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via PR #236 (commit 80638298): assess_story() gained an overridable max_tokens (default 4096, was hardcoded 2048) with a new --max-tokens CLI flag; make_segment_extractor() gained an overridable max_tokens (default 16384, was silently inheriting the library's bare 4096). Real-API dogfood run against the corpus's longest story (264KB, ~93K input tokens) directly observed the 8192-to-16384 truncation-to-success transition for segmentation and confirmed assess_story clean at 4096 - not just unit-test coverage of the override mechanism. Also surfaced an unrelated, pre-existing ASSESSMENT_TOOL schema bug (blocks all real lcats assess calls), deliberately not fixed here and flagged as a separate follow-up task. See execution record project/executions/WI-ANNOTATE-0050/2026_08_07_03_11_35_WI_ANNOTATE_0050.md."
 blocked_reason: null
 blocked: false
 id: WI-ANNOTATE-0050
 title: Fix max_tokens truncation in assess_story and make_segment_extractor
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
