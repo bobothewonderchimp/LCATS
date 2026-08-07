@@ -72,10 +72,19 @@ class AnnotateStoryResult:
         return self.genre_error is None and self.scenes_error is None
 
 
+def _hash_json(obj: Any) -> str:
+    """Deterministic hash of a JSON-serializable value (e.g. a tool
+    schema), for checkpoint fingerprints."""
+    return hashlib.sha256(
+        json.dumps(obj, sort_keys=True, default=str).encode("utf-8")
+    ).hexdigest()
+
+
 def _genre_fingerprint(model: str, body: str) -> dict:
     return {
         "model": model,
         "system_prompt_hash": _hash_text(assess.DETECT_SYSTEM_PROMPT),
+        "tool_schema_hash": _hash_json(assess.ASSESSMENT_TOOL),
         "body_hash": _hash_text(body),
     }
 
@@ -84,6 +93,7 @@ def _scenes_fingerprint(model: str, body: str) -> dict:
     return {
         "model": model,
         "system_prompt_hash": _hash_text(scene_analysis.SCENE_SEQUEL_SYSTEM_PROMPT),
+        "tool_schema_hash": _hash_json(scene_analysis.SEGMENT_TOOL_SCHEMA),
         "body_hash": _hash_text(body),
     }
 

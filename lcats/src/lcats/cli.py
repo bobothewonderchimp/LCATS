@@ -257,7 +257,7 @@ def build_parser() -> argparse.ArgumentParser:
             "Examples:\n"
             "  lcats annotate --dry-run\n"
             "  ANTHROPIC_API_KEY=sk-... lcats annotate sherlock\n"
-            "  lcats annotate --checkpoint-dir .annotate_checkpoints data/"
+            "  lcats annotate --checkpoint-dir .annotate_checkpoints --source data/"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
