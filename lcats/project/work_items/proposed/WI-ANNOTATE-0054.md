@@ -18,10 +18,11 @@ related_workstreams:
 related_design:
   - project/design/proposals/adopted/worldcon-fast-path-annotation/00_proposal.md
   - project/work_items/resolved/WI-ASSESS-0031.md
+  - project/work_items/resolved/WI-STATS-0049.md
 depends_on:
   - WI-ANNOTATE-0051
   - WI-ANNOTATE-0052
-  - WI-ANNOTATE-0053
+  - WI-STATS-0049
 blocked_by: []
 expected_actions:
   - run_tests
@@ -59,11 +60,14 @@ sequence, closing the loop from `PROP-WORLDCON-FAST-PATH-ANNOTATION`'s
 original motivation: a real, usable dataset for the paper within ~10
 days, using the mature parts of the pipeline (genre detection,
 scene/sequel segmentation) rather than the too-slow/costly/unreliable
-ERW extractor. It depends on all three preceding deliverable items
-(WI-ANNOTATE-0051/0052/0053) — the command, its promote-side validation,
-and the stats-selector fix — since a real, paid run should not proceed
-against code with known truncation, corpus-root, or stats-corruption
-bugs still open.
+ERW extractor. It depends on WI-ANNOTATE-0051 (the command) and
+WI-ANNOTATE-0052 (its promote-side validation), plus the `lcats stats`
+selector fix — since a real, paid run should not proceed against code
+with known truncation, corpus-root, or stats-corruption bugs still
+open. The selector fix itself landed as `WI-STATS-0049` (PR #238), from
+a concurrent session, before this workstream's own `WI-ANNOTATE-0053`
+was started; `WI-ANNOTATE-0053` was abandoned as redundant and this
+item's dependency retargeted to `WI-STATS-0049` directly.
 
 `WI-ASSESS-0031` (4→8 genre extension) — originally a parallel,
 in-progress effort this workstream's Step 7 was gated on — landed via
@@ -150,8 +154,9 @@ by the time this item was written).
 
 ## Dependencies / Order
 
-Depends on WI-ANNOTATE-0051, WI-ANNOTATE-0052, and WI-ANNOTATE-0053 —
-the command, its promote-side validation, and the stats-selector fix
+Depends on WI-ANNOTATE-0051, WI-ANNOTATE-0052, and WI-STATS-0049 (the
+`lcats stats` selector fix, landed independently — see Problem/Context)
+— the command, its promote-side validation, and the stats-selector fix
 must all land first. This is the last item in
 `WS-WORLDCON-FAST-PATH-ANNOTATION`'s planned sequence.
 
