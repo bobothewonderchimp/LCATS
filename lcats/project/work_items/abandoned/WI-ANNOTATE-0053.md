@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Superseded by WI-STATS-0049 (project/work_items/resolved/WI-STATS-0049.md), implemented and merged via PR #238 (commit 1067567e) in a concurrent session before this item was started. Verified every acceptance criterion against main: run_stats uses discovery.find_json_files (not find_corpus_stories) in cli.py; a regression test (TestRunStatsSelector.test_sidecar_json_is_excluded) proves sidecar files are excluded; the matching project/design/backlog.md entry is already marked \"Resolved 2026-08-07\". WI-STATS-0049 also covers a gap this item's own scope hadn't considered (preserving the cache/-directory exclusion via a new ignore_dir_names parameter on find_json_files, with its own test_cache_subdirectory_is_excluded regression test). No remaining work for this item."
 blocked_reason: null
 blocked: false
 id: WI-ANNOTATE-0053
 title: Fix lcats stats file-discovery selector
 type: deliverable
-status: proposed
+status: abandoned
 owner: unassigned
 contributors: []
 assigned_agents: []

@@ -28,11 +28,11 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `proposed/WI-LLM-0055.md` — Capture full entity lists and diff them across benchmark candidates
 - `proposed/WI-LLM-0056.md` — Tranche 1: expand the benchmark harness to cross-provider coverage (Anthropic, OpenAI, Gemini, one open-weight family)
 - `proposed/WI-ANNOTATE-0052.md` — Validate sidecar content in lcats promote's release gate
-- `proposed/WI-ANNOTATE-0053.md` — Fix lcats stats file-discovery selector
 - `proposed/WI-ANNOTATE-0054.md` — Run lcats annotate over a per-genre subset and collect statistics
 
 ## Abandoned Items
 - `abandoned/WI-META-0006.md` — superseded by native LRH functionality (`lrh meta register`); reversed by WI-META-0023
+- `abandoned/WI-ANNOTATE-0053.md` — superseded by `WI-STATS-0049`, which landed the identical `lcats stats` selector fix independently
 
 ## Resolved Items
 - `resolved/WI-REPAIR-0001.md`

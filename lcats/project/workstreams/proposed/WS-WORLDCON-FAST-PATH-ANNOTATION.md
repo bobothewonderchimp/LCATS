@@ -13,6 +13,7 @@ related_design:
   - lcats/project/design/proposals/adopted/worldcon-fast-path-annotation/00_proposal.md
   - lcats/project/design/proposals/adopted/lcats-pipeline-checkpointing/00_proposal.md
   - lcats/project/work_items/resolved/WI-ASSESS-0031.md
+  - lcats/project/work_items/resolved/WI-STATS-0049.md
 work_items:
   - WI-ANNOTATE-0050
   - WI-ANNOTATE-0051
@@ -24,9 +25,9 @@ exit_criteria:
   - lcats annotate exists, writes genre.json/scenes.json + per-bucket README.md, and iterates story buckets per-collection (never directly against a multi-collection corpus root)
   - lcats annotate writes each sidecar (genre.json, scenes.json) through lcats.utils.checkpoint's atomic-publication + fingerprint pattern, so an interrupted run neither repeats a paid call nor combines sidecars produced under mismatched model/prompt configurations
   - lcats promote's survey_collection validates sidecar content as part of the release gate
-  - lcats stats's file-discovery selector is fixed to the canonical find_json_files, with a regression test asserting sidecars are excluded from stats
+  - lcats stats's file-discovery selector is fixed to the canonical find_json_files, with a regression test asserting sidecars are excluded from stats (satisfied by WI-STATS-0049, landed independently — WI-ANNOTATE-0053 abandoned as redundant)
   - lcats annotate has been run over a small per-genre subset across all 8 current VALID_GENRES, output validated, and per-genre statistics collected
-  - All work items resolved and lrh validate reports 0 errors
+  - All work items resolved or abandoned (WI-ANNOTATE-0053 is permanently abandoned, superseded by WI-STATS-0049 — see Work Items below) and lrh validate reports 0 errors
 ---
 
 # Workstream: Fast-path annotation pipeline for the Worldcon 2026 paper dataset
@@ -75,7 +76,10 @@ sidecars would otherwise silently corrupt.
   with sidecar-content validation as part of the release gate.
 - Fix `lcats stats`'s file-discovery selector (`run_stats` currently
   calls the broad `find_corpus_stories`; must use the canonical
-  `find_json_files`, matching `survey`/`assess`).
+  `find_json_files`, matching `survey`/`assess`) — landed independently
+  as `WI-STATS-0049` (PR #238) from a concurrent session, before this
+  workstream's own `WI-ANNOTATE-0053` was started; `WI-ANNOTATE-0053`
+  abandoned as redundant once discovered.
 - Run `lcats annotate` over a small per-genre subset (all 8 current
   `VALID_GENRES`: science fiction, horror, humor, western, romance,
   mystery, fantasy, adventure — `WI-ASSESS-0031`'s 4→8 extension landed
@@ -120,12 +124,14 @@ sidecars would otherwise silently corrupt.
 3. [`WI-ANNOTATE-0052`](../../work_items/proposed/WI-ANNOTATE-0052.md) —
    Validate sidecar content in `lcats promote`'s release gate.
    `depends_on: [WI-ANNOTATE-0051]`.
-4. [`WI-ANNOTATE-0053`](../../work_items/proposed/WI-ANNOTATE-0053.md) —
-   Fix `lcats stats` file-discovery selector. No dependencies; can run
-   in parallel with (2)/(3), but must land before (5).
+4. [`WI-ANNOTATE-0053`](../../work_items/abandoned/WI-ANNOTATE-0053.md) —
+   **Abandoned**: fix `lcats stats` file-discovery selector. Superseded
+   by `WI-STATS-0049`, which landed the identical fix (and more — it
+   also preserves the `cache/`-directory exclusion) independently, from
+   a concurrent session, before this item was started.
 5. [`WI-ANNOTATE-0054`](../../work_items/proposed/WI-ANNOTATE-0054.md) —
    Run `lcats annotate` over a per-genre subset and collect statistics.
-   `depends_on: [WI-ANNOTATE-0051, WI-ANNOTATE-0052, WI-ANNOTATE-0053]`.
+   `depends_on: [WI-ANNOTATE-0051, WI-ANNOTATE-0052, WI-STATS-0049]`.
 
 ## Exit Criteria
 
