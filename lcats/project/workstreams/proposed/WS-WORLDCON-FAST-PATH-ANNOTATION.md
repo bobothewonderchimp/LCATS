@@ -27,7 +27,7 @@ exit_criteria:
   - lcats promote's survey_collection validates sidecar content as part of the release gate
   - lcats stats's file-discovery selector is fixed to the canonical find_json_files, with a regression test asserting sidecars are excluded from stats (satisfied by WI-STATS-0049, landed independently — WI-ANNOTATE-0053 abandoned as redundant)
   - lcats annotate has been run over a small per-genre subset across all 8 current VALID_GENRES, output validated, and per-genre statistics collected
-  - All work items resolved and lrh validate reports 0 errors
+  - All work items resolved or abandoned (WI-ANNOTATE-0053 is permanently abandoned, superseded by WI-STATS-0049 — see Work Items below) and lrh validate reports 0 errors
 ---
 
 # Workstream: Fast-path annotation pipeline for the Worldcon 2026 paper dataset
