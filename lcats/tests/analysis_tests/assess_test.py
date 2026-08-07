@@ -1,6 +1,8 @@
 """Unit tests for lcats.analysis.corpus.assess."""
 
+import os
 import pathlib
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -191,6 +193,60 @@ class TestAssessStoryErrorPaths(unittest.TestCase):
         self.assertIn("disk read error", result.error)
         self.assertEqual(result.verdict, "review")
         self.assertEqual(len(fb.calls), 0)
+
+    @patch(
+        "lcats.analysis.corpus.assess.run_preflight",
+        side_effect=RuntimeError("disk read error"),
+    )
+    def test_preflight_error_title_falls_back_to_directory_slug(self, _mock):
+        """Regression test: the fallback title (used only when
+        run_preflight raises before it can supply the real title) must be
+        derived from file_path.parent.name, not file_path.stem -- under
+        the bucket layout every canonical leaf filename is "story.json",
+        so file_path.stem would always be the literal string "story"."""
+        fb = fake_backend.FakeBackend(tool_result=dict(_SAMPLE_TOOL_RESULT))
+        result = assess.assess_story(_FILE, _GENRE, fb)
+        self.assertEqual(result.title, "path")
+
+    @patch(
+        "lcats.analysis.corpus.assess.run_preflight",
+        side_effect=RuntimeError("disk read error"),
+    )
+    def test_preflight_error_title_resolves_bare_relative_path(self, _mock):
+        """Regression test (Copilot review, PR #242): a bare relative
+        story.json (e.g. assess run from inside the bucket directory
+        itself) has a lexically empty parent name (Path(".").name == "")
+        -- the fallback must resolve to recover the real bucket directory
+        name instead of returning an empty title, mirroring
+        output.story_dir_value's own fallback for the same edge case."""
+        fb = fake_backend.FakeBackend(tool_result=dict(_SAMPLE_TOOL_RESULT))
+        original_cwd = os.getcwd()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bucket_dir = os.path.join(tmpdir, "my_story")
+            os.makedirs(bucket_dir)
+            os.chdir(bucket_dir)
+            try:
+                result = assess.assess_story(pathlib.Path("story.json"), _GENRE, fb)
+                self.assertEqual(result.title, "my_story")
+            finally:
+                os.chdir(original_cwd)
+
+    @patch(
+        "lcats.analysis.corpus.assess.run_preflight",
+        side_effect=RuntimeError("disk read error"),
+    )
+    @patch("pathlib.Path.resolve", side_effect=OSError("symlink loop"))
+    def test_preflight_error_survives_resolve_failure(self, _mock_resolve, _mock):
+        """Regression test: the bare-relative-path fallback's resolve()
+        call runs before the try/except that exists to catch exactly
+        this class of failure (unlike pure string ops, resolve() touches
+        the filesystem and can raise -- e.g. a broken symlink loop). A
+        resolve() failure must degrade to an empty title, not propagate
+        out of assess_story and crash the whole call."""
+        fb = fake_backend.FakeBackend(tool_result=dict(_SAMPLE_TOOL_RESULT))
+        result = assess.assess_story(pathlib.Path("story.json"), _GENRE, fb)
+        self.assertEqual(result.title, "")
+        self.assertIn("disk read error", result.error)
 
     @patch("lcats.analysis.corpus.assess.run_preflight", return_value=_PREFLIGHT_RETURN)
     def test_backend_exception_captured(self, _mock):
