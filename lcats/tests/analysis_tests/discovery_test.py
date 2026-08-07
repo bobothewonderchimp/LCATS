@@ -223,5 +223,80 @@ class TestFindJsonFiles(test_utils.TestCaseWithData):
         self.assertEqual(found, {s1, s2, other})
 
 
+class TestFindJsonFilesIgnoreDirNames(test_utils.TestCaseWithData):
+    """Unit tests for discovery.find_json_files's ignore_dir_names parameter."""
+
+    def setUp(self):
+        super().setUp()
+        self.root = pathlib.Path(self.test_temp_dir) / "corpus"
+        self.root.mkdir()
+
+    def _write(self, relpath):
+        p = self.root / relpath
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text("{}", encoding="utf-8")
+        return p
+
+    def test_prunes_matching_subdirectory(self):
+        cached = self._write("cache/story1/story.json")
+        real = self._write("fantasy/story2/story.json")
+        found = set(discovery.find_json_files([self.root], ignore_dir_names=("cache",)))
+        self.assertEqual(found, {real})
+        self.assertNotIn(cached, found)
+
+    def test_prune_is_case_insensitive(self):
+        cached = self._write("Cache/story1/story.json")
+        found = set(discovery.find_json_files([self.root], ignore_dir_names=("cache",)))
+        self.assertNotIn(cached, found)
+
+    def test_omitting_ignore_dir_names_leaves_behavior_unchanged(self):
+        cached = self._write("cache/story1/story.json")
+        real = self._write("fantasy/story2/story.json")
+        found = set(discovery.find_json_files([self.root]))
+        self.assertEqual(found, {cached, real})
+
+    def test_top_level_directory_itself_is_not_pruned(self):
+        """ignore_dir_names prunes descendants encountered during traversal,
+        not the top-level directory passed in directly -- matching
+        os.walk's own root-vs-children pruning semantics."""
+        story = self._write("cache/story1/story.json")
+        found = set(
+            discovery.find_json_files(
+                [self.root / "cache"], ignore_dir_names=("cache",)
+            )
+        )
+        self.assertEqual(found, {story})
+
+    def test_ignored_child_does_not_mask_a_real_leaf_bucket(self):
+        """Regression test (Codex review, PR #238): a real story bucket
+        that happens to contain an ignored subdirectory with its own
+        nested story.json (e.g. story1/cache/story.json) must still be
+        recognized as a leaf bucket -- the ignored child must not count
+        as nested-story-bucket evidence disqualifying story1 itself."""
+        real = self._write("fantasy/story1/story.json")
+        self._write("fantasy/story1/cache/story.json")
+        found = set(discovery.find_json_files([self.root], ignore_dir_names=("cache",)))
+        self.assertEqual(found, {real})
+
+    def test_generator_input_prunes_at_every_recursion_depth(self):
+        """Regression test (Codex review, PR #238): ignore_dir_names must
+        be safe to pass as a one-shot iterable (e.g. a generator) -- it
+        must not be exhausted after the first use, which would silently
+        stop pruning below the first traversal level."""
+        cached_shallow = self._write("cache/story1/story.json")
+        cached_deep = self._write("fantasy/cache/story2/story.json")
+        real = self._write("fantasy/story3/story.json")
+
+        found = set(
+            discovery.find_json_files(
+                [self.root], ignore_dir_names=(name for name in ["cache"])
+            )
+        )
+
+        self.assertEqual(found, {real})
+        self.assertNotIn(cached_shallow, found)
+        self.assertNotIn(cached_deep, found)
+
+
 if __name__ == "__main__":
     unittest.main()
