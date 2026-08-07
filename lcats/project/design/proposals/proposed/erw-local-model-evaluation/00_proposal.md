@@ -362,9 +362,14 @@ Already done (across two PRs):
 
 Follow-on work (proposed as separate work items once this proposal is
 adopted):
-1. Add an `ollama_qwen3_30b_a3b` candidate (MoE, higher quality ceiling)
-   to test whether a larger local model narrows the entity-recall gap
-   (11-14 vs. Opus's 21) at a still-acceptable latency.
+1. ~~Add an `ollama_qwen3_30b_a3b` candidate (MoE, higher quality
+   ceiling) to test whether a larger local model narrows the
+   entity-recall gap (11-14 vs. Opus's 21) at a still-acceptable
+   latency.~~ **Done (`WI-LLM-0049`).** The hypothesis was **not
+   supported** - `qwen3:30b-a3b` proved both slower and less reliable
+   than `qwen3:8b` on this exact call (2 of 3 real runs returned
+   essentially empty results). See
+   `lcats/experimental/model_comparison/ollama_qwen3_30b_a3b/README.md`.
 2. Extend `common/harness.py` to cover the genre-detection and
    segmentation stages, and add a candidate run against those - this is
    the evidence still needed to actually assess the hybrid-pipeline

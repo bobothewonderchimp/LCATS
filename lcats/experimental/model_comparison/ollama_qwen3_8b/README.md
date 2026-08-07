@@ -8,8 +8,10 @@ backend class.
 
 Sized for ~8GB of RAM/VRAM headroom - the "cheap tier" candidate a hybrid
 pipeline (local model for genre detection/segmentation, frontier model for
-extraction) would use. See `../ollama_qwen3_30b_a3b/` (not yet built) for
-the "quality tier" MoE candidate sized for extraction-grade stages.
+extraction) would use. See `../ollama_qwen3_30b_a3b/` for the
+"quality tier" MoE candidate - now tested (`WI-LLM-0049`): it did **not**
+turn out to be a reliable upgrade over this candidate, both slower and
+less consistent on the identical call.
 
 ## Setup
 
