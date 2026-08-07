@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+from lcats.analysis.corpus import annotate_cli
 from lcats.analysis.corpus import assess_cli
 from lcats.analysis.corpus import cli as corpus_cli
 from lcats.analysis.corpus import clean_cli
@@ -56,6 +57,10 @@ def _handle_repair_specials(args):
 
 def _handle_promote(args):
     return "", promote_cli.run(parsed_args=args)
+
+
+def _handle_annotate(args):
+    return "", annotate_cli.run(parsed_args=args)
 
 
 def _handle_clean(args):
@@ -237,6 +242,27 @@ def build_parser() -> argparse.ArgumentParser:
     )
     promote_parser.set_defaults(handler=_handle_promote)
     command_parsers["promote"] = promote_parser
+
+    annotate_parent = annotate_cli.build_parser(add_help=False)
+    annotate_parser = subparsers.add_parser(
+        "annotate",
+        parents=[annotate_parent],
+        help="Annotate data/ story buckets with genre/scenes sidecars via the Claude API.",
+        description=(
+            "Annotate data/ story buckets with genre.json/scenes.json "
+            "sidecars plus a per-bucket README.md, via the mature lcats "
+            "assess (genre) and scene_analysis (segmentation) extractors."
+        ),
+        epilog=(
+            "Examples:\n"
+            "  lcats annotate --dry-run\n"
+            "  ANTHROPIC_API_KEY=sk-... lcats annotate sherlock\n"
+            "  lcats annotate --checkpoint-dir .annotate_checkpoints data/"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    annotate_parser.set_defaults(handler=_handle_annotate)
+    command_parsers["annotate"] = annotate_parser
 
     clean_parent = clean_cli.build_parser(add_help=False)
     clean_parser = subparsers.add_parser(
