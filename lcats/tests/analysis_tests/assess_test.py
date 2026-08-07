@@ -88,6 +88,20 @@ class TestAssessStorySuccess(unittest.TestCase):
         self.assertEqual(fb.calls[0]["model"], "test-model-v1")
 
     @patch("lcats.analysis.corpus.assess.run_preflight", return_value=_PREFLIGHT_RETURN)
+    def test_max_tokens_default_raised_above_2048(self, _mock):
+        """WI-ANNOTATE-0050: the previous hardcoded 2048 ceiling truncated
+        on longer/messier real stories."""
+        fb = fake_backend.FakeBackend(tool_result=dict(_SAMPLE_TOOL_RESULT))
+        assess.assess_story(_FILE, _GENRE, fb)
+        self.assertEqual(fb.calls[0]["max_tokens"], 4096)
+
+    @patch("lcats.analysis.corpus.assess.run_preflight", return_value=_PREFLIGHT_RETURN)
+    def test_max_tokens_is_overridable(self, _mock):
+        fb = fake_backend.FakeBackend(tool_result=dict(_SAMPLE_TOOL_RESULT))
+        assess.assess_story(_FILE, _GENRE, fb, max_tokens=8192)
+        self.assertEqual(fb.calls[0]["max_tokens"], 8192)
+
+    @patch("lcats.analysis.corpus.assess.run_preflight", return_value=_PREFLIGHT_RETURN)
     def test_system_prompt_contains_genre(self, _mock):
         """The system prompt sent to the backend contains the genre name."""
         fb = fake_backend.FakeBackend(tool_result=dict(_SAMPLE_TOOL_RESULT))

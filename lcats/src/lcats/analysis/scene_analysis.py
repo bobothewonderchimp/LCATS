@@ -324,11 +324,16 @@ def _segment_result_validator(
     )
 
 
-def make_segment_extractor(backend: Any) -> llm_extractor.JSONPromptExtractor:
+def make_segment_extractor(
+    backend: Any, max_tokens: int = 8192
+) -> llm_extractor.JSONPromptExtractor:
     """Create a JSONPromptExtractor configured for scene/sequel extraction.
 
     Args:
         backend: LLMBackend satisfying lcats.llm.backend.LLMBackend Protocol.
+        max_tokens: Response token ceiling. Raised above
+            JSONPromptExtractor's bare 4096 default, which truncated on
+            real corpus stories with many segments (WI-ANNOTATE-0050).
 
     Returns:
         Configured JSONPromptExtractor using the tool= structured-output
@@ -345,6 +350,7 @@ def make_segment_extractor(backend: Any) -> llm_extractor.JSONPromptExtractor:
         output_key="segments",
         default_model="gpt-4o",
         temperature=0.2,
+        max_tokens=max_tokens,
         text_indexer=text_segmenter.paragraph_text_indexer,
         result_aligner=_segment_result_aligner,
         result_validator=_segment_result_validator,
