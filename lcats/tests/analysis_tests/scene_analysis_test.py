@@ -257,9 +257,10 @@ class TestMakeSegmentExtractor(unittest.TestCase):
 
     def test_max_tokens_raised_above_library_default(self):
         """WI-ANNOTATE-0050: the bare JSONPromptExtractor default (4096)
-        truncated on real corpus stories with many segments."""
+        truncated on real corpus stories with many segments; 8192 was
+        tried first and still truncated on the longest real story."""
         extractor = scene_analysis.make_segment_extractor(fake_backend.FakeBackend())
-        self.assertEqual(extractor.max_tokens, 8192)
+        self.assertEqual(extractor.max_tokens, 16384)
 
     def test_max_tokens_is_overridable(self):
         extractor = scene_analysis.make_segment_extractor(
