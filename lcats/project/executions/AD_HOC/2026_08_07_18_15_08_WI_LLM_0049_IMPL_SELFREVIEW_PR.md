@@ -2,10 +2,10 @@
 execution_id: 2026_08_07_18_15_08_WI_LLM_0049_IMPL_SELFREVIEW_PR
 prompt_id: PROMPT(AD_HOC:WI_LLM_0049_IMPL_SELFREVIEW_PR)[2026-08-07T18:14:54+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_07_18_00_26_WI_LLM_0049
 pr: https://github.com/xenotaur/LCATS/pull/245
-commit: a26a4a7d
+commit: 6b806efec93695f4331f858f06223616ff1fe2e6
 created_at: 2026-08-07T18:15:08+00:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/245

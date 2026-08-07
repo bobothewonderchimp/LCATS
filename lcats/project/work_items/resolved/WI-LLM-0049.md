@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #245 (commit 6b806efe). The hypothesis was NOT supported: qwen3:30b-a3b proved both slower (148-218s vs. qwen3:8b's 74-106s) and markedly less reliable (2 of 3 real runs returned essentially empty results despite structural success; the 3rd truncated outright) than the smaller qwen3:8b candidate it was meant to outperform. See lcats/experimental/model_comparison/ollama_qwen3_30b_a3b/README.md for full results."
 blocked_reason: null
 blocked: false
 id: WI-LLM-0049
 title: Add qwen3:30b-a3b (MoE) candidate to the local-model benchmark harness
 type: evaluation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
