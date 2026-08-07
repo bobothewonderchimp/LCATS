@@ -2,10 +2,10 @@
 execution_id: 2026_08_06_15_40_12_WS_PILOT_COST_SUSTAINABILITY
 prompt_id: PROMPT(AD_HOC:WS_PILOT_COST_SUSTAINABILITY)[2026-08-06T15:39:28+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/234
-commit:
+commit: f5fda70f6c5dd8c581a1be8a7e3a35e22e7bf8e5
 agent: claude_app
 instruction_source: project/workstreams/proposed/WS-PILOT-COST-SUSTAINABILITY.md
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
