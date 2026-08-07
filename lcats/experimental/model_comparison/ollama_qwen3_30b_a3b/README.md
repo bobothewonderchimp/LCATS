@@ -95,6 +95,19 @@ item's scope - see `WI-LLM-0051` for the adjacent, still-open
 item specifically for this "succeeds but returns near-empty results"
 failure mode if it recurs.
 
+Note on evidence quality: `results.json`'s `raw_output_preview` field is
+`null` on both of this candidate's "1 entity" runs, not because nothing
+was captured but because it is `None` **by construction** whenever a
+tool call structurally succeeds (`common/harness.py:197`,
+`lcats/src/lcats/analysis/llm_extractor.py:349` - both backends set
+`text=""` on any successful tool call, so there is no free text to
+preview). The single-entity/`segment`-echo diagnosis above therefore
+rests on an uncommitted, out-of-band diagnostic call, not on anything
+recoverable from the committed JSON after the fact. `WI-LLM-0055`
+(capturing full entity lists, not just counts) would need to capture the
+full tool-result payload regardless of success/failure to make this
+kind of anomaly diagnosable from `results.json` alone in the future.
+
 **Bottom line:** on this evidence, `qwen3:30b-a3b` should **not** be
 treated as a drop-in "quality tier" upgrade over `qwen3:8b` - it is both
 slower (148-218s vs. 74-106s) and less reliable in this session's 3 real
