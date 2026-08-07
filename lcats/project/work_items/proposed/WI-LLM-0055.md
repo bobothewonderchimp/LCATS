@@ -29,7 +29,7 @@ forbidden_actions:
 acceptance:
   - "BenchmarkResult (common/harness.py) captures the full extracted entity list (canonical_name + entity_type, at minimum) alongside the existing entity_count, written to results.json"
   - "A comparison script or benchmark_summary.py extension prints, for a chosen pair or set of candidates, which entities each candidate found that the others did not (set difference by name, with a documented normalization/matching rule)"
-  - "Run against the 3 committed candidates (anthropic_opus, ollama_qwen3_8b, and ollama_qwen3_30b_a3b if WI-LLM-0049 has landed by then) and show a real, worked example of the diff output"
+  - "Run against at least 2 committed candidates (anthropic_opus, ollama_qwen3_8b), plus a 3rd (ollama_qwen3_30b_a3b) if WI-LLM-0049 has landed by then, and show a real, worked example of the diff output"
 artifacts_expected:
   - lcats/experimental/model_comparison/common/harness.py
   - lcats/experimental/model_comparison/entity_diff.py

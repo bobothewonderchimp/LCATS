@@ -36,11 +36,37 @@ acceptance:
   - "A documented, reasoned decision on the second open-weight family (beyond the existing qwen3:8b) - candidate identified, its Mac-hardware fit checked, and either a real candidate landed or an explicit blocked/deferred note if nothing fits available hardware"
   - "gpt-oss-120b explicitly deferred to non-Mac hardware (Kubuntu/Linux) with a documented reason (~52-73GB minimum footprint exceeds this session's 32GB Mac), not silently dropped"
 artifacts_expected:
-  - lcats/experimental/model_comparison/anthropic_<tier>/README.md
-  - lcats/experimental/model_comparison/openai_<tier>/README.md
+  # Directory names below are provisional - see Risk Notes on
+  # re-verifying exact model IDs/sizes at implementation time; rename
+  # to match whatever model is actually selected for each cell. Each
+  # candidate follows the existing anthropic_opus/ollama_qwen3_8b
+  # shape: README.md, setup.py, benchmark.py, plus a committed
+  # results.json once actually run.
+  - lcats/experimental/model_comparison/anthropic_haiku/README.md
+  - lcats/experimental/model_comparison/anthropic_haiku/setup.py
+  - lcats/experimental/model_comparison/anthropic_haiku/benchmark.py
+  - lcats/experimental/model_comparison/anthropic_haiku/results.json
+  - lcats/experimental/model_comparison/openai_gpt5/README.md
+  - lcats/experimental/model_comparison/openai_gpt5/setup.py
+  - lcats/experimental/model_comparison/openai_gpt5/benchmark.py
+  - lcats/experimental/model_comparison/openai_gpt5/results.json
   - lcats/experimental/model_comparison/ollama_gpt_oss_20b/README.md
-  - lcats/experimental/model_comparison/gemini_<tier>/README.md
-  - lcats/experimental/model_comparison/ollama_gemma4_<size>/README.md
+  - lcats/experimental/model_comparison/ollama_gpt_oss_20b/setup.py
+  - lcats/experimental/model_comparison/ollama_gpt_oss_20b/benchmark.py
+  - lcats/experimental/model_comparison/ollama_gpt_oss_20b/results.json
+  - lcats/experimental/model_comparison/gemini_flash/README.md
+  - lcats/experimental/model_comparison/gemini_flash/setup.py
+  - lcats/experimental/model_comparison/gemini_flash/benchmark.py
+  - lcats/experimental/model_comparison/gemini_flash/results.json
+  - lcats/experimental/model_comparison/ollama_gemma4_12b/README.md
+  - lcats/experimental/model_comparison/ollama_gemma4_12b/setup.py
+  - lcats/experimental/model_comparison/ollama_gemma4_12b/benchmark.py
+  - lcats/experimental/model_comparison/ollama_gemma4_12b/results.json
+  # Second open-weight family (DeepSeek or GLM per Scope) - exact
+  # candidate and directory name are undecided; update this entry once
+  # chosen, or remove it with a documented reason if nothing fits
+  # available hardware (see Acceptance Criteria).
+  - lcats/experimental/model_comparison/<second-open-weight-family>/README.md
   - lcats/experimental/model_comparison/README.md
 required_evidence:
   - lrh_validate
@@ -73,10 +99,10 @@ A structural review (this session, in response to the user's question)
 found the existing architecture already covers most of this without new
 backend code:
 
-- `AnthropicBackend` (`src/lcats/llm/anthropic_backend.py`) already
+- `AnthropicBackend` (`lcats/src/lcats/llm/anthropic_backend.py`) already
   handles Anthropic online.
 - `OpenAIBackend` with its `base_url` parameter
-  (`src/lcats/llm/openai_backend.py:15`, added in PR #219) already
+  (`lcats/src/lcats/llm/openai_backend.py:15`, added in PR #219) already
   handles: OpenAI online (default `base_url`), any Ollama-served
   open-weight model (OpenAI offline via `gpt-oss`, Gemma offline, a
   second open-weight family offline - same pattern as
