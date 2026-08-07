@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #249 (commit 6c04e9ec). Added run_genre_detection()/run_segmentation() to common/harness.py, reusing the real production call paths. Ran ollama_qwen3_8b twice against each: genre detection succeeded 2/2 (correctly detected \"mystery\"); segmentation failed 2/2 - finish_reason='stop', tool_choice never invoked the tool despite schema-shaped free-text content, reproducing the tool_choice reliability gap WI-LLM-0051 exists to investigate. Updated PROP-ERW-LOCAL-MODEL-EVALUATION's Decision 3 with an explicit hybrid-pipeline verdict: genre detection is hybrid-viable for this model, segmentation is not (yet). Automatic first-push review (Codex, Copilot) surfaced real findings, all fixed: run_segmentation()'s success predicate missed extraction/alignment/validation errors and empty-list cases (mirrored corpus/annotate.py's existing production fix); a forced-tool_choice-ignored failure was discarding real billed token usage (fixed via a new NoToolCallError, mirroring TruncatedResponseError); a story_name inconsistency across stages; and prose overclaiming truncated captured content as fully schema-conformant."
 blocked_reason: null
 blocked: false
 id: WI-LLM-0050
 title: Extend the local-model benchmark harness to genre-detection and segmentation stages
 type: evaluation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
