@@ -102,6 +102,22 @@ class TestAssessStorySuccess(unittest.TestCase):
         self.assertEqual(fb.calls[0]["max_tokens"], 8192)
 
     @patch("lcats.analysis.corpus.assess.run_preflight", return_value=_PREFLIGHT_RETURN)
+    def test_detected_genre_confidence_clamped_above_one(self, _mock):
+        """The tool schema no longer enforces min/max, so out-of-range
+        values from the model must be clamped locally."""
+        tool_result = dict(_SAMPLE_TOOL_RESULT, detected_genre_confidence=1.5)
+        fb = fake_backend.FakeBackend(tool_result=tool_result)
+        result = assess.assess_story(_FILE, _GENRE, fb)
+        self.assertEqual(result.detected_genre_confidence, 1.0)
+
+    @patch("lcats.analysis.corpus.assess.run_preflight", return_value=_PREFLIGHT_RETURN)
+    def test_detected_genre_confidence_clamped_below_zero(self, _mock):
+        tool_result = dict(_SAMPLE_TOOL_RESULT, detected_genre_confidence=-0.3)
+        fb = fake_backend.FakeBackend(tool_result=tool_result)
+        result = assess.assess_story(_FILE, _GENRE, fb)
+        self.assertEqual(result.detected_genre_confidence, 0.0)
+
+    @patch("lcats.analysis.corpus.assess.run_preflight", return_value=_PREFLIGHT_RETURN)
     def test_system_prompt_contains_genre(self, _mock):
         """The system prompt sent to the backend contains the genre name."""
         fb = fake_backend.FakeBackend(tool_result=dict(_SAMPLE_TOOL_RESULT))

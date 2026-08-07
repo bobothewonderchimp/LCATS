@@ -84,8 +84,6 @@ ASSESSMENT_TOOL = tool_schema_module.strict_tool_schema(
                 },
                 "detected_genre_confidence": {
                     "type": "number",
-                    "minimum": 0.0,
-                    "maximum": 1.0,
                     "description": "Confidence in the detected genre, 0.0 to 1.0.",
                 },
                 "genre_verdict": {
@@ -391,7 +389,9 @@ def assess_story(
             exclude_reason=a.get("exclude_reason", ""),
             wellformed=bool(a.get("wellformed", True)),
             detected_genre=a.get("detected_genre", "other"),
-            detected_genre_confidence=float(a.get("detected_genre_confidence", 0.0)),
+            detected_genre_confidence=max(
+                0.0, min(1.0, float(a.get("detected_genre_confidence", 0.0)))
+            ),
             genre_verdict=a.get("genre_verdict", "detected"),
             genre_suggestion=a.get("genre_suggestion", ""),
             secondary_genre=a.get("secondary_genre", ""),
