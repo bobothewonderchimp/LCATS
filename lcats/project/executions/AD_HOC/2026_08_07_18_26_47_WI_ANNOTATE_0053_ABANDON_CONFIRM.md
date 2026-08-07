@@ -2,10 +2,10 @@
 execution_id: 2026_08_07_18_26_47_WI_ANNOTATE_0053_ABANDON_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_ANNOTATE_0053_ABANDON_CONFIRM)[2026-08-07T18:26:38+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_07_18_19_21_WI_ANNOTATE_0053_ABANDON_REVIEW
 pr: https://github.com/xenotaur/LCATS/pull/243
-commit: cb69bda9020331e37232e3a78814713b70f61782
+commit: 7e66106fbb98b14fc01017b209637dd17a781374
 created_at: 2026-08-07T18:26:47+00:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/243
