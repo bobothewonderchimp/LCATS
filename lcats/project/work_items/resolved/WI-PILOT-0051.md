@@ -2,7 +2,7 @@
 id: WI-PILOT-0051
 title: Add --story/--story-list targeted test harness to run_pilot.py
 type: deliverable
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
@@ -18,7 +18,7 @@ depends_on: []
 blocked_by: []
 blocked: false
 blocked_reason: null
-resolution: null
+resolution: "Implemented and merged via PR #244 (commit 19f9a3620495555a8eeebc48ee917c95f8d70301): run_pilot.py gained --story/--story-list/--genre flags bypassing the stratified genre-detect scan entirely (no implicit genre-detect call - explicit --genre or per-entry manifest genre required), a committed fixture set under fixtures/ (--story-list zero-config default), and per-stage cost/timing recording for the segmentation stage closing backlog P2 for that stage. 26 new/updated tests in run_pilot_test.py, including 3 covering review-round fixes (unexpected-exception usage preservation, is_file() path validation, object()-sentinel collision safety). See execution record project/executions/WI-PILOT-0051/2026_08_07_17_53_57_WI_PILOT_0051.md."
 expected_actions:
   - edit_file
   - create_file

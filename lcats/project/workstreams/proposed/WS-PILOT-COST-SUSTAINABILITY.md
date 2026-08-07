@@ -96,7 +96,7 @@ sequence (each of WI 2-4 depends on WI 1's harness):
 
 - **WI-PILOT-0051 — targeted test harness** (Decision 2):
   `--story`/`--story-list` flag on `run_pilot.py`, fixture set,
-  per-stage cost reporting. Created 2026-08-07.
+  per-stage cost reporting. Resolved 2026-08-07, PR #244.
 - **WI 2 — prompt caching evaluation** (Decision 3): measure the real,
   narrower caching benefit (or the mid-conversation-tool-changes
   alternative) against WI 1's fixture set given the per-call
