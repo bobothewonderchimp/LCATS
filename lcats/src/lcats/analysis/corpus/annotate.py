@@ -34,6 +34,20 @@ from lcats.analysis.corpus import assess, discovery
 from lcats.analysis.corpus import cli as corpus_cli
 from lcats.utils import checkpoint
 
+# Explicit defaults, passed through to assess_story/make_segment_extractor
+# and included in their fingerprints -- otherwise a future change to
+# either function's own default would silently go unnoticed by an
+# existing checkpoint (review finding, PR #241).
+DEFAULT_GENRE_MAX_TOKENS = 4096
+DEFAULT_SCENES_MAX_TOKENS = 16384
+
+
+class EmptyCollectionError(ValueError):
+    """Raised when a requested collection directory is missing or
+    contains no canonical story buckets -- mirrors promote.survey_
+    collection's story_count > 0 guard, so `lcats annotate <collection>`
+    cannot silently succeed while doing nothing (review finding, PR #241)."""
+
 
 def _hash_text(text: str) -> str:
     """Deterministic hash of text, for checkpoint fingerprints -- not a
@@ -78,7 +92,9 @@ def _hash_json(obj: Any) -> str:
     ).hexdigest()
 
 
-def _genre_fingerprint(model: str, story_data: dict, body: str) -> dict:
+def _genre_fingerprint(
+    model: str, max_tokens: int, story_data: dict, body: str
+) -> dict:
     """Fingerprint the complete effective assessment input, not just body
     -- assess_story also sends author/url (from metadata) to the model
     and stores them in AssessmentResult, so a metadata-only change (no
@@ -89,6 +105,7 @@ def _genre_fingerprint(model: str, story_data: dict, body: str) -> dict:
     metadata = story_data.get("metadata") or {}
     return {
         "model": model,
+        "max_tokens": max_tokens,
         "system_prompt_hash": _hash_text(assess.DETECT_SYSTEM_PROMPT),
         "tool_schema_hash": _hash_json(assess.ASSESSMENT_TOOL),
         "author": metadata.get("author", "Unknown"),
@@ -97,9 +114,10 @@ def _genre_fingerprint(model: str, story_data: dict, body: str) -> dict:
     }
 
 
-def _scenes_fingerprint(model: str, body: str) -> dict:
+def _scenes_fingerprint(model: str, max_tokens: int, body: str) -> dict:
     return {
         "model": model,
+        "max_tokens": max_tokens,
         "system_prompt_hash": _hash_text(scene_analysis.SCENE_SEQUEL_SYSTEM_PROMPT),
         "user_prompt_template_hash": _hash_text(
             scene_analysis.SCENE_SEQUEL_USER_PROMPT_TEMPLATE
@@ -117,19 +135,22 @@ def _annotate_genre(
     body: str,
     backend: Any,
     model: str,
+    max_tokens: int,
     roots: checkpoint.CheckpointRoots,
 ) -> tuple[Optional[dict], Optional[str]]:
     """Return (genre_data, error). genre_data is the sidecar payload to
     write; error is set (genre_data is None) only on an unrecoverable
     failure. A checkpoint hit skips the paid assess_story call entirely."""
-    fingerprint = _genre_fingerprint(model, story_data, body)
+    fingerprint = _genre_fingerprint(model, max_tokens, story_data, body)
     cached = checkpoint.read_checkpoint(
         roots.working_root, item_id, "genre", fingerprint
     )
     if cached.done and isinstance(cached.data, dict):
         return cached.data, None
 
-    result = assess.assess_story(story_path, genre="", backend=backend, model=model)
+    result = assess.assess_story(
+        story_path, genre="", backend=backend, model=model, max_tokens=max_tokens
+    )
     if result.error:
         checkpoint.write_checkpoint(
             roots.working_root,
@@ -153,23 +174,39 @@ def _annotate_genre(
     return data, None
 
 
+def _error_message(error: Any) -> str:
+    """Extract a clean, human-readable message from an error value.
+
+    api_error is a structured dict with its own "message" key; str()-ing
+    the whole dict produces noisy Python-repr output and throws away that
+    field (review finding, PR #241). extraction_error/alignment_error/
+    validation_error are already plain strings.
+    """
+    if isinstance(error, dict):
+        return str(error.get("message", error))
+    return str(error)
+
+
 def _annotate_scenes(
     *,
     item_id: str,
     body: str,
     backend: Any,
     model: str,
+    max_tokens: int,
     roots: checkpoint.CheckpointRoots,
 ) -> tuple[Optional[dict], Optional[str]]:
     """Return (scenes_data, error), mirroring _annotate_genre's contract."""
-    fingerprint = _scenes_fingerprint(model, body)
+    fingerprint = _scenes_fingerprint(model, max_tokens, body)
     cached = checkpoint.read_checkpoint(
         roots.working_root, item_id, "scenes", fingerprint
     )
     if cached.done and isinstance(cached.data, dict):
         return cached.data, None
 
-    seg_extractor = scene_analysis.make_segment_extractor(backend)
+    seg_extractor = scene_analysis.make_segment_extractor(
+        backend, max_tokens=max_tokens
+    )
     seg_result = seg_extractor.extract(body, model_name=model)
     # Check alignment_error/validation_error too, not just api_error/
     # extraction_error -- JSONPromptExtractor.extract() still sets
@@ -184,14 +221,19 @@ def _annotate_scenes(
     )
     segments = seg_result.get("extracted_output") or []
     if error or not segments:
-        error_message = str(error) if error else "segmentation produced no segments"
+        error_message = (
+            _error_message(error) if error else "segmentation produced no segments"
+        )
         checkpoint.write_checkpoint(
             roots.working_root,
             item_id,
             "scenes",
             outcome="failure",
             fingerprint=fingerprint,
-            data={"error": error_message},
+            # Preserve the full structured error (not just the extracted
+            # message) so a later diagnosis has the complete detail
+            # (review finding, PR #241).
+            data={"error": error_message, "error_detail": error},
         )
         return None, error_message
 
@@ -207,24 +249,30 @@ def _annotate_scenes(
     return data, None
 
 
-def _write_json(path: pathlib.Path, data: dict) -> None:
-    """Atomically publish a sidecar file -- a plain write_text can leave
-    torn JSON if interrupted mid-write even though the success checkpoint
-    was already published (review finding, PR #241), the same failure
-    mode checkpoint.write_checkpoint's own tempfile+os.replace pattern
-    exists to prevent."""
+def _atomic_write_text(path: pathlib.Path, text: str) -> None:
+    """Atomically publish a text file -- a plain write_text can leave a
+    torn file if interrupted mid-write, even though (for a sidecar) the
+    success checkpoint was already published (review finding, PR #241).
+    Mirrors checkpoint.write_checkpoint's own tempfile+os.replace
+    pattern; used for both JSON sidecars and README.md, since an
+    interrupted README write is the identical failure mode (review
+    finding, PR #241)."""
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp_name = tempfile.mkstemp(
         dir=path.parent, prefix=f".{path.name}.", suffix=".tmp"
     )
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as tmp_file:
-            json.dump(data, tmp_file, indent=2)
+            tmp_file.write(text)
         os.replace(tmp_name, path)
     except BaseException:
         if os.path.exists(tmp_name):
             os.unlink(tmp_name)
         raise
+
+
+def _write_json(path: pathlib.Path, data: dict) -> None:
+    _atomic_write_text(path, json.dumps(data, indent=2))
 
 
 def _remove_if_exists(path: pathlib.Path) -> None:
@@ -259,7 +307,7 @@ def _write_readme(
         lines.append(f"- segment_count: {scenes_data.get('segment_count', 0)}")
         lines.append("")
 
-    (bucket_dir / "README.md").write_text("\n".join(lines), encoding="utf-8")
+    _atomic_write_text(bucket_dir / "README.md", "\n".join(lines))
 
 
 def annotate_story(
@@ -269,6 +317,8 @@ def annotate_story(
     backend: Any,
     model: str,
     roots: checkpoint.CheckpointRoots,
+    genre_max_tokens: int = DEFAULT_GENRE_MAX_TOKENS,
+    scenes_max_tokens: int = DEFAULT_SCENES_MAX_TOKENS,
 ) -> AnnotateStoryResult:
     """Annotate one story bucket: write genre.json, scenes.json, README.md.
 
@@ -288,6 +338,7 @@ def annotate_story(
         body=body,
         backend=backend,
         model=model,
+        max_tokens=genre_max_tokens,
         roots=roots,
     )
     # A failed recompute must not leave a stale sidecar from a prior,
@@ -304,6 +355,7 @@ def annotate_story(
         body=body,
         backend=backend,
         model=model,
+        max_tokens=scenes_max_tokens,
         roots=roots,
     )
     if scenes_data is not None:
@@ -324,6 +376,8 @@ def annotate_collection(
     backend: Any,
     model: str,
     roots: checkpoint.CheckpointRoots,
+    genre_max_tokens: int = DEFAULT_GENRE_MAX_TOKENS,
+    scenes_max_tokens: int = DEFAULT_SCENES_MAX_TOKENS,
 ) -> list[AnnotateStoryResult]:
     """Annotate every story bucket in one collection directory.
 
@@ -332,20 +386,32 @@ def annotate_collection(
     not find_json_files, and deliberately called once per collection
     (never directly against a multi-collection root; see
     annotate_collections below).
+
+    Raises:
+        EmptyCollectionError: collection_dir is missing or contains no
+            canonical story buckets -- a silent empty result would
+            otherwise let `lcats annotate <collection>` appear to
+            succeed while doing nothing (review finding, PR #241).
     """
     collection_name = collection_dir.name
-    results = []
-    for story_path in discovery.iter_collection_story_files(collection_dir):
-        results.append(
-            annotate_story(
-                story_path,
-                collection_name=collection_name,
-                backend=backend,
-                model=model,
-                roots=roots,
-            )
+    story_paths = list(discovery.iter_collection_story_files(collection_dir))
+    if not story_paths:
+        raise EmptyCollectionError(
+            f"collection {collection_name!r} ({collection_dir}) is missing or "
+            "contains no canonical story buckets"
         )
-    return results
+    return [
+        annotate_story(
+            story_path,
+            collection_name=collection_name,
+            backend=backend,
+            model=model,
+            roots=roots,
+            genre_max_tokens=genre_max_tokens,
+            scenes_max_tokens=scenes_max_tokens,
+        )
+        for story_path in story_paths
+    ]
 
 
 def annotate_collections(

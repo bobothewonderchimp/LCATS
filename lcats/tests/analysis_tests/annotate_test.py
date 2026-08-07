@@ -114,6 +114,21 @@ class StoryItemIdTest(unittest.TestCase):
         )
 
 
+class ErrorMessageTest(unittest.TestCase):
+    """Regression coverage: str()-ing a structured api_error dict produces
+    noisy Python-repr output and discards the clean message field (review
+    finding, PR #241)."""
+
+    def test_extracts_message_from_dict_error(self):
+        error = {"status": 429, "code": "quota_exceeded", "message": "No credits."}
+        self.assertEqual("No credits.", annotate._error_message(error))
+
+    def test_falls_back_to_str_for_plain_string_error(self):
+        self.assertEqual(
+            "alignment failed: x", annotate._error_message("alignment failed: x")
+        )
+
+
 class AnnotateStoryTest(unittest.TestCase):
     def setUp(self):
         self._tmpdir = tempfile.TemporaryDirectory()
@@ -326,6 +341,28 @@ class AnnotateCollectionTest(unittest.TestCase):
 
         self.assertEqual(2, len(results))
         self.assertTrue(all(r.clean for r in results))
+
+    def test_missing_collection_raises_instead_of_silently_succeeding(self):
+        """A missing/empty collection must not let `lcats annotate
+        <collection>` appear to succeed while doing nothing (review
+        finding, PR #241)."""
+        missing_dir = self.source_root / "does_not_exist"
+        backend = _DualToolFakeBackend()
+
+        with self.assertRaises(annotate.EmptyCollectionError):
+            annotate.annotate_collection(
+                missing_dir, backend=backend, model="fake-model", roots=self.roots
+            )
+
+    def test_empty_collection_directory_raises(self):
+        empty_dir = self.source_root / "empty_collection"
+        empty_dir.mkdir()
+        backend = _DualToolFakeBackend()
+
+        with self.assertRaises(annotate.EmptyCollectionError):
+            annotate.annotate_collection(
+                empty_dir, backend=backend, model="fake-model", roots=self.roots
+            )
 
 
 class AnnotateCollectionsTest(unittest.TestCase):

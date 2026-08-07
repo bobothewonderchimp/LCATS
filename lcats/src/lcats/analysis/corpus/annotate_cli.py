@@ -79,29 +79,35 @@ def run(argv=None, parsed_args=None) -> int:
                 print(f"{name}/{story_path.parent.name}")
         return 0
 
-    from lcats.llm import anthropic_backend
+    try:
+        from lcats.llm import anthropic_backend
 
-    backend = anthropic_backend.AnthropicBackend(api_key=api_key)
-    roots = checkpoint.resolve_roots(
-        working_root=args.checkpoint_dir, source_root=args.source
-    )
+        backend = anthropic_backend.AnthropicBackend(api_key=api_key)
+        roots = checkpoint.resolve_roots(
+            working_root=args.checkpoint_dir, source_root=args.source
+        )
 
-    results = annotate.annotate_collections(
-        args.source,
-        backend=backend,
-        model=args.model,
-        roots=roots,
-        collection_names=collection_names,
-    )
+        results = annotate.annotate_collections(
+            args.source,
+            backend=backend,
+            model=args.model,
+            roots=roots,
+            collection_names=collection_names,
+        )
 
-    all_clean = True
-    for collection_name, story_results in results.items():
-        for result in story_results:
-            if not result.clean:
-                all_clean = False
-                print(
-                    f"error: {collection_name}/{result.story_path.parent.name}: "
-                    f"genre_error={result.genre_error!r} scenes_error={result.scenes_error!r}",
-                    file=sys.stderr,
-                )
-    return 0 if all_clean else 1
+        all_clean = True
+        for collection_name, story_results in results.items():
+            for result in story_results:
+                if not result.clean:
+                    all_clean = False
+                    print(
+                        f"error: {collection_name}/{result.story_path.parent.name}: "
+                        f"genre_error={result.genre_error!r} scenes_error={result.scenes_error!r}",
+                        file=sys.stderr,
+                    )
+        return 0 if all_clean else 1
+    except BrokenPipeError:
+        return 141
+    except Exception as exc:  # noqa: BLE001
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
