@@ -517,3 +517,45 @@ independently), which sidesteps the race entirely at the cost of losing
 block any of the four affected work items individually; no renaming
 proposed here since at least one (`WI-ANNOTATE-0051`) is already
 `resolved` and touching it would rewrite settled history.
+
+---
+
+## Check back on `gutenbergpy` upstream release status for `WI-RELEASE-0037` — P3, decision blocked on external response
+
+Noted 2026-07-29, while formalizing `WS-RELEASE`/`PROP-LCATS-PYPI-RELEASE-READINESS`.
+`WI-RELEASE-0037` (resolve the `gutenbergpy` `git+https` direct-VCS-dependency
+PyPI-upload blocker) is gated on an external maintainer response: the fixes
+LCATS needs (alias tables, title-index correction) are already merged
+upstream into `raduangelescu/gutenbergpy:master`
+([PR #25](https://github.com/raduangelescu/gutenbergpy/pull/25),
+[PR #26](https://github.com/raduangelescu/gutenbergpy/pull/26)), but the
+last published PyPI release is still `0.3.5` (2023-03-27), predating that
+merge. The user contacted the maintainer directly to ask about their
+release schedule; no response yet as of this entry.
+`raduangelescu/gutenbergpy:master`'s own `setup.cfg` already shows an
+unreleased `version = 0.3.6` bump — a mildly encouraging, non-committal
+signal a release may be forthcoming, not confirmation of one.
+
+`WI-RELEASE-0039` (the pre-launch verification gate,
+`depends_on: WI-RELEASE-0037`) is the standing mechanism that re-checks
+this status immediately before any real PyPI publish attempt — but that
+only fires once a publish is imminent, not on any regular cadence in the
+meantime. This entry exists so periodic check-ins on the maintainer
+response aren't lost between now and whenever a publish attempt actually
+happens.
+
+**Next step:** periodically check
+[pypi.org/project/gutenbergpy](https://pypi.org/project/gutenbergpy/) for
+a release newer than `0.3.5`, and check in on the maintainer conversation
+status. If a new release lands containing the needed fixes, "wait on
+upstream" becomes viable for `WI-RELEASE-0037` even if a vendor/fork path
+was already chosen or in progress — surface that to the user rather than
+proceeding on stale assumptions. Remove this entry once `WI-RELEASE-0037`
+resolves (its own resolution note should record the outcome either way).
+
+**Related:** `WS-RELEASE` (`project/workstreams/proposed/WS-RELEASE.md`);
+`WI-RELEASE-0037`, `WI-RELEASE-0039`; `PROP-LCATS-PYPI-RELEASE-READINESS`
+(`project/design/proposals/proposed/lcats-pypi-release-readiness/00_proposal.md`);
+upstream PRs
+[raduangelescu/gutenbergpy#25](https://github.com/raduangelescu/gutenbergpy/pull/25),
+[#26](https://github.com/raduangelescu/gutenbergpy/pull/26).
