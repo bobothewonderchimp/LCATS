@@ -23,19 +23,22 @@ already documents the 0.0-1.0 range for the model).
 
 ## Run
 
+Run from the repository's `lcats/` directory (per `AGENTS.md`):
+
 ```bash
-python verify_assess_api.py
+python experimental/verify_assess_api/verify_assess_api.py
 ```
 
 Makes **one real, billable** Anthropic API call (`assess_story()` against
 `corpora/lovecraft/the_case_of_charles_dexter_ward/story.json` in detect-only
 mode, `max_tokens=16384`). Requires `ANTHROPIC_API_KEY` (env var or
-`.secrets/anthropic_api_keys.env` - see `docs/secrets-setup.md`).
+`.secrets/anthropic_api_keys.env` - see `lcats/docs/secrets-setup.md`).
 
-Optionally pass a different story and/or claimed genre:
+Optionally pass a different story and/or claimed genre (path relative to
+`lcats/`, since that's the working directory the command above runs from):
 
 ```bash
-python verify_assess_api.py ../../corpora/sherlock/five_orange_pips/story.json --genre mystery
+python experimental/verify_assess_api/verify_assess_api.py ../corpora/sherlock/five_orange_pips/story.json --genre mystery
 ```
 
 Exits non-zero and prints `FAIL` if the call errors (including a
