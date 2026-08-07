@@ -2,10 +2,10 @@
 execution_id: 2026_08_07_06_59_11_WI_ANNOTATE_0051_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_ANNOTATE_0051_SELFREVIEW)[2026-08-07T06:59:02+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: 
-commit: 534ad5c8e5505dba9bbb2e8150fe06e12de791a9
+commit: 99457ce327aec8c869a1a9065318700e75b4d497
 created_at: 2026-08-07T06:59:11+00:00
 agent: claude_app
 instruction_source: project/work_items/proposed/WI-ANNOTATE-0051.md

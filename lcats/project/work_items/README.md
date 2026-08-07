@@ -27,7 +27,6 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `proposed/WI-LLM-0051.md` — Investigate Ollama's forced tool_choice reliability for the ERW benchmark harness
 - `proposed/WI-LLM-0055.md` — Capture full entity lists and diff them across benchmark candidates
 - `proposed/WI-LLM-0056.md` — Tranche 1: expand the benchmark harness to cross-provider coverage (Anthropic, OpenAI, Gemini, one open-weight family)
-- `proposed/WI-ANNOTATE-0051.md` — Build lcats annotate command with checkpoint-safe sidecar writes
 - `proposed/WI-ANNOTATE-0052.md` — Validate sidecar content in lcats promote's release gate
 - `proposed/WI-ANNOTATE-0053.md` — Fix lcats stats file-discovery selector
 - `proposed/WI-ANNOTATE-0054.md` — Run lcats annotate over a per-genre subset and collect statistics
@@ -59,3 +58,4 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `resolved/WI-PACKAGING-0036.md` — Replace hardcoded parent-depth path counting with a pyproject.toml anchor
 - `resolved/WI-RELEASE-0038.md` — Add lcats.version module, --version CLI flag, and scripts/version release helper
 - `resolved/WI-ANNOTATE-0050.md` — Fix max_tokens truncation in assess_story and make_segment_extractor
+- `resolved/WI-ANNOTATE-0051.md` — Build lcats annotate command with checkpoint-safe sidecar writes

@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via PR #241 (commit 99457ce3): built lcats annotate, running lcats assess (genre) and scene_analysis (segmentation) over story buckets, writing genre.json/scenes.json + README.md sidecars into data/ bucket directories, with checkpoint-safe writes (lcats.utils.checkpoint, dedicated .annotate_checkpoints/ dir, never data/corpora/cache). Two review rounds (12 findings total, 6 codex + 6 copilot) hardened it further: alignment/validation error rejection, atomic sidecar/README writes, stale-sidecar removal on failed recompute, module-import convention, full fingerprint completeness (author/url, user prompt template, max_tokens), clean error-message extraction, and an empty-collection guard. Pre-push self-review (cold subagent) caught 2 more issues before the PR's first bot round. See execution record project/executions/WI-ANNOTATE-0051/2026_08_07_07_01_05_WI_ANNOTATE_0051.md."
 blocked_reason: null
 blocked: false
 id: WI-ANNOTATE-0051
 title: Build lcats annotate command with checkpoint-safe sidecar writes
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
