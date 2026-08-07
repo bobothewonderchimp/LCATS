@@ -335,10 +335,17 @@ if they were stories, inflating or corrupting story-level statistics. Not
 caused by the bucket-layout migration itself, but it's exactly the
 "wrong tool for the canonical-presence question" pattern that migration's
 own design guidance warns against (see
-`project_story_bucket_proposal_status` memory). **Next step:** switch
-`run_stats`'s file discovery to `discovery.find_json_files`, matching
-`survey`/`assess`, and add a regression test asserting sidecar files are
-excluded from stats output.
+`project_story_bucket_proposal_status` memory). **Resolved 2026-08-07:**
+implemented and merged via
+[WI-STATS-0049](https://github.com/xenotaur/LCATS/pull/238).
+`discovery.find_json_files` gained an opt-in `ignore_dir_names`
+parameter (defaulting to a no-op) so `run_stats` can switch to it while
+still excluding `cache/` directory contents, matching the prior
+`find_corpus_stories(ignore_dir_names=("cache",))` behavior. A review
+round caught two real bugs in the first version of the fix (an ignored
+child directory could mask a real leaf story bucket; `ignore_dir_names`
+wasn't safe to pass as a one-shot iterable) — both fixed in the same
+PR.
 
 ### `assess_story`'s error-path title fallback uses the stem-collision pattern — P3, cosmetic
 

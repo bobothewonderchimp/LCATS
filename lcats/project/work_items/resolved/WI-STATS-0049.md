@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via https://github.com/xenotaur/LCATS/pull/238 (squash commit 1067567eb674f365d2fb6e2f2c420c0f2f5e711a). Two real bugs found in review (Codex) were fixed in the same PR: _is_leaf_story_bucket needed ignore_dir_names too, and ignore_dir_names needed to be materialized once (not re-derived from a possibly-exhausted iterable) across recursion."
 blocked_reason: null
 blocked: false
 id: WI-STATS-0049
 title: Fix lcats stats' broad story-file selector
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
