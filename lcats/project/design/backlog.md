@@ -79,7 +79,7 @@ cross-references and git history and is a separate decision.
 
 ---
 
-### Unguarded `pathlib.Path.resolve()` calls could crash callers on filesystem errors — P2, in progress
+### Unguarded `pathlib.Path.resolve()` calls could crash callers on filesystem errors — P2, resolved
 
 Surfaced 2026-08-07 during `WI-ASSESS-0050`'s review (Copilot found the
 underlying bare-relative-path edge case; self-review then found this
@@ -165,8 +165,9 @@ batch-level configuration (`processing.py`'s `process_files` ×2 and
 safety checks (`promote.py` ×2, `checkpoint.py` ×3, `paths.py` ×1) = 15
 total, matching the original grep count exactly.
 
-**Next step:** none — `WI-PROCESSING-0057` resolves this entry once its
-PR merges.
+**Resolved 2026-08-08:** `WI-PROCESSING-0057` implemented and merged via
+[PR #262](https://github.com/xenotaur/LCATS/pull/262) (commit
+`25218bfc`). No further action.
 
 ---
 

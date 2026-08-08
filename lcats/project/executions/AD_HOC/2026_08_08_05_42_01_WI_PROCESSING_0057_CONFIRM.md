@@ -2,10 +2,10 @@
 execution_id: 2026_08_08_05_42_01_WI_PROCESSING_0057_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_PROCESSING_0057_CONFIRM)[2026-08-08T05:41:53+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_08_05_23_41_WI_PROCESSING_0057
 pr: https://github.com/xenotaur/LCATS/pull/262
-commit: 2e68fbe8
+commit: 25218bfcd2b00fe8ddd79f20fc5e30dc99d124c1
 created_at: 2026-08-08T05:42:01+00:00
 ---
 

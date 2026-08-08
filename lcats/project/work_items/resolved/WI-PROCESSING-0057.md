@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via PR #262 (commit 25218bfc): widened assess.py's existing guard to catch RuntimeError alongside OSError (resolve() raises RuntimeError, not OSError, for a symlink loop on Python <3.13); added a matching guard to output.py's story_dir_value; guarded processing.py's process_file three initial resolve() calls, returning its normal status=\"error\" shape instead of crashing; stopped process_files from eagerly resolving every input path before its per-file loop starts, restoring per-file fault isolation. A Copilot review finding (raw vs. expanded path in the error result) was fixed in a follow-up commit. See execution records project/executions/WI-PROCESSING-0057/2026_08_08_05_23_41_WI_PROCESSING_0057.md and project/executions/AD_HOC/2026_08_08_05_42_01_WI_PROCESSING_0057_CONFIRM.md."
 blocked_reason: null
 blocked: false
 id: WI-PROCESSING-0057
 title: Guard unhandled pathlib.Path.resolve() failures in assessment, batch processing, and survey row-building
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
