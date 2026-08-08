@@ -13,6 +13,8 @@ import json
 import pathlib
 import statistics
 
+from lcats.analysis import text_segmenter
+
 HERE = pathlib.Path(__file__).resolve().parent
 TRIAL_DIR = HERE / "source" / "trial"
 MANIFEST_PATH = HERE / "subset_manifest.md"
@@ -29,6 +31,41 @@ _CORRUPTION_MARKERS = ("</antml", "<parameter", "antml:")
 
 def _is_corrupted(value: str) -> bool:
     return any(marker in value for marker in _CORRUPTION_MARKERS)
+
+
+def _segment_overlap_chars(segments: list[dict]) -> int:
+    """Sum of overlap (in chars) between consecutive segments, ordered by
+    segment_id. A correctly aligned scene-segmentation run partitions the
+    story text into non-overlapping spans; any overlap means at least one
+    segment's start_char/end_char was misaligned."""
+    ordered = sorted(
+        (s for s in segments if isinstance(s.get("start_char"), int)),
+        key=lambda s: s["segment_id"],
+    )
+    overlap = 0
+    prev_end = -1
+    for seg in ordered:
+        start = seg["start_char"]
+        end = seg.get("end_char", start)
+        if start < prev_end:
+            overlap += prev_end - start
+        prev_end = max(prev_end, end)
+    return overlap
+
+
+def _paragraph_collapse(body: str) -> bool:
+    """True if text_segmenter's paragraph indexer -- which splits on a
+    literal blank line ("\\n\\n") -- collapses this story's body into a
+    single paragraph spanning the whole text. When that happens, every
+    segment's start_par_id/end_par_id is forced to 1, so the search range
+    align_segment uses for every anchor becomes the entire document; a
+    single failed anchor search then silently falls back to end-of-text
+    instead of a tight local range (text_segmenter.py's align_segment,
+    line ~146), producing wrong, overlapping offsets rather than a loud
+    error. Observed on all 3 stories sourced from corpora/london in this
+    trial (single-newline paragraph formatting, no blank-line breaks)."""
+    _, meta = text_segmenter.paragraph_text_indexer(body)
+    return meta["n_paragraphs"] <= 1 and len(body) > 2000
 
 
 def read_manifest() -> list[tuple[str, str]]:
@@ -57,6 +94,9 @@ def collect_rows(manifest_rows: list[tuple[str, str]]) -> list[dict]:
             (story_dir / "scenes.json").read_text(encoding="utf-8")
         )
         secondary_raw = genre_data.get("secondary_genre", "")
+        story_data = json.loads((story_dir / "story.json").read_text(encoding="utf-8"))
+        body = story_data.get("body", "")
+        segments = scenes_data.get("segments", [])
         rows.append(
             {
                 "story": story_name,
@@ -66,9 +106,11 @@ def collect_rows(manifest_rows: list[tuple[str, str]]) -> list[dict]:
                 "secondary": secondary_raw,
                 "secondary_corrupted": _is_corrupted(secondary_raw),
                 "match": provisional == genre_data["detected_genre"],
-                "scene_count": len(scenes_data.get("segments", [])),
+                "scene_count": len(segments),
                 "input_tokens": genre_data.get("input_tokens", 0),
                 "output_tokens": genre_data.get("output_tokens", 0),
+                "segment_overlap_chars": _segment_overlap_chars(segments),
+                "paragraph_collapse": _paragraph_collapse(body),
             }
         )
     return rows
@@ -116,9 +158,78 @@ def write_report(rows: list[dict]) -> None:
         "this item's own Risk Notes to keep this first run small.",
         "- `lcats promote`'s `survey_collection` gate: **clean** (0 "
         "mojibake findings, 0 malformed-sidecar findings across all 24 "
-        "stories) -- this checks JSON validity and required-field shape, "
-        "not free-text field content, so it does not catch the "
-        "`secondary_genre` corruption below.",
+        "stories) -- this checks JSON validity and required-field shape "
+        "only. It does not catch either data quality finding below: "
+        "neither corrupted `secondary_genre` text nor overlapping scene "
+        "`start_char`/`end_char` offsets change a sidecar's required-key "
+        "shape.",
+        "",
+    ]
+
+    collapsed = [r for r in rows if r["paragraph_collapse"]]
+    overlapping = [r for r in rows if r["segment_overlap_chars"] > 0]
+    lines += [
+        "## Data quality finding: scene-segmentation offset corruption "
+        "(most severe finding in this run)",
+        "",
+        f"**{len(collapsed)}/{len(rows)} stories have single-paragraph "
+        f"source text** (`text_segmenter.paragraph_text_indexer` finds no "
+        "blank-line paragraph breaks at all -- the whole story collapses "
+        "into one `[P0001]` block), and **all "
+        f"{len(collapsed)} of those show corrupted scene segmentation**: "
+        f"{len(overlapping)} with overlapping segment offsets, the rest "
+        "degenerate (a single segment spanning the entire story, no real "
+        "segmentation at all). Unlike the `secondary_genre` finding below, "
+        "this corrupts the actual `start_char`/`end_char` fields "
+        "downstream consumers would use to slice the story text -- a "
+        "real correctness defect, not a cosmetic one.",
+        "",
+        "**Root cause, traced to `text_segmenter.py`:** "
+        "`build_paragraph_index` splits only on a literal blank line "
+        "(`\\n\\n`); a story formatted with single-newline paragraph "
+        "breaks (all 3 affected stories here are from `corpora/london`) "
+        "collapses to `n_paragraphs=1`, so every segment's "
+        "`start_par_id`/`end_par_id` is forced to 1 and `align_segment`'s "
+        "search range becomes the *entire document* for every segment. "
+        "When `find_anchor_in_range` then fails to locate a segment's "
+        "`end_exact` text verbatim (`align_segment`, "
+        "`text_segmenter.py` around line 146), the function silently "
+        "falls back to `hi` -- the end of the search range, i.e. "
+        "end-of-document -- instead of raising an alignment error. The "
+        "result is a spurious full-document-length segment that "
+        "overlaps every segment after it, with no `alignment_error` or "
+        "`validation_error` raised to catch it (verified: `annotate.py`'s "
+        "existing alignment/validation-error rejection did not fire for "
+        "any of these 3 stories).",
+        "",
+        "Affected stories:",
+        "",
+    ]
+    for row in collapsed:
+        detail = (
+            f"{row['segment_overlap_chars']:,} overlapping chars across "
+            f"{row['scene_count']} segments"
+            if row["segment_overlap_chars"] > 0
+            else f"degenerate: {row['scene_count']} segment spanning the "
+            "entire story"
+        )
+        lines.append(f"- `{row['story']}`: {detail}")
+    lines += [
+        "",
+        "**Not fixed here** -- `align_segment`/`build_paragraph_index` "
+        "are shared library code in `text_segmenter.py`, used by other "
+        "callers beyond `lcats annotate` (`story_processors.py`, "
+        "`run_pilot.py`, `notebooks/12_extract_scenes.ipynb` per "
+        "`scene_analysis.py`'s own docstring) -- a fix needs its own "
+        "design and test coverage against all of those callers, not a "
+        "quick patch mid-review for an evaluation-only work item. "
+        "Recommend a dedicated follow-up work item: (1) handle "
+        "single-newline paragraph formatting in "
+        "`build_paragraph_index`, and (2) make `align_segment` return "
+        "alignment failure (not a full-range fallback) when an anchor "
+        "search genuinely fails, so `annotate.py`'s existing "
+        "`alignment_error` rejection can catch it instead of silently "
+        "writing a corrupted `scenes.json`.",
         "",
     ]
 
@@ -212,10 +323,13 @@ def write_report(rows: list[dict]) -> None:
             if row["secondary_corrupted"]
             else row["secondary"]
         )
+        scenes_display = row["scene_count"]
+        if row["paragraph_collapse"]:
+            scenes_display = f"{row['scene_count']} **(offsets corrupted, see above)**"
         lines.append(
             f"| {row['story']} | {row['provisional']} | "
             f"{row['detected']}{flag} | {secondary_display} | "
-            f"{row['confidence']:.2f} | {row['scene_count']} |"
+            f"{row['confidence']:.2f} | {scenes_display} |"
         )
 
     mismatches = [r for r in rows if not r["match"]]
@@ -239,9 +353,16 @@ def write_report(rows: list[dict]) -> None:
         "",
         "## Observations",
         "",
+        "- **Most important finding**: scene-segmentation offsets are "
+        f"unreliable for {len(collapsed)}/{len(rows)} stories in this "
+        "run (see above) -- a real correctness defect with a diagnosed "
+        "root cause in shared library code, not model flakiness. Any "
+        "future larger run should treat single-newline-formatted source "
+        "text as a known risk until `text_segmenter.py` is fixed.",
         "- All 24 stories produced non-empty `genre.json`, `scenes.json`, "
         "and `README.md` sidecars, and passed `lcats promote`'s formal "
-        "release-gate validation (`survey_collection`) with zero findings.",
+        "release-gate validation (`survey_collection`) with zero findings "
+        "-- that gate checks shape, not segmentation correctness.",
         "- Confidence and secondary-genre fields surfaced real nuance, not "
         "just a bare label -- e.g. `brown_wolf` (Jack London) came back "
         "`adventure` at only 0.55 confidence with secondary genre "
