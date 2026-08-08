@@ -24,6 +24,41 @@ before a loud one even if the loud one blocks more use cases.
 
 ---
 
+### `lrh work-items validate`'s custom frontmatter parser rejects comments inside YAML lists, and `lrh validate` doesn't catch it — P1, fix needed
+
+Surfaced 2026-08-08 while fixing `WI-LLM-0056.md`'s `malformed-frontmatter`
+error. `lrh`'s own frontmatter parser
+(`lrh.control.parser.parse_markdown_text`, in the sibling
+`LogicalRoboticsHarness` repo at
+`logical_robotics_harness/src/lrh/control/parser.py`) is a custom parser,
+not PyYAML - and it cannot handle a `#` comment line interleaved between
+items of a YAML list (e.g. `artifacts_expected:` with a `# note` line
+between two `- path` entries). PyYAML parses this shape fine, so
+`lrh validate` (the general, top-level validator) reports 0 errors on a
+file with this pattern, but `lrh work-items validate --project-root
+<path>` fails it with `malformed-frontmatter`
+(`unsupported nested mapping for key '<field>': '<comment line>'`), and
+`lrh work-items readiness <id>` fails with "work item not found" even
+though the file exists. Nothing in CI or the standard `lrh validate` path
+catches this before it lands - confirmed by the fact that this exact
+pattern was independently introduced and then independently
+rediscovered-and-fixed *twice* in parallel by different concurrent
+sessions on 2026-08-08: `WI-LLM-0056.md` (fixed in PR #259) and
+`WI-LLM-0051.md` (fixed in PR #254). A repo-wide scan of every `.md` file
+under `lcats/project/` on `origin/main` after both fixes landed found no
+further instances, but nothing prevents a new one from being introduced
+again the same way (e.g. by an agent adding an explanatory YAML comment
+inside a list it's editing, which is valid YAML and easy to reach for).
+**Next step:** either (a) extend `lrh validate` to also run the same
+custom-parser check `lrh work-items validate` already performs, so the
+gap is caught by the validator every workflow already runs, or (b) fix
+the custom parser itself (in the sibling `LogicalRoboticsHarness` repo) to
+tolerate comment lines between YAML list items, matching PyYAML's
+behavior. Either fix belongs in `LogicalRoboticsHarness`, not `LCATS` -
+this repo can only work around the gap per-file, not close it.
+
+---
+
 ### Concurrent sessions independently minted the same WI number under different prefixes — P2, decision needed
 
 Surfaced 2026-08-07 while creating `WI-PILOT-0051`: at least four work
