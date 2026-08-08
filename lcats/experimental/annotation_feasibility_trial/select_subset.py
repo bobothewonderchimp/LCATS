@@ -160,15 +160,27 @@ SELECTIONS: tuple[tuple[str, str, str], ...] = (
 
 
 def build_subset() -> list[tuple[str, str, str, int]]:
-    """Copy each selected story into TRIAL_DIR; return manifest rows.
+    """Copy each selected story's story.json into TRIAL_DIR; return
+    manifest rows.
+
+    Only writes/overwrites story.json in each selected story's own
+    subdirectory, and only removes a subdirectory that is no longer in
+    SELECTIONS at all -- a wholesale rmtree of TRIAL_DIR would destroy
+    any genre.json/scenes.json/README.md sidecars lcats annotate has
+    already written there (paid API output, manually validated), for
+    every story still in the current selection (review finding, PR
+    #253).
 
     Each returned row is (source_path, provisional_genre, rationale,
     body_length) -- body_length is read back from the copied file so
     the manifest reflects what was actually written, not an assumption.
     """
-    if TRIAL_DIR.exists():
-        shutil.rmtree(TRIAL_DIR)
-    TRIAL_DIR.mkdir(parents=True)
+    TRIAL_DIR.mkdir(parents=True, exist_ok=True)
+
+    selected_names = {rel_path.split("/", 1)[1] for rel_path, _, _ in SELECTIONS}
+    for existing in TRIAL_DIR.iterdir():
+        if existing.is_dir() and existing.name not in selected_names:
+            shutil.rmtree(existing)
 
     rows: list[tuple[str, str, str, int]] = []
     for rel_path, genre, rationale in SELECTIONS:
@@ -183,7 +195,7 @@ def build_subset() -> list[tuple[str, str, str, int]]:
             raise ValueError(f"source story has an empty body, refusing: {source}")
 
         dest_dir = TRIAL_DIR / story_name
-        dest_dir.mkdir(parents=True)
+        dest_dir.mkdir(parents=True, exist_ok=True)
         dest_path = dest_dir / "story.json"
         dest_path.write_text(
             json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
