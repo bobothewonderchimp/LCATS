@@ -822,6 +822,52 @@ class TestExtractWithAligner(unittest.TestCase):
         self.assertIsNotNone(result["alignment_error"])
         self.assertIn("align failed", result["alignment_error"])
 
+    def test_aligner_exception_clears_extracted_output(self):
+        """WI-SEGMENT-0059, review finding PR #269: this is the plain-JSON
+        branch (no tool_schema) -- extract() must clear extracted_output
+        to None on an alignment failure here too, not just in the
+        tool_schema branch, or a caller reading extracted_output without
+        checking alignment_error first would get the stale, pre-alignment
+        parsed value instead of a safe falsy result."""
+        index_meta = {"n_paragraphs": 1}
+        indexer = MagicMock(return_value=("[P0001] hello", index_meta))
+        aligner = MagicMock(side_effect=RuntimeError("align failed"))
+        fb = fake_backend.FakeBackend(
+            response_text=json.dumps({"segments": [{"id": 1}]})
+        )
+        ext = _make_extractor(
+            backend=fb,
+            text_indexer=indexer,
+            result_aligner=aligner,
+            user_prompt_template="{story_text}",
+        )
+        result = ext.extract("hello")
+        self.assertIsNone(result["extracted_output"])
+        self.assertIsNone(result["extraction_error"])
+
+    def test_aligner_exception_skips_validator(self):
+        """The validator must not run against the stale pre-alignment
+        value once alignment has already failed -- it would otherwise
+        produce a confusing secondary error unrelated to the real
+        alignment_error."""
+        index_meta = {"n_paragraphs": 1}
+        indexer = MagicMock(return_value=("[P0001] hello", index_meta))
+        aligner = MagicMock(side_effect=RuntimeError("align failed"))
+        validator = MagicMock(side_effect=RuntimeError("should not run"))
+        fb = fake_backend.FakeBackend(
+            response_text=json.dumps({"segments": [{"id": 1}]})
+        )
+        ext = _make_extractor(
+            backend=fb,
+            text_indexer=indexer,
+            result_aligner=aligner,
+            result_validator=validator,
+            user_prompt_template="{story_text}",
+        )
+        result = ext.extract("hello")
+        validator.assert_not_called()
+        self.assertIsNone(result["validation_error"])
+
 
 # ---------------------------------------------------------------------------
 # Tests: extract — with result_validator

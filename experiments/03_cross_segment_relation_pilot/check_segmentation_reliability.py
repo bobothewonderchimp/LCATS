@@ -134,13 +134,12 @@ def classify(result: dict, segments: list) -> str:
     if result.get("extraction_error"):
         return f"extraction_error:{result['extraction_error']}"
     if result.get("alignment_error"):
-        # On an alignment failure, extracted_output is the raw, unaligned
-        # {"segments": [...]} dict (segments_result_aligner raises before
-        # ever unwrapping it, WI-SEGMENT-0059) -- truthy and non-empty, so
-        # without this check the story would silently fall through to
-        # "included" with segment_count reporting len() of the dict's
-        # keys (effectively 1) as if segmentation had succeeded, exactly
-        # the class of silent misreporting this script exists to measure.
+        # extracted_output is None here regardless (cleared by
+        # JSONPromptExtractor.extract() itself on an alignment failure,
+        # WI-SEGMENT-0059) -- this check exists so the story is reported
+        # under its real cause instead of silently falling through to
+        # "included", exactly the class of silent misreporting this
+        # script exists to measure and prevent.
         return f"alignment_error:{result['alignment_error']}"
     if not segments:
         return "no_segments"
@@ -266,11 +265,10 @@ def main() -> int:
         api_error = result.get("api_error")
         segments = result.get("extracted_output") or []
         if result.get("alignment_error"):
-            # On an alignment failure, extracted_output is the raw,
-            # unaligned {"segments": [...]} dict, not a bare segment list
-            # (WI-SEGMENT-0059) -- len() of that dict is 1 (its one key),
-            # which would misreport segment_count below as if one segment
-            # had been successfully produced.
+            # segments would already be [] here regardless (extracted_
+            # output is cleared to None by JSONPromptExtractor.extract()
+            # itself on an alignment failure, WI-SEGMENT-0059) -- kept
+            # explicit for clarity, not strict necessity.
             segments = []
         outcome = classify(result, segments)
         counts[outcome] += 1

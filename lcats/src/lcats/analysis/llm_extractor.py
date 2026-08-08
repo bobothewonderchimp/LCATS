@@ -545,8 +545,13 @@ class JSONPromptExtractor:
                 except Exception as exc:
                     alignment_error = f"alignment failed: {exc!r}"
 
-            # Optional validation/auditing
-            if self.result_validator and index_meta is not None:
+            # Optional validation/auditing -- skipped once alignment has
+            # already failed, matching the tool_schema branch above:
+            # `parsed` still holds its pre-alignment value in that case,
+            # and validating against it produces a confusing, unrelated
+            # secondary error rather than a meaningful report
+            # (WI-SEGMENT-0059, review finding PR #269).
+            if self.result_validator and index_meta is not None and not alignment_error:
                 try:
                     validation_report = self.result_validator(
                         parsed, story_text, index_meta
@@ -555,10 +560,21 @@ class JSONPromptExtractor:
                     validation_error = f"validation failed: {exc!r}"
             self.last_validation_report = validation_report
 
+            # On an alignment failure, `parsed` still holds its
+            # pre-alignment value -- clear extracted to None rather than
+            # reading self.output_key out of that stale value, matching
+            # the tool_schema branch's contract (WI-SEGMENT-0059, review
+            # finding PR #269). No current caller exercises this branch
+            # with a non-None result_aligner (only scene_analysis.py's
+            # segment extractor uses one, and it always pairs with
+            # tool_schema), but a future non-tool-schema extractor with
+            # an aligner must not silently reintroduce this bug.
             extracted = (
-                parsed.get(self.output_key) if isinstance(parsed, dict) else None
+                parsed.get(self.output_key)
+                if isinstance(parsed, dict) and not alignment_error
+                else None
             )
-            if extracted is None:
+            if extracted is None and not alignment_error:
                 extraction_error = f"Expected '{self.output_key}' key in JSON response."
         else:
             if parsing_error:
