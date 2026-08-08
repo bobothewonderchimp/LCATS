@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: Merged via https://github.com/xenotaur/LCATS/pull/253 (merge commit d6ba49203f2c7952df37954bcfc0fb9415e9c399). Ran lcats annotate over a 24-story subset (3 per genre x 8 VALID_GENRES), validated output by hand, and produced a per-genre stats report. Surfaced two real data-quality findings, both documented with recommended follow-up work items rather than fixed in this evaluation-only item: (1) ~42% secondary_genre corruption in assess.py's genre-detection output, and (2) scene-segmentation offset corruption in text_segmenter.py affecting all 3 corpora/london stories in the trial.
 blocked_reason: null
 blocked: false
 id: WI-ANNOTATE-0054
 title: Run lcats annotate over a per-genre subset and collect statistics
 type: evaluation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []

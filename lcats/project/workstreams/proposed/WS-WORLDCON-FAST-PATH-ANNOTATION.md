@@ -129,7 +129,7 @@ sidecars would otherwise silently corrupt.
    by `WI-STATS-0049`, which landed the identical fix (and more — it
    also preserves the `cache/`-directory exclusion) independently, from
    a concurrent session, before this item was started.
-5. [`WI-ANNOTATE-0054`](../../work_items/proposed/WI-ANNOTATE-0054.md) —
+5. [`WI-ANNOTATE-0054`](../../work_items/resolved/WI-ANNOTATE-0054.md) —
    Run `lcats annotate` over a per-genre subset and collect statistics.
    `depends_on: [WI-ANNOTATE-0051, WI-ANNOTATE-0052, WI-STATS-0049]`.
 
