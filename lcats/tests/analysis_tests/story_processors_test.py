@@ -393,6 +393,56 @@ class TestProcessorFunction(unittest.TestCase):
         result = self._run_processor(seg_errors={"alignment_error": "offset mismatch"})
         self.assertEqual(result["segmentation"]["alignment_error"], "offset mismatch")
 
+    def test_alignment_error_prevents_malformed_segments_reaching_semantics(self):
+        """WI-SEGMENT-0059: on an alignment_error, extracted_output is the
+        raw, unaligned {"segments": [...]} dict (segments_result_aligner
+        raises before ever unwrapping it) -- not a bare list. Verify the
+        processor passes an empty list to annotate_segments_with_semantics
+        in that case, not the raw dict, which would otherwise iterate its
+        keys as if they were segments and crash with a confusing
+        AttributeError instead of surfacing the clean alignment_error
+        already captured."""
+        data = dict(_MINIMAL_STORY)
+        seg_extraction = {
+            "extracted_output": {"segments": [{"segment_id": 1}]},
+            "parsing_error": None,
+            "extraction_error": None,
+            "alignment_error": "alignment failed for segment_id=1: ...",
+            "validation_report": None,
+        }
+
+        mock_seg_extractor = MagicMock()
+        mock_seg_extractor.extract.return_value = seg_extraction
+
+        mock_sem_extractor = MagicMock()
+        mock_encoder = _make_mock_encoder()
+
+        client = fake_backend.FakeBackend()
+
+        with (
+            patch(
+                "lcats.analysis.scene_analysis.make_segment_extractor",
+                return_value=mock_seg_extractor,
+            ),
+            patch(
+                "lcats.analysis.scene_analysis.make_semantics_extractor",
+                return_value=mock_sem_extractor,
+            ),
+            patch(
+                "lcats.analysis.story_analysis.get_encoder",
+                return_value=mock_encoder,
+            ),
+            patch(
+                "lcats.analysis.scene_analysis.annotate_segments_with_semantics",
+                return_value=[],
+            ) as mock_annotate,
+        ):
+            processor = story_processors.make_annotated_segment_extractor(client)
+            result = processor(data)
+
+        self.assertEqual(mock_annotate.call_args.kwargs["segments"], [])
+        self.assertIn("alignment failed", result["segmentation"]["alignment_error"])
+
     def test_validation_report_included_when_flag_true(self):
         report = {"score": 0.9}
         result = self._run_processor(

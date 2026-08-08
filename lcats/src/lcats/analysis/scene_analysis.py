@@ -298,11 +298,17 @@ def _segment_result_aligner(
     The tool_schema (SEGMENT_TOOL_SCHEMA) must keep a "segments" wrapper
     so this function receives the same {"segments": [...]} shape
     segments_result_aligner has always expected - but this wrapper then
-    unwraps it before returning, so extracted_output stays a bare list,
-    preserving make_segment_extractor's pre-WI-EVENT-0033 contract for
-    every existing caller (story_processors.py, run_pilot.py's
-    _segment_story, notebooks/12_extract_scenes.ipynb) with no changes
-    needed on their side.
+    unwraps it before returning, so extracted_output stays a bare list
+    on success, preserving make_segment_extractor's pre-WI-EVENT-0033
+    contract for every existing caller (story_processors.py,
+    run_pilot.py's _segment_story, notebooks/12_extract_scenes.ipynb).
+
+    Does not catch exceptions: segments_result_aligner now raises
+    ValueError on a per-segment alignment failure (WI-SEGMENT-0059,
+    fixing a prior silent-fallback bug) rather than always returning
+    successfully, so callers relying on JSONPromptExtractor.extract's
+    own alignment_error field (story_processors.py, run_pilot.py) do
+    still need to check it - it just wasn't reachable before this fix.
     """
     aligned = text_segmenter.segments_result_aligner(
         parsed_output, story_text, index_meta

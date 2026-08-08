@@ -390,6 +390,49 @@ class TestSegmentExtractorEndToEnd(unittest.TestCase):
         )
         self.assertIsNotNone(result["validation_report"])
 
+    def test_unresolvable_anchor_surfaces_as_alignment_error(self):
+        """WI-SEGMENT-0059: a genuinely unresolvable end_exact must reach
+        extract()'s own alignment_error field, not just fail silently
+        inside align_segment's return value -- proving the failure
+        actually propagates through segments_result_aligner raising,
+        _segment_result_aligner not catching it, and extract()'s own
+        try/except around calling its result_aligner, end-to-end through
+        the real extractor (not a unit-level text_segmenter-only check)."""
+        story_text = "Once upon a time there was a dragon."
+        tool_result = {
+            "segments": [
+                {
+                    "segment_id": 1,
+                    "segment_type": "narrative_scene",
+                    "start_par_id": 1,
+                    "end_par_id": 1,
+                    "start_exact": "Once upon a time",
+                    "end_exact": "this text is not in the story at all",
+                    "start_prefix": "",
+                    "end_suffix": "",
+                    "start_char": None,
+                    "end_char": None,
+                    "summary": "A dragon appears.",
+                    "cohesion": {
+                        "time": "once upon a time",
+                        "place": "unspecified",
+                        "characters": ["dragon"],
+                    },
+                    "gacd": None,
+                    "erac": None,
+                    "reason": "Establishes setting.",
+                    "confidence": 0.8,
+                }
+            ]
+        }
+        fb = fake_backend.FakeBackend(tool_result=tool_result)
+        extractor = scene_analysis.make_segment_extractor(fb)
+
+        result = extractor.extract(story_text)
+
+        self.assertIsNotNone(result["alignment_error"])
+        self.assertIn("segment_id=1", result["alignment_error"])
+
 
 class TestSemanticsExtractorEndToEnd(unittest.TestCase):
     """extract() through the tool= path with no wrapper key."""

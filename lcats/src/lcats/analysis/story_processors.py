@@ -153,6 +153,16 @@ def make_annotated_segment_extractor(
                 result["segmentation"]["validation_report"] = seg_extraction.get(
                     "validation_report"
                 )
+            if result["segmentation"]["alignment_error"]:
+                # On an alignment failure, extracted_output is the raw,
+                # unaligned tool-result dict (not a bare segment list) --
+                # segments_result_aligner raises before ever unwrapping
+                # it (WI-SEGMENT-0059). Passing that dict into
+                # annotate_segments_with_semantics below would iterate
+                # its keys as if they were segments and crash with a
+                # confusing AttributeError instead of the clean
+                # alignment_error signal already captured above.
+                segments = []
 
             # 2) Per-segment semantic judgments (text-only, no external labels).
             annotated = scene_analysis.annotate_segments_with_semantics(

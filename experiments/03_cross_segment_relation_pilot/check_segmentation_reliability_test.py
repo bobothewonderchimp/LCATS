@@ -241,5 +241,52 @@ class TestMainStoryIdCollisionAvoidance(unittest.TestCase):
             self.assertEqual(first_record, second_record)
 
 
+class TestClassifyAlignmentError(unittest.TestCase):
+    """WI-SEGMENT-0059: on an alignment failure, extracted_output is the
+    raw, unaligned {"segments": [...]} dict (segments_result_aligner
+    raises before ever unwrapping it), not a bare list. classify() must
+    check alignment_error explicitly -- without that check, a truthy,
+    non-empty dict would fall through every other check and misreport
+    "included", exactly the class of silent misreporting this script
+    exists to measure and prevent."""
+
+    def test_alignment_error_reported_not_included(self):
+        result = {
+            "api_error": None,
+            "extraction_error": None,
+            "alignment_error": "alignment failed for segment_id=1: ...",
+            "extracted_output": {"segments": [{"segment_id": 1}]},
+        }
+        segments = result.get("extracted_output") or []
+        outcome = check_segmentation_reliability.classify(result, segments)
+        self.assertTrue(outcome.startswith("alignment_error:"))
+
+    def test_alignment_error_takes_priority_over_no_segments_check(self):
+        """A truthy dict is not "no segments" either -- confirm
+        alignment_error is checked before the segments truthiness check
+        would (wrongly) let it through as "included"."""
+        result = {
+            "api_error": None,
+            "extraction_error": None,
+            "alignment_error": "alignment failed",
+            "extracted_output": {"segments": []},
+        }
+        segments = result.get("extracted_output") or []
+        self.assertTrue(segments)  # a non-empty dict is truthy
+        outcome = check_segmentation_reliability.classify(result, segments)
+        self.assertNotEqual(outcome, "included")
+
+    def test_no_alignment_error_still_included(self):
+        result = {
+            "api_error": None,
+            "extraction_error": None,
+            "alignment_error": None,
+            "extracted_output": [{"segment_id": 1}],
+        }
+        segments = result.get("extracted_output") or []
+        outcome = check_segmentation_reliability.classify(result, segments)
+        self.assertEqual(outcome, "included")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -133,6 +133,15 @@ def classify(result: dict, segments: list) -> str:
         return f"api_error:{label or 'unknown'}"
     if result.get("extraction_error"):
         return f"extraction_error:{result['extraction_error']}"
+    if result.get("alignment_error"):
+        # On an alignment failure, extracted_output is the raw, unaligned
+        # {"segments": [...]} dict (segments_result_aligner raises before
+        # ever unwrapping it, WI-SEGMENT-0059) -- truthy and non-empty, so
+        # without this check the story would silently fall through to
+        # "included" with segment_count reporting len() of the dict's
+        # keys (effectively 1) as if segmentation had succeeded, exactly
+        # the class of silent misreporting this script exists to measure.
+        return f"alignment_error:{result['alignment_error']}"
     if not segments:
         return "no_segments"
     return "included"
@@ -256,6 +265,13 @@ def main() -> int:
         word_counts.append(word_count)
         api_error = result.get("api_error")
         segments = result.get("extracted_output") or []
+        if result.get("alignment_error"):
+            # On an alignment failure, extracted_output is the raw,
+            # unaligned {"segments": [...]} dict, not a bare segment list
+            # (WI-SEGMENT-0059) -- len() of that dict is 1 (its one key),
+            # which would misreport segment_count below as if one segment
+            # had been successfully produced.
+            segments = []
         outcome = classify(result, segments)
         counts[outcome] += 1
         # Persist immediately - both raw_output (empty for this extractor:

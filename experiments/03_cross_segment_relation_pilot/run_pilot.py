@@ -504,10 +504,21 @@ def _segment_story(
     """
     seg_extractor = scene_analysis.make_segment_extractor(backend)
     seg_result = seg_extractor.extract(body, model_name=model)
-    error = seg_result.get("api_error") or seg_result.get("extraction_error")
+    # alignment_error must be checked here too, not just api_error/
+    # extraction_error: on an alignment failure, extracted_output is the
+    # raw, unaligned tool-result dict (not a bare segment list), since
+    # segments_result_aligner now raises before ever unwrapping it
+    # (WI-SEGMENT-0059). Without this check that dict would be truthy
+    # and get returned as "segments" below, silently corrupting this
+    # function's own bare-list return contract.
+    error = (
+        seg_result.get("api_error")
+        or seg_result.get("extraction_error")
+        or seg_result.get("alignment_error")
+    )
     segments = seg_result.get("extracted_output") or []
     usage = seg_result.get("usage")
-    if not segments:
+    if error or not segments:
         return [], error or "segmentation produced no segments", usage
     return segments, error, usage
 

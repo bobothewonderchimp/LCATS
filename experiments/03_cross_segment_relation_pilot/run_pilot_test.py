@@ -148,9 +148,11 @@ class TestSegmentStoryStillReturnsBareList(unittest.TestCase):
     """WI-EVENT-0033: make_segment_extractor now uses the tool= path
     internally, but scene_analysis._segment_result_aligner unwraps the
     schema's required "segments" wrapper key before returning, so
-    extracted_output stays a bare list and _segment_story needs no
-    changes of its own - this regression test proves that contract holds
-    end-to-end through the real extractor, not just at the schema level."""
+    extracted_output stays a bare list on a successful alignment - this
+    regression test proves that contract holds end-to-end through the
+    real extractor, not just at the schema level. (WI-SEGMENT-0059:
+    _segment_story does need to check alignment_error now, for the
+    failure case - see TestSegmentStoryHandlesAlignmentFailure below.)"""
 
     def test_segment_story_returns_bare_list(self):
         from lcats.llm import fake_backend
@@ -190,6 +192,55 @@ class TestSegmentStoryStillReturnsBareList(unittest.TestCase):
         self.assertIsInstance(segments, list)
         self.assertEqual(len(segments), 1)
         self.assertEqual(segments[0]["segment_id"], 1)
+        self.assertEqual(usage, {"input_tokens": 0, "output_tokens": 0})
+
+
+class TestSegmentStoryHandlesAlignmentFailure(unittest.TestCase):
+    """WI-SEGMENT-0059: a genuinely unresolvable anchor now makes
+    segments_result_aligner raise, which JSONPromptExtractor.extract
+    catches and records as alignment_error. On that path,
+    extracted_output is the raw, unaligned {"segments": [...]} dict
+    (segments_result_aligner raises before ever unwrapping it), not a
+    bare list - _segment_story must check alignment_error itself
+    (previously it only checked api_error/extraction_error) or it would
+    return that dict as "segments" with error=None, corrupting its own
+    bare-list return contract."""
+
+    def test_unresolvable_anchor_returns_empty_segments_and_error(self):
+        from lcats.llm import fake_backend
+
+        # A single short paragraph (no blank-line break) with an
+        # end_exact that does not appear anywhere in the text at all.
+        story_text = "Once upon a time there was a dragon."
+        tool_result = {
+            "segments": [
+                {
+                    "segment_id": 1,
+                    "segment_type": "narrative_scene",
+                    "start_par_id": 1,
+                    "end_par_id": 1,
+                    "start_exact": "Once upon a time",
+                    "end_exact": "this text does not appear in the story",
+                    "start_prefix": "",
+                    "end_suffix": "",
+                    "start_char": None,
+                    "end_char": None,
+                    "summary": "Intro.",
+                    "cohesion": {"time": "once", "place": "", "characters": []},
+                    "gacd": None,
+                    "erac": None,
+                    "reason": "Setup.",
+                    "confidence": 0.7,
+                }
+            ]
+        }
+        fb = fake_backend.FakeBackend(tool_result=tool_result)
+
+        segments, error, usage = run_pilot._segment_story(story_text, fb, "fake-model")
+
+        self.assertEqual(segments, [])
+        self.assertIsNotNone(error)
+        self.assertIn("alignment failed", error)
         self.assertEqual(usage, {"input_tokens": 0, "output_tokens": 0})
 
 

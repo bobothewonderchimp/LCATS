@@ -19,12 +19,34 @@ def canonicalize_text(s: str) -> str:
     return s.replace("\r\n", "\n").replace("\r", "\n")
 
 
+def _effective_paragraph_splitter(story_text: str, splitter: str) -> str:
+    """Return splitter, or a single-newline fallback if story_text has no
+    blank-line paragraph breaks at all.
+
+    Some Gutenberg-sourced story text uses single-newline paragraph
+    formatting with no blank lines. Splitting that on a literal blank
+    line collapses the whole document into one giant "paragraph," which
+    forces any downstream anchor-based alignment search across the
+    entire document instead of a tight local range -- confirmed to
+    produce silently wrong, overlapping segment offsets on real
+    corpora/london stories (WI-SEGMENT-0059, WI-ANNOTATE-0054). Only
+    applies when splitter itself contains a newline and genuinely does
+    not occur in story_text; a caller-supplied non-newline splitter is
+    respected unchanged.
+    """
+    if "\n" in splitter and splitter not in story_text and "\n" in story_text:
+        return "\n"
+    return splitter
+
+
 def build_paragraph_index(
     story_text: str, splitter: str = "\n\n"
 ) -> Tuple[List[str], List[Tuple[int, int]]]:
     """Split story_text into paragraphs by splitter, returning (parts, spans).
 
     Each span is a (start, end) tuple of absolute character indices in story_text.
+    See _effective_paragraph_splitter for the single-newline fallback this
+    applies when story_text has no blank-line breaks at all.
 
     Args:
         story_text: The full text to split.
@@ -34,17 +56,18 @@ def build_paragraph_index(
           - parts: List of paragraph strings.
           - spans: List of (start, end) tuples giving absolute character indices.
     """
+    effective_splitter = _effective_paragraph_splitter(story_text, splitter)
     parts: List[str] = []
     spans: List[Tuple[int, int]] = []
     i = 0
-    for chunk in story_text.split(splitter):
+    for chunk in story_text.split(effective_splitter):
         j = story_text.find(chunk, i)
         if j == -1:
             j = i
         k = j + len(chunk)
         parts.append(chunk)
         spans.append((j, k))
-        i = k + len(splitter)
+        i = k + len(effective_splitter)
     return parts, spans
 
 
@@ -123,6 +146,14 @@ def align_segment(
     Returns:
         A tuple (start_char, end_char) of absolute indices, or None if alignment fails.
     """
+    # A missing/wrong-typed par_id is itself a form of malformed model
+    # output (the tool schema requires these as integers) -- fail
+    # cleanly via the same None-return contract as an unresolvable
+    # anchor, rather than letting int-comparison operators below raise
+    # an opaque TypeError (WI-SEGMENT-0059).
+    if not isinstance(start_par_id, int) or not isinstance(end_par_id, int):
+        return None
+
     n = len(para_spans)
     sp = max(1, min(start_par_id, n)) - 1
     ep = max(1, min(end_par_id, n)) - 1
@@ -132,18 +163,30 @@ def align_segment(
     lo = para_spans[sp][0]
     hi = para_spans[ep][1]
 
-    # Start: empty/whitespace → paragraph start
+    # Start: empty/whitespace → paragraph start. A genuinely non-empty
+    # start_exact that can't be located is an alignment failure, not a
+    # silent fallback to lo -- a silent fallback here produces the same
+    # class of wrong, syntactically-valid-looking span as the end_exact
+    # case below (WI-SEGMENT-0059, review finding PR #255).
     if start_exact and start_exact.strip():
         s_idx = find_anchor_in_range(story_text, start_exact, lo, hi)
         if s_idx is None:
-            s_idx = lo
+            return None
     else:
         s_idx = lo
 
-    # End: empty/whitespace → paragraph end
+    # End: empty/whitespace → paragraph end. A genuinely non-empty
+    # end_exact that can't be located is an alignment failure, not a
+    # silent fallback to hi -- the original bug: falling back to the
+    # search range's own end (often end-of-document, when para_spans
+    # collapsed to one paragraph) produced spurious full-document-length
+    # segments that overlap every segment after them, with no error
+    # signal (WI-SEGMENT-0059, WI-ANNOTATE-0054).
     if end_exact and end_exact.strip():
         e_pos = find_anchor_in_range(story_text, end_exact, s_idx, hi)
-        e_idx = (e_pos + len(end_exact)) if e_pos is not None else hi
+        if e_pos is None:
+            return None
+        e_idx = e_pos + len(end_exact)
     else:
         e_idx = hi
 
@@ -179,11 +222,17 @@ def paragraph_text_indexer(story_text: str) -> Tuple[str, Dict[str, Any]]:
               - n_paragraphs: The number of paragraphs.
     """
     text = canonicalize_text(story_text)
-    paragraphs, para_spans = build_paragraph_index(text, splitter="\n\n")
-    indexed = add_paragraph_markers(paragraphs, delimiter="\n\n")
+    default_splitter = "\n\n"
+    effective_splitter = _effective_paragraph_splitter(text, default_splitter)
+    paragraphs, para_spans = build_paragraph_index(text, splitter=default_splitter)
+    # Use the same splitter build_paragraph_index actually applied
+    # (which may have fallen back from the default) so the paragraph
+    # markers shown to the model use consistent delimiters, and "splitter"
+    # in index_meta reflects reality rather than the unconditional default.
+    indexed = add_paragraph_markers(paragraphs, delimiter=effective_splitter)
     meta: Dict[str, Any] = {
         "canonical_text": text,
-        "splitter": "\n\n",
+        "splitter": effective_splitter,
         "para_spans": para_spans,
         "n_paragraphs": len(paragraphs),
     }
@@ -196,6 +245,20 @@ def segments_result_aligner(
     """
     Fills/repairs start_char/end_char in-place for segments that provide:
       start_par_id, end_par_id, start_exact, end_exact
+
+    Raises ValueError if any segment's alignment fails (align_segment
+    returns None, or itself raises) -- previously such a failure was
+    silently swallowed and the segment left unchanged (possibly with
+    null offsets, or worse, a caller-supplied bogus offset), with no
+    signal that anything went wrong. Raising here lets it propagate to
+    JSONPromptExtractor.extract's own try/except around calling this
+    function, which sets alignment_error -- the mechanism annotate.py's
+    _annotate_genre/_annotate_scenes already checks and rejects on, but
+    that previously never actually fired for this failure mode
+    (WI-SEGMENT-0059). This is an all-or-nothing choice deliberately:
+    a story with even one misaligned segment is not safe to partially
+    trust, matching this pipeline's existing preference (elsewhere) for
+    a whole-story rejection over silently-wrong partial output.
 
     Args:
         parsed_output: The parsed JSON output from the extractor.
@@ -221,13 +284,18 @@ def segments_result_aligner(
                 seg.get("start_exact", ""),
                 seg.get("end_exact", ""),
             )
-        except Exception:
-            span = None
+        except Exception as exc:
+            raise ValueError(
+                f"alignment failed for segment_id={seg.get('segment_id')!r}: {exc!r}"
+            ) from exc
 
-        if span:
-            seg["start_char"], seg["end_char"] = span
-        # else: leave as-is (may remain null)
+        if span is None:
+            raise ValueError(
+                f"alignment failed for segment_id={seg.get('segment_id')!r}: "
+                "anchor text not found in story text"
+            )
 
+        seg["start_char"], seg["end_char"] = span
         fixed.append(seg)
 
     obj["segments"] = fixed

@@ -100,6 +100,13 @@ def main() -> None:
     result = extractor.extract(story_body, model_name=MODEL)
     if result.get("api_error"):
         raise RuntimeError(f"Segmentation failed: {result['api_error']}")
+    if result.get("alignment_error"):
+        # On an alignment failure, extracted_output is the raw, unaligned
+        # {"segments": [...]} dict, not a bare segment list
+        # (WI-SEGMENT-0059) -- iterating it below as if it were a list of
+        # segments would crash on the dict's own string keys instead of
+        # reporting the real cause.
+        raise RuntimeError(f"Segmentation alignment failed: {result['alignment_error']}")
 
     segments = result["extracted_output"]
     chosen = _pick_segment(segments)
