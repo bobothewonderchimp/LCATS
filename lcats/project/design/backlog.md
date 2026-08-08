@@ -24,7 +24,7 @@ before a loud one even if the loud one blocks more use cases.
 
 ---
 
-### `lrh work-items validate`'s custom frontmatter parser rejects comments inside YAML lists, and `lrh validate` doesn't catch it — P1, fix needed
+### `lrh work-items validate`'s custom frontmatter parser rejects comments inside YAML lists, and `lrh validate` doesn't catch it — P1, analysis delegated to LogicalRoboticsHarness
 
 Surfaced 2026-08-08 while fixing `WI-LLM-0056.md`'s `malformed-frontmatter`
 error. `lrh`'s own frontmatter parser
@@ -49,13 +49,15 @@ under `lcats/project/` on `origin/main` after both fixes landed found no
 further instances, but nothing prevents a new one from being introduced
 again the same way (e.g. by an agent adding an explanatory YAML comment
 inside a list it's editing, which is valid YAML and easy to reach for).
-**Next step:** either (a) extend `lrh validate` to also run the same
-custom-parser check `lrh work-items validate` already performs, so the
-gap is caught by the validator every workflow already runs, or (b) fix
-the custom parser itself (in the sibling `LogicalRoboticsHarness` repo) to
-tolerate comment lines between YAML list items, matching PyYAML's
-behavior. Either fix belongs in `LogicalRoboticsHarness`, not `LCATS` -
-this repo can only work around the gap per-file, not close it.
+Either fix belongs in `LogicalRoboticsHarness`, not `LCATS` - this repo
+can only work around the gap per-file, not close it. **Next step:** an
+analysis prompt covering root cause, the `lrh validate` vs. `lrh
+work-items validate` inconsistency, fix options (parser tolerance vs.
+extending `lrh validate`'s coverage), and blast radius to other
+planning-node types was handed off 2026-08-08 to a session in the
+`LogicalRoboticsHarness` repo directly - check back there for findings
+and fix status before starting independent work on this from the `LCATS`
+side.
 
 ---
 
