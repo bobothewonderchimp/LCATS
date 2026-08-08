@@ -249,6 +249,7 @@ not silent acceptance.
   failure and discards `genre.json` entirely
   (`annotate.py:160-169`); at this defect's observed 39% combined rate,
   reusing that channel would convert cosmetic field corruption into
-  widespread loss of required-field data. (Ported from `WI-ASSESS-0060`,
-  abandoned as redundant with this item's broader scope - see its
-  `resolution:` field for the full comparison.)
+  widespread loss of required-field data. (Ported from a work item
+  proposed in PR #258, then abandoned as redundant with this item's
+  broader scope before merging - see #258 for the full comparison; no
+  work item file exists on `main` for it.)
