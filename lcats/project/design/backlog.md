@@ -89,15 +89,32 @@ computing max+1, not simultaneous computation) - a distinct failure
 mechanism worth tracking separately even though the symptom (a
 duplicate suffix) looks identical.
 
-In total, six work items across two incidents now share a duplicate
-numeric suffix (four `*-0051` items from the concurrency race, two
-`*-0057` items from the stale-checkout case). No technical collision
-resulted in either case (`lrh validate` passes; each full ID string -
-prefix plus number - is unique), but both defeat the shared
+A third incident surfaced 2026-08-08: `WI-SEGMENT-0059` (first commit
+2026-08-08T04:29:27Z, PR #255, merged 2026-08-08T05:03:40Z) shares its
+suffix with `WI-LLM-0059` (first commit 2026-08-08T05:04:40Z, PR #260).
+Only about 60 seconds separate `WI-SEGMENT-0059`'s merge from
+`WI-LLM-0059`'s first commit - close enough in time that this pattern
+matches the `*-0051` same-moment race, not the `*-0057` stale-checkout
+case's 54-minute gap, though (as with the earlier entries) the exact
+causal mechanism inside the `WI-LLM-0059` session's own checkout wasn't
+independently inspected, only the public commit/merge timestamps. The
+two items are topically unrelated - `WI-SEGMENT-0059` fixes a
+`text_segmenter.py` alignment bug found during `WI-ANNOTATE-0054`'s
+trial; `WI-LLM-0059` investigates a `scene_analysis.py` system-prompt
+mitigation for local-model segmentation reliability, `depends_on:
+[WI-LLM-0051]` - the collision is purely numeric, not a sign either
+item duplicates or should be merged with the other.
+
+In total, eight work items across three incidents now share a
+duplicate numeric suffix (four `*-0051` items from the concurrency
+race, two `*-0057` items from the stale-checkout case, two `*-0059`
+items from a third same-moment race). No technical collision
+resulted in any case (`lrh validate` passes; each full ID string -
+prefix plus number - is unique), but all three defeat the shared
 cross-prefix numbering pool's intent of an unambiguous sequence, and
-the recurrence (two separate incidents, a day apart, two distinct
-failure mechanisms) suggests this is not a rare edge case but a
-predictable consequence of how often concurrent sessions create work
+the recurrence (three separate incidents within two days, at least two
+distinct failure mechanisms) suggests this is not a rare edge case but
+a predictable consequence of how often concurrent sessions create work
 items in this project. **Next step:** this is a design-shaped question,
 not a quick fix - decide whether to (a) accept occasional same-number
 collisions as a known limitation of the current "compute max+1 from
@@ -110,7 +127,7 @@ coordination mechanism (e.g. a reserved-numbers file, a CI check that
 fails on a newly-introduced duplicate suffix across prefixes, or a
 numbering authority) - note that (c) would need to guard against both
 failure mechanisms found here, not just true concurrency. Does not
-retroactively rename any of the six existing collided items - renaming
+retroactively rename any of the eight existing collided items - renaming
 a resolved/merged item touches
 cross-references and git history and is a separate decision.
 
