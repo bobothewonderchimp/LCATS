@@ -643,6 +643,46 @@ was already chosen or in progress — surface that to the user rather than
 proceeding on stale assumptions. Remove this entry once `WI-RELEASE-0037`
 resolves (its own resolution note should record the outcome either way).
 
+**Suggested kickoff prompt** (paste into a fresh session once the
+maintainer responds, or periodically to check in without a response):
+
+```
+Check on the gutenbergpy dependency blocker for WI-RELEASE-0037
+(lcats/project/work_items/proposed/WI-RELEASE-0037.md), per the backlog
+entry "Check back on gutenbergpy upstream release status for
+WI-RELEASE-0037" in lcats/project/design/backlog.md.
+
+1. Check https://pypi.org/project/gutenbergpy/ for a release newer than
+   0.3.5 (2023-03-27). Also check whether the upstream maintainer
+   (raduangelescu/gutenbergpy) has responded to the release-schedule
+   question, or cut a release incorporating
+   https://github.com/raduangelescu/gutenbergpy/pull/25 and
+   https://github.com/raduangelescu/gutenbergpy/pull/26.
+
+2. If a qualifying release now exists: update WI-RELEASE-0037's Problem/
+   Context with the finding, choose "wait on upstream" as the resolution
+   path if still appropriate, and implement it -- update
+   lcats/pyproject.toml:26 and lcats/environment.yml's matching pin from
+   the git+https direct-VCS reference to the new PyPI version, following
+   the WI's own acceptance criteria.
+
+3. If no qualifying release exists yet and the maintainer hasn't
+   responded: report that back plainly (don't assume silence means
+   proceed) and ask whether to keep waiting or proceed with the
+   vendor-fork path WI-RELEASE-0037 already scopes as Required Change 3
+   -- note that file list is explicitly provisional and needs tracing
+   gutenbergpy's real import closure at implementation time, not
+   trusting the list as-is.
+
+4. Either way, drive WI-RELEASE-0037 through to a PR and, once merged,
+   consider whether WI-RELEASE-0039 (the pre-launch verification gate,
+   lcats/project/work_items/proposed/WI-RELEASE-0039.md) is ready to run
+   -- only if a real PyPI publish is actually imminent, not as a
+   formality right after WI-RELEASE-0037 resolves.
+
+Remove this backlog entry once WI-RELEASE-0037 resolves.
+```
+
 **Related:** `WS-RELEASE` (`project/workstreams/proposed/WS-RELEASE.md`);
 `WI-RELEASE-0037`, `WI-RELEASE-0039`; `PROP-LCATS-PYPI-RELEASE-READINESS`
 (`project/design/proposals/proposed/lcats-pypi-release-readiness/00_proposal.md`);
