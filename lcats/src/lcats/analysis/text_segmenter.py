@@ -150,8 +150,17 @@ def align_segment(
     # output (the tool schema requires these as integers) -- fail
     # cleanly via the same None-return contract as an unresolvable
     # anchor, rather than letting int-comparison operators below raise
-    # an opaque TypeError (WI-SEGMENT-0059).
-    if not isinstance(start_par_id, int) or not isinstance(end_par_id, int):
+    # an opaque TypeError (WI-SEGMENT-0059). isinstance(x, int) alone
+    # would accept True/False (bool is an int subclass in Python), which
+    # would misresolve to paragraph 1/0 instead of a clean failure if
+    # the model ever emitted a boolean for these fields (review finding,
+    # PR #269) -- explicitly excluded.
+    if (
+        not isinstance(start_par_id, int)
+        or isinstance(start_par_id, bool)
+        or not isinstance(end_par_id, int)
+        or isinstance(end_par_id, bool)
+    ):
         return None
 
     n = len(para_spans)

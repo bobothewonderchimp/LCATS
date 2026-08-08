@@ -856,9 +856,22 @@ class TestWiAnnotate0054RealTrialDataReplay(unittest.TestCase):
         story_path = self.CORPORA_ROOT / story_name / "story.json"
         scenes_path = self.TRIAL_ROOT / story_name / "scenes.json"
         if not story_path.is_file() or not scenes_path.is_file():
-            self.skipTest(
+            # These files are this WI's own required regression evidence
+            # (acceptance criteria), not an optional/environmental
+            # dependency -- a missing file must fail the suite, not
+            # silently skip it (AGENTS.md: "Do not suppress or skip
+            # failing tests"; review finding, PR #269). A corpora/
+            # restructuring or an experimental/ cleanup that removes
+            # these files should break this test loudly, forcing a
+            # deliberate decision about this coverage, not silently
+            # losing it.
+            self.fail(
                 f"real trial evidence files not present for {story_name} "
-                f"({story_path}, {scenes_path}) -- see class docstring"
+                f"({story_path}, {scenes_path}) -- see class docstring. "
+                "This is required regression evidence, not optional; if "
+                "these files were intentionally moved or removed, update "
+                "or remove this test explicitly rather than letting it "
+                "silently stop exercising this coverage."
             )
         body = json.loads(story_path.read_text(encoding="utf-8"))["body"]
         segments = json.loads(scenes_path.read_text(encoding="utf-8"))["segments"]

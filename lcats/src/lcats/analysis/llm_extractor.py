@@ -451,7 +451,23 @@ class JSONPromptExtractor:
                         parsed = self.result_aligner(parsed, story_text, index_meta)
                     except Exception as exc:
                         alignment_error = f"alignment failed: {exc!r}"
-                if self.result_validator and index_meta is not None:
+                if (
+                    self.result_validator
+                    and index_meta is not None
+                    and not alignment_error
+                ):
+                    # Skip validation entirely once alignment has already
+                    # failed: `parsed` still holds its pre-alignment value
+                    # (result_aligner raised before reassigning it), which
+                    # for a result_validator that assumes an already-
+                    # unwrapped/aligned shape (e.g. scene_analysis's
+                    # _segment_result_validator) produces a confusing,
+                    # unrelated secondary error rather than a meaningful
+                    # validation_report -- observed directly: an
+                    # AttributeError from double-wrapping an
+                    # already-dict value, masking the real
+                    # alignment_error (WI-SEGMENT-0059, review finding
+                    # PR #269).
                     try:
                         validation_report = self.result_validator(
                             parsed, story_text, index_meta
@@ -459,7 +475,18 @@ class JSONPromptExtractor:
                     except Exception as exc:
                         validation_error = f"validation failed: {exc!r}"
                 self.last_validation_report = validation_report
-                extracted = parsed
+                # On an alignment failure, `parsed` still holds its
+                # pre-alignment value, which for a result_aligner that
+                # normally unwraps a schema wrapper (e.g. scene_analysis's
+                # {"segments": [...]} -> bare list) is the wrong shape --
+                # a dict, not the documented bare-list/None contract.
+                # Clear it centrally so every caller (including ones that
+                # don't explicitly check alignment_error, e.g. an
+                # interactive notebook) gets a safe, falsy
+                # extracted_output on failure instead of a
+                # type-inconsistent partial result (WI-SEGMENT-0059,
+                # review finding PR #269).
+                extracted = parsed if not alignment_error else None
             else:
                 extraction_error = "No tool_result returned by backend."
 
