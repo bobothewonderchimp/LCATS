@@ -2,10 +2,10 @@
 execution_id: 2026_08_08_04_52_19_BACKLOG_NUMBERING_COLLISION_PROCESSING_0057_REVIEW
 prompt_id: PROMPT(AD_HOC:BACKLOG_NUMBERING_COLLISION_PROCESSING_0057_REVIEW)[2026-08-08T04:52:02+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_08_04_31_45_BACKLOG_NUMBERING_COLLISION_PROCESSING_0057
 pr: https://github.com/xenotaur/LCATS/pull/256
-commit: 9c32da0d
+commit: ab341efc87f044c535bfdd7bd1f1774d045cccca
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/256
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
