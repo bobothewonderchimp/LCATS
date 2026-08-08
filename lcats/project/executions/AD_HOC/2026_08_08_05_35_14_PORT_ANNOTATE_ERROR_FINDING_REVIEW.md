@@ -2,10 +2,10 @@
 execution_id: 2026_08_08_05_35_14_PORT_ANNOTATE_ERROR_FINDING_REVIEW
 prompt_id: PROMPT(AD_HOC:PORT_ANNOTATE_ERROR_FINDING_REVIEW)[2026-08-08T05:35:06+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_08_05_27_38_PORT_ANNOTATE_ERROR_FINDING_INTO_WI_LLM_0058
 pr: https://github.com/xenotaur/LCATS/pull/263
-commit: c6cfd119d6bd5e943cde3eb5a46d0ff75163a066
+commit: fd9aed590dd3cfc3cb7fccf1c6c110c221705a73
 created_at: 2026-08-08T05:35:14+00:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/263

@@ -2,10 +2,10 @@
 execution_id: 2026_08_08_05_27_38_PORT_ANNOTATE_ERROR_FINDING_INTO_WI_LLM_0058
 prompt_id: PROMPT(AD_HOC:PORT_ANNOTATE_ERROR_FINDING_INTO_WI_LLM_0058)[2026-08-08T05:27:03+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/263
-commit: 83c06cacb40486bcbc0d0bac42114fafc10cc36c
+commit: fd9aed590dd3cfc3cb7fccf1c6c110c221705a73
 created_at: 2026-08-08T05:27:38+00:00
 agent: claude_app
 instruction_source: user request (compare WI-LLM-0058 vs WI-ASSESS-0060, port finding, abandon redundant item)
