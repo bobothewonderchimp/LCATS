@@ -24,6 +24,36 @@ before a loud one even if the loud one blocks more use cases.
 
 ---
 
+### Concurrent sessions independently minted the same WI number under different prefixes — P2, decision needed
+
+Surfaced 2026-08-07 while creating `WI-PILOT-0051`: at least four work
+items now share the numeric suffix `0051` under different prefixes -
+`WI-LLM-0051` (created 2026-08-05), `WI-ANNOTATE-0051` (created
+2026-08-06, resolved), `WI-ASSESS-0051` (created 2026-08-07, PR #235),
+and `WI-PILOT-0051` (created 2026-08-07, PR #237, resolved). Each was
+created by a different concurrent session independently computing "next
+number = global max + 1" against `main` at a moment when the other
+sessions' PRs hadn't yet merged, so all four landed on the same number.
+No technical collision resulted (`lrh validate` passes; each full ID
+string - prefix plus number - is unique), but it defeats the shared
+cross-prefix numbering pool's intent of an unambiguous sequence, and
+makes the "next number" computation itself unreliable under concurrency
+without some coordination mechanism. **Next step:** this is a
+design-shaped question, not a quick fix - decide whether to (a) accept
+occasional same-number collisions as a known limitation of the current
+"compute max+1 from `main`" convention (numbers are for uniqueness
+within a prefix's own namespace, not a global sequence, despite the
+existing "shared cross-prefix pool" convention), (b) prefix-scope the
+numbering instead (each prefix gets its own independent sequence,
+removing the cross-prefix uniqueness expectation entirely), or (c) add a
+real coordination mechanism (e.g. a reserved-numbers file, a CI check
+that fails on a newly-introduced duplicate suffix across prefixes, or a
+numbering authority). Does not retroactively rename any of the four
+existing `*-0051` items - renaming a resolved/merged item touches
+cross-references and git history and is a separate decision.
+
+---
+
 ### Unguarded `pathlib.Path.resolve()` calls could crash callers on filesystem errors — P2, decision not a fix
 
 Surfaced 2026-08-07 during `WI-ASSESS-0050`'s review (Copilot found the
