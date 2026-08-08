@@ -2,10 +2,10 @@
 execution_id: 2026_08_08_18_33_22_LOG_WI_SEGMENT_0059_LLM_0059_COLLISION_REVIEW
 prompt_id: PROMPT(AD_HOC:LOG_WI_SEGMENT_0059_LLM_0059_COLLISION_REVIEW)[2026-08-08T18:33:08+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_08_18_23_35_LOG_WI_SEGMENT_0059_LLM_0059_COLLISION
 pr: https://github.com/xenotaur/LCATS/pull/265
-commit: c60ca90774c6bfe18d81508896e38ff0c5a2913c
+commit: 0f7731cffb6e4b6fca2e068f36acf378841ef9f5
 created_at: 2026-08-08T18:33:22+00:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/265
