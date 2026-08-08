@@ -31,7 +31,7 @@ forbidden_actions:
 acceptance:
   - "Combines this item's own evidence with the already-existing, independent 24-story reproduction in lcats/experimental/annotation_feasibility_trial/stats_report.md (WI-ANNOTATE-0054) into one consolidated finding: corruption rate, affected field(s), and confirmation that detected_genre is unaffected across both real-API runs (44 stories total)"
   - "A documented root-cause hypothesis is reached and stated with its supporting evidence (schema field-adjacency at the secondary_genre/specials_verdict boundary, already narrowed by WI-ANNOTATE-0054 to an intermittent claude-opus-4-8 structured-output reliability issue, not a parsing bug or prompt injection) - or a good-faith investigation finds no further explanation and that is stated plainly"
-  - "If a fix or mitigation is identified (e.g. ASSESSMENT_TOOL field reordering, or output validation/sanitization for free-text tool-result fields as WI-ANNOTATE-0054 recommended): it is implemented with a regression test, or an explicit decision not to fix now is recorded with rationale"
+  - "If a fix or mitigation is identified (e.g. ASSESSMENT_TOOL field reordering, or output validation/sanitization for free-text tool-result fields as WI-ANNOTATE-0054 recommended): it is implemented with a regression test, or an explicit decision not to fix now is recorded with rationale. If sanitization is chosen, a corrupted value must be flagged through a new, non-fatal channel -- never AssessmentResult.error, which annotate.py's _annotate_genre already treats as an unrecoverable failure that drops genre.json entirely (annotate.py:160-169) -- verified with a test asserting genre.json's required fields are still written when only secondary_genre is corrupted"
   - "A written go/no-go recommendation for WI-ASSESS-0051's --full corpus run, grounded in the combined 44-story evidence: is this corruption a blocker, and if so what threshold/fix resolves it"
   - "WI-ASSESS-0051's own depends_on lists this item, so an executor following its frontmatter discovers the prerequisite before starting the ~$435 full run"
   - "scripts/test passes with no new failures"
@@ -168,9 +168,25 @@ not silent acceptance.
    reordering is chosen (moving `secondary_genre` so it isn't immediately
    followed by another required string field), and/or a runtime
    validation/sanitization check on `secondary_genre` if that mitigation
-   is chosen instead or in addition.
+   is chosen instead or in addition. **If a sanitization/validation
+   check is implemented, it must flag a corrupted value through a new,
+   non-fatal channel — never by populating `AssessmentResult.error`**,
+   which `annotate.py`'s `_annotate_genre` already treats as an
+   unrecoverable genre-detection failure and responds to by discarding
+   `genre.json` entirely (`annotate.py:160-169`). At the observed 39%
+   combined corruption rate, routing this optional-field defect through
+   that hard-failure channel would turn cosmetic corruption into
+   widespread loss of `genre.json`'s required fields for a large
+   fraction of stories — a materially worse outcome than the defect
+   itself. (Finding from `WI-ASSESS-0060`'s review round, PR #258 —
+   ported here when that item was abandoned as redundant with this
+   one's broader scope.)
 2. `lcats/tests/analysis_tests/assess_test.py`: regression test(s)
-   covering whichever fix/mitigation is implemented.
+   covering whichever fix/mitigation is implemented. If sanitization is
+   chosen, include a test asserting `genre.json`'s required fields
+   (`detected_genre`, `summary`, etc.) are still written when only
+   `secondary_genre` is corrupted — i.e. that the fix does not route
+   through `AssessmentResult.error`.
 3. `lcats/project/work_items/proposed/WI-ASSESS-0051.md`: add
    `WI-LLM-0058` to `depends_on:`.
 4. A written finding (in this work item's own execution record, or a
@@ -227,3 +243,12 @@ not silent acceptance.
   codebase's control; if so, the right outcome is a documented mitigation
   (output validation/sanitization) rather than a "root cause eliminated"
   claim.
+- **A sanitization fix must not use `AssessmentResult.error` as its
+  failure channel** - `annotate.py`'s `_annotate_genre` already treats
+  any `AssessmentResult.error` as an unrecoverable genre-detection
+  failure and discards `genre.json` entirely
+  (`annotate.py:160-169`); at this defect's observed 39% combined rate,
+  reusing that channel would convert cosmetic field corruption into
+  widespread loss of required-field data. (Ported from `WI-ASSESS-0060`,
+  abandoned as redundant with this item's broader scope - see its
+  `resolution:` field for the full comparison.)
