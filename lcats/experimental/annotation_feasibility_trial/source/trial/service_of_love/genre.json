@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/service_of_love/story.json",
+  "title": "service_of_love",
+  "author": "OHenry",
+  "url": "https://www.gutenberg.org/cache/epub/2776/pg2776-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "romance",
+  "detected_genre_confidence": 0.72,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "</antml=parameter>\n<parameter name=\"specials_verdict\">author_intentional",
+  "specials_verdict": "author_intentional",
+  "summary": "A young married couple of struggling artists each secretly abandon their art to take menial jobs to support the other's studies, inventing elaborate cover stories, until a burned hand reveals they both work at the same laundry\u2014one ironing, one firing the engine.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 7059,
+  "output_tokens": 354,
+  "backend_model": "claude-opus-4-8"
+}

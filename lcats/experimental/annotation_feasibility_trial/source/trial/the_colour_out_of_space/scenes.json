@@ -1,0 +1,305 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "other",
+      "start_par_id": 1,
+      "end_par_id": 4,
+      "start_exact": "THE COLOUR OUT OF SPACE",
+      "end_exact": "You will not regret having read this marvellous tale.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 0,
+      "end_char": 622,
+      "summary": "Front matter: title, author, transcriber's note, and editorial blurb praising the story.",
+      "cohesion": {
+        "time": "N/A (publication front matter)",
+        "place": "N/A",
+        "characters": []
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Non-narrative publication material (title, byline, transcriber note, magazine blurb). Labeled 'other'.",
+      "confidence": 0.98
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "narrative_scene",
+      "start_par_id": 5,
+      "end_par_id": 10,
+      "start_exact": "West of Arkham the hills rise wild, and there are valleys with deep\nwoods that no axe has ever cut.",
+      "end_exact": "an odd timidity about the deep skyey voids above had\ncrept into my soul.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 624,
+      "end_char": 5779,
+      "summary": "The narrator/surveyor describes the wild hills west of Arkham and his exploratory walk to the eerie blasted heath.",
+      "cohesion": {
+        "time": "Present-day frame, one day of surveying",
+        "place": "The hills/valleys west of Arkham, the blasted heath",
+        "characters": [
+          "The narrator/surveyor"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Establishes setting through the narrator's exploration; time/place unified but lacks strong GACD conflict/outcome, so narrative_scene.",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 11,
+      "end_par_id": 13,
+      "start_exact": "In the evening I asked old people in Arkham about the blasted heath,",
+      "end_exact": "nothing could bribe me to drink\nthe new city water of Arkham.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 5781,
+      "end_char": 8996,
+      "summary": "The narrator inquires in Arkham, seeks out Ammi Pierce, and hears his rambling story before fleeing back to Boston.",
+      "cohesion": {
+        "time": "Evening and next morning, present frame",
+        "place": "Arkham and Ammi Pierce's cottage",
+        "characters": [
+          "The narrator",
+          "Ammi Pierce"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Frame narrative of the narrator gathering the tale; unified in time/place but functions as narrative setup, not a GACD scene.",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "narrative_scene",
+      "start_par_id": 14,
+      "end_par_id": 21,
+      "start_exact": "It all began, old Ammi said, with the meteorite.",
+      "end_exact": "that lone,\nweird message from other universes and other realms of matter, force,\nand entity.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 8998,
+      "end_char": 16765,
+      "summary": "The meteorite falls at Nahum's farm; professors examine and test the strange shrinking stone and the coloured globule until it vanishes.",
+      "cohesion": {
+        "time": "June 1882",
+        "place": "Nahum Gardner's farm and Miskatonic laboratory",
+        "characters": [
+          "Nahum Gardner",
+          "Ammi",
+          "the professors"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Sequential investigation of the meteorite over several days; episodic narrative without a single focal Goal/Conflict/Outcome, so narrative_scene.",
+      "confidence": 0.66
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "narrative_scene",
+      "start_par_id": 22,
+      "end_par_id": 36,
+      "start_exact": "As was natural, the Arkham papers made much of the incident with its\ncollegiate sponsoring,",
+      "end_exact": "only Mrs. Gardner had\nmade pets of the graceful felines.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 16767,
+      "end_char": 33620,
+      "summary": "Over the seasons the blight spreads: poisoned crops, strange colours, mad wife, dying vegetation, madness of Thaddeus, and dying livestock.",
+      "cohesion": {
+        "time": "Summer 1882 through the following harvest",
+        "place": "Nahum Gardner's farm and surrounding countryside",
+        "characters": [
+          "Nahum Gardner",
+          "his family",
+          "Ammi",
+          "neighbors"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "A long chronicle of the creeping blight over many months; unified thematically but episodic seasonal narration, not a single GACD scene.",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "narrative_scene",
+      "start_par_id": 37,
+      "end_par_id": 38,
+      "start_exact": "On the nineteenth of October Nahum staggered into Ammi's house with\nhideous news.",
+      "end_exact": "he had\nalways walked uprightly in the Lord's ways so far as he knew.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 33622,
+      "end_char": 37053,
+      "summary": "Nahum brings news of Thaddeus's death and later Merwin's disappearance; Ammi comforts him and finds only fused metal remnants near the well.",
+      "cohesion": {
+        "time": "October 19 and three days later",
+        "place": "Ammi's house and the Gardner farm",
+        "characters": [
+          "Nahum",
+          "Ammi",
+          "Mrs. Pierce",
+          "Merwin",
+          "Zenas"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Reports the deaths/disappearances; largely narrated exposition of unfolding calamity without on-stage focal conflict resolution, so narrative_scene.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 39,
+      "end_par_id": 47,
+      "start_exact": "For over two weeks Ammi saw nothing of Nahum; and then, worried about\nwhat might have happened,",
+      "end_exact": "went into the well after it had done with poor Nahum....",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 37055,
+      "end_char": 45597,
+      "summary": "Ammi visits the farm, finds Nahum broken, discovers the crumbling horror in the attic, and returns downstairs to hear Nahum's dying account before fleeing.",
+      "cohesion": {
+        "time": "November, ~two weeks later, single visit",
+        "place": "The Gardner farmhouse (kitchen, attic, stairs)",
+        "characters": [
+          "Ammi",
+          "Nahum",
+          "the attic horror"
+        ]
+      },
+      "gacd": {
+        "goal": "Ammi seeks to learn what has happened to Nahum's family and help him",
+        "action": "He searches the house, opens the locked attic door, and confronts the crumbling horror",
+        "conflict": "He encounters the moving, brushing coloured vapour/monstrosity and the dying transformation of Nahum",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "A single visit with clear Goal, on-stage Action, terrifying Conflict, and disastrous Outcome (Nahum's death); GACD threshold met.",
+      "confidence": 0.82
+    },
+    {
+      "segment_id": 8,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 48,
+      "end_par_id": 48,
+      "start_exact": "When Ammi reached his house the horses and buggy had arrived before\nhim",
+      "end_exact": "it was\nsome comfort to have so many people with him.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 45599,
+      "end_char": 46533,
+      "summary": "Ammi reaches home shaken, reassures his wife, and decides to notify the Arkham authorities, then reluctantly agrees to guide officials to the farm.",
+      "cohesion": {
+        "time": "Immediately after fleeing the farm, that afternoon",
+        "place": "Ammi's house and Arkham police station",
+        "characters": [
+          "Ammi",
+          "Mrs. Pierce",
+          "the authorities"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Shaken, fearful of returning to the accursed place",
+        "reason": "Realizes the family is dead and authorities must be informed",
+        "anticipation": "Fears the fall of night over the place; expects comfort in numbers",
+        "choice": "Decides to notify authorities and reluctantly take officers to the farm"
+      },
+      "reason": "Recovery/reaction plus deliberation and a clear decision to report and guide officials, with no on-stage conflict; ERAC threshold met.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 9,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 49,
+      "end_par_id": 64,
+      "start_exact": "The six men drove out in a democrat-wagon, following Ammi's buggy,",
+      "end_exact": "what was left down there at Nahum's.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 46535,
+      "end_char": 62876,
+      "summary": "Ammi and the officials investigate the farm, empty the well, and witness the colour glow, seize the trees, kill the horse, and finally erupt skyward as they flee.",
+      "cohesion": {
+        "time": "Late afternoon into night, single visit",
+        "place": "The Gardner farm, well, and sitting-room",
+        "characters": [
+          "Ammi",
+          "officers",
+          "coroner",
+          "medical examiner",
+          "veterinary",
+          "the colour"
+        ]
+      },
+      "gacd": {
+        "goal": "Investigate the deaths and determine what happened at the farm",
+        "action": "They explore the attic, empty the well, and observe/confront the glowing colour",
+        "conflict": "The colour manifests, killing the horse and threatening the men as it grows and animates the trees",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "A sustained single-night investigation with clear Goal, on-stage Action, escalating supernatural Conflict, and disastrous climax (the colour's eruption); GACD met. Ends as they flee.",
+      "confidence": 0.85
+    },
+    {
+      "segment_id": 10,
+      "segment_type": "narrative_scene",
+      "start_par_id": 65,
+      "end_par_id": 66,
+      "start_exact": "Too awed even to hint theories, the seven shaking men trudged back\ntoward Arkham",
+      "end_exact": "have named it \"the blasted heath.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 62878,
+      "end_char": 65128,
+      "summary": "The men retreat to Arkham; Ammi sees a last remnant of the colour rise, and the aftermath leaves only the dusty grey blasted heath.",
+      "cohesion": {
+        "time": "That night and the next morning; forty-four years later frame",
+        "place": "Road to Arkham and the ruined farm site",
+        "characters": [
+          "Ammi",
+          "the men",
+          "the narrator"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Aftermath and denouement bridging into the present frame; narrated wrap-up without a discrete GACD conflict/outcome, so narrative_scene.",
+      "confidence": 0.62
+    },
+    {
+      "segment_id": 11,
+      "segment_type": "narrative_scene",
+      "start_par_id": 67,
+      "end_par_id": 72,
+      "start_exact": "The rural tales are queer.",
+      "end_exact": "THE END",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 65130,
+      "end_char": 69283,
+      "summary": "Closing reflections: rural tales of the spreading blight, the narrator's dread, speculation about surviving globules, and worry for Ammi.",
+      "cohesion": {
+        "time": "Present-day frame",
+        "place": "Arkham country / narrator's reflection",
+        "characters": [
+          "The narrator",
+          "Ammi"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Reflective epilogue/meditation by the narrator; narrative frame material without GACD/ERAC structure, so narrative_scene.",
+      "confidence": 0.66
+    }
+  ],
+  "segment_count": 11,
+  "model": "claude-opus-4-8"
+}

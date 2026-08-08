@@ -1,0 +1,33 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/the_call_of_cthulhu/story.json",
+  "title": "the_call_of_cthulhu",
+  "author": "H. P. Lovecraft",
+  "url": "https://www.gutenberg.org/cache/epub/68283/pg68283-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "horror",
+  "detected_genre_confidence": 0.98,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "cosmic horror / weird fiction",
+  "specials_verdict": "author_intentional",
+  "summary": "A man investigating his late grand-uncle's papers pieces together evidence of a global cult worshiping the ancient, cosmic entity Cthulhu, culminating in a sailor's account of encountering the risen monster in the sunken city of R'lyeh, and comes to fear he knows too much to survive.",
+  "issues": [
+    {
+      "type": "transcriber_note",
+      "severity": "medium",
+      "description": "A Transcriber's Note about the Weird Tales, February 1928 source and U.S. copyright renewal is embedded at the story's start."
+    },
+    {
+      "type": "formatting_artifact",
+      "severity": "low",
+      "description": "Title heading and byline appear at the start of the story text (flagged as start-contamination)."
+    }
+  ],
+  "error": "",
+  "input_tokens": 26629,
+  "output_tokens": 475,
+  "backend_model": "claude-opus-4-8"
+}

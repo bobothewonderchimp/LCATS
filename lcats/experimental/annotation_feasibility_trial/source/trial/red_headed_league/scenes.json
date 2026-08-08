@@ -1,0 +1,208 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 133,
+      "start_exact": "I had\ncalled upon my friend, Mr. Sherlock Holmes, one day in the autumn of last year\nand found him in deep conv",
+      "end_exact": "\"What are you going to do, then?\" I asked.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1,
+      "end_char": 25726,
+      "summary": "Watson arrives at Baker Street; Jabez Wilson recounts the whole story of the Red-headed League and its abrupt dissolution while Holmes questions him.",
+      "cohesion": {
+        "time": "One morning/afternoon, autumn (Saturday)",
+        "place": "Holmes's rooms at Baker Street",
+        "characters": [
+          "Watson",
+          "Holmes",
+          "Jabez Wilson"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Long unified time/place block in Holmes's sitting room dominated by Wilson's embedded narration and Holmes's questioning; no on-stage GACD conflict or ERAC deliberation by a focal character\u2014primarily expository dialogue.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 134,
+      "end_par_id": 137,
+      "start_exact": "\"To smoke,\" he answered. \"It is quite a three pipe problem,\nand I beg that you won\",",
+      "end_exact": "It is introspective, and I want to introspect. Come along!\"",
+      "start_prefix": "\"What are you going to do, then?\" I asked.\n\n",
+      "end_suffix": "",
+      "start_char": 25728,
+      "end_char": 26781,
+      "summary": "Holmes reflects, smokes his three-pipe problem, and decides on a plan of action\u2014to visit the City and hear Sarasate.",
+      "cohesion": {
+        "time": "Immediately after Wilson leaves, Saturday",
+        "place": "Holmes's rooms at Baker Street",
+        "characters": [
+          "Holmes",
+          "Watson"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Holmes's contemplative, energized mood after mulling the problem",
+        "reason": "He calls it a three-pipe problem and thinks it through in silence",
+        "anticipation": "He expects the outing will clarify the case",
+        "choice": "He decides to go through the City and to the concert, taking Watson along"
+      },
+      "reason": "Recovery/deliberation function: Holmes reasons through the problem and chooses a course of action; no on-stage conflict/outcome, meeting the ERAC threshold.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 138,
+      "end_par_id": 151,
+      "start_exact": "We travelled by the Underground as far as Aldersgate; and a short walk took us\nto Saxe-Coburg Square",
+      "end_exact": "there are no red-headed clients to vex\nus with their conundrums.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 26784,
+      "end_char": 30180,
+      "summary": "Holmes investigates Saxe-Coburg Square, thumps the pavement, and tricks the assistant into showing himself; deduces the layout to confirm his theory.",
+      "cohesion": {
+        "time": "Saturday afternoon",
+        "place": "Saxe-Coburg Square and the adjoining thoroughfare",
+        "characters": [
+          "Holmes",
+          "Watson",
+          "Vincent Spaulding (assistant)"
+        ]
+      },
+      "gacd": {
+        "goal": "Confirm his suspicion about the assistant's tunneling and the true target",
+        "action": "Beats the pavement, knocks to view the assistant's knees, surveys the surrounding shops",
+        "conflict": "Must gather clues covertly against a cunning, formidable adversary ('spies in an enemy's country')",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "New time/place (Saxe-Coburg Square). Holmes pursues a goal via on-stage investigative action against a wary opponent, reaching a clear interim success, meeting GACD.",
+      "confidence": 0.66
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "narrative_scene",
+      "start_par_id": 152,
+      "end_par_id": 162,
+      "start_exact": "My friend was an enthusiastic musician, being himself not only a very capable\nperformer but a compos",
+      "end_exact": "set the matter aside until night should\nbring an explanation.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 30183,
+      "end_char": 33290,
+      "summary": "The concert at St. James's Hall, Holmes's dual nature described, parting instructions to be armed, and Watson's puzzled reflection driving home.",
+      "cohesion": {
+        "time": "Saturday afternoon into evening",
+        "place": "St. James's Hall / Watson's journey home to Kensington",
+        "characters": [
+          "Holmes",
+          "Watson"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Transitional passage unified by afternoon/evening; character sketch, arrangements, and Watson's musing without on-stage GACD conflict or a decisive ERAC choice by the focal character.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "narrative_scene",
+      "start_par_id": 163,
+      "end_par_id": 173,
+      "start_exact": "It was a quarter-past nine when I started from home and made my way across the\nPark",
+      "end_exact": "Here we are, and they are waiting for us.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 33293,
+      "end_char": 36947,
+      "summary": "Watson returns to Baker Street; the party (Jones, Merryweather) assembles, background on John Clay is given, and they set off by cab.",
+      "cohesion": {
+        "time": "Saturday night, from quarter-past nine",
+        "place": "Baker Street and the cab ride toward Farrington Street",
+        "characters": [
+          "Watson",
+          "Holmes",
+          "Jones",
+          "Merryweather"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Unified nighttime assembly and travel; expository dialogue and logistics without on-stage conflict/outcome, so narrative_scene rather than dramatic scene.",
+      "confidence": 0.62
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 174,
+      "end_par_id": 205,
+      "start_exact": "We had reached the same crowded thoroughfare in which we had found ourselves in\nthe morning.",
+      "end_exact": "hearing\nthe very remarkable narrative of the Red-headed League.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 36950,
+      "end_char": 45488,
+      "summary": "In the bank cellar the party waits in darkness, then ambushes and captures John Clay as he emerges from the tunnel; his accomplice is taken at the door.",
+      "cohesion": {
+        "time": "Saturday night into early hours",
+        "place": "The cellar/vault of the City and Suburban Bank",
+        "characters": [
+          "Holmes",
+          "Watson",
+          "Jones",
+          "Merryweather",
+          "John Clay"
+        ]
+      },
+      "gacd": {
+        "goal": "Catch the robbers in the act and prevent the theft of the French gold",
+        "action": "They set positions in darkness, wait, and seize Clay as he climbs from the tunnel",
+        "conflict": "Armed confrontation with the daring criminals\u2014a revolver is drawn and struck down",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "New location (bank vault) and the story's climax; clear goal, on-stage action, armed conflict, and successful capture satisfy GACD.",
+      "confidence": 0.9
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 206,
+      "end_par_id": 215,
+      "start_exact": "\"You see, Watson,\" he explained in the early hours of the morning\nas we sat over a glass of whisky",
+      "end_exact": "as Gustave\nFlaubert wrote to George Sand.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 45490,
+      "end_char": 49419,
+      "summary": "Back at Baker Street over whisky, Holmes explains his reasoning and reflects on his need to escape the commonplaces of life.",
+      "cohesion": {
+        "time": "Early hours of the morning, after the capture",
+        "place": "Baker Street",
+        "characters": [
+          "Holmes",
+          "Watson"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Holmes's ennui and satisfaction; Watson's admiration",
+        "reason": "Holmes retraces the entire chain of deduction step by step",
+        "anticipation": "He foresees the return of boredom closing in",
+        "choice": "He affirms his life's aim to escape commonplaces through such problems (quotes Flaubert)"
+      },
+      "reason": "Denouement in the same place after the climax: emotional reflection and reasoning with no on-stage conflict, satisfying the ERAC threshold.",
+      "confidence": 0.7
+    }
+  ],
+  "segment_count": 7,
+  "model": "claude-opus-4-8"
+}

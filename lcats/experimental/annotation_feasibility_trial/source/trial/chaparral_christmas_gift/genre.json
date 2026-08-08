@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/chaparral_christmas_gift/story.json",
+  "title": "chaparral_christmas_gift",
+  "author": "OHenry",
+  "url": "https://www.gutenberg.org/files/1595/1595-h/1595-h.htm",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "western",
+  "detected_genre_confidence": 0.92,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "</antml\uff1aparameter>\n<parameter name=\"specials_verdict\">author_intentional",
+  "specials_verdict": "author_intentional",
+  "summary": "Spurned suitor Johnny McRoy becomes the murderous outlaw \"the Frio Kid\" after Rosita marries Madison Lane; years later he plots to kill Lane on Christmas Eve disguised as Santa Claus, but is shot dead by a frightened Mexican sheep herder while still in the Santa costume.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 6584,
+  "output_tokens": 382,
+  "backend_model": "claude-opus-4-8"
+}

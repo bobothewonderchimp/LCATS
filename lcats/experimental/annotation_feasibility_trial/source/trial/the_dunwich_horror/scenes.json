@@ -1,0 +1,429 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "other",
+      "start_par_id": 1,
+      "end_par_id": 4,
+      "start_exact": "[Transcriber's note: This etext was produced from Weird Tales April",
+      "end_exact": "shadowland of pre-existence.\"\u2014Charles\nLamb: Witches and Other Night-Fears .",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 0,
+      "end_char": 1207,
+      "summary": "Front matter: transcriber's note, title, author attribution, and an epigraph from Charles Lamb.",
+      "cohesion": {
+        "time": "N/A (publication front matter)",
+        "place": "N/A",
+        "characters": []
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Non-narrative material: transcriber's note, title/author, and epigraph. Labeled 'other' per rubric C.",
+      "confidence": 0.97
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "narrative_scene",
+      "start_par_id": 5,
+      "end_par_id": 14,
+      "start_exact": "1",
+      "end_exact": "persist in believing the remains Caucasian.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1209,
+      "end_char": 9160,
+      "summary": "Descriptive introduction to Dunwich: its bleak geography, decadent inhabitants, legends of witchcraft, hill noises, and ancient stone circles.",
+      "cohesion": {
+        "time": "Timeless/general past up to the present frame",
+        "place": "Dunwich region, north central Massachusetts",
+        "characters": [
+          "narrator",
+          "Dunwich inhabitants"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Sets scene through description of place and history; no focal Goal/Conflict/Outcome and no ERAC. Unified by place (Dunwich). Narrative_scene per rubric C.",
+      "confidence": 0.85
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 15,
+      "end_par_id": 30,
+      "start_exact": "2",
+      "end_exact": "court further publicity by a violent resistance or refusal to talk.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 9162,
+      "end_char": 24619,
+      "summary": "Chronicle of Wilbur Whateley's birth (1913) and uncanny early growth, Old Whateley's cattle-buying and carpentry, hill noises, and the 1917 investigation and press attention.",
+      "cohesion": {
+        "time": "1913\u20131917",
+        "place": "Whateley farmhouse and Dunwich Village",
+        "characters": [
+          "Wilbur Whateley",
+          "Lavinia Whateley",
+          "Old Whateley"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Extended chronicle spanning years unified by place/family; presents events summarily without on-stage GACD conflict/outcome or ERAC deliberation. Narrative_scene.",
+      "confidence": 0.82
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "narrative_scene",
+      "start_par_id": 31,
+      "end_par_id": 35,
+      "start_exact": "4",
+      "end_exact": "some\npretty tough tussles sometimes.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 24621,
+      "end_char": 26790,
+      "summary": "A decade of Whateley oddities: biannual hilltop fires, further carpentry gutting the upper story, and Old Whateley's ominous talk of whippoorwills coming for his soul.",
+      "cohesion": {
+        "time": "c.1918\u20131924",
+        "place": "Whateley farmhouse and Osborn's store, Dunwich",
+        "characters": [
+          "Old Whateley",
+          "Wilbur Whateley"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Summary chronicle unified by place/family with no on-stage conflict/outcome or decision structure. Narrative_scene.",
+      "confidence": 0.8
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "narrative_scene",
+      "start_par_id": 36,
+      "end_par_id": 42,
+      "start_exact": "On Lammas Night, 1924, Dr. Houghton of Aylesbury was hastily summoned",
+      "end_exact": "\"They didn't git him,\" he muttered in his heavy bass voice.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 26792,
+      "end_char": 29111,
+      "summary": "The death of Old Whateley on Lammas Night 1924, with his final mad instructions to Wilbur, the whippoorwills' chorus, and Wilbur's chuckle.",
+      "cohesion": {
+        "time": "Lammas Night, 1924",
+        "place": "Whateley farmhouse bedside",
+        "characters": [
+          "Old Whateley",
+          "Wilbur",
+          "Lavinia",
+          "Dr. Houghton"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "A single time/place death-bed scene, but the focal function is the passing and cryptic instructions rather than a goal-directed struggle with outcome. No clear GACD conflict/outcome or ERAC deliberation; narrative_scene per rubric C.",
+      "confidence": 0.62
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "narrative_scene",
+      "start_par_id": 43,
+      "end_par_id": 47,
+      "start_exact": "Wilbur was by this time a scholar of really tremendous erudition in",
+      "end_exact": "seven feet, and\nshowed no signs of ceasing its development.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 29113,
+      "end_char": 31861,
+      "summary": "Wilbur's growing erudition, gigantic stature, contempt for and disappearance of his mother Lavinia (1926-27), and further sealing/gutting of the farmhouse.",
+      "cohesion": {
+        "time": "1924\u2013summer 1927",
+        "place": "Whateley farmhouse, Dunwich",
+        "characters": [
+          "Wilbur Whateley",
+          "Lavinia Whateley",
+          "Mamie Bishop"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Summary chronicle of years unified by place/family; no on-stage GACD or ERAC. Narrative_scene.",
+      "confidence": 0.8
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 48,
+      "end_par_id": 58,
+      "start_exact": "5",
+      "end_exact": "half-human flesh and blood?\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 31863,
+      "end_char": 39546,
+      "summary": "Wilbur travels to Miskatonic library seeking the Necronomicon; Armitage reads the terrible passage, refuses to lend the book, and Wilbur departs thwarted, deepening Armitage's fear.",
+      "cohesion": {
+        "time": "Winter, then a single day at the library (c.1927-28)",
+        "place": "Miskatonic University library, Arkham",
+        "characters": [
+          "Wilbur Whateley",
+          "Dr. Henry Armitage"
+        ]
+      },
+      "gacd": {
+        "goal": "Wilbur wants to obtain/borrow the Miskatonic Necronomicon to find the Yog-Sothoth formula.",
+        "action": "He collates texts and openly asks Armitage to let him take the book home.",
+        "conflict": "Armitage firmly refuses, recognizing the danger of giving him the key to blasphemous spheres.",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Focal character (Wilbur) with clear Goal, on-stage Action (the request), strong Conflict (Armitage's refusal), and Outcome (denied) in one place/time. Meets GACD threshold.",
+      "confidence": 0.86
+    },
+    {
+      "segment_id": 8,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 59,
+      "end_par_id": 59,
+      "start_exact": "During the ensuing weeks Dr. Armitage set about to collect all possible",
+      "end_exact": "human world as Wilbur Whateley.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 39548,
+      "end_char": 40590,
+      "summary": "In the weeks after Wilbur's visit, Armitage's fear grows as he gathers data on Dunwich and resolves that something must be done about the lurking terror.",
+      "cohesion": {
+        "time": "The ensuing weeks / summer",
+        "place": "Arkham (and inquiries abroad)",
+        "characters": [
+          "Dr. Armitage"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Growing amazement passing into acute spiritual fear.",
+        "reason": "He weighs the Necronomicon clues, Houghton's account, and scholars' opinions.",
+        "anticipation": "He senses something ought to be done about the threat.",
+        "choice": "Resolves to investigate/act against Wilbur Whateley and the Dunwich terror."
+      },
+      "reason": "Follows the dramatic library scene as reflection/investigation: emotion (fear), reasoning over data, and a forming resolve, with no on-stage conflict/outcome. Meets ERAC (>=2).",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 9,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 60,
+      "end_par_id": 70,
+      "start_exact": "6",
+      "end_exact": "somewhat after his\nunknown father.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 40592,
+      "end_char": 48975,
+      "summary": "Wilbur breaks into the Miskatonic library at night for the Necronomicon; the watchdog kills him, revealing his monstrous non-human body, which disintegrates before witnesses.",
+      "cohesion": {
+        "time": "Early August 1928, small hours of a single night",
+        "place": "Miskatonic University library, Arkham",
+        "characters": [
+          "Wilbur Whateley",
+          "Dr. Armitage",
+          "Rice",
+          "Morgan",
+          "the watchdog"
+        ]
+      },
+      "gacd": {
+        "goal": "Wilbur attempts to steal the Necronomicon by breaking in at night.",
+        "action": "He enters through the window to seize the book.",
+        "conflict": "The savage watchdog attacks and mauls him.",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Single night/place scene with Goal (steal book), Action (break-in), strong Conflict (dog attack), Outcome (Wilbur's death and revelation). Clear GACD dramatic_scene.",
+      "confidence": 0.9
+    },
+    {
+      "segment_id": 10,
+      "segment_type": "narrative_scene",
+      "start_par_id": 71,
+      "end_par_id": 73,
+      "start_exact": "7",
+      "end_exact": "gold with which Wilbur and Old Whateley always paid their debts has yet been\ndiscovered.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 48977,
+      "end_char": 50709,
+      "summary": "Aftermath of Wilbur's death: officials handle formalities, note growing disturbances at the farmhouse, and send his strange diary and books to Miskatonic.",
+      "cohesion": {
+        "time": "Days after Wilbur's death (August 1928)",
+        "place": "Dunwich, Aylesbury, Miskatonic",
+        "characters": [
+          "officials",
+          "Earl Sawyer"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Transitional summary of aftermath/logistics without focal GACD or ERAC. Narrative_scene.",
+      "confidence": 0.8
+    },
+    {
+      "segment_id": 11,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 74,
+      "end_par_id": 88,
+      "start_exact": "It was in the dark of September ninth that the horror broke loose.",
+      "end_exact": "The Elmer Fryes had\nbeen erased from Dunwich.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 50711,
+      "end_char": 63233,
+      "summary": "The invisible horror escapes and rampages through Dunwich over several nights\u2014monstrous tracks, slaughtered cattle, wrecked farms, and the destruction of the Elmer Frye family.",
+      "cohesion": {
+        "time": "September 9 and following nights, 1928",
+        "place": "Dunwich countryside (glen, farms, Sentinel Hill)",
+        "characters": [
+          "Dunwich villagers",
+          "the Fryes",
+          "the invisible horror"
+        ]
+      },
+      "gacd": {
+        "goal": "The Dunwich community tries to survive and comprehend the unleashed horror.",
+        "action": "Villagers barricade, guard cattle, and investigate the tracks and ruins.",
+        "conflict": "The invisible monster repeatedly attacks farms, killing cattle and people.",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "A multi-night but tightly continuous rampage unified by place; strong on-stage conflict (attacks) and repeated disastrous outcomes (Frye family erased). Meets GACD despite spanning nights.",
+      "confidence": 0.75
+    },
+    {
+      "segment_id": 12,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 89,
+      "end_par_id": 102,
+      "start_exact": "8",
+      "end_exact": "the deeper and more malign meddling which others\nhad done before him.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 63235,
+      "end_char": 75056,
+      "summary": "Armitage labors to decipher Wilbur's ciphered diary, uncovering the plan to wipe out humanity; horrified, he prepares countermeasures and resolves to go to Dunwich.",
+      "cohesion": {
+        "time": "Late August\u2013early September 1928",
+        "place": "Armitage's shelf-lined room, Arkham",
+        "characters": [
+          "Dr. Armitage",
+          "Rice",
+          "Morgan"
+        ]
+      },
+      "gacd": {
+        "goal": "Armitage aims to decipher the diary and find means to stop the entity.",
+        "action": "He works through cryptography and mixes chemicals/formulae.",
+        "conflict": "The cipher resists solution and the horrifying revelations create dread and uncertainty about any material remedy.",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Focal character with Goal (decipher/find a remedy), sustained Action, Conflict (the resistant cipher and dawning menace), and interim Outcome (cracks the code, forms a plan). Unified time/place (his room). GACD dramatic_scene.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 13,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 103,
+      "end_par_id": 133,
+      "start_exact": "9",
+      "end_exact": "outside the sane experience of mankind.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 75058,
+      "end_char": 88745,
+      "summary": "Armitage, Rice and Morgan reach Dunwich, survey the devastation, learn of the vanished police and the fresh daytime attack on the Bishops, rally the frightened natives, and track the invisible horror up Sentinel Hill.",
+      "cohesion": {
+        "time": "Friday afternoon through the next morning, September 1928",
+        "place": "Dunwich village, farms, and Sentinel Hill approaches",
+        "characters": [
+          "Armitage",
+          "Rice",
+          "Morgan",
+          "Dunwich natives"
+        ]
+      },
+      "gacd": {
+        "goal": "The Arkham men set out to find and destroy the invisible monster.",
+        "action": "They investigate, guard the ruins, rally the men, and pursue the tracks toward Sentinel Hill.",
+        "conflict": "The unseen horror keeps attacking (Bishop house), natives panic, and the creature is climbing the hill.",
+        "outcome": "Unclear"
+      },
+      "erac": null,
+      "reason": "Continuous pursuit sequence unified by the Dunwich locale over roughly a day; Goal, Action, and ongoing Conflict clearly present with interim (unresolved) outcome as they close in. GACD dramatic_scene.",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 14,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 134,
+      "end_par_id": 152,
+      "start_exact": "10",
+      "end_exact": "sunlight once more brilliant and untainted.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 88747,
+      "end_char": 97651,
+      "summary": "The three men ascend Sentinel Hill; watched via telescope, they briefly render the monster visible, chant the counter-spell amid supernatural darkness, and destroy the horror in a cataclysmic burst.",
+      "cohesion": {
+        "time": "That morning, climaxing at the summit ritual",
+        "place": "Sentinel Hill summit and its base",
+        "characters": [
+          "Armitage",
+          "Rice",
+          "Morgan",
+          "watching natives",
+          "the monster"
+        ]
+      },
+      "gacd": {
+        "goal": "Destroy the invisible entity atop Sentinel Hill.",
+        "action": "They spray the powder to reveal it and chant the banishing incantation.",
+        "conflict": "The monster's roaring struggle and the eldritch storm/force resist them.",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Climactic confrontation unified by place/time; Goal, Action (spell/spray), strong Conflict (monster's cries, storm), and decisive Outcome (destruction). GACD dramatic_scene.",
+      "confidence": 0.9
+    },
+    {
+      "segment_id": 15,
+      "segment_type": "narrative_scene",
+      "start_par_id": 153,
+      "end_par_id": 162,
+      "start_exact": "\"The thing has gone for ever,\" Armitage said.",
+      "end_exact": "It was\nhis twin brother, but it looked more like the father than he did.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 97919,
+      "end_char": 100959,
+      "summary": "Denouement: Armitage explains the nature of the vanquished entity, Curtis recalls the Whateley-like half-face, and Armitage reveals it was Wilbur's twin brother, offspring of Yog-Sothoth.",
+      "cohesion": {
+        "time": "Immediately after the destruction",
+        "place": "Base of Sentinel Hill, Dunwich",
+        "characters": [
+          "Armitage",
+          "Curtis Whateley",
+          "Zebulon Whateley",
+          "Joe Osborn",
+          "natives"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Post-climax explanation/dialogue revealing the truth; no on-stage conflict or new goal-directed action. Unified time/place. Narrative_scene per rubric C.",
+      "confidence": 0.72
+    }
+  ],
+  "segment_count": 15,
+  "model": "claude-opus-4-8"
+}

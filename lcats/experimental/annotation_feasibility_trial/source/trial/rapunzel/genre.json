@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/rapunzel/story.json",
+  "title": "rapunzel",
+  "author": "Grimm",
+  "url": "https://www.gutenberg.org/cache/epub/2591/pg2591-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "fantasy",
+  "detected_genre_confidence": 0.85,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "fairy tale / children's",
+  "specials_verdict": "author_intentional",
+  "summary": "A couple surrenders their child to an enchantress, who locks the girl, Rapunzel, in a doorless tower; a prince discovers her by climbing her hair, and after being blinded and separated they are ultimately reunited and healed.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 5332,
+  "output_tokens": 326,
+  "backend_model": "claude-opus-4-8"
+}

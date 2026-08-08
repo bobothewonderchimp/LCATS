@@ -1,0 +1,30 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/the_cowboy_and_the_lady_and_her_pa_b_a_story_of_a__cobb/story.json",
+  "title": "the_cowboy_and_the_lady_and_her_pa_b_a_story_of_a__cobb",
+  "author": [
+    "Cobb, Irvin S. (Irvin Shrewsbury)"
+  ],
+  "url": "https://www.gutenberg.org/cache/epub/69929/pg69929.txt",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "humor",
+  "detected_genre_confidence": 0.82,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "western",
+  "specials_verdict": "author_intentional",
+  "summary": "When his socialite daughter falls for a dashing cowboy guide on a Western vacation, the shrewd Mr. Gatling cures her infatuation not by opposing the match but by secretly outfitting the rugged young man in ludicrous \"Eastern\" clothes, making him unappealing\u2014then offers the good-hearted youth a ranch job instead.",
+  "issues": [
+    {
+      "type": "structural_artifact",
+      "severity": "low",
+      "description": "An embedded illustration caption remains in the body text: '[Illustration: Hayes had ridden the man-killer at the Pendleton Round-up...]'"
+    }
+  ],
+  "error": "",
+  "input_tokens": 17720,
+  "output_tokens": 430,
+  "backend_model": "claude-opus-4-8"
+}

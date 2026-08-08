@@ -1,0 +1,28 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/story_of_keesh/story.json",
+  "title": "story_of_keesh",
+  "author": "london",
+  "url": "https://www.gutenberg.org/cache/epub/710/pg710-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "adventure",
+  "detected_genre_confidence": 0.75,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "children's",
+  "specials_verdict": "author_intentional",
+  "summary": "A poor Inuit boy named Keesh rises to become head man of his village by cleverly hunting polar bears with an ingenious whalebone-and-blubber trap, which the villagers suspect is witchcraft until he reveals it is simply \"headcraft.\"",
+  "issues": [
+    {
+      "type": "formatting_artifact",
+      "severity": "low",
+      "description": "Numerous U+00A0 non-breaking space characters appear throughout the text, likely from HTML extraction, but they do not impair readability."
+    }
+  ],
+  "error": "",
+  "input_tokens": 11794,
+  "output_tokens": 397,
+  "backend_model": "claude-opus-4-8"
+}

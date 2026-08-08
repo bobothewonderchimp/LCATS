@@ -1,0 +1,150 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "other",
+      "start_par_id": 1,
+      "end_par_id": 2,
+      "start_exact": "Keesh lived long ago on the rim of the polar sea, was head man",
+      "end_exact": "came to live in the meanest of all the igloos.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 0,
+      "end_char": 1614,
+      "summary": "Framing introduction to the legend of Keesh, his heritage, his brave father's death, and his fall into poverty.",
+      "cohesion": {
+        "time": "long ago / backstory",
+        "place": "polar sea village",
+        "characters": [
+          "Keesh",
+          "narrator",
+          "Bok",
+          "Ikeega"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Expository framing/backstory establishing the legend; no on-stage GACD or ERAC. Time is generalized and functions as narrative prologue.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 3,
+      "end_par_id": 17,
+      "start_exact": "It was at a council, one night, in the big igloo of\nKlosh-Kwan, the chief, that Keesh showed the blood",
+      "end_exact": "but his jaw was set and he went his way, looking\nneither to right nor left.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1615,
+      "end_char": 4662,
+      "summary": "At the council Keesh demands fair meat, is mocked and threatened by the men, and vows to hunt his own meat and enforce fairness before storming out.",
+      "cohesion": {
+        "time": "one night",
+        "place": "council in Klosh-Kwan's big igloo",
+        "characters": [
+          "Keesh",
+          "Klosh-Kwan",
+          "Ugh-Gluk",
+          "Massuk"
+        ]
+      },
+      "gacd": {
+        "goal": "To win recognition and fair distribution of meat for himself and his mother",
+        "action": "Keesh rises and confronts the assembled hunters with his grievance and his father's legacy",
+        "conflict": "The men are outraged, jeer, threaten beatings and deny him meat",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Clear GACD: Keesh's goal (fair meat/recognition), his on-stage confrontation, strong conflict with the hostile council, and a disastrous outcome (jeered out). Unified time/place at the night council.",
+      "confidence": 0.9
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 18,
+      "end_par_id": 24,
+      "start_exact": "The next day he went forth along the shore-line where the ice\nand the land met together.",
+      "end_exact": "after that slept for twenty running hours.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 4663,
+      "end_char": 6461,
+      "summary": "Keesh sets out to hunt alone; after a storm and fears of his death, he returns triumphantly bearing bear meat and instructs the men to fetch the rest.",
+      "cohesion": {
+        "time": "days following the council",
+        "place": "village and shore ice",
+        "characters": [
+          "Keesh",
+          "Ikeega",
+          "hunters"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Spans several days summarizing his departure and triumphant return; the actual hunt happens off-stage, so no on-stage GACD conflict. Narrative summary unified by the hunting-return episode.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "narrative_scene",
+      "start_par_id": 25,
+      "end_par_id": 42,
+      "start_exact": "There was much doubt at first, much doubt and\ndiscussion.",
+      "end_exact": "the news of the killing might be told.\ff\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 6462,
+      "end_char": 16782,
+      "summary": "Keesh's repeated hunting success deepens the mystery and rumors of witchcraft; he builds a large igloo, and spies Bim and Bawn follow him and report his strange method to the council.",
+      "cohesion": {
+        "time": "over many days/weeks",
+        "place": "village and ice-field",
+        "characters": [
+          "Keesh",
+          "Klosh-Kwan",
+          "Ugh-Gluk",
+          "Bim",
+          "Bawn"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Extended summary of ongoing success, growing rumors, and the spies' report; time is generalized over many trips without a single on-stage GACD conflict/outcome. Narrative unity around the mystery.",
+      "confidence": 0.62
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 43,
+      "end_par_id": 54,
+      "start_exact": "And in the afternoon of that day the women hauled in the meat",
+      "end_exact": "neither widow nor weak one\ncried aloud in the night because there was no meat.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 14156,
+      "end_char": 16782,
+      "summary": "The council confronts Keesh at his igloo demanding explanation; challenged about witchcraft, he reveals his clever whalebone-and-blubber method, resolving the mystery, and rises to head man.",
+      "cohesion": {
+        "time": "afternoon of that day",
+        "place": "Keesh's igloo",
+        "characters": [
+          "Keesh",
+          "Klosh-Kwan",
+          "Ugh-Gluk"
+        ]
+      },
+      "gacd": {
+        "goal": "Keesh must answer the accusation of witchcraft and defend his standing",
+        "action": "He receives the council and demonstrates his whalebone trick to prove headcraft not witchcraft",
+        "conflict": "The council sternly demands explanation, suspecting witchcraft",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "GACD present: goal to answer accusation, on-stage demonstration meeting the council's suspicion (conflict), resolved successfully. Unified by time/place at his igloo; closing lines are the tale's resolution kept with the scene.",
+      "confidence": 0.82
+    }
+  ],
+  "segment_count": 5,
+  "model": "claude-opus-4-8"
+}

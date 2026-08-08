@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/extricating_young_gussie/story.json",
+  "title": "extricating_young_gussie",
+  "author": "Wodehouse",
+  "url": "https://www.gutenberg.org/cache/epub/7471/pg7471-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "humor",
+  "detected_genre_confidence": 0.95,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "comedy of manners",
+  "specials_verdict": "none",
+  "summary": "Bertie Wooster is dispatched to New York by his formidable Aunt Agatha to stop his cousin Gussie from marrying a vaudeville performer, but the scheme backfires when Bertie summons Gussie's mother, who turns out to be a former vaudevillian herself and rekindles a romance with the girl's father, leaving both couples happily engaged and Bertie fleeing home in dismay.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 17476,
+  "output_tokens": 376,
+  "backend_model": "claude-opus-4-8"
+}

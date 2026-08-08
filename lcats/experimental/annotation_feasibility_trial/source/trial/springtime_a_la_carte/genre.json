@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/springtime_a_la_carte/story.json",
+  "title": "springtime_a_la_carte",
+  "author": "OHenry",
+  "url": "https://www.gutenberg.org/cache/epub/2776/pg2776-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "romance",
+  "detected_genre_confidence": 0.75,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "</antml=parameter>\n<parameter name=\"specials_verdict\">author_intentional",
+  "specials_verdict": "author_intentional",
+  "summary": "Sarah, a New York freelance typist who furnishes menu cards for a restaurant, pines for her farmer sweetheart Walter after weeks without a letter; when spring's dandelions on the bill of fare bring her to tears, she accidentally types a love note in place of the vegetable, which leads Walter to find and reunite with her.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 7068,
+  "output_tokens": 381,
+  "backend_model": "claude-opus-4-8"
+}

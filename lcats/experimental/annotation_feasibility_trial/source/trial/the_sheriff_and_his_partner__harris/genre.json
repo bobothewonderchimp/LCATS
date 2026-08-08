@@ -1,0 +1,24 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/the_sheriff_and_his_partner__harris/story.json",
+  "title": "the_sheriff_and_his_partner__harris",
+  "author": [
+    "Harris, Frank"
+  ],
+  "url": "https://www.gutenberg.org/cache/epub/23008/pg23008.txt",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "western",
+  "detected_genre_confidence": 0.95,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "</antml name=\"secondary_genre\">",
+  "specials_verdict": "author_intentional",
+  "summary": "In frontier Kansas, a young British law clerk is tricked into being sworn in as a deputy sheriff and sent to arrest an outlaw named Tom Williams; when he brings Williams back, a fatal duel reveals that the sheriff was Williams's former partner, and both men die in the shootout.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 16714,
+  "output_tokens": 350,
+  "backend_model": "claude-opus-4-8"
+}

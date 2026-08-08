@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/snow_white_and_rose_red/story.json",
+  "title": "snow_white_and_rose_red",
+  "author": "Grimm",
+  "url": "https://www.gutenberg.org/cache/epub/2591/pg2591-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "fantasy",
+  "detected_genre_confidence": 0.95,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "children's fairy tale",
+  "specials_verdict": "author_intentional",
+  "summary": "Two devoted sisters, Snow-white and Rose-red, befriend a talking bear who shelters with them each winter, repeatedly rescue an ungrateful dwarf, and eventually the bear kills the dwarf, breaks his enchantment to reveal himself as a king's son, and marries Snow-white while his brother marries Rose-red.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 7308,
+  "output_tokens": 363,
+  "backend_model": "claude-opus-4-8"
+}

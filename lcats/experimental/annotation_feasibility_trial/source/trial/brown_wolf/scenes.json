@@ -1,0 +1,33 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "She had delayed, because of the dew-wet grass, in order to put\non her overshoes, and when she emerged from the house",
+      "end_exact": "he cut\nsharply across the curve of the trail and was gone.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 0,
+      "end_char": 31817,
+      "summary": "Walt and Madge walk their dog Wolf down a trail; a Klondike stranger, Skiff Miller, arrives and claims Wolf as his dog Brown. They agree to let the dog choose, and Wolf ultimately follows Miller.",
+      "cohesion": {
+        "time": "One spring morning, continuous",
+        "place": "Mountain trail near the Irvines' cottage, Glen Ellen",
+        "characters": [
+          "Walt Irvine",
+          "Madge",
+          "Wolf/Brown",
+          "Skiff Miller"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "The entire story is embedded in a single paragraph marker and unfolds in one continuous time/place (the trail on a spring morning). Although it contains a strong conflict over the dog's ownership, the whole passage\u2014including extensive backstory and description\u2014is presented as one cohesive block with no time/place breaks, so it is treated as a single coarse narrative scene.",
+      "confidence": 0.6
+    }
+  ],
+  "segment_count": 1,
+  "model": "claude-opus-4-8"
+}

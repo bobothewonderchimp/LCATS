@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/crowned_heads/story.json",
+  "title": "crowned_heads",
+  "author": "Wodehouse",
+  "url": "https://www.gutenberg.org/cache/epub/7471/pg7471-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "humor",
+  "detected_genre_confidence": 0.75,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "romance",
+  "specials_verdict": "none",
+  "summary": "Katie, who cares for her elderly grandfather deluded into believing he is the King of England, falls for athlete Ted Brady, but the old man forbids the match on grounds of rank. Ted wins his blessing by getting himself elected \"King of Coney Island\" at the Mardi Gras, making it a royal alliance.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 13974,
+  "output_tokens": 342,
+  "backend_model": "claude-opus-4-8"
+}

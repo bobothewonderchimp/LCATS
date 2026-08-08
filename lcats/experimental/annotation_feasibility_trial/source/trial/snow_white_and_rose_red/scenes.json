@@ -1,0 +1,206 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 6,
+      "start_exact": "There was once a poor widow who lived in a lonely cottage.",
+      "end_exact": "behind them upon a perch sat a white dove with its head hidden beneath its\n      wings.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 7,
+      "end_char": 3138,
+      "summary": "Introduces the widow and her daughters Snow-white and Rose-red, their gentle natures, their forest wanderings, angelic protection, and daily household life.",
+      "cohesion": {
+        "time": "Unspecified/general past; seasons cycling",
+        "place": "Widow's cottage and surrounding forest",
+        "characters": [
+          "Snow-white",
+          "Rose-red",
+          "mother"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Expository introduction unified by the cottage/forest setting and family; describes habitual life without a focused goal-conflict-outcome structure, so narrative_scene.",
+      "confidence": 0.83
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "narrative_scene",
+      "start_par_id": 7,
+      "end_par_id": 12,
+      "start_exact": "One evening, as they were thus sitting comfortably together, someone\n      knocked at the door",
+      "end_exact": "the doors were never fastened\n      until their black friend had arrived.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 3151,
+      "end_char": 5462,
+      "summary": "A bear knocks and is welcomed at the cottage; the children play with him, he stays by the hearth nightly through winter.",
+      "cohesion": {
+        "time": "Winter evenings",
+        "place": "The cottage",
+        "characters": [
+          "Snow-white",
+          "Rose-red",
+          "mother",
+          "the bear"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Unified by the cottage setting and the recurring evening visits; the initial fright resolves quickly into a friendly habitual arrangement, lacking sustained conflict/outcome structure, so narrative_scene.",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 13,
+      "end_par_id": 14,
+      "start_exact": "When spring had come and all outside was green, the bear said one morning",
+      "end_exact": "The\n      bear ran away quickly, and was soon out of sight behind the trees.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 5475,
+      "end_char": 6518,
+      "summary": "In spring the bear announces he must leave to guard treasures from dwarfs; departing, his coat tears revealing a glint of gold.",
+      "cohesion": {
+        "time": "Spring morning",
+        "place": "The cottage doorway",
+        "characters": [
+          "Snow-white",
+          "the bear"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Distinct time shift (spring) and departure event, unified by cottage doorway; descriptive/transitional without goal-conflict-outcome, so narrative_scene.",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 15,
+      "end_par_id": 18,
+      "start_exact": "A short time afterwards the mother sent her children into the forest to\n      get firewood.",
+      "end_exact": "went\n      off without even once looking at the children.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 6531,
+      "end_char": 8769,
+      "summary": "Gathering firewood, the girls find a dwarf with his beard trapped in a tree; despite his abuse they free him by cutting his beard, and he leaves ungrateful.",
+      "cohesion": {
+        "time": "Some time after the bear leaves",
+        "place": "The forest, by a felled tree",
+        "characters": [
+          "Snow-white",
+          "Rose-red",
+          "the dwarf"
+        ]
+      },
+      "gacd": {
+        "goal": "Free the trapped dwarf",
+        "action": "The girls pull at his beard, then Snow-white cuts it with scissors",
+        "conflict": "Beard caught fast; the dwarf abuses and resists their help",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Clear goal (help the dwarf), on-stage action (cutting the beard) meeting resistance (stuck beard, ungrateful dwarf), and interim outcome; unified forest setting, so dramatic_scene.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 19,
+      "end_par_id": 20,
+      "start_exact": "Some time afterwards Snow-white and Rose-red went to catch a dish of fish.",
+      "end_exact": "he dragged it\n      away and disappeared behind a stone.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 8782,
+      "end_char": 10500,
+      "summary": "At the brook the girls find the dwarf being pulled in by a fish tangled in his beard; they cut him free and he curses them, snatching a sack of pearls.",
+      "cohesion": {
+        "time": "Some time later",
+        "place": "By the brook",
+        "characters": [
+          "Snow-white",
+          "Rose-red",
+          "the dwarf"
+        ]
+      },
+      "gacd": {
+        "goal": "Save the dwarf from being dragged into the water",
+        "action": "They hold him and cut the entangled beard from the line",
+        "conflict": "Beard and line entangled fast; the dwarf being pulled by the fish and then rages at them",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "New place (brook) and clear rescue action against resistance with an outcome; dramatic_scene.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 21,
+      "end_par_id": 23,
+      "start_exact": "It happened that soon afterwards the mother sent the two children to the\n      town",
+      "end_exact": "gave\n      the wicked creature a single blow with his paw, and he did not move again.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 10513,
+      "end_char": 13000,
+      "summary": "On a trip to town the girls rescue the dwarf from an eagle; later they surprise him with his jewels, and the bear arrives and kills the dwarf.",
+      "cohesion": {
+        "time": "Soon afterwards; evening on return",
+        "place": "The heath among rocks",
+        "characters": [
+          "Snow-white",
+          "Rose-red",
+          "the dwarf",
+          "the eagle",
+          "the bear"
+        ]
+      },
+      "gacd": {
+        "goal": "Get through their errand / deal with the dwarf; ultimately the dwarf's fate",
+        "action": "Girls pull the dwarf from the eagle; the bear attacks the dwarf",
+        "conflict": "Eagle seizing the dwarf; dwarf's rage and betrayal; the bear confronts him",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Unified by the heath setting across going and returning; sustained conflict (eagle, then bear) culminating in the dwarf's death, so dramatic_scene.",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "narrative_scene",
+      "start_par_id": 24,
+      "end_par_id": 25,
+      "start_exact": "The girls had run away, but the bear called to them: \\u\\u",
+      "end_exact": "every year bore the most beautiful roses,\n      white and red.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 13007,
+      "end_char": 13983,
+      "summary": "The bear reveals he is a bewitched king's son freed by the dwarf's death; Snow-white and Rose-red marry him and his brother, living happily with their mother.",
+      "cohesion": {
+        "time": "Immediately after / years following",
+        "place": "The heath and later the family home",
+        "characters": [
+          "Snow-white",
+          "Rose-red",
+          "the prince",
+          "mother"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Resolution and happy-ending summary: revelation and marriages narrated without goal-conflict-outcome or deliberation structure, so narrative_scene.",
+      "confidence": 0.72
+    }
+  ],
+  "segment_count": 7,
+  "model": "claude-opus-4-8"
+}

@@ -1,0 +1,43 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/the_colour_out_of_space/story.json",
+  "title": "the_colour_out_of_space",
+  "author": "H. P. Lovecraft",
+  "url": "https://www.gutenberg.org/cache/epub/68236/pg68236-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "horror",
+  "detected_genre_confidence": 0.95,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "science fiction (cosmic/weird)",
+  "specials_verdict": "author_intentional",
+  "summary": "A surveyor recounts old Ammi Pierce's tale of a meteorite that fell on the Gardner farm near Arkham, unleashing an unnameable colour from space that poisons the land, mutates and drains the life from crops, animals, and the entire family before erupting back into the sky, leaving a blasted heath and a lingering horror in the well.",
+  "issues": [
+    {
+      "type": "transcriber_note",
+      "severity": "high",
+      "description": "Project Gutenberg/Amazing Stories transcriber's note embedded near the start: '[Transcriber's Note: This etext was produced from Amazing Stories September 1927...]'"
+    },
+    {
+      "type": "other",
+      "severity": "medium",
+      "description": "Editorial magazine blurb inserted before the story proper ('Here is a totally different story that we can highly recommend to you...'), which is front matter not part of the narrative."
+    },
+    {
+      "type": "formatting_artifact",
+      "severity": "low",
+      "description": "A duplicated passage ('...and in the fearsome instant of deeper darkness, the watchers saw wriggling...') appears as an apparent pull-quote/repetition artifact mid-text."
+    },
+    {
+      "type": "the_end",
+      "severity": "low",
+      "description": "Explicit 'THE END' ending marker present."
+    }
+  ],
+  "error": "",
+  "input_tokens": 25693,
+  "output_tokens": 655,
+  "backend_model": "claude-opus-4-8"
+}

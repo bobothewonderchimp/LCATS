@@ -1,0 +1,267 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 10,
+      "start_exact": "From up on the first level of the first shelf of the wagon road",
+      "end_exact": "chow and lots\nof it!\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 0,
+      "end_char": 3203,
+      "summary": "At a scenic mountain wagon-road stop above Avalanche Creek, the Gatlings admire the vista as daughter Shirley strolls off toward the guides packing up.",
+      "cohesion": {
+        "time": "Morning, one day on the trail",
+        "place": "Wagon road above Avalanche Creek, mountain camp",
+        "characters": [
+          "Dad Wheelis",
+          "Mrs. Gatling",
+          "Mr. Gatling",
+          "Shirley Gatling"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Opening scene unified by time/place introducing the party; descriptive/introductory without on-stage conflict or decision structure.",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 11,
+      "end_par_id": 37,
+      "start_exact": "Mr. Gatling said nothing for a minute or two, but he took off his",
+      "end_exact": "With\nyour valuable advice and assistance, of course!\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 3205,
+      "end_char": 11553,
+      "summary": "Mr. Gatling voices his suspicion to his wife that Shirley is falling for a guide; they debate whether to intervene, and he insists on watchful waiting.",
+      "cohesion": {
+        "time": "Continuous, same morning at the rest stop",
+        "place": "The camp/rest area among the pines",
+        "characters": [
+          "Mr. Gatling",
+          "Mrs. Gatling"
+        ]
+      },
+      "gacd": {
+        "goal": "Mr. Gatling wants to convince his wife of the danger and decide on a strategy about Shirley's romance",
+        "action": "He argues his case and rebuts her denials and proposals to warn Shirley",
+        "conflict": "Mrs. Gatling resists, denying and disputing his suspicions and pushing to intervene",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Focal character pursues a goal (persuade wife, set policy) against her resistance (conflict), reaching an interim outcome: agreement to watch and wait.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 38,
+      "end_par_id": 42,
+      "start_exact": "With a manner which she strove to make casual and unconcerned, the",
+      "end_exact": "But now the sinking was more\npronounced.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 11557,
+      "end_char": 14141,
+      "summary": "The expedition breaks camp and journeys through the day across the Divide, making a new camp by evening under a romantic moonlit sky.",
+      "cohesion": {
+        "time": "The following day into evening; travel montage",
+        "place": "Along the trail across the Divide to a sheltered cove",
+        "characters": [
+          "Mrs. Gatling",
+          "the party"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Transitional travel montage covering a day's journey; unified by time progression but lacks GACD/ERAC structure.",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 43,
+      "end_par_id": 76,
+      "start_exact": "She strained at the tethers of her patience though until supper was",
+      "end_exact": "aggravating\npersons on earth when he set out to be. Any husband can.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 14143,
+      "end_char": 22358,
+      "summary": "That night in their tent the Gatlings watch the lovers on the moonlit rock and argue over Shirley's infatuation and what to do; Mr. Gatling defers action and goes to sleep.",
+      "cohesion": {
+        "time": "That evening/night after supper",
+        "place": "The Gatlings' tent at the moonlit camp",
+        "characters": [
+          "Mr. Gatling",
+          "Mrs. Gatling",
+          "Shirley",
+          "Hayes Tripier"
+        ]
+      },
+      "gacd": {
+        "goal": "Determine how to handle Shirley's romance and whether it is real love",
+        "action": "The parents observe the couple and debate the guide's worth and their strategy",
+        "conflict": "Spousal disagreement over the seriousness and appropriate response; unresolved worry",
+        "outcome": "Unclear"
+      },
+      "erac": null,
+      "reason": "Same night/place scene driven by conflictual debate between the parents observing the lovers; ends without a settled plan, an interim/unclear outcome.",
+      "confidence": 0.62
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 77,
+      "end_par_id": 102,
+      "start_exact": "Speaking with regard to the ripening effect of summer nights upon",
+      "end_exact": "It looks like an impossible bet and I\u2019ve got to make sure.\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 22362,
+      "end_char": 29081,
+      "summary": "After more days on the trail, Shirley announces her engagement to her father; he accepts calmly while secretly planning, and sends her to tell her mother and to summon Tripier.",
+      "cohesion": {
+        "time": "Late afternoon of the third day, days later on the trail",
+        "place": "A secluded spot by a rapids-filled river at camp",
+        "characters": [
+          "Shirley",
+          "Mr. Gatling"
+        ]
+      },
+      "gacd": {
+        "goal": "Shirley aims to win her father's approval of her engagement",
+        "action": "She announces the engagement and negotiates plans while he probes with questions",
+        "conflict": "Underlying tension as she anticipates resistance and he conceals his covert scheme",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Focal exchange with a goal (gain approval) and questioning/negotiation; interim outcome is apparent approval, though father plots covertly. Time/place shift from tent to riverside days later.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 103,
+      "end_par_id": 116,
+      "start_exact": "With young Tripier he had more than the few words he had specified.",
+      "end_exact": "Well, suppose we see how they\u2019re coming along\nwith supper.\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 29085,
+      "end_char": 32545,
+      "summary": "Mr. Gatling privately persuades young Tripier into a secret plan to buy flashy new East-style clothes and get a close haircut, sworn to secrecy.",
+      "cohesion": {
+        "time": "Continuous, same day at camp",
+        "place": "Behind the rocks at camp",
+        "characters": [
+          "Mr. Gatling",
+          "Hayes Tripier"
+        ]
+      },
+      "gacd": {
+        "goal": "Mr. Gatling seeks to get Tripier to transform his appearance to disenchant Shirley",
+        "action": "He proposes and coaxes the youth into buying garish clothes and a haircut in secret",
+        "conflict": "Tripier's initial embarrassment and need for persuasion; the covert manipulation",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Same-place interview with a clear goal, on-stage persuasion meeting mild resistance, and a successful outcome (agreement to the scheme).",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "narrative_scene",
+      "start_par_id": 117,
+      "end_par_id": 124,
+      "start_exact": "Mr. Gatling\u2019s strategy ticked like a clock. After they got to",
+      "end_exact": "gnaw at Mr. Gatling\u2019s heart cockles.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 32549,
+      "end_char": 35125,
+      "summary": "Gatling stalls the trip in Spokane to let the plan work, then sends Shirley ahead by train to meet Tripier; he and his wife exchange words at the station.",
+      "cohesion": {
+        "time": "Over subsequent days, ending at the Western Gate station",
+        "place": "Spokane and the railway station at the park gate",
+        "characters": [
+          "Mr. Gatling",
+          "Mrs. Gatling",
+          "Shirley"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Summary/travel-logistics passage advancing the plan across days and locations; no on-stage conflict/outcome, functioning as a transitional narrative scene.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 8,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 125,
+      "end_par_id": 135,
+      "start_exact": "Indeed, something strongly resembling remorse beset him toward the",
+      "end_exact": "booking up\nfor a little swing around Europe.\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 35129,
+      "end_char": 37326,
+      "summary": "That evening at the hotel, a tearful Shirley meets her parents and announces the engagement is off, having broken it herself after seeing the changed Tripier.",
+      "cohesion": {
+        "time": "Evening of the same day",
+        "place": "The hotel and the Gatlings' rooms",
+        "characters": [
+          "Shirley",
+          "Mr. Gatling",
+          "Mrs. Gatling"
+        ]
+      },
+      "gacd": {
+        "goal": "Learn the outcome of the reunion / resolve Shirley's engagement",
+        "action": "Shirley confronts her parents and confesses she has broken the engagement",
+        "conflict": "Shirley's inner turmoil and heartbreak; the emotional revelation",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "New time/place (hotel evening). The plan's payoff is delivered on-stage with emotional confrontation and a clear outcome: engagement broken.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 9,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 136,
+      "end_par_id": 151,
+      "start_exact": "The lobby below was seething--seething is the word commonly used in",
+      "end_exact": "Mr. Gatling winked a concealed, deadly wink.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 37330,
+      "end_char": 41747,
+      "summary": "In the lobby Gatling finds the garishly dressed, dejected Tripier and offers him a job as ranch foreman, slyly insisting he keep wearing the ridiculous new clothes.",
+      "cohesion": {
+        "time": "Same evening, continuous",
+        "place": "The hotel lobby",
+        "characters": [
+          "Mr. Gatling",
+          "Hayes Tripier"
+        ]
+      },
+      "gacd": {
+        "goal": "Gatling wants to secure the capable youth for his cattle venture without the marriage",
+        "action": "He approaches the transformed Tripier and offers a foreman/partnership position",
+        "conflict": "The youth's heartache and confusion over the clothes advice; Gatling's manipulation",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Continuous hotel scene resolving the tale: Gatling achieves his double aim (broken match, hired hand). Clear goal, on-stage action, and successful outcome capped by the closing wink.",
+      "confidence": 0.62
+    }
+  ],
+  "segment_count": 9,
+  "model": "claude-opus-4-8"
+}

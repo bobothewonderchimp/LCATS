@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/speckled_band/story.json",
+  "title": "speckled_band",
+  "author": "Arthur Conan Doyle",
+  "url": "https://www.gutenberg.org/files/1661/1661-h/1661-h.htm",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "mystery",
+  "detected_genre_confidence": 0.98,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "</antmlial>\n<parameter name=\"specials_verdict\">author_intentional",
+  "specials_verdict": "author_intentional",
+  "summary": "Sherlock Holmes investigates the mysterious death of Helen Stoner's twin sister at Stoke Moran and uncovers that her tyrannical stepfather, Dr. Grimesby Roylott, murdered her using a trained venomous snake sent through a ventilator \u2014 a plot he now aims at Helen, until the snake fatally turns on Roylott himself.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 20861,
+  "output_tokens": 393,
+  "backend_model": "claude-opus-4-8"
+}

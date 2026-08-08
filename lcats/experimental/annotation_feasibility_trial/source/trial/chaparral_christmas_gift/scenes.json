@@ -1,0 +1,202 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "other",
+      "start_par_id": 1,
+      "end_par_id": 3,
+      "start_exact": "The original cause of the trouble was about twenty years in growing.",
+      "end_exact": "she was the daughter of\nold man McMullen of the Sundown Sheep Ranch.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1,
+      "end_char": 474,
+      "summary": "Narrator's framing introduction of the twenty-year-old trouble and description of Rosita McMullen.",
+      "cohesion": {
+        "time": "Backstory framing",
+        "place": "Near Sundown Ranch",
+        "characters": [
+          "Rosita McMullen",
+          "narrator"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Expository framing/description introducing characters; no scene action, time/place, or GACD/ERAC structure. Non-narrative setup.",
+      "confidence": 0.62
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "narrative_scene",
+      "start_par_id": 4,
+      "end_par_id": 7,
+      "start_exact": "There came riding on red roan steeds",
+      "end_exact": "the outspoken congratulations of the herders\nof kine.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 477,
+      "end_char": 1633,
+      "summary": "Introduction of suitors Madison Lane and Johnny McRoy; Lane wins Rosita, and the wedding celebration begins at Sundown Ranch.",
+      "cohesion": {
+        "time": "Courtship through the Christmas wedding day",
+        "place": "Sundown Ranch",
+        "characters": [
+          "Madison Lane",
+          "Johnny McRoy",
+          "Rosita"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Summarized narrative of courtship and wedding, unified by place; recounts events without on-stage GACD conflict/outcome.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 8,
+      "end_par_id": 15,
+      "start_exact": "But while the wedding feast was at its liveliest there descended upon it Johnny\nMcRoy",
+      "end_exact": "as he galloped into the concealing chaparral.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1636,
+      "end_char": 3563,
+      "summary": "Jealous Johnny McRoy bursts into the wedding, shooting; the party fights back, McRoy kills Carson and escapes.",
+      "cohesion": {
+        "time": "Wedding feast, Christmas day",
+        "place": "Sundown Ranch, at the feast/door",
+        "characters": [
+          "Johnny McRoy",
+          "Madison Lane",
+          "Carson",
+          "Rosita",
+          "guests"
+        ]
+      },
+      "gacd": {
+        "goal": "McRoy seeks revenge by killing the groom (and bride) out of jealousy",
+        "action": "He opens fire on the wedding party at the door",
+        "conflict": "Guests spoil his aim and rush to attack; gunfight ensues",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Clear GACD: McRoy's goal, armed action, on-stage conflict with the party, and violent outcome (Carson killed, McRoy flees). Unified time/place at the feast.",
+      "confidence": 0.9
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "narrative_scene",
+      "start_par_id": 16,
+      "end_par_id": 18,
+      "start_exact": "That night was the birthnight of the Frio Kid.",
+      "end_exact": "It stirs the memory to a dangerous degree.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 3566,
+      "end_char": 5181,
+      "summary": "Narrator recounts how McRoy became the outlaw Frio Kid, his killings, death, and reflection on Christmas mercy and the ratama tree.",
+      "cohesion": {
+        "time": "Years of outlaw life, summarized",
+        "place": "Border country",
+        "characters": [
+          "Frio Kid (Johnny McRoy)",
+          "narrator"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Summary narration spanning years and the narrator's moralizing; no unified scene or GACD/ERAC. Bridges to the main tale.",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 19,
+      "end_par_id": 24,
+      "start_exact": "One December in the Frio country there was a ratama tree in full bloom",
+      "end_exact": "\u201cI\u2019ll get him,\u201d said the Kid.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 5184,
+      "end_char": 6947,
+      "summary": "The scent of the ratama tree stirs the Kid's memory; he resolves to ride to Madison Lane's Christmas gathering and kill him, ignoring Mexican Frank's warnings.",
+      "cohesion": {
+        "time": "One December, evening",
+        "place": "Frio country, on horseback by the ratama tree",
+        "characters": [
+          "Frio Kid",
+          "Mexican Frank"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Memory and grief stirred by the ratama scent; brooding resentment",
+        "reason": "He recalls Rosita and dwells on losing her to Lane; Frank argues it's suicidal",
+        "anticipation": "He imagines going to the Christmas doings and killing Lane despite the danger",
+        "choice": "He resolves/decides to ride over and kill Madison Lane on Christmas Eve"
+      },
+      "reason": "Emotion (stirred memory), reasoning/deliberation (dialogue about the plan), anticipation, and a firm choice/decision dominate; no on-stage conflict or outcome. Classic sequel.",
+      "confidence": 0.78
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 25,
+      "end_par_id": 44,
+      "start_exact": "Christmas Eve fell as balmy as April.",
+      "end_exact": "unless he could have meant me.\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 6950,
+      "end_char": 9864,
+      "summary": "On Christmas Eve at the Lane ranch, guards are posted; Santa Claus (the disguised Kid) hears Rosita defend him, and instead of harming leaves her a present rather than killing Lane.",
+      "cohesion": {
+        "time": "Christmas Eve, night",
+        "place": "Madison Lane's ranch-house",
+        "characters": [
+          "Madison Lane",
+          "Rosita",
+          "the Frio Kid as Santa Claus",
+          "guests"
+        ]
+      },
+      "gacd": {
+        "goal": "The Kid infiltrates the party disguised as Santa to kill Madison Lane",
+        "action": "Disguised, he moves through the house and overhears Rosita's kind words",
+        "conflict": "His murderous intent versus Rosita's defense of him and the guarded house",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Unified time/place at the ranch-house Christmas Eve. GACD present: infiltration goal, on-stage action in disguise, tension/conflict of intent, and outcome\u2014the Kid relents, sparing Lane and leaving a gift.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "narrative_scene",
+      "start_par_id": 45,
+      "end_par_id": 48,
+      "start_exact": "The next day Gabriel Radd, the foreman of the X O Ranch, dropped into the\npost-office at Loma Alta.",
+      "end_exact": "Think of the Frio Kid playing Santy!\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 9867,
+      "end_char": 10516,
+      "summary": "Next day at the Loma Alta post-office, Gabriel Radd reports the Frio Kid was shot dead by a sheep herder while dressed as Santa Claus.",
+      "cohesion": {
+        "time": "The next day",
+        "place": "Post-office at Loma Alta",
+        "characters": [
+          "Gabriel Radd",
+          "postmaster"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "New time/place (next day, post-office). Reported/off-stage news of the Kid's death; conversational recounting without on-stage GACD conflict\u2014narrative coda.",
+      "confidence": 0.68
+    }
+  ],
+  "segment_count": 7,
+  "model": "claude-opus-4-8"
+}

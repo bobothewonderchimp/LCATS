@@ -1,0 +1,240 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 13,
+      "start_exact": "One afternoon in July, 1869, I was seated at my desk in Locock's\nlaw-office in the town of Kiota, Kansas.",
+      "end_exact": "even for a few hours a few hours.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 0,
+      "end_char": 5463,
+      "summary": "Narrator introduces himself in Locock's law office in Kiota and reads a newspaper account of Judge Shannon's robbery by Tom Williams.",
+      "cohesion": {
+        "time": "July 1869 afternoon",
+        "place": "Locock's law office, Kiota",
+        "characters": [
+          "narrator",
+          "Sheriff Johnson (referenced)",
+          "Tom Williams (referenced)"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Unified by time/place (afternoon in the office) and the reading of the newspaper account; establishes setting and backstory without on-stage GACD/ERAC. The embedded newspaper is quoted text within the same scene.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "narrative_scene",
+      "start_par_id": 14,
+      "end_par_id": 18,
+      "start_exact": "As may be imagined this item of news awakened my keenest interest.",
+      "end_exact": "There, if anywhere, my questions would be\nanswered.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 5465,
+      "end_char": 7920,
+      "summary": "Narrator recalls the backstory of Johnson and Williams, wonders if the robber is the old partner, and decides to go to the Carvell House that night.",
+      "cohesion": {
+        "time": "same day, evening approaching",
+        "place": "office then walking to Carvell House",
+        "characters": [
+          "narrator"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Bridging/recollection passage tying the news to memory and forming curiosity; lacks clear on-stage conflict/outcome or full ERAC deliberation. Transitional narrative unified by narrator's reflection and movement toward the hotel.",
+      "confidence": 0.55
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 19,
+      "end_par_id": 60,
+      "start_exact": "On entering the billiard-room I was struck by the number of men who had\ncome together.",
+      "end_exact": "barkeeper!\" I left the room.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 7922,
+      "end_char": 17682,
+      "summary": "At the Carvell House bar the narrator observes the tense crowd, then rashly declares one man should go alone after Williams, clashing with Johnson and being shunned by the crowd.",
+      "cohesion": {
+        "time": "that night",
+        "place": "billiard-room/bar of the Carvell House",
+        "characters": [
+          "narrator",
+          "Sheriff Johnson",
+          "Morris",
+          "Martin",
+          "Crosskey",
+          "Reid"
+        ]
+      },
+      "gacd": {
+        "goal": "Narrator seeks to learn about the affair and asserts his opinion on how Williams should be pursued.",
+        "action": "He interjects that only one man should go, challenging the crowd and Johnson.",
+        "conflict": "Johnson confronts him with repressed passion; the crowd shuns him for taking a hand where unwanted.",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Same time/place (night at the bar). Narrator pursues a goal (asserting himself), meets strong conflict with Johnson and the crowd, and the outcome is his isolation/humiliation\u2014clear GACD.",
+      "confidence": 0.8
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 61,
+      "end_par_id": 88,
+      "start_exact": "The next morning I went as usual to the office.",
+      "end_exact": "The Sheriff moved away from the door.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 17684,
+      "end_char": 21949,
+      "summary": "Next morning in the office, Johnson visits, draws out that the narrator has nothing to do, then swears him in as deputy to bring in Williams, offering an escape which the narrator angrily refuses.",
+      "cohesion": {
+        "time": "next morning",
+        "place": "Locock's law office",
+        "characters": [
+          "narrator",
+          "Sheriff Johnson"
+        ]
+      },
+      "gacd": {
+        "goal": "Johnson maneuvers to give the tenderfoot narrator the lesson of arresting Williams; narrator wants to save face.",
+        "action": "Johnson swears him in and lays out weapons and buggy; offers an out.",
+        "conflict": "Narrator's pride vs. offered escape; the trap and the narrator's defiant refusal.",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "New time/place (morning, office). On-stage confrontation with a clear goal, resistance, and outcome (narrator commits to the dangerous mission). GACD dominant.",
+      "confidence": 0.76
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "narrative_scene",
+      "start_par_id": 89,
+      "end_par_id": 96,
+      "start_exact": "On reaching the street I stopped for a moment in utter wonder.",
+      "end_exact": "answering \"Good days!\" as I drove\nup the street.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 21951,
+      "end_char": 23640,
+      "summary": "The narrator emerges to find the townsmen gathered; Martin whispers encouragement, and after a curt exchange the narrator drives off amid unexpected friendly farewells.",
+      "cohesion": {
+        "time": "immediately after, morning",
+        "place": "Washington Street outside Locock's office",
+        "characters": [
+          "narrator",
+          "Martin",
+          "the boys"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Brief transitional scene unified by street/place; social interaction (Martin's sympathy) without full conflict/outcome or deliberation. Narrative bridge to the journey.",
+      "confidence": 0.58
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 97,
+      "end_par_id": 106,
+      "start_exact": "A few hundred yards I went, and then wheeled to the right past the post\noffice",
+      "end_exact": "ten or fifteen minutes\nlater saw Osawotamie in the distance.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 23642,
+      "end_char": 27552,
+      "summary": "Driving out of town the narrator stops to think, works through shame, reason, and options, weighs fleeing versus going on, and resolves to arrest Williams.",
+      "cohesion": {
+        "time": "morning, during the drive",
+        "place": "open country on the road toward Osawotamie",
+        "characters": [
+          "narrator"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Shame, fear, agitation over the trap he is in.",
+        "reason": "He analyzes the boys' plot, courage as the local virtue, and whether the quarrel is even just.",
+        "anticipation": "He foresees death or killing Williams, and shame if he flees.",
+        "choice": "He resolves to go on to Osawotamie and arrest or shoot Williams."
+      },
+      "reason": "Classic sequel: recovery/reflection during the drive with emotion, reasoning through options, anticipation, and a clear choice; no on-stage conflict. Unified by the solitary drive.",
+      "confidence": 0.83
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 107,
+      "end_par_id": 166,
+      "start_exact": "I drew up, laid the reins on the dashboard, and examined the revolver.",
+      "end_exact": "two minutes\nlater he and I were seated in the buggy, driving towards Kiota.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 27554,
+      "end_char": 35219,
+      "summary": "In the Osawotamie saloon the narrator confronts Williams at gunpoint; upon learning it is Sheriff Johnson who sent him, Williams reacts with rage then resolves to come, and they set off for Kiota.",
+      "cohesion": {
+        "time": "later that morning",
+        "place": "saloon in Osawotamie",
+        "characters": [
+          "narrator",
+          "Tom Williams",
+          "Zeke",
+          "Joe the bar-keeper"
+        ]
+      },
+      "gacd": {
+        "goal": "Narrator's goal: arrest Williams and take him to Kiota.",
+        "action": "He draws his revolver and declares the arrest.",
+        "conflict": "Williams' armed presence and suspicion; the tense standoff over who sent the narrator.",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "New place (Osawotamie saloon). The narrator pursues his goal with on-stage action, faces armed conflict, and achieves the interim success of Williams agreeing to come. GACD dominant.",
+      "confidence": 0.85
+    },
+    {
+      "segment_id": 8,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 167,
+      "end_par_id": 185,
+      "start_exact": "We had gone more than a mile before he spoke again.",
+      "end_exact": "each in the\ncentre of a small mound of pink flesh.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 35221,
+      "end_char": 39359,
+      "summary": "On the drive Williams questions the narrator, confirming his old partner; at the Sheriff's house the two men shoot it out\u2014Johnson falls, Williams is killed by Jarvis, and Jarvis is wounded.",
+      "cohesion": {
+        "time": "the drive and arrival, midday",
+        "place": "road to Kiota and the Sheriff's house",
+        "characters": [
+          "narrator",
+          "Williams",
+          "Johnson",
+          "Jarvis",
+          "Martin"
+        ]
+      },
+      "gacd": {
+        "goal": "Williams and Johnson each seek to settle their old feud face to face.",
+        "action": "The narrator delivers Williams; the two men draw and fire.",
+        "conflict": "The armed duel between Williams and Johnson (and the vigilantes).",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Continuous action from the drive through arrival and the climactic gunfight; unified by movement to the fatal confrontation. Clear conflict and disastrous outcome (both men shot). Final line is a dated signature.",
+      "confidence": 0.8
+    }
+  ],
+  "segment_count": 8,
+  "model": "claude-opus-4-8"
+}

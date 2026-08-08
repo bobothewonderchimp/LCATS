@@ -1,0 +1,117 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "other",
+      "start_par_id": 1,
+      "end_par_id": 5,
+      "start_exact": "Everything was perfectly swell.",
+      "end_exact": "The population of the United States was stabilized at forty-million\nsouls.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 0,
+      "end_char": 300,
+      "summary": "Opening expository frame describing a utopian future with no disease, no death except by volunteering, and a stabilized population.",
+      "cohesion": {
+        "time": "Unspecified future era",
+        "place": "United States (general)",
+        "characters": []
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Non-narrative world-building/exposition with no on-stage scene, characters, or GACD/ERAC structure.",
+      "confidence": 0.86
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "narrative_scene",
+      "start_par_id": 6,
+      "end_par_id": 60,
+      "start_exact": "One bright morning in the Chicago Lying-in Hospital, a man named Edward\nK. Wehling, Jr., waited for his wife to give birth.",
+      "end_exact": "What she did was make people comfortable while she killed them.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 302,
+      "end_char": 7879,
+      "summary": "In the hospital waiting room, the painter converses with an orderly and gas-chamber hostess Leora Duncan, establishing the world's population-control ethos while Wehling waits.",
+      "cohesion": {
+        "time": "One bright morning",
+        "place": "Chicago Lying-in Hospital waiting room",
+        "characters": [
+          "The painter",
+          "orderly",
+          "Leora Duncan",
+          "Wehling"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Unified by time/place; dominated by dialogue and world-establishing exposition without a focal goal meeting on-stage conflict/outcome, so narrative_scene.",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 62,
+      "end_par_id": 108,
+      "start_exact": "And, while Leora Duncan was posing for her portrait, into the\nwaitingroom bounded Dr. Hitz himself.",
+      "end_exact": "The painter sat on the top of his stepladder, looking down reflectively\non the sorry scene.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 7883,
+      "end_char": 12991,
+      "summary": "Dr. Hitz arrives; Wehling, agonized over having to sacrifice a relative for his triplets, argues with Hitz about population control, then shoots Hitz, Duncan, and himself.",
+      "cohesion": {
+        "time": "Continuous, same morning",
+        "place": "Hospital waiting room",
+        "characters": [
+          "Dr. Hitz",
+          "Wehling",
+          "Leora Duncan",
+          "the painter"
+        ]
+      },
+      "gacd": {
+        "goal": "Wehling wants all three of his newborn triplets to live without sacrificing his grandfather.",
+        "action": "He confronts Hitz's justifications for population control, then draws a revolver and acts.",
+        "conflict": "The law requires volunteers to die for each child; Hitz defends the system against Wehling's anguish.",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Time/place continuous with clear GACD: focal goal, escalating verbal conflict, and violent Disaster outcome (three deaths) within the segment.",
+      "confidence": 0.9
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 110,
+      "end_par_id": 121,
+      "start_exact": "The painter pondered the mournful puzzle of life demanding to be born",
+      "end_exact": "But the deepest thanks of all is\nfrom future generations.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 12995,
+      "end_char": 14402,
+      "summary": "The painter reflects on the grim puzzle of life, decides to stop painting and to die, lacks nerve to shoot himself, and instead phones the Bureau of Termination for an appointment.",
+      "cohesion": {
+        "time": "Immediately after the shootings",
+        "place": "Hospital waiting room",
+        "characters": [
+          "The painter",
+          "hostess (by phone)"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Grim, despairing reflection on the shootings and life's futility.",
+        "reason": "He weighs war, plague, starvation as the only alternatives; he has had enough of life.",
+        "anticipation": "He foresees his own death as the resolution.",
+        "choice": "He resolves to end his life and calls to make a termination appointment."
+      },
+      "reason": "Recovery/reflection followed by deliberation and a clear decision (calling the Bureau); no on-stage conflict/outcome, fitting ERAC dramatic_sequel.",
+      "confidence": 0.83
+    }
+  ],
+  "segment_count": 4,
+  "model": "claude-opus-4-8"
+}

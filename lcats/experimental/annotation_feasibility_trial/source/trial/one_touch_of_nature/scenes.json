@@ -1,0 +1,124 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 13,
+      "start_exact": "The feelings of Mr J. Wilmot Birdsey, as he stood wedged in the crowd that",
+      "end_exact": "He was staring straight in front of him with\n      an unseeing gaze.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 7,
+      "end_char": 5312,
+      "summary": "Backstory of Birdsey, exiled to England by his wife, attending a rare baseball game at Chelsea; he resolves to invite his two seatmates to dinner.",
+      "cohesion": {
+        "time": "Afternoon of the ball-game",
+        "place": "Chelsea Football Ground, London",
+        "characters": [
+          "Mr Birdsey",
+          "Waterall (young man)",
+          "Benyon/Johnson (bearded man)"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Establishes character and situation with time/place unity at the football ground; largely expository backstory and description, not meeting GACD/ERAC thresholds.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 14,
+      "end_par_id": 31,
+      "start_exact": "Mr Birdsey tapped the young man on the shoulder.",
+      "end_exact": "'Thank you,' said the bearded man; 'I will.'",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 5325,
+      "end_char": 7681,
+      "summary": "Birdsey invites both men to dinner; the bearded man reacts with panic but ultimately accepts.",
+      "cohesion": {
+        "time": "Continuous, as crowd leaves",
+        "place": "Chelsea Football Ground exit",
+        "characters": [
+          "Mr Birdsey",
+          "Waterall",
+          "Benyon/Johnson"
+        ]
+      },
+      "gacd": {
+        "goal": "Birdsey wants to invite the two fans to dinner",
+        "action": "He taps each on the shoulder and issues the invitation",
+        "conflict": "The bearded man reacts with panic and near-refusal, unsettling Birdsey",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Time/place continue at the ground; Birdsey pursues a goal (dinner invitation) meeting resistance from the fearful bearded man, resolved when both accept.",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 32,
+      "end_par_id": 131,
+      "start_exact": "When three men, all strangers, sit down to dinner together, conversation,",
+      "end_exact": "the door\n      opened, banged to, and feet fled down the passage.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 7694,
+      "end_char": 23196,
+      "summary": "At dinner, Waterall recognizes the bearded man as fugitive bank-robber Benyon and phones Scotland Yard; Birdsey tackles Waterall so Benyon can escape.",
+      "cohesion": {
+        "time": "That evening, dinner",
+        "place": "Birdsey's suite at the Savoy Hotel",
+        "characters": [
+          "Mr Birdsey",
+          "Waterall",
+          "Benyon"
+        ]
+      },
+      "gacd": {
+        "goal": "Waterall aims to expose and turn in the fugitive Benyon; Birdsey wants to protect the fan",
+        "action": "Waterall unmasks Benyon and calls the police; Birdsey tackles Waterall and shouts for Benyon to run",
+        "conflict": "Direct confrontation\u2014pistol drawn, telephone call, physical tackle",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Unified by time/place at the Savoy dinner; strong on-stage conflict with goal, action, and outcome (Benyon escapes) satisfying the GACD test.",
+      "confidence": 0.83
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 132,
+      "end_par_id": 141,
+      "start_exact": "Mr Birdsey disentangled himself, and rose painfully.",
+      "end_exact": "I've got to square myself with\n      my wife!'",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 23209,
+      "end_char": 25205,
+      "summary": "Aftermath: Birdsey, back to himself, justifies his action and reflects with gloom that his real difficulty is facing his wife.",
+      "cohesion": {
+        "time": "Immediately after, same evening",
+        "place": "Birdsey's suite at the Savoy Hotel",
+        "characters": [
+          "Mr Birdsey",
+          "Waterall"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Birdsey sobered, chagrined; Waterall furious",
+        "reason": "Birdsey reasons about the exception to the duty-of-a-citizen rule and reflects on consequences",
+        "anticipation": "Anticipates the difficulty of squaring himself with his wife",
+        "choice": "Accepts his fate/decides his real task is dealing with his wife"
+      },
+      "reason": "Follows the dramatic scene in same time/place; recovery from the berserk mood, reflection, and realization of a new problem (the wife) fit the ERAC test with no fresh on-stage conflict.",
+      "confidence": 0.7
+    }
+  ],
+  "segment_count": 4,
+  "model": "claude-opus-4-8"
+}

@@ -1,0 +1,246 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 1,
+      "end_par_id": 55,
+      "start_exact": "She sprang it on me before breakfast. There in seven words you have a",
+      "end_exact": "'Very good, sir,' he said; 'which suit will you wear?'",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 7,
+      "end_char": 10082,
+      "summary": "Aunt Agatha rouses Bertie before breakfast and commands him to sail to America to stop Cousin Gussie marrying a vaudeville girl. Bertie caves and agrees.",
+      "cohesion": {
+        "time": "One morning, the small hours before breakfast",
+        "place": "Bertie's flat in London",
+        "characters": [
+          "Bertie",
+          "Aunt Agatha",
+          "Jeeves"
+        ]
+      },
+      "gacd": {
+        "goal": "Aunt Agatha wants Bertie to agree to go to America to stop Gussie's marriage",
+        "action": "She confronts and pressures Bertie, laying out the family shame and demanding he go",
+        "conflict": "Bertie resists/scents danger and tries to dodge, but is intimidated by her moral suasion",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Unified time/place (Bertie's flat, one morning). Clear GACD: Aunt Agatha's goal, her pressuring action, Bertie's resistance as conflict, and his agreement as outcome.",
+      "confidence": 0.9
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 56,
+      "end_par_id": 98,
+      "start_exact": "New York is a large city conveniently situated on the edge of America",
+      "end_exact": "safely, and all that sort of tosh,' I\n      answered.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 10095,
+      "end_char": 21473,
+      "summary": "Bertie arrives in New York, can't find Gussie, then meets him at a vaudeville agent's. Gussie reveals he's booked into vaudeville to win Ray; Bertie secretly cables for reinforcements.",
+      "cohesion": {
+        "time": "Arrival morning in New York and shortly after",
+        "place": "New York\u2014hotel bar, streets, Riesbitter's office",
+        "characters": [
+          "Bertie",
+          "Gussie",
+          "Abe Riesbitter"
+        ]
+      },
+      "gacd": {
+        "goal": "Bertie's mission to find and detach Gussie from the vaudeville marriage",
+        "action": "Bertie locates Gussie and learns of his vaudeville booking, then cables for help",
+        "conflict": "The situation is worse than expected\u2014Gussie has committed to the stage, thwarting Bertie's task",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Continuous time/place block (Bertie's first day in New York). GACD present: goal to stop Gussie, action of finding him, conflict of discovering the vaudeville commitment, disaster outcome prompting the cable.",
+      "confidence": 0.82
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 99,
+      "end_par_id": 111,
+      "start_exact": "Gussie opened his vaudeville career on the following Monday at a rummy",
+      "end_exact": "seemed to give it sacred associations\n      for him.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 21486,
+      "end_char": 23787,
+      "summary": "Over the weekend Bertie helps Gussie rehearse his songs at the music publisher's, with the pianist heckling. Description of preparation for the debut.",
+      "cohesion": {
+        "time": "The weekend before Gussie's Monday debut",
+        "place": "Music-room at publisher's offices, New York",
+        "characters": [
+          "Bertie",
+          "Gussie",
+          "the pianist chappie"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Time/place unity (rehearsal weekend at the music-room) but mainly descriptive/comic rehearsal without a clear GACD conflict-outcome or ERAC deliberation.",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 112,
+      "end_par_id": 124,
+      "start_exact": "You will scarcely believe me, but the management expected Gussie to show",
+      "end_exact": "beyond me.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 23800,
+      "end_char": 29340,
+      "summary": "At Gussie's debut Bertie hopes he'll flop; Gussie's stage fright nearly sinks him until Ray, seated by Bertie, rises and sings, rescuing the act into a triumph.",
+      "cohesion": {
+        "time": "Monday one o'clock, debut performance",
+        "place": "Uptown vaudeville/picture house, New York",
+        "characters": [
+          "Bertie",
+          "Gussie",
+          "Ray Denison"
+        ]
+      },
+      "gacd": {
+        "goal": "Bertie hopes Gussie will fail so the marriage collapses",
+        "action": "He watches the debut hoping for a flop",
+        "conflict": "Gussie flounders with stage fright, but Ray intervenes and sings to save him",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Unified scene at the theatre during the debut. GACD: Bertie's goal (a flop), on-stage struggle, and the outcome (Gussie's success) which is a disaster for Bertie's plan.",
+      "confidence": 0.83
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "narrative_scene",
+      "start_par_id": 125,
+      "end_par_id": 128,
+      "start_exact": "During the next week I saw a lot of old Gussie, and was introduced to the",
+      "end_exact": "'Rumpty-tiddley-umpty-ay' is one of them.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 29353,
+      "end_char": 31022,
+      "summary": "Over the next week Bertie meets Ray and her father; Aunt Julia arrives. Character sketch of the dignified Aunt Julia and her hidden vaudeville past.",
+      "cohesion": {
+        "time": "The following week, up to Aunt Julia's Wednesday arrival",
+        "place": "New York (general)",
+        "characters": [
+          "Bertie",
+          "Aunt Julia",
+          "Gussie",
+          "Ray",
+          "Danby"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Transitional/expository passage introducing Aunt Julia; time spans a week without a single scene's GACD or ERAC. Narrative bridging.",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 129,
+      "end_par_id": 154,
+      "start_exact": "She got straight to the point within five minutes of our meeting.",
+      "end_exact": "concluded, and it's up to you.'",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 31035,
+      "end_char": 34841,
+      "summary": "Bertie shows Aunt Julia the situation via visits to the Auditorium (Ray) and Gussie's act. Julia is moved and shaken; Bertie hands off to send her to Danby.",
+      "cohesion": {
+        "time": "Wednesday, shortly after Julia's arrival",
+        "place": "Auditorium and uptown theatre, New York",
+        "characters": [
+          "Bertie",
+          "Aunt Julia",
+          "Gussie (on stage)",
+          "Ray (on stage)"
+        ]
+      },
+      "gacd": {
+        "goal": "Bertie aims to make Aunt Julia grasp the situation so she'll handle it",
+        "action": "He escorts her to see Ray and Gussie perform as 'exhibits'",
+        "conflict": "Aunt Julia is stirred by the stage, reacting with emotion rather than the outrage Bertie expected",
+        "outcome": "Unclear"
+      },
+      "erac": null,
+      "reason": "Continuous outing across the theatres with Julia. Bertie's goal to inform her, the on-stage demonstrations, and Julia's emotional response constitute GACD; label dramatic_scene as it's an active attempt meeting an unexpected reaction.",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 155,
+      "end_par_id": 205,
+      "start_exact": "The Danbys lived in one of those big apartments uptown which look as if",
+      "end_exact": "out into the street and wailed for a taxi.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 34854,
+      "end_char": 41429,
+      "summary": "At Danby's apartment Aunt Julia and old Danby recognize each other as long-lost sweethearts. They rekindle their romance and she agrees to come back to him and the stage.",
+      "cohesion": {
+        "time": "That afternoon",
+        "place": "Danby's apartment, uptown New York",
+        "characters": [
+          "Bertie",
+          "Aunt Julia",
+          "Joe Danby"
+        ]
+      },
+      "gacd": {
+        "goal": "To resolve the objection to Gussie and Ray's marriage via Danby",
+        "action": "Julia confronts Danby; they recognize each other and rekindle old love",
+        "conflict": "Danby's obstinacy and the emotional tension of the reunion",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Single scene in Danby's apartment. Strong GACD: the reunion overcomes Danby's objection and ends in his proposal\u2014a clear (comic) success that resolves the marriage obstacle.",
+      "confidence": 0.85
+    },
+    {
+      "segment_id": 8,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 206,
+      "end_par_id": 227,
+      "start_exact": "Gussie called on me at the hotel that night. He curveted into the room as",
+      "end_exact": "stay where you are. Profession overcrowded.'",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 41442,
+      "end_char": 43245,
+      "summary": "That night Gussie reports all the engagements. A dazed Bertie, faced with Aunt Agatha's cable, dreads the fallout and decides to reply telling her to stay away.",
+      "cohesion": {
+        "time": "That night",
+        "place": "Bertie's hotel room, New York",
+        "characters": [
+          "Bertie",
+          "Gussie"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Bertie feels weak, dazed, as if with brain fever, dreading Aunt Agatha",
+        "reason": "He weighs the impossible situation and Aunt Agatha's cable asking whether to come over",
+        "anticipation": "He foresees disaster if she comes and fears returning to England for years",
+        "choice": "He decides to cable back telling her to stay away: 'Profession overcrowded'"
+      },
+      "reason": "Aftermath scene in the hotel: reaction/emotion plus deliberation over the cable and a clear decision. No on-stage conflict/outcome\u2014fits dramatic_sequel (ERAC).",
+      "confidence": 0.8
+    }
+  ],
+  "segment_count": 8,
+  "model": "claude-opus-4-8"
+}
