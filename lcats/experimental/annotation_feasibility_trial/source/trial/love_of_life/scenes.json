@@ -1,0 +1,367 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "They limped painfully down the bank, and once the foremost of\nthe two men staggered among the rough-strewn rocks.",
+      "end_exact": "he turned his gaze and slowly took in the\ncircle of the world that remained to him now that Bill was\ngone.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 0,
+      "end_char": 2556,
+      "summary": "Two starving, exhausted men ford an icy stream; the follower sprains his ankle and cries out for Bill, who abandons him and disappears over the hill.",
+      "cohesion": {
+        "time": "About four o'clock, late July/early August",
+        "place": "Icy feeder stream to the Coppermine and the hill Bill crosses",
+        "characters": [
+          "the man",
+          "Bill"
+        ]
+      },
+      "gacd": {
+        "goal": "The injured man wants Bill to stop and help him",
+        "action": "He calls out repeatedly to Bill, pleading for him to wait",
+        "conflict": "Bill ignores him and walks on, refusing to turn back",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Unified by continuous time/place at the stream crossing; focal man's goal (get Bill to stop) meets clear conflict (Bill's refusal) ending in disaster (abandonment). Meets GACD threshold.",
+      "confidence": 0.86
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "Near the horizon the sun was smouldering dimly, almost\nobscured by formless mists and vapors",
+      "end_exact": "south to some warm Hudson Bay\nCompany post, where timber grew tall and generous and there was\ngrub without end.",
+      "start_prefix": "circle of the world that remained to him now that Bill was\ngone.",
+      "end_suffix": "These were the thoughts of the man as he strove onward.",
+      "start_char": 2557,
+      "end_char": 6606,
+      "summary": "Alone in the desolation, the man fights fear, orients himself by sun and memory, and resolves to reach the cache by the Dease and rejoin Bill, planning the long journey south.",
+      "cohesion": {
+        "time": "Immediately after abandonment, late afternoon",
+        "place": "The barren stream bank and surrounding desolation",
+        "characters": [
+          "the man"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Fear, dread of the vast desolation; trembling and cowering",
+        "reason": "He recalls the route, the cache, the map, reasons he must believe Bill will wait or he will die",
+        "anticipation": "Anticipates reaching the land of little sticks, the cache with ammunition and food, and travel south ahead of winter",
+        "choice": "Resolves to press on toward the cache and rejoin Bill"
+      },
+      "reason": "Follows the abandonment scene in same place; dominated by emotion (fear), reasoning/planning, anticipation, and a decision to press on. No on-stage conflict/outcome. Meets ERAC.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "These were the thoughts of the man as he strove onward.",
+      "end_exact": "wound his watch, and crawled between his\nblankets.",
+      "start_prefix": "grub without end.",
+      "end_suffix": "He slept like a dead man.",
+      "start_char": 6607,
+      "end_char": 9194,
+      "summary": "The man trudges on through muskeg, eating worthless berries, until he collapses from exhaustion at nine o'clock; he makes camp, counts his matches obsessively, and tends his ruined feet and swollen ankle.",
+      "cohesion": {
+        "time": "Late afternoon into night of the first day",
+        "place": "Muskeg valley, first camp on rocky ledge",
+        "characters": [
+          "the man"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Continuous travel/camp sequence unified by time/place; describes ongoing struggle and camp routine without a single goal meeting decisive on-stage conflict/outcome or a clear deliberative decision. Narrative_scene.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "He slept like a dead man.",
+      "end_exact": "and crumpled up and sank down upon the wet\nearth.",
+      "start_prefix": "wound his watch, and crawled between his\nblankets.",
+      "end_suffix": "At first he cried softly to himself",
+      "start_char": 9195,
+      "end_char": 15887,
+      "summary": "Over the next day the starving man tries repeatedly to catch food\u2014firing at a caribou with an empty gun, stalking ptarmigan, chasing a fish by baling a pool\u2014but every attempt fails.",
+      "cohesion": {
+        "time": "Second day, dawn to long twilight",
+        "place": "Barren swales, valleys, and pools between camps",
+        "characters": [
+          "the man",
+          "caribou",
+          "ptarmigan",
+          "fish"
+        ]
+      },
+      "gacd": {
+        "goal": "Obtain food to survive his starvation",
+        "action": "Shoots empty gun at caribou, stalks ptarmigan, bales a pool to catch a minnow",
+        "conflict": "Game escapes; gun empty; fish slips through crevice to a larger pool",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Unified day of hunting attempts driven by clear goal (food) meeting repeated conflict and ending in failure (empty pool, no fish). Meets GACD with strong conflict and disastrous outcome.",
+      "confidence": 0.82
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "At first he cried softly to himself, then he cried\nloudly to the pitiless desolation",
+      "end_exact": "he had edged away too far to the left.  He now bore off to\nthe right to counteract the possible deviation from his true\ncourse.",
+      "start_prefix": "and crumpled up and sank down upon the wet\nearth.",
+      "end_suffix": "Though the hunger pangs were no longer so exquisite",
+      "start_char": 15889,
+      "end_char": 44068,
+      "summary": "The man weeps, camps, endures snow and rain over several days; hunger dulls, he caches half his gold-dust, wraps his feet, realizes he is lost, and corrects his course to the right.",
+      "cohesion": {
+        "time": "Several days of storms following the fish failure",
+        "place": "Barren camps and travel across the moss and hills",
+        "characters": [
+          "the man"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Extended multi-day travel/survival passage unified by continuous journey; ongoing struggle without a single decisive goal-conflict-outcome or focused deliberation. Prefer narrative_scene over splitting many tiny spans.",
+      "confidence": 0.58
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "Though the hunger pangs were no longer so exquisite, he\nrealized that he was weak.",
+      "end_exact": "He threw stones at her\nand with one chance shot broke a wing.  Then she fluttered\naway, running, trailing the broken wing, with him in pursuit.",
+      "start_prefix": "counteract the possible deviation from his true\ncourse.",
+      "end_suffix": "The little chicks had no more than whetted his appetite.",
+      "start_char": 18956,
+      "end_char": 44068,
+      "summary": "Over days he catches a few minnows, grows weaker, divides the gold again; falling into a ptarmigan nest he devours the chicks and pursues the wounded mother bird.",
+      "cohesion": {
+        "time": "Following days of dwindling strength, day of fog",
+        "place": "Pools, swales, and the ptarmigan nest in the barrens",
+        "characters": [
+          "the man",
+          "ptarmigan"
+        ]
+      },
+      "gacd": {
+        "goal": "Get food; capture the ptarmigan",
+        "action": "Eats chicks, clubs and stones the mother bird, breaks her wing, gives chase",
+        "conflict": "Bird dodges, flees, leads him on across the ground",
+        "outcome": "Unclear"
+      },
+      "erac": null,
+      "reason": "Focal food-goal with active on-stage attempts meeting resistance (bird evades). Outcome is interim/unclear at boundary but conflict strong; GACD threshold met.",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "The little chicks had no more than whetted his appetite.",
+      "end_exact": "wound his watch, and lay\nthere until morning.",
+      "start_prefix": "trailing the broken wing, with him in pursuit.",
+      "end_suffix": "Another day of fog.",
+      "start_char": 21925,
+      "end_char": 23128,
+      "summary": "He chases the mother ptarmigan to mutual exhaustion, crossing Bill's footprints along the way, but she escapes at nightfall and he collapses, cutting his cheek.",
+      "cohesion": {
+        "time": "Continuing that day into night",
+        "place": "Swampy valley bottom where Bill's tracks appear",
+        "characters": [
+          "the man",
+          "ptarmigan"
+        ]
+      },
+      "gacd": {
+        "goal": "Catch the mother ptarmigan for food",
+        "action": "Continues the pursuit until both are exhausted, repeatedly reaching for her",
+        "conflict": "The bird recovers each time and flutters out of reach",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Direct continuation of the chase; goal, sustained action, conflict (bird escapes), and disastrous outcome (she escapes; he collapses). GACD met.",
+      "confidence": 0.75
+    },
+    {
+      "segment_id": 8,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "Another day of fog.",
+      "end_exact": "when he yielded to a fit of\ntrembling and sank down into the wet moss.",
+      "start_prefix": "wound his watch, and lay\nthere until morning.",
+      "end_suffix": "He pulled himself together and went on, afraid now in a new\nway.",
+      "start_char": 23129,
+      "end_char": 26318,
+      "summary": "He discards the gold, suffers cartridge hallucinations, then confronts a great brown bear; weak and afraid, he faces it down with a growl until the bear edges away.",
+      "cohesion": {
+        "time": "Another foggy day",
+        "place": "The barrens where he meets the bear",
+        "characters": [
+          "the man",
+          "the bear"
+        ]
+      },
+      "gacd": {
+        "goal": "Survive the encounter (initially to kill the bear for meat, then to avoid being killed)",
+        "action": "Draws knife intending to attack, then stands his ground and growls savagely at the bear",
+        "conflict": "The bear advances, rears, and growls menacingly",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Focal confrontation with clear goal shift, on-stage action facing the bear, strong conflict, and a successful outcome (bear retreats). GACD met with distinct scene.",
+      "confidence": 0.78
+    },
+    {
+      "segment_id": 9,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "He pulled himself together and went on, afraid now in a new\nway.",
+      "end_exact": "Soul and body\nwalked or crawled side by side, yet apart, so slender was the\nthread that bound them.",
+      "start_prefix": "when he yielded to a fit of\ntrembling and sank down into the wet moss.",
+      "end_suffix": "He awoke in his right mind, lying on his back on a rocky\nledge.",
+      "start_char": 26319,
+      "end_char": 29192,
+      "summary": "Now fearing the wolves, the man sucks marrow from a caribou calf's picked bones, then endures frightful days of storm, crawling on as a mere automaton driven by the life within him.",
+      "cohesion": {
+        "time": "Days following the bear, into storms",
+        "place": "Desolation, following a large stream and valley",
+        "characters": [
+          "the man",
+          "wolves"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Transitional multi-day survival passage unified by continuous decline and travel; no single decisive goal-conflict-outcome. Narrative_scene.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 10,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "He awoke in his right mind, lying on his back on a rocky\nledge.",
+      "end_exact": "nearer to it by no more than four miles.",
+      "start_prefix": "so slender was the\nthread that bound them.",
+      "end_suffix": "Throughout the night he heard the cough of the sick wolf",
+      "start_char": 29193,
+      "end_char": 33906,
+      "summary": "Waking lucid, the man sees the sea and an anchored ship, realizes he reached the Coppermine, inventories his losses, drinks hot water, and begins the terrible crawling journey toward the ship, trailed by a sick wolf.",
+      "cohesion": {
+        "time": "A bright morning after the storm",
+        "place": "Rocky ledge above the Coppermine, near the Arctic Ocean and ship",
+        "characters": [
+          "the man",
+          "the sick wolf"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Unified by time/place (lucid awakening on ledge). Mixes recovery, realization, and setting out; dominant function is orientation and beginning travel rather than a completed GACD or focused ERAC decision. Narrative_scene.",
+      "confidence": 0.55
+    },
+    {
+      "segment_id": 11,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "Throughout the night he heard the cough of the sick wolf",
+      "end_exact": "he would not take the gold, nor would he suck Bill\u2019s\nbones.  Bill would have, though, had it been the other way\naround, he mused as he staggered on.",
+      "start_prefix": "nearer to it by no more than four miles.",
+      "end_suffix": "He came to a pool of water.",
+      "start_char": 33907,
+      "end_char": 44068,
+      "summary": "Over days the man totters toward the ship, follows a crawling man's trail to Bill's picked bones and torn gold-sack, refuses to take the gold or suck the bones, and staggers on.",
+      "cohesion": {
+        "time": "Following days, Indian Summer",
+        "place": "The trail toward the ship; site of Bill's remains",
+        "characters": [
+          "the man",
+          "the sick wolf",
+          "Bill's bones"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Continuous slow journey with the grim discovery of Bill's fate; unified by time/place and character. No decisive on-stage conflict/outcome or structured deliberation. Narrative_scene.",
+      "confidence": 0.55
+    },
+    {
+      "segment_id": 12,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "He came to a pool of water.",
+      "end_exact": "Later the man rolled over on his\nback and slept.",
+      "start_prefix": "had it been the other way\naround, he mused as he staggered on.",
+      "end_suffix": "* * * * *",
+      "start_char": 36285,
+      "end_char": 41423,
+      "summary": "Reduced to crawling and hunted by the sick wolf, the man endures a mutual death-stalk; feigning helplessness, he finally seizes the wolf, crushes it under his body, and drinks its blood to live.",
+      "cohesion": {
+        "time": "The final days of crawling, Indian Summer",
+        "place": "The barren shore within a few miles of the ship",
+        "characters": [
+          "the man",
+          "the sick wolf"
+        ]
+      },
+      "gacd": {
+        "goal": "Survive by killing the wolf before it kills him",
+        "action": "Lies motionless as bait, then grips the wolf's jaw and pins it with his body's weight",
+        "conflict": "The mutual predator-prey stalk; the wolf tries to sink its teeth into him",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Climactic scene with clear goal, sustained on-stage action, life-and-death conflict, and a successful outcome (he kills the wolf and drinks its blood). Strong GACD.",
+      "confidence": 0.9
+    },
+    {
+      "segment_id": 13,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "There were some members of a scientific expedition on the\nwhale-ship Bedford.",
+      "end_exact": "ere the Bedford\u2019s\nanchor rumbled down in San Francisco Bay.",
+      "start_prefix": "* * * * *",
+      "end_suffix": "",
+      "start_char": 41434,
+      "end_char": 44068,
+      "summary": "Scientists from the Bedford rescue the barely-human crawling creature; recovering, he grows obsessively fat, hoards hardtack against future famine, and eventually recovers as the ship reaches San Francisco Bay.",
+      "cohesion": {
+        "time": "Rescue and weeks afterward, ending in San Francisco Bay",
+        "place": "Aboard the whale-ship Bedford",
+        "characters": [
+          "the man",
+          "scientific men",
+          "sailors"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Explicit scene-break markers set off the epilogue aboard ship; unified new time/place. Recounts rescue and recovery without a focal GACD or deliberative ERAC. Narrative_scene.",
+      "confidence": 0.7
+    }
+  ],
+  "segment_count": 13,
+  "model": "claude-opus-4-8"
+}

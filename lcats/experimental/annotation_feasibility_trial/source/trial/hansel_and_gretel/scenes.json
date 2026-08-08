@@ -1,0 +1,280 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "Hard by a great forest dwelt a poor wood-cutter with his wife and his two\n      children.",
+      "end_exact": "\u2018But I feel very sorry for the poor children, all the same,\u2019 said the man.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 7,
+      "end_char": 1348,
+      "summary": "Starving woodcutter and wife debate abandoning children in forest; wife prevails and husband reluctantly consents.",
+      "cohesion": {
+        "time": "One night during famine",
+        "place": "The woodcutter's house (bedroom)",
+        "characters": [
+          "Woodcutter",
+          "Wife",
+          "(children mentioned)"
+        ]
+      },
+      "gacd": {
+        "goal": "The wife wants to solve their starvation by getting rid of the children",
+        "action": "She argues and pressures her husband to abandon the children in the forest",
+        "conflict": "The husband resists, fearing for the children's lives",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Opening scene unified by night/house; wife has goal, meets husband's resistance (conflict), and prevails (outcome), satisfying GACD.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 2,
+      "end_par_id": 2,
+      "start_exact": "The two children had also not been able to sleep for hunger, and had heard\n      what their stepmother had said",
+      "end_exact": "throwing one of the white pebble-stones\n      out of his pocket on the road.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1361,
+      "end_char": 3374,
+      "summary": "Having overheard the plan, Hansel secretly gathers white pebbles at night and drops them along the path into the forest.",
+      "cohesion": {
+        "time": "That night into next morning",
+        "place": "The house and the path into the forest",
+        "characters": [
+          "Hansel",
+          "Gretel",
+          "Father",
+          "Stepmother"
+        ]
+      },
+      "gacd": {
+        "goal": "Hansel wants to save himself and Gretel from being lost",
+        "action": "He collects pebbles and drops them to mark the trail while deceiving his parents",
+        "conflict": "He must act secretly against the parents' plan and avoid detection",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Continuous night-to-morning action with Hansel's countergoal against the parents' scheme; deception and secrecy provide conflict, satisfying GACD.",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 3,
+      "end_par_id": 3,
+      "start_exact": "When they had reached the middle of the forest, the father said: \u2018Now,",
+      "end_exact": "we\n      will come back and fetch you away.\u2019",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 3387,
+      "end_char": 3895,
+      "summary": "In the middle of the forest the parents build a fire and leave the children to rest while pretending to cut wood.",
+      "cohesion": {
+        "time": "Later that day",
+        "place": "Middle of the forest",
+        "characters": [
+          "Father",
+          "Stepmother",
+          "Hansel",
+          "Gretel"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Brief transitional scene at a new place (middle of forest); mainly logistical setup without on-stage conflict, so narrative_scene.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 4,
+      "end_par_id": 5,
+      "start_exact": "Hansel and Gretel sat by the fire, and when noon came, each ate a little\n      piece of bread",
+      "end_exact": "for it had cut him to\n      the heart to leave them behind alone.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 3908,
+      "end_char": 5249,
+      "summary": "The children wait, sleep, then use the moonlit pebbles to find their way home, arriving at their father's house.",
+      "cohesion": {
+        "time": "From noon through the night to daybreak",
+        "place": "Forest and path back home",
+        "characters": [
+          "Hansel",
+          "Gretel",
+          "Father",
+          "Stepmother"
+        ]
+      },
+      "gacd": {
+        "goal": "Return home safely from abandonment",
+        "action": "They wait for the moon and follow the pebble trail through the forest",
+        "conflict": "Darkness, being lost, Gretel's fear of not finding the way",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Goal of getting home, action of following pebbles, conflict of darkness/being lost, and successful return; a completed dramatic scene.",
+      "confidence": 0.66
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 6,
+      "end_par_id": 9,
+      "start_exact": "Not long afterwards, there was once more great dearth throughout the land,",
+      "end_exact": "they lay\n      down beneath a tree and fell asleep.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 5262,
+      "end_char": 8622,
+      "summary": "New famine; parents again abandon children. Hansel drops bread crumbs but birds eat them, leaving the children lost in the deep forest.",
+      "cohesion": {
+        "time": "The second abandonment, over several days",
+        "place": "The house and deeper into the forest",
+        "characters": [
+          "Hansel",
+          "Gretel",
+          "Father",
+          "Stepmother"
+        ]
+      },
+      "gacd": {
+        "goal": "Hansel again tries to secure a way home",
+        "action": "Locked in, he crumbles bread on the path instead of pebbles",
+        "conflict": "The door is locked and birds eat the crumbs",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Second abandonment sequence unified by the crumb plan; Hansel's goal meets obstacles (locked door, birds) ending in disaster (lost), satisfying GACD.",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "narrative_scene",
+      "start_par_id": 10,
+      "end_par_id": 14,
+      "start_exact": "It was now three mornings since they had left their father\u2019s house.",
+      "end_exact": "lay down in them, and thought they were in\n      heaven.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 8635,
+      "end_char": 10844,
+      "summary": "Lost and starving, the children follow a bird to a gingerbread house, eat from it, and are taken in by a seemingly kind old woman.",
+      "cohesion": {
+        "time": "Third morning to that evening",
+        "place": "Deep forest and the witch's candy house",
+        "characters": [
+          "Hansel",
+          "Gretel",
+          "Old woman/witch"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Discovery of the house and reception is largely descriptive/transitional with the interior verses; no sustained on-stage conflict/outcome, so narrative_scene.",
+      "confidence": 0.55
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 15,
+      "end_par_id": 16,
+      "start_exact": "The old woman had only pretended to be so kind; she was in reality a\n      wicked witch",
+      "end_exact": "\u2018it\n      won\u2019t help you at all.\u2019",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 10857,
+      "end_char": 13394,
+      "summary": "The witch imprisons Hansel to fatten and eat him and enslaves Gretel; Hansel fools her with a bone, but she resolves to kill him anyway.",
+      "cohesion": {
+        "time": "The following days/weeks in captivity",
+        "place": "The witch's house and stable",
+        "characters": [
+          "Witch",
+          "Hansel",
+          "Gretel"
+        ]
+      },
+      "gacd": {
+        "goal": "The witch wants to fatten and eat Hansel",
+        "action": "She imprisons him, checks his finger daily, and forces Gretel to serve",
+        "conflict": "Hansel deceives her with a bone so she cannot tell he stays thin",
+        "outcome": "Unclear"
+      },
+      "erac": null,
+      "reason": "Captivity scene with witch's goal, action, and conflict via Hansel's trickery; interim outcome (she decides to kill him regardless), a dramatic scene.",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 8,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 17,
+      "end_par_id": 18,
+      "start_exact": "Early in the morning, Gretel had to go out and hang up the cauldron with",
+      "end_exact": "that we may get out of the witch\u2019s forest.\u2019",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 13407,
+      "end_char": 15225,
+      "summary": "Gretel tricks the witch into the oven and burns her, frees Hansel, and they take the witch's treasure to leave.",
+      "cohesion": {
+        "time": "That morning",
+        "place": "The witch's house/oven and stable",
+        "characters": [
+          "Gretel",
+          "Witch",
+          "Hansel"
+        ]
+      },
+      "gacd": {
+        "goal": "Gretel wants to escape and save Hansel",
+        "action": "She tricks the witch into the oven and bolts the door, then frees Hansel",
+        "conflict": "The witch intends to bake Gretel; a deadly struggle of wits",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Climactic scene: Gretel's goal, deceptive action, lethal conflict with the witch, and successful escape with treasure; clear GACD.",
+      "confidence": 0.85
+    },
+    {
+      "segment_id": 9,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 19,
+      "end_par_id": 21,
+      "start_exact": "When they had walked for two hours, they came to a great stretch of water.",
+      "end_exact": "whosoever catches it, may make himself a big fur\n      cap out of it.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 15238,
+      "end_char": 16770,
+      "summary": "The children reach a water they can't cross, a duck ferries them over, and they return home to their father with riches; the wife is dead.",
+      "cohesion": {
+        "time": "During the journey home",
+        "place": "The great water and the father's house",
+        "characters": [
+          "Hansel",
+          "Gretel",
+          "Duck",
+          "Father"
+        ]
+      },
+      "gacd": {
+        "goal": "Return home safely with the treasure",
+        "action": "They enlist a duck to ferry them across the water and journey home",
+        "conflict": "An impassable stretch of water blocks their way",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Final journey with an obstacle (water) overcome by the duck, leading to a happy homecoming; goal/action/conflict/outcome present, ending the tale.",
+      "confidence": 0.7
+    }
+  ],
+  "segment_count": 9,
+  "model": "claude-opus-4-8"
+}

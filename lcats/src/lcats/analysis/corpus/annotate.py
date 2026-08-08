@@ -243,7 +243,19 @@ def _annotate_scenes(
         )
         return None, error_message
 
-    data = {"segments": segments, "segment_count": len(segments), "model": model}
+    usage = seg_result.get("usage") or {}
+    data = {
+        "segments": segments,
+        "segment_count": len(segments),
+        "model": model,
+        # Mirrors _annotate_genre's AssessmentResult.to_dict() fields, so
+        # scenes.json carries the same cost-visibility data genre.json
+        # already does -- previously omitted even though
+        # JSONPromptExtractor.extract() already returns it in "usage"
+        # (review finding, PR #253).
+        "input_tokens": usage.get("input_tokens", 0),
+        "output_tokens": usage.get("output_tokens", 0),
+    }
     checkpoint.write_checkpoint(
         roots.working_root,
         item_id,

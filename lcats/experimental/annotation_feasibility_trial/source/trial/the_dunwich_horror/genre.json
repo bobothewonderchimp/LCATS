@@ -1,0 +1,33 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/the_dunwich_horror/story.json",
+  "title": "the_dunwich_horror",
+  "author": "H. P. Lovecraft",
+  "url": "https://www.gutenberg.org/cache/epub/50133/pg50133-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "horror",
+  "detected_genre_confidence": 0.99,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "weird fiction / cosmic horror",
+  "specials_verdict": "author_intentional",
+  "summary": "In the decaying Massachusetts village of Dunwich, the wizard Old Whateley and his albino daughter raise the monstrous half-human Wilbur, spawned by the cosmic entity Yog-Sothoth; after Wilbur dies attempting to steal the Necronomicon, his gigantic invisible twin brother breaks loose and rampages until Dr. Armitage and colleagues destroy it with counter-sorcery atop Sentinel Hill.",
+  "issues": [
+    {
+      "type": "transcriber_note",
+      "severity": "medium",
+      "description": "Opening bracketed transcriber's note about the etext source (Weird Tales April 1929) and copyright status appears at the very start of the story body."
+    },
+    {
+      "type": "incomplete_text",
+      "severity": "high",
+      "description": "The story text is truncated near the end (marked '[... text truncated ...]') during Armitage's closing explanation, cutting off the final resolution and denouement."
+    }
+  ],
+  "error": "",
+  "input_tokens": 37649,
+  "output_tokens": 552,
+  "backend_model": "claude-opus-4-8"
+}

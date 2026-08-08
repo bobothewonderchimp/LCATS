@@ -1,0 +1,33 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/love_of_life/story.json",
+  "title": "love_of_life",
+  "author": "london",
+  "url": "https://www.gutenberg.org/cache/epub/710/pg710-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "adventure",
+  "detected_genre_confidence": 0.85,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "survival",
+  "specials_verdict": "author_intentional",
+  "summary": "Abandoned by his companion Bill in the Canadian Barrens, a starving prospector battles hunger, injury, and a dying wolf in a desperate crawl toward a distant ship, ultimately surviving to be rescued by a whaler's crew.",
+  "issues": [
+    {
+      "type": "formatting_artifact",
+      "severity": "low",
+      "description": "Two '* * * * *' section break markers appear in the body, but these are author-intended scene dividers rather than extraction errors."
+    },
+    {
+      "type": "formatting_artifact",
+      "severity": "low",
+      "description": "Numerous U+00A0 (non-breaking space) characters flagged in pre-flight QA; these are benign whitespace artifacts from HTML extraction and do not disrupt readability."
+    }
+  ],
+  "error": "",
+  "input_tokens": 28276,
+  "output_tokens": 478,
+  "backend_model": "claude-opus-4-8"
+}

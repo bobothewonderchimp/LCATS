@@ -1,0 +1,178 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "other",
+      "start_par_id": 1,
+      "end_par_id": 2,
+      "start_exact": "To Sherlock Holmes she\nis always the woman.",
+      "end_exact": "I knew little of my former friend and companion.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1,
+      "end_char": 2449,
+      "summary": "Narrator's framing essay on Holmes' regard for Irene Adler and Watson's recent estrangement after marriage. Non-scenic exposition.",
+      "cohesion": {
+        "time": "General/retrospective",
+        "place": "Unspecified",
+        "characters": [
+          "Watson",
+          "Sherlock Holmes"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Introductory expository commentary with no scene time/place unity or GACD/ERAC structure; classified as other per Rubric C.",
+      "confidence": 0.8
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "narrative_scene",
+      "start_par_id": 3,
+      "end_par_id": 120,
+      "start_exact": "One night/it was on the twentieth of March, 1888/I was returning",
+      "end_exact": "call to-morrow afternoon at three o\\u2019clock I should like to chat this\nlittle matter over with you.\", ",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 2451,
+      "end_char": 19221,
+      "summary": "Watson visits Baker Street; Holmes' deductions, the masked visitor revealed as the King of Bohemia, who explains the Irene Adler photograph problem and hires Holmes.",
+      "cohesion": {
+        "time": "Night of 20 March 1888",
+        "place": "Holmes' rooms, Baker Street",
+        "characters": [
+          "Watson",
+          "Holmes",
+          "The King of Bohemia"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Unified time/place (one evening at Baker Street). Primarily an expository interview establishing the case; no strong on-stage conflict/outcome or ERAC deliberation dominates, so narrative_scene.",
+      "confidence": 0.62
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 121,
+      "end_par_id": 170,
+      "start_exact": "At three o\\u2019clock precisely I was at Baker Street, but Holmes had not yet\nreturned.",
+      "end_exact": "it is almost time that I prepare\nfor the new role I have to play.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 19223,
+      "end_char": 30695,
+      "summary": "Holmes recounts his morning reconnaissance disguised as a groom, and how he was pressed into witnessing Irene Adler's sudden marriage to Godfrey Norton; then plans the evening operation.",
+      "cohesion": {
+        "time": "Next afternoon, ~3-5 pm",
+        "place": "Baker Street (Holmes narrating events elsewhere)",
+        "characters": [
+          "Holmes",
+          "Watson",
+          "Irene Adler",
+          "Godfrey Norton"
+        ]
+      },
+      "gacd": {
+        "goal": "Locate the photograph by learning Irene Adler's habits and situation",
+        "action": "Holmes investigates disguised, follows the couple to church, and is dragooned into witnessing the marriage",
+        "conflict": "Unexpected marriage and hurried departures menace his plans; complications force improvisation",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Time/place shift to next afternoon at Baker Street. Holmes' recounted investigation shows Goal, Action, Conflict (menaced plans) and an interim Success, meeting the GACD threshold.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 171,
+      "end_par_id": 211,
+      "start_exact": "He disappeared into his bedroom and returned in a few minutes in the character",
+      "end_exact": "I must wire to the King without delay.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 30698,
+      "end_char": 40250,
+      "summary": "At Briony Lodge Holmes stages a fake brawl and injury; carried inside, he raises a fire alarm so Irene reveals the photograph's hiding place, then explains the ruse to Watson.",
+      "cohesion": {
+        "time": "Evening, ~6:15-7 pm and after",
+        "place": "Serpentine Avenue / Briony Lodge and streets nearby",
+        "characters": [
+          "Holmes",
+          "Watson",
+          "Irene Adler"
+        ]
+      },
+      "gacd": {
+        "goal": "Discover where Irene hides the photograph",
+        "action": "Staged street brawl, feigned injury, fire alarm to provoke her to reach for the photograph",
+        "conflict": "Must deceive the watchful, resolute Irene and her household without being caught",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "New time/place (evening at Briony Lodge). Clear Goal, Action, Conflict, and Success outcome (location discovered), satisfying the GACD threshold.",
+      "confidence": 0.85
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "narrative_scene",
+      "start_par_id": 212,
+      "end_par_id": 215,
+      "start_exact": "We had reached Baker Street and had stopped at the door.",
+      "end_exact": "Now, I wonder who the deuce that could have\nbeen.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 40253,
+      "end_char": 40693,
+      "summary": "Returning to Baker Street, Holmes is greeted by a slim youth whose voice he recognizes but cannot place.",
+      "cohesion": {
+        "time": "Later that night",
+        "place": "Baker Street doorway",
+        "characters": [
+          "Holmes",
+          "Watson",
+          "disguised Irene Adler"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Brief transitional scene at a distinct place/time (Baker Street door, night); no GACD/ERAC structure, so narrative_scene.",
+      "confidence": 0.55
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 216,
+      "end_par_id": 256,
+      "start_exact": "I slept at Baker Street that night, and we were engaged upon our toast and\ncoffee",
+      "end_exact": "it is always under the honourable title of the woman.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 40696,
+      "end_char": 46610,
+      "summary": "Next morning Holmes, the King, and Watson go to Briony Lodge to seize the photograph, but Irene has fled abroad, leaving a letter; Holmes is outwitted and keeps her photograph.",
+      "cohesion": {
+        "time": "Next morning",
+        "place": "Baker Street then Briony Lodge",
+        "characters": [
+          "Holmes",
+          "Watson",
+          "King of Bohemia",
+          "Irene Adler (via letter)"
+        ]
+      },
+      "gacd": {
+        "goal": "Recover the compromising photograph for the King",
+        "action": "They travel to Briony Lodge and Holmes rushes to the hiding place",
+        "conflict": "Irene has anticipated them and fled with the photograph, leaving a letter",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "New morning/travel to Briony Lodge; clear Goal, Action, Conflict (Irene's escape) and Disaster outcome for Holmes, satisfying GACD. Closing narrator lines are merged as denouement.",
+      "confidence": 0.8
+    }
+  ],
+  "segment_count": 6,
+  "model": "claude-opus-4-8"
+}

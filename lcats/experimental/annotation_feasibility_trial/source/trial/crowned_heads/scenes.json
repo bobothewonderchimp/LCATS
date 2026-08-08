@@ -1,0 +1,232 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 50,
+      "start_exact": "Katie had never been more surprised in her life than when the serious",
+      "end_exact": "And he\n      was gone, walking swiftly through the crowd about the bandstand.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 7,
+      "end_char": 8444,
+      "summary": "At Palisades Park, Ted Brady singles Katie out over Genevieve, spends the afternoon with her, learns about her bookshop, and announces he'll call on her.",
+      "cohesion": {
+        "time": "One afternoon",
+        "place": "Palisades Park (amusement park by the Hudson)",
+        "characters": [
+          "Katie",
+          "Ted Brady",
+          "Genevieve"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Unified by time/place (afternoon at the park). It's mostly courtship dialogue and getting-acquainted; no strong on-stage conflict with a goal-thwarting outcome, so narrative_scene fits.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 51,
+      "end_par_id": 70,
+      "start_exact": "Katie went back to Genevieve, and Genevieve was simply horrid.",
+      "end_exact": "'I beat Lord Murdoch five games to nothing,' he said.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 8457,
+      "end_char": 11827,
+      "summary": "Back at the Sixth Avenue shop, Katie finds her grandfather upset over Suffragette news; she soothes his 'King of England' delusion by drafting a royal letter.",
+      "cohesion": {
+        "time": "Evening after the outing",
+        "place": "The Sixth Avenue bookshop",
+        "characters": [
+          "Katie",
+          "old Mr Bennett",
+          "Mr Murdoch"
+        ]
+      },
+      "gacd": {
+        "goal": "Calm her agitated grandfather",
+        "action": "Katie drafts a mock royal letter to Parliament to appease him",
+        "conflict": "The old man is upset and agitated by his delusion",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Time/place shift to the bookshop that evening. Katie has a clear goal (soothe grandfather), takes action (writes letter), meets the conflict of his agitation, and succeeds within the segment.",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 71,
+      "end_par_id": 82,
+      "start_exact": "It was now nearly two years since the morning when old Matthew Bennett",
+      "end_exact": "which does not require the aid of\n      speech.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 11840,
+      "end_char": 17108,
+      "summary": "Backstory of Mr Bennett's delusions and Katie's steady handling; Ted courts Katie over successive visits, tells her about himself, and proposes with a ring.",
+      "cohesion": {
+        "time": "Over the past two years / weeks of courtship",
+        "place": "The bookshop and general narration",
+        "characters": [
+          "Katie",
+          "old Mr Bennett",
+          "Ted Brady",
+          "Mr Murdoch"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Expository/summary passage spanning long time; recounts background and courtship rather than a single scene with GACD/ERAC.",
+      "confidence": 0.66
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 83,
+      "end_par_id": 100,
+      "start_exact": "It was not till she took the news of her engagement to old Mr Bennett",
+      "end_exact": "concentrate his thoughts on a subject for\n      any length of time.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 17121,
+      "end_char": 20864,
+      "summary": "Confident of approval, Katie tells her grandfather of the engagement, but he forbids it: a king's granddaughter cannot marry a commoner. Katie is crushed.",
+      "cohesion": {
+        "time": "Day of the engagement announcement",
+        "place": "The bookshop's inner room",
+        "characters": [
+          "Katie",
+          "old Mr Bennett",
+          "Mr Murdoch (recalled)"
+        ]
+      },
+      "gacd": {
+        "goal": "Obtain her grandfather's blessing for marrying Ted",
+        "action": "Katie recites Ted's virtues to win approval",
+        "conflict": "The old man refuses on grounds of royal rank",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Distinct scene with Katie pursuing a goal (approval), action (recital), strong conflict (refusal), and a clear disaster outcome.",
+      "confidence": 0.8
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 101,
+      "end_par_id": 118,
+      "start_exact": "So little did Ted Brady realize at first the true complexity of the",
+      "end_exact": "you\n      count it anything that he's made me an earl.'",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 20877,
+      "end_char": 23868,
+      "summary": "Ted wants to elope, Katie explains why they can't abandon her grandfather; Ted goes in to persuade the old man but comes out defeated\u2014made an earl instead.",
+      "cohesion": {
+        "time": "After the refusal",
+        "place": "The bookshop",
+        "characters": [
+          "Katie",
+          "Ted Brady",
+          "old Mr Bennett"
+        ]
+      },
+      "gacd": {
+        "goal": "Ted seeks a way to marry Katie despite the veto",
+        "action": "Ted proposes eloping, then goes to persuade the old man himself",
+        "conflict": "Katie resists elopement; the old man won't relent",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Continuous scene of attempts to overcome the obstacle; goal, action, conflict, and failed outcome present.",
+      "confidence": 0.74
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "narrative_scene",
+      "start_par_id": 119,
+      "end_par_id": 127,
+      "start_exact": "In the next two weeks several brains busied themselves with the situation.",
+      "end_exact": "one wondered why one had complained of July's tepid\n      advances.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 23881,
+      "end_char": 27194,
+      "summary": "Over weeks, friends scheme (the Bear-Cat's staged fight plan), plans fail, and Katie sadly tells Ted to stay away; summer passes into a sweltering August.",
+      "cohesion": {
+        "time": "Over the following weeks / the summer",
+        "place": "General / the shop",
+        "characters": [
+          "Katie",
+          "Ted Brady",
+          "Genevieve",
+          "the Tennessee Bear-Cat"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Summary passage covering weeks of schemes and Katie's decision to part; spans too much time for a single dramatic scene and is largely narrated overview.",
+      "confidence": 0.63
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 128,
+      "end_par_id": 163,
+      "start_exact": "It was on the evening of September the eleventh that Katie, having closed",
+      "end_exact": "amounts to a pretty steady job as kings go.'",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 27207,
+      "end_char": 33321,
+      "summary": "On a cool September evening Ted returns, tells the old man he's the newly elected King of Coney Island, wins consent for the 'royal alliance,' then confesses his ruse to Katie.",
+      "cohesion": {
+        "time": "Evening of September 11th",
+        "place": "The Sixth Avenue shop steps and inner room, then the street",
+        "characters": [
+          "Katie",
+          "Ted Brady",
+          "old Mr Bennett"
+        ]
+      },
+      "gacd": {
+        "goal": "Ted aims to secure permission to marry Katie",
+        "action": "Ted claims to the old man he is King of Coney Island, testing him with Brooklyn and Yonkers first",
+        "conflict": "The risk the old man will see through the deception; the standing veto",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Clear time/place marker ('evening of September the eleventh') begins a climactic scene with goal, clever action against resistance, and a successful outcome (consent granted).",
+      "confidence": 0.82
+    },
+    {
+      "segment_id": 8,
+      "segment_type": "other",
+      "start_par_id": 164,
+      "end_par_id": 165,
+      "start_exact": "",
+      "end_exact": "",
+      "start_prefix": "amounts to a pretty steady job as kings go.'",
+      "end_suffix": "",
+      "start_char": 33328,
+      "end_char": 33333,
+      "summary": "Trailing blank paragraphs; no narrative content.",
+      "cohesion": {
+        "time": "n/a",
+        "place": "n/a",
+        "characters": []
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Empty trailing paragraphs constitute non-narrative material.",
+      "confidence": 0.9
+    }
+  ],
+  "segment_count": 8,
+  "model": "claude-opus-4-8"
+}

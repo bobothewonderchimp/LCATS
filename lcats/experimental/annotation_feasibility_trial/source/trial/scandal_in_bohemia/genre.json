@@ -1,0 +1,33 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/scandal_in_bohemia/story.json",
+  "title": "scandal_in_bohemia",
+  "author": "Arthur Conan Doyle",
+  "url": "https://www.gutenberg.org/files/1661/1661-h/1661-h.htm",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "mystery",
+  "detected_genre_confidence": 0.97,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "</antml\":parameter>\n<parameter name=\"specials_verdict\">author_intentional",
+  "specials_verdict": "author_intentional",
+  "summary": "Sherlock Holmes is hired by the King of Bohemia to recover a compromising photograph held by the adventuress Irene Adler; Holmes locates it through a clever ruse but is ultimately outwitted by Adler, who flees with the photograph, earning his lasting admiration.",
+  "issues": [
+    {
+      "type": "start-contamination",
+      "severity": "low",
+      "description": "Pre-flight flagged a likely title heading at story start; the provided text begins with the narrative proper ('To Sherlock Holmes she is always the woman'), so no visible title remnant in body, but flagged as minor."
+    },
+    {
+      "type": "formatting_artifact",
+      "severity": "low",
+      "description": "Several U+00A0 (non-breaking space) characters present, likely indentation artifacts from HTML source; benign and does not affect readability."
+    }
+  ],
+  "error": "",
+  "input_tokens": 19112,
+  "output_tokens": 530,
+  "backend_model": "claude-opus-4-8"
+}

@@ -1,0 +1,125 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "There were once a man and a woman who had long in vain wished for a child.",
+      "end_exact": "gave the child the name\n      of Rapunzel, and took it away with her.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 7,
+      "end_char": 2718,
+      "summary": "A pregnant woman craves rampion from the enchantress's garden; her husband steals it, is caught, and must promise their child, whom the enchantress takes and names Rapunzel.",
+      "cohesion": {
+        "time": "Before Rapunzel's birth",
+        "place": "The couple's house and the enchantress's garden",
+        "characters": [
+          "the wife",
+          "the husband",
+          "the enchantress"
+        ]
+      },
+      "gacd": {
+        "goal": "The husband seeks to satisfy his wife's desperate craving for rampion",
+        "action": "He climbs into the enchantress's garden repeatedly to steal rampion",
+        "conflict": "The enchantress catches him and threatens punishment, demanding his future child",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "A unified time/place opening tale with clear goal (get rampion), on-stage action (theft), conflict (caught by enchantress), and disastrous outcome (must surrender child).",
+      "confidence": 0.86
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "narrative_scene",
+      "start_par_id": 2,
+      "end_par_id": 9,
+      "start_exact": "Rapunzel grew into the most beautiful child under the sun.",
+      "end_exact": "Immediately the hair fell down and the king\\u2019s son climbed up.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 2731,
+      "end_char": 4555,
+      "summary": "Rapunzel is imprisoned in a doorless tower; the enchantress climbs her hair. The king's son overhears her song, learns the hair trick, and climbs up.",
+      "cohesion": {
+        "time": "Years later; Rapunzel age twelve onward",
+        "place": "The tower in the forest",
+        "characters": [
+          "Rapunzel",
+          "the enchantress",
+          "the king's son"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Time/place unity around the tower; largely expository narrative introducing the tower, the hair, and the prince's discovery without a single dominant on-stage conflict/outcome.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 10,
+      "end_par_id": 10,
+      "start_exact": "At first Rapunzel was terribly frightened when a man, such as her eyes had",
+      "end_exact": "she had to live in great grief and misery.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 4563,
+      "end_char": 6259,
+      "summary": "The prince courts Rapunzel and they plan escape via a ladder; Rapunzel accidentally reveals the secret, and the enraged enchantress cuts her hair and banishes her to a desert.",
+      "cohesion": {
+        "time": "Over ensuing evenings",
+        "place": "The tower",
+        "characters": [
+          "Rapunzel",
+          "the king's son",
+          "the enchantress"
+        ]
+      },
+      "gacd": {
+        "goal": "Rapunzel and the prince plan her escape from the tower to marry",
+        "action": "They arrange the silk-ladder plan; Rapunzel meets him secretly",
+        "conflict": "The enchantress discovers the deception and reacts with fury",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Same tower setting; goal (escape), action (secret plan), conflict (discovery), and disastrous outcome (hair cut, banishment) meet the GACD threshold.",
+      "confidence": 0.82
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 11,
+      "end_par_id": 13,
+      "start_exact": "On the same day that she cast out Rapunzel, however, the enchantress",
+      "end_exact": "happy and contented.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 6272,
+      "end_char": 7915,
+      "summary": "The enchantress tricks the prince, who leaps and is blinded by thorns. He wanders years, finds Rapunzel and their twins; her tears restore his sight and they live happily.",
+      "cohesion": {
+        "time": "Same day onward, then years of wandering",
+        "place": "The tower, then the forest and the desert",
+        "characters": [
+          "the king's son",
+          "the enchantress",
+          "Rapunzel"
+        ]
+      },
+      "gacd": {
+        "goal": "The prince seeks to reunite with Rapunzel",
+        "action": "He climbs to the tower, then wanders blind searching until he finds her",
+        "conflict": "The enchantress deceives him and he is blinded; long suffering in the wilderness",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Continues to the tale's resolution; goal of reunion, action (climbing/wandering), conflict (deception, blindness), and a successful outcome (reunion, healing, happy ending).",
+      "confidence": 0.8
+    }
+  ],
+  "segment_count": 4,
+  "model": "claude-opus-4-8"
+}

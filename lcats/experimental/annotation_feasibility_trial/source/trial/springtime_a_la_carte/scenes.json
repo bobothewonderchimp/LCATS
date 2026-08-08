@@ -1,0 +1,163 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "other",
+      "start_par_id": 1,
+      "end_par_id": 6,
+      "start_exact": "It was a day in March.",
+      "end_exact": "Like to wait for a dozen raw opened that\nway?",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1,
+      "end_char": 1113,
+      "summary": "Narrator's meta-commentary on how not to begin a story, addressing the reader directly with authorial asides.",
+      "cohesion": {
+        "time": "N/A (authorial frame)",
+        "place": "N/A",
+        "characters": [
+          "narrator"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "This is meta-narrative commentary directly addressing the reader about storytelling craft, not a narrative scene with time/place unity.",
+      "confidence": 0.82
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "narrative_scene",
+      "start_par_id": 7,
+      "end_par_id": 12,
+      "start_exact": "Sarah had managed to pry apart the shells with her unhandy weapon far enough to",
+      "end_exact": "which was the main thing\nwith her.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1116,
+      "end_char": 3233,
+      "summary": "Backstory of Sarah the freelance typist and her barter deal with Schulenberg's restaurant to type menus in exchange for meals.",
+      "cohesion": {
+        "time": "the past winter (expository backstory)",
+        "place": "Sarah's hall room / Schulenberg's restaurant",
+        "characters": [
+          "Sarah",
+          "Schulenberg"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Expository summary establishing Sarah's situation and the menu arrangement; unified but lacks in-scene GACD/ERAC structure.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 13,
+      "end_par_id": 21,
+      "start_exact": "And then the almanac lied, and said that spring had come.",
+      "end_exact": "And Sarah came back to the city to pound her typewriter.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 3236,
+      "end_char": 6030,
+      "summary": "An afternoon Sarah sits gazing out her window, and the narrative recounts her summer romance with farmer Walter Franklin and their spring wedding plans.",
+      "cohesion": {
+        "time": "one afternoon in March, with flashback to previous summer",
+        "place": "Sarah's hall bedroom / Sunnybrook Farm (recalled)",
+        "characters": [
+          "Sarah",
+          "Walter Franklin"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Time/place unity around Sarah at her window plus embedded romantic backstory; reflective/expository rather than a GACD or ERAC scene.",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 22,
+      "end_par_id": 31,
+      "start_exact": "A knock at the door dispelled Sarah\", ",
+      "end_exact": "banquet of her\nheart\"s true affection.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 6032,
+      "end_char": 9871,
+      "summary": "Sarah types the day's menu; reaching dandelions on the list, she breaks down crying over lost love and Walter's silence, then forces herself to finish the cards.",
+      "cohesion": {
+        "time": "that afternoon into 6 o'clock evening",
+        "place": "Sarah's hall room",
+        "characters": [
+          "Sarah"
+        ]
+      },
+      "gacd": {
+        "goal": "Finish typing the day's menu cards for the restaurant",
+        "action": "Sarah types down the courses until she hits the dandelion item",
+        "conflict": "The dandelions trigger overwhelming grief over Walter's two-week silence, overcoming her composure",
+        "outcome": "Unclear"
+      },
+      "erac": null,
+      "reason": "Sarah pursues a concrete goal (typing menus) and meets emotional conflict (breakdown over dandelions) on-stage, forcing back tears to continue; GACD dominates with interim result.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "narrative_scene",
+      "start_par_id": 32,
+      "end_par_id": 33,
+      "start_exact": "At 7:30 the couple in the next room began to quarrel:",
+      "end_exact": "Oh, yes; you would, just as she did!",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 9874,
+      "end_char": 10508,
+      "summary": "That evening Sarah settles in to read her book until the front door bell rings and she listens.",
+      "cohesion": {
+        "time": "7:30 that evening",
+        "place": "Sarah's hall room",
+        "characters": [
+          "Sarah"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "A brief transitional evening scene of ambient detail and reading; no clear GACD/ERAC, unified by time/place.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 34,
+      "end_par_id": 48,
+      "start_exact": "And then a strong voice was heard in the hall below,",
+      "end_exact": "\"DEAREST WALTER, WITH HARD-BOILED EGG.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 10511,
+      "end_char": 12435,
+      "summary": "Walter arrives; the reunited couple explains how he found her via her typewritten menu, where her tear-blurred typing spelled 'Dearest Walter' instead of dandelions.",
+      "cohesion": {
+        "time": "immediately after, that evening",
+        "place": "Sarah's rooming house (stairs/hall room)",
+        "characters": [
+          "Sarah",
+          "Walter Franklin"
+        ]
+      },
+      "gacd": {
+        "goal": "Reunion and explanation of the long silence between Sarah and Walter",
+        "action": "Walter recounts hunting for her and finding her via the menu; they trade questions about the missing letter",
+        "conflict": "The mystery of lost contact and the absent name on the menu must be resolved",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "The climactic reunion scene resolves the story's central problem on-stage through action and dialogue, culminating in the reveal of the typo; a dramatic_scene with clear successful outcome.",
+      "confidence": 0.7
+    }
+  ],
+  "segment_count": 6,
+  "model": "claude-opus-4-8"
+}

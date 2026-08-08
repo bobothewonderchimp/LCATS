@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/hansel_and_gretel/story.json",
+  "title": "hansel_and_gretel",
+  "author": "Grimm",
+  "url": "https://www.gutenberg.org/cache/epub/2591/pg2591-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "fantasy",
+  "detected_genre_confidence": 0.9,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "children's fairy tale",
+  "specials_verdict": "author_intentional",
+  "summary": "Two children abandoned in the forest by their parents during famine find a house made of bread and cakes belonging to a cannibal witch; Gretel outwits and kills the witch, and the pair return home with jewels to their repentant father.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 8333,
+  "output_tokens": 322,
+  "backend_model": "claude-opus-4-8"
+}

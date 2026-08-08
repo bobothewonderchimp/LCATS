@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/gift_of_the_magi/story.json",
+  "title": "gift_of_the_magi",
+  "author": "OHenry",
+  "url": "https://www.gutenberg.org/cache/epub/2776/pg2776-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "romance",
+  "detected_genre_confidence": 0.75,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "Christmas/holiday",
+  "specials_verdict": "author_intentional",
+  "summary": "A poor young couple, Della and Jim, each secretly sacrifice their most prized possession\u2014her hair and his gold watch\u2014to buy the other a Christmas gift, only to find their gifts now useless yet their love proven.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 6643,
+  "output_tokens": 319,
+  "backend_model": "claude-opus-4-8"
+}

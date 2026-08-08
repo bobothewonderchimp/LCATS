@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/brown_wolf/story.json",
+  "title": "brown_wolf",
+  "author": "london",
+  "url": "https://www.gutenberg.org/cache/epub/710/pg710-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "adventure",
+  "detected_genre_confidence": 0.55,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "animal story",
+  "specials_verdict": "author_intentional",
+  "summary": "A California poet and his wife have adopted a mysterious wolf-like dog, only to have a Klondike musher arrive and claim it as his lost lead dog; they agree to let the dog choose, and after an agonizing internal struggle the dog chooses to follow his old master north.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 21160,
+  "output_tokens": 333,
+  "backend_model": "claude-opus-4-8"
+}

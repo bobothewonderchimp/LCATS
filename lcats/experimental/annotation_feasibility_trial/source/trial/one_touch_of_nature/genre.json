@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/one_touch_of_nature/story.json",
+  "title": "one_touch_of_nature",
+  "author": "Wodehouse",
+  "url": "https://www.gutenberg.org/cache/epub/7471/pg7471-images.html",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "humor",
+  "detected_genre_confidence": 0.8,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "</antml=\"parameter>\n<parameter name=\"specials_verdict\">none",
+  "specials_verdict": "none",
+  "summary": "An exiled American baseball fan in London sneaks off to a ball game and impulsively invites two fellow fans to dinner; when one turns out to be a wanted bank robber and the other, a reporter, calls the police, the fan-loving host tackles the reporter to help the fugitive escape\u2014leaving himself to face his wife's wrath.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 11323,
+  "output_tokens": 373,
+  "backend_model": "claude-opus-4-8"
+}

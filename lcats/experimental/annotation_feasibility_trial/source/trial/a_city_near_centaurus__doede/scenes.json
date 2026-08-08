@@ -1,0 +1,173 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "other",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "The city was sacred, but not to its gods.",
+      "end_exact": "but far from sacred!",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 15,
+      "end_char": 113,
+      "summary": "Epigraph/tagline framing the story about the sacred city and Michaelson.",
+      "cohesion": {
+        "time": "n/a",
+        "place": "n/a",
+        "characters": [
+          "Michaelson"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Non-narrative front matter/tagline; not a scene.",
+      "confidence": 0.9
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 2,
+      "end_par_id": 60,
+      "start_exact": "Crouched in the ancient doorway like an animal peering out from his\nburrow, Mr. Michaelson saw the native.",
+      "end_exact": "while\nMichaelson's blood trickled out from the head wound upon the ancient\nstreet.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 116,
+      "end_char": 9008,
+      "summary": "Michaelson explores the dead city; the native Maota confronts him demanding he leave. Their standoff escalates until Maota strikes him unconscious with a book.",
+      "cohesion": {
+        "time": "Late afternoon into night",
+        "place": "The ancient dead city",
+        "characters": [
+          "Michaelson",
+          "Maota"
+        ]
+      },
+      "gacd": {
+        "goal": "Michaelson wants to explore and preserve the ancient city; Maota wants him gone",
+        "action": "Michaelson pokes about ruins, collects artifacts, refuses to leave despite warnings",
+        "conflict": "Maota repeatedly orders him to leave, threatens to kill him",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Continuous time/place (city, afternoon into night); strong Goal/Action/Conflict with Disaster outcome (knocked unconscious). Meets GACD threshold.",
+      "confidence": 0.88
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 62,
+      "end_par_id": 78,
+      "start_exact": "When he regained consciousness the two moons, bright sentinel orbs in\nthe night sky, had moved to a new position",
+      "end_exact": "He sat down in the darkness, meaning to rest a moment.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 9012,
+      "end_char": 13043,
+      "summary": "Michaelson regains consciousness, treats his wound, resolves to fight for the city; discovers the talking book and warm 'clock,' but panics and flees to the city's edge.",
+      "cohesion": {
+        "time": "Later that night",
+        "place": "The dead city",
+        "characters": [
+          "Michaelson"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Pain, fear, new determination",
+        "reason": "He reflects that if it's a fight the webfoot wants, he'll get one; weighs preserving the wonders",
+        "anticipation": "Anticipates preserving the city despite Maota; fears the impossible warmth",
+        "choice": "Resolves to preserve the city 'whether Maota likes it or not'"
+      },
+      "reason": "Follows the disaster; dominated by recovery, emotion, reasoning, and a new resolve/decision. Fits ERAC without on-stage conflict/outcome.",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 80,
+      "end_par_id": 199,
+      "start_exact": "When he awoke dawn was red against thin clouds in the east.",
+      "end_exact": "The old man was dead.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 13047,
+      "end_char": 24459,
+      "summary": "At dawn Maota again threatens to kill Michaelson; they argue over the book, struggle, and the weapon destroys the priceless book. Maota, despairing, presses the 'clock' button and dies.",
+      "cohesion": {
+        "time": "Dawn into day",
+        "place": "The ancient street / Maota's house",
+        "characters": [
+          "Michaelson",
+          "Maota"
+        ]
+      },
+      "gacd": {
+        "goal": "Maota aims to kill Michaelson and drive out the intruder; Michaelson seeks to survive and negotiate",
+        "action": "Verbal standoff, Michaelson jumps and fights for the gun, they struggle",
+        "conflict": "Armed confrontation, physical struggle, destruction of the book",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "New time (dawn) with continuous escalating confrontation; strong GACD ending in disaster (book destroyed, Maota dead). Kept as one large scene per coarse-granularity rules despite move to Maota's house within the same continuous action.",
+      "confidence": 0.82
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "narrative_scene",
+      "start_par_id": 201,
+      "end_par_id": 206,
+      "start_exact": "Feeling depressed and alone, Michaelson found a desert knoll outside\nthe city",
+      "end_exact": "He pinched his eyes shut tight like a child and pressed the\nbutton.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 24463,
+      "end_char": 25676,
+      "summary": "Michaelson buries Maota, then over weeks learns the language, studies the books, and finally decides to test the machine himself, pressing the button.",
+      "cohesion": {
+        "time": "Days and weeks afterward",
+        "place": "The city and desert knoll",
+        "characters": [
+          "Michaelson"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Time-lapse summary bridging events (burial, study, decision); unified but lacks on-stage GACD conflict or full ERAC deliberation structure. Best as narrative_scene.",
+      "confidence": 0.62
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 207,
+      "end_par_id": 223,
+      "start_exact": "The high-pitched whine started.",
+      "end_exact": "I said you were a\ngod...!_",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 25678,
+      "end_char": 28025,
+      "summary": "Michaelson enters the disembodied realm and meets Maota, who insists no one can return. Michaelson defies him, uses the cylinder, and succeeds in returning to his body.",
+      "cohesion": {
+        "time": "Immediately after pressing the button",
+        "place": "The place of no direction / Maota's house",
+        "characters": [
+          "Michaelson",
+          "Maota"
+        ]
+      },
+      "gacd": {
+        "goal": "Michaelson wants to return to his body after entering the disembodied state",
+        "action": "He gathers his mind's force and gives a violent command using the cylinder",
+        "conflict": "Maota insists it's impossible and protests with fear and anger",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Continuous climactic sequence with clear Goal, Action, Conflict (Maota's protests) and Success (he returns to his body). Meets GACD threshold.",
+      "confidence": 0.83
+    }
+  ],
+  "segment_count": 6,
+  "model": "claude-opus-4-8"
+}

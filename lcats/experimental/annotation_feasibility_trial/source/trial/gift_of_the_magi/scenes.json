@@ -1,0 +1,143 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 10,
+      "start_exact": "One dollar and eighty-seven cents. That was all. And sixty cents of it was in\npennies.",
+      "end_exact": "while a tear or two splashed on the worn\nred carpet.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1,
+      "end_char": 3721,
+      "summary": "Della counts her meager $1.87, cries over having no money for Jim's gift, and contemplates her beautiful hair, her one prized possession.",
+      "cohesion": {
+        "time": "Day before Christmas, afternoon",
+        "place": "The Youngs' furnished flat",
+        "characters": [
+          "Della"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Despair and frustration over having only $1.87",
+        "reason": "She reflects on months of saving and her love for Jim, deciding she must find a worthy gift",
+        "anticipation": "Hopes to buy something fine and worthy for Jim",
+        "choice": "Resolves to sell her hair (implied by whirling to the glass and letting hair down)"
+      },
+      "reason": "Time/place unified in the flat; dominant function is emotional reaction and deliberation leading toward a decision (ERAC), with no on-stage conflict/outcome, so dramatic_sequel would fit\u2014but the extended exposition and setup lean narrative. Chosen narrative_scene for descriptive/expository dominance.",
+      "confidence": 0.55
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 11,
+      "end_par_id": 18,
+      "start_exact": "On went her old brown jacket; on went her old brown hat.",
+      "end_exact": "on account of the old leather strap that he used in place of a chain.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 3724,
+      "end_char": 5321,
+      "summary": "Della goes out, sells her hair to Madame Sofronie for $20, then searches the stores and finds the perfect platinum fob chain for Jim's watch.",
+      "cohesion": {
+        "time": "That afternoon, roughly two hours",
+        "place": "The street / Madame Sofronie's shop / the stores",
+        "characters": [
+          "Della",
+          "Madame Sofronie"
+        ]
+      },
+      "gacd": {
+        "goal": "Obtain money and buy a worthy Christmas gift for Jim",
+        "action": "Sells her prized hair and ransacks the stores to find the right present",
+        "conflict": "Must sacrifice her most beloved possession and search exhaustively for the perfect item",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Clear time/place change (leaving flat for the shop and stores). Goal, action, conflict (sacrifice/search), and a successful outcome (finds the chain) meet the GACD threshold.",
+      "confidence": 0.8
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 19,
+      "end_par_id": 23,
+      "start_exact": "When Della reached home her intoxication gave way a little to prudence and\nreason.",
+      "end_exact": "make him think I am\nstill pretty.\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 5324,
+      "end_char": 6529,
+      "summary": "Back home, Della repairs her cropped hair with curling irons, frets about her looks, prepares dinner, and waits nervously for Jim, praying he'll still find her pretty.",
+      "cohesion": {
+        "time": "Later that day, approaching 7 o'clock",
+        "place": "The Youngs' flat",
+        "characters": [
+          "Della"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Time/place shift back to the flat. Preparation and waiting with anxiety but without a strong on-stage conflict/outcome or a decisive new choice; time/place unity supports narrative_scene.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 24,
+      "end_par_id": 43,
+      "start_exact": "The door opened and Jim stepped in and closed it.",
+      "end_exact": "And now suppose you put the\nchops on.\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 6532,
+      "end_char": 10584,
+      "summary": "Jim arrives and reacts strangely to Della's short hair; they exchange gifts and discover both sacrificed their treasures\u2014Della's hair for a watch chain, Jim's watch for combs.",
+      "cohesion": {
+        "time": "7 o'clock that evening",
+        "place": "The Youngs' flat",
+        "characters": [
+          "Della",
+          "Jim"
+        ]
+      },
+      "gacd": {
+        "goal": "Della wants Jim to accept her and love her gift; both want to give a worthy present",
+        "action": "They exchange presents and confront the consequences of their sacrifices",
+        "conflict": "Jim's disturbing reaction; the ironic revelation that each gift is now useless due to the other's sacrifice",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Continuous scene in the flat with dramatic confrontation and the ironic climax. Goal, action, conflict, and outcome (gifts rendered useless) satisfy the GACD threshold.",
+      "confidence": 0.85
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "other",
+      "start_par_id": 44,
+      "end_par_id": 44,
+      "start_exact": "The magi, as you know, were wise men\u2014wonderfully wise men\u2014who\nbrought gifts",
+      "end_exact": "Everywhere they are wisest. They are the magi.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 10587,
+      "end_char": 11258,
+      "summary": "Narratorial epilogue reflecting on the magi and declaring Della and Jim the wisest of gift-givers.",
+      "cohesion": {
+        "time": "N/A (authorial commentary)",
+        "place": "N/A",
+        "characters": [
+          "Narrator"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Meta-commentary/moral reflection by the narrator, not a narrative scene with time/place action; labeled other.",
+      "confidence": 0.8
+    }
+  ],
+  "segment_count": 5,
+  "model": "claude-opus-4-8"
+}

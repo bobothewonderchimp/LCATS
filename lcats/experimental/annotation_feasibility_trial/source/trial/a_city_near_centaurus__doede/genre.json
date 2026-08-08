@@ -1,0 +1,24 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/a_city_near_centaurus__doede/story.json",
+  "title": "a_city_near_centaurus__doede",
+  "author": [
+    "Doede, William R."
+  ],
+  "url": "https://www.gutenberg.org/cache/epub/50802/pg50802.txt",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "science fiction",
+  "detected_genre_confidence": 0.97,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "</antml name=\"secondary_genre\">",
+  "specials_verdict": "none",
+  "summary": "On Alpha Centauri II, an Earth archeologist named Michaelson clashes with Maota, the self-appointed keeper of an ancient alien city, over whether to preserve or leave the ruins untouched; their conflict ends when Maota uses a device that transports only the mind to another dimension, and Michaelson discovers his teleportation cylinder lets him return to his body while Maota cannot.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 12394,
+  "output_tokens": 380,
+  "backend_model": "claude-opus-4-8"
+}

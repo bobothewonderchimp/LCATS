@@ -1,0 +1,284 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "narrative_scene",
+      "start_par_id": 1,
+      "end_par_id": 8,
+      "start_exact": "Jarvis stretched himself as luxuriously as he could in the cramped\ngeneral quarters of the _Ares_.",
+      "end_exact": "_Ich spiel\nes!_\" He grunted comfortably and began.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 0,
+      "end_char": 2177,
+      "summary": "Aboard the Ares, Jarvis relaxes and his three crewmates urge him to recount his adventure. Introduces the expedition and sets the framing device.",
+      "cohesion": {
+        "time": "Present; after Jarvis's rescue",
+        "place": "General quarters of the Ares on Mars",
+        "characters": [
+          "Jarvis",
+          "Harrison",
+          "Putz",
+          "Leroy"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Framing scene unified by time/place aboard the Ares; establishes characters and prompts the tale but lacks on-stage GACD conflict or ERAC deliberation.",
+      "confidence": 0.75
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 9,
+      "end_par_id": 30,
+      "start_exact": "\"According to orders,\" he said, \"I watched Karl here take off toward the\nNorth, and then I got into my flying sweat-box",
+      "end_exact": "for these wintry\nMartian nights.",
+      "start_prefix": "es!_\" He grunted comfortably and began.\n\n",
+      "end_suffix": "",
+      "start_char": 2179,
+      "end_char": 6863,
+      "summary": "Jarvis recounts his solo scouting flight south, the engine failure and crash landing in Thyle, and his decision to walk 800 miles back.",
+      "cohesion": {
+        "time": "Ten days earlier; daylight flight and crash",
+        "place": "Auxiliary rocket over/on Thyle, Mars",
+        "characters": [
+          "Jarvis"
+        ]
+      },
+      "gacd": {
+        "goal": "Complete the scouting flight and return to the Ares",
+        "action": "Flies south scouting, then attempts to cope after the motor quits",
+        "conflict": "The atomic blast weakens and the rocket crashes, stranding him",
+        "outcome": "Disaster"
+      },
+      "erac": null,
+      "reason": "Narrated as a distinct time/place (the flight and crash); has clear Goal, on-stage Action meeting resistance (engine failure/crash) and a Disaster outcome.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 31,
+      "end_par_id": 39,
+      "start_exact": "\"Off I went, bouncing along pretty quickly. Eight hours of daylight\nmeant twenty miles or more.",
+      "end_exact": "nothing\ndangerous, that is.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 6865,
+      "end_char": 8710,
+      "summary": "Jarvis begins the long trek: crossing the dry canal with walking grass, traversing Thyle and descending the cliff to Mare Chronium, camping for the night.",
+      "cohesion": {
+        "time": "First day of the march into evening",
+        "place": "Thyle desert, canal, and edge of Mare Chronium",
+        "characters": [
+          "Jarvis"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Travelogue unified by the day's march; describes landscape and minor incidents (walking grass) without a strong single conflict/outcome, so narrative_scene.",
+      "confidence": 0.62
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 40,
+      "end_par_id": 57,
+      "start_exact": "\"Did you?\" queried Harrison.",
+      "end_exact": "the thing came\nover and we were pals.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 8712,
+      "end_char": 11751,
+      "summary": "Jarvis hears a racket, finds the bird-like Tweel being devoured by a tentacled creature, shoots the attacker to rescue Tweel, and the two become friends.",
+      "cohesion": {
+        "time": "That evening/night at the Mare Chronium camp",
+        "place": "Base of Thyle cliff, Mare Chronium",
+        "characters": [
+          "Jarvis",
+          "Tweel"
+        ]
+      },
+      "gacd": {
+        "goal": "Investigate the noise and decide whether to intervene",
+        "action": "Fires his automatic into the rope-armed creature attacking Tweel",
+        "conflict": "The tentacled monster is attacking the intelligent bird-creature",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "New on-stage encounter with clear Goal, Action (shooting), Conflict (the monster) and successful Outcome (rescue, friendship).",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "narrative_scene",
+      "start_par_id": 58,
+      "end_par_id": 78,
+      "start_exact": "\"By that time, the sun was pretty low and I knew that I'd better build a\nfire or get into my thermo-skin.",
+      "end_exact": "add to the bump I acquired during the crash of my\nrocket.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 11753,
+      "end_char": 17812,
+      "summary": "By the campfire Jarvis attempts communication with Tweel via names, math, and an astronomy diagram, discovering their minds differ, then sleeps and gets frostbite.",
+      "cohesion": {
+        "time": "Evening into night at the camp",
+        "place": "Campfire at base of Thyle cliff, Mare Chronium",
+        "characters": [
+          "Jarvis",
+          "Tweel"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Extended same-place communication attempt; exploratory rather than a conflict with disaster/success, so narrative_scene.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "narrative_scene",
+      "start_par_id": 79,
+      "end_par_id": 100,
+      "start_exact": "\"I don't know what Tweel made of my sleeping. He sat around, but when I\nwoke up, he was gone.",
+      "end_exact": "\"Protective mimicry!\" ejaculated Leroy. \"See? He is desert creature!\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 17814,
+      "end_char": 25533,
+      "summary": "Next days: Tweel joins the trek across Mare Chronium and into Xanthus; a sandstorm and crystal balls; the second rocket passes without spotting Jarvis, disappointing him.",
+      "cohesion": {
+        "time": "Following two days of travel",
+        "place": "Mare Chronium to the Xanthus cliffs",
+        "characters": [
+          "Jarvis",
+          "Tweel"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Continuous travel narrative across multiple days; the missed rocket is a setback but the segment is dominated by descriptive journeying rather than a single GACD structure.",
+      "confidence": 0.55
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 101,
+      "end_par_id": 144,
+      "start_exact": "\"In the morning,\" resumed Jarvis, \"we started off again. We hadn't gone\na hundred yards into Xanthus",
+      "end_exact": "\"Tell me!\" begged Leroy. \"I must go see!\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 25535,
+      "end_char": 34183,
+      "summary": "Jarvis and Tweel trail a line of pyramids to the silicon pyramid-monster, investigate it, deduce it is silicon-based immortal life, and Tweel conveys its non-intelligence.",
+      "cohesion": {
+        "time": "Next morning through afternoon",
+        "place": "Xanthus desert",
+        "characters": [
+          "Jarvis",
+          "Tweel"
+        ]
+      },
+      "gacd": {
+        "goal": "Understand the mysterious line of pyramids and their builder",
+        "action": "They trail the pyramids, draw weapons, and approach the emerging creature to examine it",
+        "conflict": "The unknown, potentially dangerous armored creature emerging from the capped pyramid",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "New day/place with investigative Goal, on-stage Action (approaching the creature, weapons drawn) and resolution (understanding it), giving a scene with mild conflict and success.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 8,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 145,
+      "end_par_id": 176,
+      "start_exact": "\"Not _this_ devil!\" He paused again. \"Well,\" he resumed, \"Tweel and I\nleft the pyramid creature",
+      "end_exact": "even, by patience and concentration, the exchange of\nideas.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 34185,
+      "end_char": 40994,
+      "summary": "Crossing Xanthus toward a canal, Jarvis is lured by a vision of Fancy Long; Tweel restrains him and destroys the dream-beast, revealing it preys on longing.",
+      "cohesion": {
+        "time": "Later that afternoon",
+        "place": "Xanthus, approaching the canal",
+        "characters": [
+          "Jarvis",
+          "Tweel"
+        ]
+      },
+      "gacd": {
+        "goal": "Reach the canal (and, unwittingly, the vision of Fancy Long)",
+        "action": "Jarvis rushes toward the illusion; Tweel seizes him and shoots the creature",
+        "conflict": "The dream-beast hypnotically lures Jarvis to his death",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Distinct dramatic episode with a life-threatening Conflict (dream-beast), on-stage Action (Tweel's rescue) and a Success outcome (danger destroyed).",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 9,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 177,
+      "end_par_id": 226,
+      "start_exact": "\"Well,\" he continued, \"we left the dream-beast dying, dragging itself\nback into its hole",
+      "end_exact": "He'd gone, and damn it! I wish--I wish he hadn't!\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 40996,
+      "end_char": 56327,
+      "summary": "At the mud-city, Jarvis meets the barrel-creatures, explores their labyrinth, gets lost, finds a healing crystal, and they are attacked; Putz's rocket rescues them and Tweel departs.",
+      "cohesion": {
+        "time": "Late afternoon into nightfall",
+        "place": "Barrel-creatures' mound city along the canal, Xanthus",
+        "characters": [
+          "Jarvis",
+          "Tweel",
+          "Putz"
+        ]
+      },
+      "gacd": {
+        "goal": "Investigate the mud-city and escape it alive",
+        "action": "They enter the labyrinth, examine the crystal, then fight off the attacking barrel-beasts",
+        "conflict": "Getting lost in the maze and being cornered and assaulted with darts by the barrel-creatures",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Large but time/place-continuous action climax with clear Goal, sustained Conflict (labyrinth and attack) and Success outcome (rescue by Putz). Kept as one coarse segment.",
+      "confidence": 0.66
+    },
+    {
+      "segment_id": 10,
+      "segment_type": "narrative_scene",
+      "start_par_id": 227,
+      "end_par_id": 231,
+      "start_exact": "The four men of the _Ares_ were silent--even the sardonic Harrison.",
+      "end_exact": "\"Here it is.\"",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 56329,
+      "end_char": 56753,
+      "summary": "Back aboard the Ares, the crew reacts to Jarvis's tale; he produces the healing crystal that started the final fight.",
+      "cohesion": {
+        "time": "Present, after the tale",
+        "place": "General quarters of the Ares",
+        "characters": [
+          "Jarvis",
+          "Harrison",
+          "Leroy",
+          "Putz"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Returns to the framing time/place; brief reaction and closing beat without GACD/ERAC structure, so narrative_scene.",
+      "confidence": 0.7
+    }
+  ],
+  "segment_count": 10,
+  "model": "claude-opus-4-8"
+}

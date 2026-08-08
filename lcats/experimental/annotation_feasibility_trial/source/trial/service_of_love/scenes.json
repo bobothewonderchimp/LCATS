@@ -1,0 +1,160 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "other",
+      "start_par_id": 1,
+      "end_par_id": 2,
+      "start_exact": "When one loves one\u2019s Art no service seems too hard.",
+      "end_exact": "and a feat in story-telling somewhat older than the great wall of China.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1,
+      "end_char": 284,
+      "summary": "Epigraph and authorial meta-commentary framing the story's premise about loving one's Art.",
+      "cohesion": {
+        "time": "N/A (framing)",
+        "place": "N/A",
+        "characters": [
+          "narrator"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Non-narrative framing/meta-commentary; no scene, so labeled other.",
+      "confidence": 0.9
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "narrative_scene",
+      "start_par_id": 3,
+      "end_par_id": 11,
+      "start_exact": "Joe Larrabee came out of the post-oak flats of the Middle West pulsing with a\ngenius for pictorial art.",
+      "end_exact": "stuffed olives and cheese\nsandwiches at 11 p.m.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 287,
+      "end_char": 3392,
+      "summary": "Backstory: Joe and Delia's origins, meeting, marriage, and happy flat life studying art and music.",
+      "cohesion": {
+        "time": "Backstory spanning weeks/months",
+        "place": "New York; the little flat",
+        "characters": [
+          "Joe",
+          "Delia"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Summary/backstory narrative unified by the couple's life; no on-stage GACD or ERAC, so narrative_scene.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 12,
+      "end_par_id": 13,
+      "start_exact": "But after a while Art flagged.",
+      "end_exact": "One evening she came\nhome elated.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 3395,
+      "end_char": 3847,
+      "summary": "Money runs out; Delia resolves to give music lessons and goes canvassing, returning elated.",
+      "cohesion": {
+        "time": "After a while; over two or three days",
+        "place": "The flat / around town",
+        "characters": [
+          "Joe",
+          "Delia"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Transitional narrative bridging to the dialogue scene; no clear GACD/ERAC structure, unified by the money problem.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "narrative_scene",
+      "start_par_id": 14,
+      "end_par_id": 22,
+      "start_exact": "\u201cJoe, dear,\u201d she said, gleefully, \u201cI\u2019ve a pupil.",
+      "end_exact": "let\u2019s be thankful for Gen. Pinkney and this veal roast.\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 3850,
+      "end_char": 5806,
+      "summary": "Evening in the flat: Delia announces her pupil Clementina; Joe protests but agrees; they share domestic banter.",
+      "cohesion": {
+        "time": "One evening",
+        "place": "The flat",
+        "characters": [
+          "Joe",
+          "Delia"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Dialogue scene unified by time/place; primarily domestic exchange without strong on-stage conflict/outcome, so narrative_scene.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "narrative_scene",
+      "start_par_id": 23,
+      "end_par_id": 32,
+      "start_exact": "During all of the next week the Larrabees had an early breakfast.",
+      "end_exact": "said Joe. \u201cWhere is the\nolive fork?\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 5809,
+      "end_char": 8036,
+      "summary": "Over a week: routine, then Delia brings home $15 and tales of the Pinkneys; Joe claims to have sold a watercolour.",
+      "cohesion": {
+        "time": "Over the next week; end of week",
+        "place": "The flat",
+        "characters": [
+          "Joe",
+          "Delia"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Narrative of the week's routine plus dialogue exchange of earnings; unified by time/place, no strong GACD/ERAC.",
+      "confidence": 0.58
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 33,
+      "end_par_id": 52,
+      "start_exact": "On the next Saturday evening Joe reached home first.",
+      "end_exact": "just \u2018When one loves.\u2019\u201d",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 8039,
+      "end_char": 11517,
+      "summary": "Saturday evening: Delia arrives with a bandaged hand; Joe probes her story and reveals both have been secretly working at the laundry, exposing the truth.",
+      "cohesion": {
+        "time": "The next Saturday evening",
+        "place": "The flat",
+        "characters": [
+          "Joe",
+          "Delia"
+        ]
+      },
+      "gacd": {
+        "goal": "Joe seeks to uncover the truth behind Delia's injury and her cover story.",
+        "action": "Joe questions Delia persistently about her bandaged hand and her account of the Welsh rabbit incident.",
+        "conflict": "Delia resists with her fabricated story until her lie collides with Joe's own secret knowledge, forcing confession.",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Unified Saturday-evening scene with clear Goal (get truth), Action (questioning), Conflict (Delia's resistance/deception), and Outcome (mutual confession/reconciliation).",
+      "confidence": 0.8
+    }
+  ],
+  "segment_count": 6,
+  "model": "claude-opus-4-8"
+}

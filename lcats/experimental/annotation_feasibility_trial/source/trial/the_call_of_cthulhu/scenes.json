@@ -1,0 +1,252 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "other",
+      "start_par_id": 1,
+      "end_par_id": 6,
+      "start_exact": "The CALL of CTHULHU",
+      "end_exact": "between the ring of bodies and the ring of fire.\" [1]",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 0,
+      "end_char": 737,
+      "summary": "Title, author, transcriber's note, and epigraphs (Blackwood quote and the ring-of-worshipers footnote) preceding the story proper.",
+      "cohesion": {
+        "time": "N/A (front matter)",
+        "place": "N/A",
+        "characters": []
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Non-narrative front matter: title, byline, transcriber note, and epigraphs. No time/place narrative unity; labeled other.",
+      "confidence": 0.95
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "narrative_scene",
+      "start_par_id": 7,
+      "end_par_id": 23,
+      "start_exact": "1. The Horror in Clay.",
+      "end_exact": "known of the older matters mentioned by the professor.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 739,
+      "end_char": 17904,
+      "summary": "Narrator inherits late uncle's papers, finds the Cthulhu box with bas-relief; recounts Wilcox's dream-sculpture, delirium, and the collected dream/press reports.",
+      "cohesion": {
+        "time": "Winter 1926-27 and recounted 1925 events",
+        "place": "Boston/Providence (narrator's study, retrospective)",
+        "characters": [
+          "Narrator (Thurston)",
+          "Professor Angell",
+          "Wilcox"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Section 1 is a unified retrospective account framed by the narrator examining papers; it recounts investigation and evidence without on-stage GACD conflict/outcome or a clear ERAC deliberation. Coarse narrative_scene.",
+      "confidence": 0.7
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "narrative_scene",
+      "start_par_id": 24,
+      "end_par_id": 57,
+      "start_exact": "2. The Tale of Inspector Legrasse.",
+      "end_exact": "akin to the dream-sculpture of young Wilcox.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 17906,
+      "end_char": 40073,
+      "summary": "The second manuscript: Legrasse's 1908 presentation of the idol at the archeological meeting, Webb's Greenland tale, and the 1907 swamp raid on the voodoo cult with the prisoners' cosmic lore.",
+      "cohesion": {
+        "time": "1908 meeting and recounted 1907 raid",
+        "place": "St. Louis meeting / Louisiana swamps (recounted)",
+        "characters": [
+          "Legrasse",
+          "Professor Angell",
+          "Professor Webb",
+          "Castro"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Section 2 is a large embedded retrospective narrative unified as 'the tale of Legrasse.' Though it contains a raid, it is nested reportage, not an on-stage GACD scene for the framing narrator; treated coarsely as narrative_scene.",
+      "confidence": 0.62
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 58,
+      "end_par_id": 63,
+      "start_exact": "That my uncle was excited by the tale of the sculptor I did not",
+      "end_exact": "and wish him all the success his talent promises.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 40075,
+      "end_char": 44332,
+      "summary": "The skeptical narrator travels to Providence to rebuke Wilcox as an imposter, but on-stage conversation convinces him of Wilcox's genuine sincerity, overturning his goal.",
+      "cohesion": {
+        "time": "After studying the manuscript (continuous)",
+        "place": "Wilcox's rooms, Fleur-de-Lys Building, Providence",
+        "characters": [
+          "Narrator",
+          "Wilcox"
+        ]
+      },
+      "gacd": {
+        "goal": "To confront and rebuke Wilcox for imposing on the aged professor.",
+        "action": "Narrator visits, draws Wilcox out and interrogates him about the dreams.",
+        "conflict": "Wilcox's evident sincerity and genuine dreams contradict the narrator's assumption of imposture.",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "A distinct time/place (Wilcox's rooms) with a focal goal (rebuke), on-stage attempt meeting resistance (Wilcox's sincerity), and a clear interim outcome (narrator convinced of honesty). Meets GACD threshold.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 64,
+      "end_par_id": 65,
+      "start_exact": "The matter of the cult still remained to fascinate me, and at times",
+      "end_exact": "as he did remains to be seen, for I have learned much now.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 44334,
+      "end_char": 46124,
+      "summary": "The narrator, still fascinated, visits New Orleans to confirm Legrasse's data, then reflects with growing dread that his uncle's death was murder by the cult.",
+      "cohesion": {
+        "time": "After the Providence visit",
+        "place": "New Orleans / narrator's reflection",
+        "characters": [
+          "Narrator",
+          "Legrasse"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Fascination shifting to fear/suspicion about his uncle's death.",
+        "reason": "Weighs the cult's marine ties and poison-needle methods against his uncle's fall.",
+        "anticipation": "Wonders whether he will die as his uncle did.",
+        "choice": "Resolves he is on the track of a real ancient religion and continues the inquiry."
+      },
+      "reason": "Recovery/reflection segment with emotion, reasoning, and anticipation; logistical travel rather than on-stage conflict. Meets ERAC threshold.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "narrative_scene",
+      "start_par_id": 66,
+      "end_par_id": 86,
+      "start_exact": "3. The Madness from the Sea.",
+      "end_exact": "begun its siege of mankind's soul.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 46126,
+      "end_char": 53704,
+      "summary": "By chance the narrator finds a Sydney Bulletin clipping about the derelict yacht Alert and survivor Johansen; the reprinted news story and his correlation of dates deepen the mystery.",
+      "cohesion": {
+        "time": "Later; chance discovery",
+        "place": "Museum in Paterson, NJ (reading the clipping)",
+        "characters": [
+          "Narrator",
+          "Johansen (via news)"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Section 3 opens with a chance discovery and a long embedded newspaper article plus the narrator's date-correlations; expository/reportage narrative unified by place, lacking on-stage GACD/ERAC. Narrative_scene.",
+      "confidence": 0.63
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "narrative_scene",
+      "start_par_id": 87,
+      "end_par_id": 93,
+      "start_exact": "That evening, after a day of hurried cabling and arranging, I bade my",
+      "end_exact": "began to read it on the London boat.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 53706,
+      "end_char": 57183,
+      "summary": "The narrator travels across the world\u2014Dunedin, Auckland, Sydney, then Oslo\u2014tracking Johansen, only to learn he has died; he obtains Johansen's manuscript from the widow.",
+      "cohesion": {
+        "time": "Over weeks/months of travel",
+        "place": "Dunedin, Auckland, Sydney, Oslo",
+        "characters": [
+          "Narrator",
+          "Johansen's widow"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "A travel/logistics sequence spanning multiple ports with no single on-stage conflict/outcome and no clear deliberative ERAC; unified by the quest journey. Coarse narrative_scene.",
+      "confidence": 0.6
+    },
+    {
+      "segment_id": 8,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 94,
+      "end_par_id": 111,
+      "start_exact": "It was a simple, rambling thing\u2014a naive sailor's effort at a",
+      "end_exact": "if only it could blot out the memories.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 57185,
+      "end_char": 68605,
+      "summary": "Johansen's manuscript: the Emma's crew reach risen R'lyeh, open the great door, release Cthulhu, and Johansen escapes by ramming the pursuing monster with the Alert.",
+      "cohesion": {
+        "time": "1925 voyage (recounted in Johansen's diary)",
+        "place": "The sea and the risen city of R'lyeh",
+        "characters": [
+          "Johansen",
+          "Briden",
+          "the crew",
+          "Cthulhu"
+        ]
+      },
+      "gacd": {
+        "goal": "Johansen and crew explore the risen city, then to survive and escape.",
+        "action": "They land, open the monolithic door, and after Cthulhu emerges, Johansen rams the yacht into the pursuing Thing.",
+        "conflict": "The awakened Cthulhu devours most of the crew and pursues the ship.",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Distinct time/place (R'lyeh voyage) with clear goal, on-stage action, intense conflict (Cthulhu), and outcome (escape). Strong GACD; treated as one coarse dramatic scene.",
+      "confidence": 0.8
+    },
+    {
+      "segment_id": 9,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 112,
+      "end_par_id": 114,
+      "start_exact": "That was the document I read, and now I have placed it in the tin box",
+      "end_exact": "it meets no other eye.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 68607,
+      "end_char": 69993,
+      "summary": "The narrator, having read all, files the record with the papers, reflects on his doomed knowledge, and prays his account is never revealed; ends with the found-among-papers footnote.",
+      "cohesion": {
+        "time": "Present, after reading manuscript",
+        "place": "Narrator's home (Boston)",
+        "characters": [
+          "Narrator (Thurston)"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Dread and despair from having looked upon cosmic horror.",
+        "reason": "Concludes the cult and Cthulhu still live and that he knows too much.",
+        "anticipation": "Believes his life will be short, that he will die as his uncle and Johansen did.",
+        "choice": "Resolves to hide the manuscript and prays his executors keep it unseen."
+      },
+      "reason": "Closing reflection with strong emotion, reasoning, anticipation of death, and a chosen course (concealment); no on-stage conflict/outcome. Meets ERAC threshold. Footnote absorbed at close.",
+      "confidence": 0.7
+    }
+  ],
+  "segment_count": 9,
+  "model": "claude-opus-4-8"
+}

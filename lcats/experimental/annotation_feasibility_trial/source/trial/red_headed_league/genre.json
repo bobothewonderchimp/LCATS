@@ -1,0 +1,22 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/red_headed_league/story.json",
+  "title": "red_headed_league",
+  "author": "Arthur Conan Doyle",
+  "url": "https://www.gutenberg.org/files/1661/1661-h/1661-h.htm",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "mystery",
+  "detected_genre_confidence": 0.98,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "</antml=\"secondary_genre\">",
+  "specials_verdict": "author_intentional",
+  "summary": "Sherlock Holmes investigates the bizarre case of a pawnbroker hired by a mysterious \"Red-Headed League\" to copy the encyclopedia, and deduces that the scheme is a ruse to keep him away from his shop while his assistant, the notorious criminal John Clay, tunnels from the cellar into an adjoining bank vault; Holmes and the police foil the robbery.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 19838,
+  "output_tokens": 382,
+  "backend_model": "claude-opus-4-8"
+}

@@ -1,0 +1,24 @@
+{
+  "file_path": "experimental/annotation_feasibility_trial/source/trial/2_b_r_0_2_b__vonnegut/story.json",
+  "title": "2_b_r_0_2_b__vonnegut",
+  "author": [
+    "Vonnegut, Kurt"
+  ],
+  "url": "https://www.gutenberg.org/cache/epub/21279/pg21279.txt",
+  "target_genre": "",
+  "verdict": "include",
+  "exclude_reason": "",
+  "wellformed": true,
+  "detected_genre": "science fiction",
+  "detected_genre_confidence": 0.95,
+  "genre_verdict": "detected",
+  "genre_suggestion": "",
+  "secondary_genre": "dystopian satire",
+  "specials_verdict": "none",
+  "summary": "In a future utopia where death is voluntary to keep the population stable, a man whose wife has just delivered triplets must find three volunteers to die; unable to face killing his grandfather, he shoots a doctor, a gas-chamber hostess, and himself to make room for his children, leaving a despairing painter to book his own termination.",
+  "issues": [],
+  "error": "",
+  "input_tokens": 7943,
+  "output_tokens": 348,
+  "backend_model": "claude-opus-4-8"
+}

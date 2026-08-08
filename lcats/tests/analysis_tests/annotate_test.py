@@ -165,6 +165,12 @@ class AnnotateStoryTest(unittest.TestCase):
             (bucket_dir / "scenes.json").read_text(encoding="utf-8")
         )
         self.assertEqual(1, scenes_data["segment_count"])
+        # scenes.json carries the same cost-visibility fields genre.json
+        # already does, sourced from JSONPromptExtractor.extract()'s own
+        # "usage" dict rather than left unrecorded (review finding, PR
+        # #253).
+        self.assertIn("input_tokens", scenes_data)
+        self.assertIn("output_tokens", scenes_data)
 
     def test_writes_readme_summarizing_sidecars(self):
         story_path = _write_story(

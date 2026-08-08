@@ -1,0 +1,268 @@
+{
+  "segments": [
+    {
+      "segment_id": 1,
+      "segment_type": "other",
+      "start_par_id": 1,
+      "end_par_id": 1,
+      "start_exact": "On glancing over my\nnotes of the seventy odd cases in which I have during the last eight years",
+      "end_exact": "which tend\nto make the matter even more terrible than the truth.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1,
+      "end_char": 1230,
+      "summary": "Watson's framing preamble introducing the memoir and the singular Roylott case.",
+      "cohesion": {
+        "time": "Retrospective/framing",
+        "place": "N/A (narrator commentary)",
+        "characters": [
+          "Watson",
+          "Holmes"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Non-narrative framing/meta-commentary establishing the story; no scene with time/place unity or GACD/ERAC.",
+      "confidence": 0.9
+    },
+    {
+      "segment_id": 2,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 2,
+      "end_par_id": 113,
+      "start_exact": "It was early in April in the year \n83 that I woke one morning to find\nSherlock Holmes standing",
+      "end_exact": "walk down to Doctors\\some data which may help us in this matter.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 1232,
+      "end_char": 25790,
+      "summary": "Morning at Baker Street: Helen Stoner recounts her sister's mysterious death and her own fears; Roylott bursts in and threatens Holmes.",
+      "cohesion": {
+        "time": "Early morning, April 1883",
+        "place": "Baker Street sitting-room",
+        "characters": [
+          "Holmes",
+          "Watson",
+          "Helen Stoner",
+          "Dr. Roylott"
+        ]
+      },
+      "gacd": {
+        "goal": "Holmes seeks to understand Helen's case and take it on",
+        "action": "He questions Helen, extracts details, and faces Roylott's intimidation",
+        "conflict": "Roylott storms in, threatens Holmes and bends the poker to warn him off",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Continuous scene in one time/place (Baker Street morning) with a clear goal (grasp the mystery) meeting on-stage conflict (Roylott's threat); ends as Holmes leaves for Doctors' Commons.",
+      "confidence": 0.85
+    },
+    {
+      "segment_id": 3,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 114,
+      "end_par_id": 115,
+      "start_exact": "It was nearly one o\nclock when Sherlock Holmes returned from his\nexcursion.",
+      "end_exact": "all that we need.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 25792,
+      "end_char": 27101,
+      "summary": "Holmes returns with the will's details, deduces Roylott's motive, and resolves to travel to Stoke Moran armed.",
+      "cohesion": {
+        "time": "Nearly one o'clock, same day",
+        "place": "Baker Street",
+        "characters": [
+          "Holmes",
+          "Watson"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Grave seriousness ('too serious for dawdling')",
+        "reason": "Analyzes the will proving Roylott's financial motive to prevent marriage",
+        "anticipation": "Anticipates danger from a man who twists pokers",
+        "choice": "Decides to go to Waterloo and bring the revolver"
+      },
+      "reason": "Recovery/reasoning about new data leading to a clear decision (travel, bring revolver); no on-stage conflict, matching ERAC.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 4,
+      "segment_type": "narrative_scene",
+      "start_par_id": 116,
+      "end_par_id": 131,
+      "start_exact": "At Waterloo we were fortunate in catching a train for Leatherhead",
+      "end_exact": "kindly take us at once\nto the rooms which we are to examine.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 27105,
+      "end_char": 30013,
+      "summary": "Journey to Surrey; they spot Stoke Moran, meet Miss Stoner, learn Roylott followed her, and prepare to examine the rooms.",
+      "cohesion": {
+        "time": "Afternoon, same day",
+        "place": "Surrey lanes / grounds of Stoke Moran",
+        "characters": [
+          "Holmes",
+          "Watson",
+          "Miss Stoner",
+          "driver"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Travel and arrival unified by time/place; logistical movement and dialogue without on-stage conflict or a decisive GACD/ERAC structure.",
+      "confidence": 0.62
+    },
+    {
+      "segment_id": 5,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 132,
+      "end_par_id": 172,
+      "start_exact": "The building was of grey, lichen-blotched stone, with a high central portion",
+      "end_exact": "with your permission we shall\nwalk out upon the lawn.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 30017,
+      "end_char": 36940,
+      "summary": "Holmes examines the rooms, uncovering the dummy bell-rope, non-ventilating ventilator, clamped bed, saucer of milk, and looped whipcord.",
+      "cohesion": {
+        "time": "Afternoon, same day",
+        "place": "Stoke Moran bedrooms",
+        "characters": [
+          "Holmes",
+          "Watson",
+          "Miss Stoner"
+        ]
+      },
+      "gacd": {
+        "goal": "Holmes aims to find how Julia died and the threat to Helen",
+        "action": "He minutely inspects the rooms and tests his shutter theory",
+        "conflict": "The shutters resist his theory, but clues (bell-rope, bed, milk, lash) yield the truth",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Investigation with goal, hands-on action, resistance (shutters defeat first theory) and successful discovery of key clues, all in one time/place.",
+      "confidence": 0.8
+    },
+    {
+      "segment_id": 6,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 173,
+      "end_par_id": 194,
+      "start_exact": "I had never seen my friend\ns face so grim or his brow so dark",
+      "end_exact": "we shall soon\ndrive away the dangers that threaten you.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 36943,
+      "end_char": 39214,
+      "summary": "On the lawn Holmes, grim, lays out his plan for Miss Stoner to signal them and vacate her room while they keep the night vigil.",
+      "cohesion": {
+        "time": "Late afternoon, same day",
+        "place": "Lawn at Stoke Moran",
+        "characters": [
+          "Holmes",
+          "Watson",
+          "Miss Stoner"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Holmes's grim, dark expression",
+        "reason": "The matter is too serious; her life may depend on compliance",
+        "anticipation": "Foresees danger in the night to come",
+        "choice": "Decides they must spend the night in her room and instructs her plan"
+      },
+      "reason": "Reaction (grim reverie) plus deliberation and a firm decision on the night's plan; no on-stage conflict, fits ERAC.",
+      "confidence": 0.72
+    },
+    {
+      "segment_id": 7,
+      "segment_type": "dramatic_sequel",
+      "start_par_id": 195,
+      "end_par_id": 218,
+      "start_exact": "Sherlock Holmes and I had no difficulty in engaging a bedroom and sitting-room",
+      "end_exact": "turn our minds for a few hours to something more\ncheerful.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 39218,
+      "end_char": 42351,
+      "summary": "At the Crown Inn, Holmes explains his deductions about the ventilator, bell-rope and clamped bed, revealing the impending crime.",
+      "cohesion": {
+        "time": "Dusk to evening, same day",
+        "place": "Crown Inn",
+        "characters": [
+          "Holmes",
+          "Watson"
+        ]
+      },
+      "gacd": null,
+      "erac": {
+        "emotion": "Scruples about Watson's danger; tension of anticipation",
+        "reason": "Explains reasoning behind ventilator, cord, and clamped bed",
+        "anticipation": "Warns of horrors before the night is over",
+        "choice": "Commits to the vigil and prepares mentally"
+      },
+      "reason": "Reflection and explanation of deductions with anticipation of coming danger; no on-stage conflict here, matching ERAC.",
+      "confidence": 0.68
+    },
+    {
+      "segment_id": 8,
+      "segment_type": "dramatic_scene",
+      "start_par_id": 219,
+      "end_par_id": 246,
+      "start_exact": "About nine o\nclock the light among the trees was extinguished",
+      "end_exact": "threw it into the iron safe,\nwhich he closed upon it.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 42354,
+      "end_char": 49306,
+      "summary": "The night vigil in Julia's room: Holmes lashes at the ventilator, the swamp adder recoils and kills Roylott; they find him dead with the speckled band.",
+      "cohesion": {
+        "time": "Night into early morning",
+        "place": "Stoke Moran (bedroom and Roylott's room)",
+        "characters": [
+          "Holmes",
+          "Watson",
+          "Dr. Roylott"
+        ]
+      },
+      "gacd": {
+        "goal": "Catch and thwart the murderous device threatening Miss Stoner",
+        "action": "Holmes attacks the snake with his cane when it descends",
+        "conflict": "Deadly confrontation with the swamp adder in darkness",
+        "outcome": "Success"
+      },
+      "erac": null,
+      "reason": "Climactic scene with clear goal, on-stage action against the snake, life-threatening conflict, and decisive outcome (Roylott's death) in one continuous night setting.",
+      "confidence": 0.9
+    },
+    {
+      "segment_id": 9,
+      "segment_type": "narrative_scene",
+      "start_par_id": 247,
+      "end_par_id": 251,
+      "start_exact": "Such are the true facts of the death of Dr. Grimesby Roylott, of Stoke Moran.",
+      "end_exact": "I cannot say\nthat it is likely to weigh very heavily upon my conscience.",
+      "start_prefix": "",
+      "end_suffix": "",
+      "start_char": 49309,
+      "end_char": 53156,
+      "summary": "Denouement: aftermath summarized and Holmes explains, on the return journey, his full reasoning and his role in Roylott's death.",
+      "cohesion": {
+        "time": "Next day (return journey)",
+        "place": "Train back to London",
+        "characters": [
+          "Holmes",
+          "Watson"
+        ]
+      },
+      "gacd": null,
+      "erac": null,
+      "reason": "Explanatory wrap-up and retrospective narration; unified as an epilogue but lacks on-stage conflict or a decision-driven ERAC, so narrative_scene.",
+      "confidence": 0.7
+    }
+  ],
+  "segment_count": 9,
+  "model": "claude-opus-4-8"
+}
