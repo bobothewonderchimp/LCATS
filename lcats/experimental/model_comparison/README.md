@@ -31,8 +31,8 @@ model_comparison/
   openai_gpt55/                   - OpenAI online (gpt-5.5, OpenAIBackend) - WI-LLM-0056; surfaced a real ENTITY_TOOL_SCHEMA bug, see its README
   ollama_gpt_oss_20b/             - OpenAI offline (gpt-oss:20b via Ollama, OpenAIBackend+base_url) - WI-LLM-0056
   gemini_flash/                   - Gemini online (gemini-3.5-flash via Google's OpenAI-compat endpoint) - WI-LLM-0056; real tool_choice incompatibility found, see its README
-  ollama_gemma4_12b/              - Gemma offline (gemma4:12b via Ollama, OpenAIBackend+base_url) - WI-LLM-0056, pending network to pull the model
-  ollama_deepseek_r1_14b/         - second open-weight family, offline (deepseek-r1:14b via Ollama, OpenAIBackend+base_url) - WI-LLM-0056, pending network to pull the model
+  ollama_gemma4_12b/              - Gemma offline (gemma4:12b via Ollama, OpenAIBackend+base_url) - WI-LLM-0056; real tool_choice failure found (2/2), see its README
+  ollama_deepseek_r1_14b/         - second open-weight family, offline (deepseek-r1:14b via Ollama, OpenAIBackend+base_url) - WI-LLM-0056; real tool_choice failure found (2/2), see its README
   ollama_qwen3_8b/                - local "cheap tier" candidate (qwen3:8b via Ollama, OpenAIBackend+base_url)
   ollama_qwen3_30b_a3b/           - local "quality tier" MoE candidate (qwen3:30b-a3b via Ollama, OpenAIBackend+base_url)
   <new_candidate>/                - add more by copying an existing candidate's shape
@@ -121,13 +121,37 @@ for the full write-up):
 | OpenAI online | `openai_gpt55` | Blocked, then a **real bug** - `ENTITY_TOOL_SCHEMA`'s `mentions` sub-schema is missing `grammatical_role` from its own `required` array; OpenAI's strict validator rejects it, Anthropic's does not enforce the same completeness rule |
 | OpenAI offline | `ollama_gpt_oss_20b` | Success (2/2), fast (35-38s) - one run matched `anthropic_opus`'s exact entity count |
 | Gemini online | `gemini_flash` | Failed consistently (2/2) - Gemini's own function-call filter rejects `ENTITY_TOOL_SCHEMA` as malformed, independent of the `strict` flag; a real compat-layer incompatibility, not a wiring bug |
-| Gemma offline | `ollama_gemma4_12b` | Pending - model pull interrupted by network conditions, not yet run |
-| Second open-weight family (offline) | `ollama_deepseek_r1_14b` | Pending - the WI's originally-named DeepSeek V4/GLM-5.2 turned out to be Ollama-cloud-only (no locally-runnable tag); substituted `deepseek-r1:14b` as the real, locally-runnable candidate. Model pull interrupted by network conditions, not yet run |
+| Gemma offline | `ollama_gemma4_12b` | Failed consistently (2/2) - `tool_choice` never invoked despite schema-shaped free text, slowest candidate in this tranche (310-544s) |
+| Second open-weight family (offline) | `ollama_deepseek_r1_14b` | Failed consistently (2/2) - the WI's originally-named DeepSeek V4/GLM-5.2 turned out to be Ollama-cloud-only (no locally-runnable tag); substituted `deepseek-r1:14b`. `tool_choice` never invoked; unlike `gemma4:12b`, responded in plain prose rather than JSON-shaped text |
 
 Anthropic offline was never in scope (Anthropic has no open-weight
 release - a vendor-policy fact, not a gap this tranche could close), and
 `gpt-oss-120b` was explicitly deferred to non-Mac hardware per the WI's
 own scope (~52-73GB footprint exceeds this session's 32GB Mac).
+
+**Two distinct patterns beyond any single candidate - not one (review
+finding, PR #273):** an earlier draft of this section conflated 3
+failing cells into a single "tool_choice gap," but the committed evidence
+shows two genuinely different failure mechanisms, not one:
+
+- **Silent ignore (`ollama_gemma4_12b`, `ollama_deepseek_r1_14b`):**
+  `finish_reason='stop'`, real free-text content (JSON-shaped for
+  `gemma4:12b`, plain prose for `deepseek-r1:14b`) - the model never
+  attempts the forced tool call at all. This is the same mechanism
+  `WI-LLM-0051` already characterized on the segmentation stage, now
+  reproduced on entity extraction across 2 different local Ollama models.
+- **Active filter rejection (`gemini_flash` only):** `finish_reason`
+  literally contains `'function_call_filter: MALFORMED_FUNCTION_CALL'`
+  and `content` is empty (`''`) - Gemini's own compat-layer *did*
+  attempt a function call and its internal filter rejected it as
+  malformed. This is a provider-side validation rejection, not a model
+  silently ignoring `tool_choice`, and reproduces identically whether or
+  not `strict` is set (see `gemini_flash/README.md`).
+
+Both patterns are real and both recur on entity extraction, not just
+segmentation - but they likely have different root causes and would need
+different fixes, so a follow-up investigation should treat them as two
+separate questions, not one combined "tool_choice gap."
 
 ## Research context (no download/execution - see individual candidates for real runs)
 
