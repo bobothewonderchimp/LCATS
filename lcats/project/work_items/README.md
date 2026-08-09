@@ -23,7 +23,6 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `proposed/WI-RELEASE-0039.md` — Pre-launch verification of the gutenbergpy dependency resolution before real PyPI publish
 - `proposed/WI-STORY-0042.md` — Make LCATS story discovery and identity dual-layout-compatible
 - `proposed/WI-LLM-0055.md` — Capture full entity lists and diff them across benchmark candidates
-- `proposed/WI-LLM-0056.md` — Tranche 1: expand the benchmark harness to cross-provider coverage (Anthropic, OpenAI, Gemini, one open-weight family); 4/6 cells landed for real (PR #270), 2 pending on network (Gemma, second open-weight family)
 - `proposed/WI-ANNOTATE-0052.md` — Validate sidecar content in lcats promote's release gate
 - `proposed/WI-ANNOTATE-0054.md` — Run lcats annotate over a per-genre subset and collect statistics
 
@@ -32,6 +31,7 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `abandoned/WI-ANNOTATE-0053.md` — superseded by `WI-STATS-0049`, which landed the identical `lcats stats` selector fix independently
 
 ## Resolved Items
+- `resolved/WI-LLM-0056.md` — Tranche 1: expand the benchmark harness to cross-provider coverage; all 6 cells landed with real evidence (3 succeeded, 3 documented failures revealing two distinct tool_choice failure mechanisms)
 - `resolved/WI-LLM-0058.md` — Fix ASSESSMENT_TOOL secondary_genre schema-adjacent field corruption (39% combined rate across two real runs); sanitized via a new non-fatal AssessmentResult.secondary_genre_sanitized flag, checkpoint-version bumps across all 3 assess_story() callers, GO recommendation for WI-ASSESS-0051's --full run
 - `resolved/WI-LLM-0051.md` — Investigate Ollama's forced tool_choice reliability; 0/5 baseline success, but a system-prompt reminder retry helps (2/5, 40%) - implemented as an automatic retry in the harness
 - `resolved/WI-LLM-0050.md` — Extend the local-model benchmark harness to genre-detection and segmentation stages; genre detection hybrid-viable (2/2), segmentation not (2/2 tool_choice failures)

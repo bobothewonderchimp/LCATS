@@ -2,10 +2,10 @@
 execution_id: 2026_08_09_06_08_48_WI_LLM_0056_TRANCHE1_COMPLETE
 prompt_id: PROMPT(WI-LLM-0056:WI_LLM_0056_TRANCHE1_COMPLETE)[2026-08-09T06:08:39+00:00]
 work_item: WI-LLM-0056
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/273
-commit: c3174191f25d02122f173ac162c6fb16a982e8e1
+commit: 551c6ea9c7c11d746402ebcec7cb41e6e231adee
 created_at: 2026-08-09T06:08:48+00:00
 agent: claude_app
 instruction_source: project/work_items/proposed/WI-LLM-0056.md
@@ -28,9 +28,12 @@ candidate twice (per this session's decision-grade-evidence standard for
 stochastic LLM calls) via a real live local Ollama server:
 
 - `ollama_gemma4_12b`: **failed 2/2** - `tool_choice` never invoked
-  (`error_type=no_tool_call`) despite well-formed, schema-shaped JSON
-  free text in both responses. Slowest candidate across this entire
-  tranche (310.1s/544.1s, 4208/7528 output tokens).
+  (`error_type=no_tool_call`); both responses' free text visibly begins
+  a schema-shaped JSON object, but the committed evidence is truncated
+  at 2000 chars and cuts off mid-object, so full-response
+  well-formedness/completeness is not established (see the correction
+  below). Slowest candidate across this entire tranche (310.1s/544.1s,
+  4208/7528 output tokens).
 - `ollama_deepseek_r1_14b`: **failed 2/2** - `tool_choice` never invoked;
   unlike `gemma4:12b`'s JSON-shaped output, both responses were plain
   prose (a numbered entity list), a distinct failure signature. Faster
@@ -38,11 +41,21 @@ stochastic LLM calls) via a real live local Ollama server:
 
 Both failures reproduce the exact `tool_choice`-silently-ignored gap
 `WI-LLM-0051` characterized on the segmentation stage - now confirmed on
-entity extraction too, across 2 different local Ollama models. The
-initial draft of this commit described this as one combined "3-provider
+entity extraction too, across 2 different local Ollama models.
+
+The automatic first-push review on this PR (Codex) caught two real
+issues in the initial draft, both fixed before merge. First: the initial
+`ollama_gemma4_12b/README.md` (and this record's own text above)
+described both responses' free text as "a well-formed, schema-shaped
+JSON object" - verified against the committed `results_run*.json` files
+that both are truncated at 2000 chars and cut off mid-object, so only the
+visible prefix is confirmed schema-shaped, not the full response.
+Corrected both the README and this record.
+
+Second: the initial draft described this as one combined "3-provider
 tool_choice pattern" together with `gemini_flash`'s failure (landed in
-PR #270). The automatic first-push review on this PR (Codex) correctly
-caught that this conflates two genuinely different failure mechanisms:
+PR #270). The same review correctly caught that this conflates two
+genuinely different failure mechanisms:
 `gemma4:12b`/`deepseek-r1:14b` silently ignore `tool_choice` and return
 free text (`finish_reason='stop'`), while `gemini_flash`'s own compat
 layer *attempts* the call and its internal filter actively rejects it
