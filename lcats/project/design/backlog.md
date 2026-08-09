@@ -385,7 +385,7 @@ wants to press on it.
 
 ## Other known gaps worth following up on
 
-### Malformed-item guards check each item's type but never the container's, exploding into thousands of bogus errors on a non-list field — P1, in progress
+### Malformed-item guards check each item's type but never the container's, exploding into thousands of bogus errors on a non-list field — P1, resolved
 
 Surfaced 2026-08-04, same re-run (against `mass_quantities/calling_the_empress__smith` or its predecessor in the pipeline - the terminal was mid-scrollback when this was noticed): a single story's discourse extraction produced **1300+ separate "speech_acts[N] is not an object (got str): '<single character>'" errors**, one per character of what was clearly a real, long natural-language string (readable prose about "the Sickness on Earth", "wanted to know the truth", etc.) - not a list of speech-act objects at all.
 
@@ -401,10 +401,9 @@ Compounding consequence: `run_pilot.py:1100`'s `row["exclude_reason"] = "; ".joi
 
 **Open question, not yet answered:** `DISCOURSE_TOOL_SCHEMA` declares `speech_acts` as `"type": "array"` and goes through `strict_tool_schema()` (`discourse_extractor.py:18`) - `strict: true` is supposed to guarantee schema-valid output via grammar-constrained sampling (see that function's own docstring). A real string value coming back for a `strict: true`-constrained array field is surprising and worth understanding before assuming a quick fix covers it - either this is a genuine (rare, extreme-output-length?) violation of Anthropic's own strict-mode guarantee, or something upstream in our own tool-result handling is misassigning a value to this key. Needs investigation, not just the defensive fix below.
 
-**In progress 2026-08-09:** [WI-EVENT-0061](https://github.com/xenotaur/LCATS/pull/268)
-(scoping PR, merged) is being implemented; this entry will be marked
-resolved once the implementation PR itself merges, not before. A new
-`schema.coerce_list_field()` helper
+**Resolved 2026-08-09:** scoped via [PR #268](https://github.com/xenotaur/LCATS/pull/268)
+and implemented via [PR #274](https://github.com/xenotaur/LCATS/pull/274)
+(commit `4a5a3c60`). A new `schema.coerce_list_field()` helper
 (mirroring `describe_malformed_item()`'s existing per-item pattern)
 centralizes the container-type check across all 12 call sites -
 `entity_extractor.py` (2), `event_extractor.py` (4),
@@ -416,11 +415,20 @@ produces exactly one `f"{field} is not an array (got {type(value).__name__})"`
 error instead of being iterated character-by-character.
 `run_pilot.py`'s printed `exclude_reason` is capped via a new
 `_capped_exclude_reason()` helper (truncating with a "...N more errors"
-suffix); the stored/persisted row value itself remains uncapped. The
-open question above (whether `strict: true` should have prevented a
-non-array value from reaching this code) was deliberately left
-unaddressed, per the WI's own Non-Goals - this fix handles the failure
-mode defensively, regardless of its ultimate cause.
+suffix, or "(truncated)" when no sibling error was actually omitted);
+the stored/persisted row value itself remains uncapped. A first-push
+review round (Codex + Copilot) caught two further real gaps in the
+first implementation cut, both fixed before merge: `coerce_list_field()`
+originally used `if not value`, which silently passed a falsy-but-present
+non-list value (`""`, `0`, `False`, `{}`) with no recorded error -
+narrowed to `if value is None`; and `_capped_exclude_reason()`'s
+`max(total - shown, 1)` floor fabricated a "...1 more error" claim when
+the char-count cutoff fell inside the last joined segment rather than
+before a real segment boundary. The open question above (whether
+`strict: true` should have prevented a non-array value from reaching
+this code) was deliberately left unaddressed, per the WI's own
+Non-Goals - this fix handles the failure mode defensively, regardless
+of its ultimate cause.
 
 ### `pilot_usage.jsonl` doesn't track genre-detect or segmentation cost at all — P2, real cost-visibility gap
 
