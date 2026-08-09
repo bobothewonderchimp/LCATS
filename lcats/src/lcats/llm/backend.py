@@ -75,6 +75,16 @@ class BackendResponse:
         model: Exact model string echoed back by the provider's API response.
         input_tokens: Number of input/prompt tokens reported by the API.
         output_tokens: Number of output/completion tokens reported by the API.
+        cache_creation_input_tokens: Input tokens used to write a new prompt
+            cache entry, when the backend supports and enabled caching for
+            this call. None when the backend/call doesn't report this (e.g.
+            caching not in use, or the provider omits the field entirely).
+        cache_read_input_tokens: Input tokens served from an existing prompt
+            cache entry (a cache hit), when the backend supports and enabled
+            caching for this call. None under the same conditions as
+            cache_creation_input_tokens. A real, present value of 0 (as
+            opposed to None) is a genuine cache miss, not evidence caching
+            wasn't attempted (WI-PILOT-0057).
         raw: The raw, provider-specific SDK response object, for debugging.
     """
 
@@ -83,6 +93,8 @@ class BackendResponse:
     model: str
     input_tokens: int
     output_tokens: int
+    cache_creation_input_tokens: Optional[int] = None
+    cache_read_input_tokens: Optional[int] = None
     raw: Any = dataclasses.field(repr=False, default=None)
 
 
