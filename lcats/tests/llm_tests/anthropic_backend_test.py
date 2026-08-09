@@ -296,11 +296,45 @@ class TestAnthropicBackend(unittest.TestCase):
         self.assertEqual(result.input_tokens, 13)
         self.assertEqual(result.output_tokens, 29)
 
-    def test_cache_fields_default_none_when_absent_from_usage(self):
+    def test_cache_fields_none_when_present_but_null_on_usage(self):
         """cache_creation_input_tokens/cache_read_input_tokens are None
-        when the API response doesn't report them (caching not in use) -
-        WI-PILOT-0057."""
+        when the API response reports them as null (caching not in use
+        for this call) - WI-PILOT-0057. This exercises attribute
+        access, not the getattr() fallback - see
+        test_cache_fields_default_none_when_the_sdk_omits_the_attribute_entirely
+        for the case where the SDK's Usage object doesn't even have
+        these attributes (e.g. an older installed SDK version)."""
         stub_client = _StubAnthropicClient(_make_message(text="ok"))
+        with patch("anthropic.Anthropic", return_value=stub_client):
+            backend_under_test = anthropic_backend.AnthropicBackend()
+            result = backend_under_test.complete(
+                system="sys",
+                messages=[{"role": "user", "content": "hi"}],
+                model="claude-opus-4-8",
+            )
+        self.assertIsNone(result.cache_creation_input_tokens)
+        self.assertIsNone(result.cache_read_input_tokens)
+
+    def test_cache_fields_default_none_when_the_sdk_omits_the_attribute_entirely(self):
+        """AnthropicBackend.complete() reads these fields via
+        getattr(usage, "...", None) specifically so an older installed
+        SDK whose Usage object doesn't define these attributes at all
+        (not merely sets them to None) still returns None rather than
+        raising AttributeError - review finding, PR #271: the existing
+        test only covered "present but null", never true absence, so it
+        could not have caught a regression to a bare
+        usage.cache_creation_input_tokens attribute access."""
+        usage_without_cache_fields = types.SimpleNamespace(
+            input_tokens=5, output_tokens=7
+        )
+        message_without_cache_fields = types.SimpleNamespace(
+            content=[types.SimpleNamespace(type="text", text="ok")],
+            usage=usage_without_cache_fields,
+            model="claude-opus-4-8",
+            stop_reason="end_turn",
+        )
+        self.assertFalse(hasattr(usage_without_cache_fields, "cache_read_input_tokens"))
+        stub_client = _StubAnthropicClient(message_without_cache_fields)
         with patch("anthropic.Anthropic", return_value=stub_client):
             backend_under_test = anthropic_backend.AnthropicBackend()
             result = backend_under_test.complete(

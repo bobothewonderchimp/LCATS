@@ -132,15 +132,53 @@ class _DryRunFakeBackend:
         )
 
 
+# Verified 2026-08-09 against platform.claude.com/docs/en/about-claude/pricing
+# ("Model pricing" and "Prompt caching" tables). $/MTok. Cache-write uses the
+# 5-minute-TTL multiplier (1.25x base input) - this script never sets a
+# non-default `ttl` on CacheControlEphemeralParam (see anthropic_backend.py),
+# so every real cache write here is a 5-minute write, never the 1-hour rate.
+_MODEL_PRICING_PER_MTOK: Dict[str, Dict[str, float]] = {
+    "claude-opus-4-8": {
+        "input": 5.0,
+        "output": 25.0,
+        "cache_write": 5.0 * 1.25,
+        "cache_read": 5.0 * 0.1,
+    },
+}
+
+
+def _compute_cost_usd(run_totals: Dict[str, int], model: str) -> Optional[float]:
+    """Real measured cost in USD for one comparison arm's totals, per
+    Anthropic's published per-model pricing - not just a raw token sum,
+    since input/output/cache-write/cache-read are billed at different
+    rates (WI-PILOT-0057, review finding). Returns None for a model this
+    script doesn't have verified pricing for, rather than guessing."""
+    pricing = _MODEL_PRICING_PER_MTOK.get(model)
+    if pricing is None:
+        return None
+    return (
+        run_totals["total_input_tokens"] * pricing["input"]
+        + run_totals["total_output_tokens"] * pricing["output"]
+        + run_totals["total_cache_creation_input_tokens"] * pricing["cache_write"]
+        + run_totals["total_cache_read_input_tokens"] * pricing["cache_read"]
+    ) / 1_000_000
+
+
 def _fixtures_dir() -> pathlib.Path:
     return pathlib.Path(__file__).resolve().parent / "fixtures"
 
 
-def _fixture_stories() -> List[pathlib.Path]:
+def _fixture_stories(fixtures_dir: Optional[pathlib.Path] = None) -> List[pathlib.Path]:
     """The WI-PILOT-0051 fixture set's committed stories, in a fixed,
     reproducible order (sorted by name) - not the manifest file, which
-    also carries genre labels this measurement doesn't need."""
-    return sorted(_fixtures_dir().glob("*/story.json"))
+    also carries genre labels this measurement doesn't need.
+
+    fixtures_dir defaults to _fixtures_dir() but honors a caller-supplied
+    root (e.g. run_comparison's own source_root), so a caller pointing at
+    a different fixture root doesn't also have to separately inject
+    stories= to make discovery consistent with it (review finding)."""
+    root = fixtures_dir if fixtures_dir is not None else _fixtures_dir()
+    return sorted(root.glob("*/story.json"))
 
 
 def preflight_prefix_token_counts(model: str) -> Dict[str, int]:
@@ -183,16 +221,57 @@ def preflight_prefix_token_counts(model: str) -> Dict[str, int]:
     return counts
 
 
-def _segment_and_extract(
+def _warm_segmentation_checkpoints(
+    stories: List[pathlib.Path],
+    model: str,
+    roots: checkpoint.CheckpointRoots,
+    backend: Any,
+) -> None:
+    """Segment every story once, before either comparison arm starts
+    recording, so both arms see identical, already-cached segmentation.
+
+    Without this, whichever arm runs first pays for (and records) real
+    segmentation calls that the second arm then skips entirely via
+    run_pilot._segment_story_cached's own checkpoint reuse - confounding
+    the comparison with a workload difference that has nothing to do
+    with caching (review finding, PR #271). Segmentation itself is never
+    part of what this evaluation measures: Decision 3 scopes caching to
+    the ERW extractors' tools+system prefix only, and segmentation uses
+    an entirely different tool schema (record_segments), so it was never
+    a caching-eligible call in the first place - it just needs to be
+    equally absent from both arms' recorded totals, not present in one
+    and missing from the other.
+    """
+    for story_path in stories:
+        story = json.loads(story_path.read_text(encoding="utf-8"))
+        body = story["body"]
+        _segments, seg_error, _seg_usage = run_pilot._segment_story_cached(
+            story_path, body, backend, model, "anthropic", roots
+        )
+        if seg_error:
+            raise RuntimeError(f"{story_path}: segmentation failed: {seg_error}")
+
+
+def _extract_and_relate(
     story_path: pathlib.Path,
     backend: Any,
     model: str,
     roots: checkpoint.CheckpointRoots,
 ) -> Dict[str, Any]:
-    """Segment (checkpointed) then run the real ERW extraction sequence
-    for one fixture story, returning run_pilot._run_erw_extraction's own
-    result dict. Reuses run_pilot's real, unmodified per-story pipeline
-    pieces (WI-PILOT-0057 does not reimplement extraction logic)."""
+    """Run the real ERW extraction sequence AND the story-level
+    cross-segment-relation pass for one fixture story, via
+    run_pilot._run_erw_pipeline - the same composed, already-tested
+    function main()'s own real pipeline uses (not just
+    _run_erw_extraction alone, which explicitly excludes the
+    cross-segment pass per its own docstring - review finding, PR #271:
+    story_relation is a real, preflighted extractor that must actually
+    be exercised, not built and never called).
+
+    Assumes this story's segmentation checkpoint is already warm (see
+    _warm_segmentation_checkpoints) - reads it via the same
+    _segment_story_cached call, which is then guaranteed to hit the
+    checkpoint and make no new call, so no segmentation call is ever
+    recorded here."""
     story = json.loads(story_path.read_text(encoding="utf-8"))
     body = story["body"]
     story_id = run_pilot._story_identity(story_path)
@@ -205,7 +284,7 @@ def _segment_and_extract(
 
     extractors = run_pilot._build_erw_extractors(backend, model)
     nlp_backend = run_pilot._make_nlp_backend("fake")
-    return run_pilot._run_erw_extraction(
+    return run_pilot._run_erw_pipeline(
         body, segments, extractors, nlp_backend, "fake", story_id
     )
 
@@ -231,13 +310,33 @@ def run_comparison(
     schema-appropriate tool_results).
     """
     roots = checkpoint.resolve_roots(working_root, source_root=source_root)
-    stories = stories if stories is not None else _fixture_stories()
+    stories = stories if stories is not None else _fixture_stories(source_root)
     if not stories:
-        raise RuntimeError(f"No fixture stories found under {_fixtures_dir()}")
+        raise RuntimeError(f"No fixture stories found under {source_root}")
+
+    run_model = model if (backend_factory is not None or not dry_run) else "fake-1.0"
+
+    def _build_backend(enable_caching: bool) -> Any:
+        if backend_factory is not None:
+            return backend_factory(enable_caching)
+        if dry_run:
+            return _DryRunFakeBackend()
+        from lcats.llm import anthropic_backend
+
+        return anthropic_backend.AnthropicBackend(enable_prompt_caching=enable_caching)
+
+    # Warm segmentation once, before either arm starts recording, so
+    # both arms see identical already-cached segmentation and neither
+    # arm's own totals are confounded by which one happened to pay for
+    # it (review finding, PR #271). Caching doesn't apply to
+    # segmentation either way (different tool schema), so
+    # enable_caching=False here is just a fixed, arbitrary choice, not
+    # a meaningful one.
+    _warm_segmentation_checkpoints(stories, run_model, roots, _build_backend(False))
 
     report: Dict[str, Any] = {
         "model": model,
-        "stories": [s.name for s in stories],
+        "stories": [run_pilot._story_identity(s) for s in stories],
         "runs": {},
     }
 
@@ -245,25 +344,11 @@ def run_comparison(
         ("caching_disabled", False),
         ("caching_enabled", True),
     ):
-        if backend_factory is not None:
-            inner = backend_factory(enable_caching)
-            run_model = model
-        elif dry_run:
-            inner = _DryRunFakeBackend()
-            run_model = "fake-1.0"
-        else:
-            from lcats.llm import anthropic_backend
-
-            inner = anthropic_backend.AnthropicBackend(
-                enable_prompt_caching=enable_caching
-            )
-            run_model = model
-
-        recorder = _RecordingBackend(inner)
+        recorder = _RecordingBackend(_build_backend(enable_caching))
         for story_path in stories:
-            _segment_and_extract(story_path, recorder, run_model, roots)
+            _extract_and_relate(story_path, recorder, run_model, roots)
 
-        report["runs"][label] = {
+        run_totals = {
             "enable_prompt_caching": enable_caching,
             "calls": recorder.calls,
             "total_input_tokens": sum(c["input_tokens"] for c in recorder.calls),
@@ -275,6 +360,16 @@ def run_comparison(
                 c["cache_read_input_tokens"] or 0 for c in recorder.calls
             ),
         }
+        run_totals["cost_usd"] = _compute_cost_usd(run_totals, model)
+        report["runs"][label] = run_totals
+
+    disabled_cost = report["runs"]["caching_disabled"]["cost_usd"]
+    enabled_cost = report["runs"]["caching_enabled"]["cost_usd"]
+    report["cost_delta_usd"] = (
+        enabled_cost - disabled_cost
+        if disabled_cost is not None and enabled_cost is not None
+        else None
+    )
 
     return report
 
@@ -328,13 +423,17 @@ def main() -> int:
     report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(f"Wrote comparison report to {report_path}")
     for label, run in report["runs"].items():
+        cost = f"${run['cost_usd']:.4f}" if run["cost_usd"] is not None else "unpriced"
         print(
             f"  {label}: {len(run['calls'])} calls, "
             f"input={run['total_input_tokens']}, "
             f"output={run['total_output_tokens']}, "
             f"cache_creation={run['total_cache_creation_input_tokens']}, "
-            f"cache_read={run['total_cache_read_input_tokens']}"
+            f"cache_read={run['total_cache_read_input_tokens']}, "
+            f"cost={cost}"
         )
+    if report["cost_delta_usd"] is not None:
+        print(f"  cost delta (enabled - disabled): ${report['cost_delta_usd']:.4f}")
     return 0
 
 

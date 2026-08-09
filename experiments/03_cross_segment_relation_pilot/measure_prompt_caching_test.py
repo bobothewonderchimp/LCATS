@@ -119,11 +119,11 @@ class TestRunComparisonDryRun(unittest.TestCase):
         self.assertFalse(report["runs"]["caching_disabled"]["enable_prompt_caching"])
         self.assertTrue(report["runs"]["caching_enabled"]["enable_prompt_caching"])
 
-    def test_segmentation_checkpoint_is_reused_across_both_arms(self):
-        """The second arm to run must make fewer real backend calls than
-        the first, by exactly one segmentation call per story - proving
-        _segment_story_cached's checkpoint is actually shared across
-        both comparison runs, not re-paid for twice."""
+    def test_stories_are_identified_by_collection_name_not_the_bare_filename(self):
+        """Every fixture story's on-disk path is <collection>/<name>/
+        story.json, so a bare path.name is always "story.json" for
+        every story - indistinguishable in the report (review finding,
+        PR #271). Must use run_pilot._story_identity instead."""
         report = measure_prompt_caching.run_comparison(
             model="claude-opus-4-8",
             working_root=self.output_dir,
@@ -131,10 +131,136 @@ class TestRunComparisonDryRun(unittest.TestCase):
             dry_run=True,
         )
 
-        num_stories = len(report["stories"])
-        first_arm_calls = len(report["runs"]["caching_disabled"]["calls"])
-        second_arm_calls = len(report["runs"]["caching_enabled"]["calls"])
-        self.assertEqual(first_arm_calls - second_arm_calls, num_stories)
+        self.assertNotIn("story.json", report["stories"])
+        self.assertEqual(len(report["stories"]), len(set(report["stories"])))
+
+    def test_run_comparison_honors_a_caller_supplied_source_root(self):
+        """A caller pointing source_root at a fixture root other than
+        the real committed WI-PILOT-0051 fixtures must have fixture
+        discovery actually look there, not silently fall back to
+        _fixtures_dir() regardless (review finding, PR #271)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            custom_root = pathlib.Path(tmp) / "custom_fixtures"
+            story_dir = custom_root / "custom_story"
+            story_dir.mkdir(parents=True)
+            (story_dir / "story.json").write_text(
+                json.dumps({"name": "custom_story", "author": "T", "body": "x"}),
+                encoding="utf-8",
+            )
+
+            found = measure_prompt_caching._fixture_stories(custom_root)
+
+        self.assertEqual(found, [story_dir / "story.json"])
+
+    def test_cost_usd_is_computed_from_real_per_model_pricing(self):
+        """The report must include an actual measured $ cost per arm and
+        a delta between them, not just raw token sums - input/output/
+        cache-write/cache-read are billed at different rates, so a raw
+        token total alone cannot answer the WI's own acceptance
+        criterion (review finding, PR #271)."""
+        report = measure_prompt_caching.run_comparison(
+            model="claude-opus-4-8",
+            working_root=self.output_dir,
+            source_root=measure_prompt_caching._fixtures_dir(),
+            dry_run=True,
+        )
+
+        for run in report["runs"].values():
+            self.assertIsNotNone(run["cost_usd"])
+            self.assertGreaterEqual(run["cost_usd"], 0)
+        self.assertIn("cost_delta_usd", report)
+
+    def test_compute_cost_usd_returns_none_for_an_unpriced_model(self):
+        totals = {
+            "total_input_tokens": 1_000_000,
+            "total_output_tokens": 0,
+            "total_cache_creation_input_tokens": 0,
+            "total_cache_read_input_tokens": 0,
+        }
+        self.assertIsNone(
+            measure_prompt_caching._compute_cost_usd(totals, "not-a-real-model")
+        )
+
+    def test_compute_cost_usd_matches_the_published_pricing_formula(self):
+        """Cross-check against Anthropic's own published pricing
+        (verified 2026-08-09): Opus 4.8 is $5/MTok input, $25/MTok
+        output, 1.25x input for a 5-minute cache write, 0.1x input for
+        a cache read."""
+        totals = {
+            "total_input_tokens": 1_000_000,
+            "total_output_tokens": 1_000_000,
+            "total_cache_creation_input_tokens": 1_000_000,
+            "total_cache_read_input_tokens": 1_000_000,
+        }
+        cost = measure_prompt_caching._compute_cost_usd(totals, "claude-opus-4-8")
+        expected = 5.0 + 25.0 + (5.0 * 1.25) + (5.0 * 0.1)
+        self.assertAlmostEqual(cost, expected, places=6)
+
+    def test_segmentation_is_pre_warmed_so_neither_arm_pays_for_it(self):
+        """Both comparison arms must record the exact same number of
+        calls, and neither arm's recorded calls include a segmentation
+        call at all - segmentation is warmed once via
+        _warm_segmentation_checkpoints before either arm starts
+        recording (review finding, PR #271: without this, whichever arm
+        ran first paid for real segmentation calls the second arm then
+        skipped via checkpoint reuse, confounding the comparison with a
+        workload difference unrelated to caching)."""
+        report = measure_prompt_caching.run_comparison(
+            model="claude-opus-4-8",
+            working_root=self.output_dir,
+            source_root=measure_prompt_caching._fixtures_dir(),
+            dry_run=True,
+        )
+
+        first_arm_calls = report["runs"]["caching_disabled"]["calls"]
+        second_arm_calls = report["runs"]["caching_enabled"]["calls"]
+        self.assertEqual(len(first_arm_calls), len(second_arm_calls))
+        for call in first_arm_calls + second_arm_calls:
+            self.assertNotEqual(call["tool_name"], "record_segments")
+
+    def test_extract_and_relate_calls_the_real_cross_segment_relation_pass(self):
+        """_extract_and_relate must use run_pilot._run_erw_pipeline (which
+        unconditionally calls _apply_cross_segment_relations - the gate
+        deciding whether it does real work vs. a no-op lives INSIDE that
+        function, per its own docstring), not _run_erw_extraction alone,
+        which never calls _apply_cross_segment_relations at all (review
+        finding, PR #271: story_relation was preflighted but never
+        actually exercised by the real measurement).
+
+        This test only proves the call site is reached - not that the
+        real story_relation extractor gets invoked under a specific
+        >=2-segments-with-events scenario, which is a separate,
+        already-tested concern belonging to run_pilot_test.py itself
+        (see its own coverage around "No story_relation call: a single
+        segment never satisfies" the gate). Replicating a real
+        gate-satisfying fixture here would duplicate that coverage and
+        be fragile against unrelated schema changes."""
+        with tempfile.TemporaryDirectory() as tmp:
+            story_dir = pathlib.Path(tmp) / "fixtures" / "only_story"
+            story_dir.mkdir(parents=True)
+            (story_dir / "story.json").write_text(
+                json.dumps({"name": "only_story", "author": "T", "body": "x " * 50}),
+                encoding="utf-8",
+            )
+            output_dir = pathlib.Path(tmp) / "out"
+            roots = measure_prompt_caching.checkpoint.resolve_roots(
+                output_dir, source_root=pathlib.Path(tmp) / "fixtures"
+            )
+            backend = measure_prompt_caching._DryRunFakeBackend()
+            measure_prompt_caching._warm_segmentation_checkpoints(
+                [story_dir / "story.json"], "fake-1.0", roots, backend
+            )
+
+            with patch.object(
+                measure_prompt_caching.run_pilot,
+                "_apply_cross_segment_relations",
+                wraps=measure_prompt_caching.run_pilot._apply_cross_segment_relations,
+            ) as spy:
+                measure_prompt_caching._extract_and_relate(
+                    story_dir / "story.json", backend, "fake-1.0", roots
+                )
+
+        spy.assert_called_once()
 
     def test_report_is_json_serializable_and_written_to_disk(self):
         measure_prompt_caching.run_comparison(
