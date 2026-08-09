@@ -1256,5 +1256,59 @@ class TestSegmentationUsagePreservedOnUnexpectedException(unittest.TestCase):
         self.assertEqual(segment_usages[0]["output_tokens"], 2)
 
 
+class TestCappedExcludeReason(unittest.TestCase):
+    """WI-EVENT-0061: a container-type extraction error (schema.
+    coerce_list_field) can produce many joined item_errors for one story;
+    the console print must be capped so it can't flood the terminal, while
+    the stored row value stays uncapped for later analysis."""
+
+    def test_short_reason_is_unchanged(self):
+        reason = "empty story body"
+        self.assertEqual(run_pilot._capped_exclude_reason(reason), reason)
+
+    def test_long_reason_is_truncated_with_more_count_suffix(self):
+        errors = [f"speech_acts[{i}] is not an object (got str): 'x'" for i in range(50)]
+        reason = "; ".join(errors)
+        self.assertGreater(len(reason), run_pilot._EXCLUDE_REASON_PRINT_MAX_CHARS)
+
+        capped = run_pilot._capped_exclude_reason(reason)
+
+        self.assertLess(len(capped), len(reason))
+        self.assertRegex(capped, r"\.\.\.\d+ more errors?$")
+
+    def test_reason_at_exactly_the_limit_is_unchanged(self):
+        reason = "x" * run_pilot._EXCLUDE_REASON_PRINT_MAX_CHARS
+        self.assertEqual(run_pilot._capped_exclude_reason(reason), reason)
+
+    def test_single_long_message_does_not_claim_nonexistent_more_errors(self):
+        """Regression test (self-review finding, WI-EVENT-0061): a single
+        message longer than the cap, with no "; "-joined sibling errors,
+        must not be suffixed "...1 more error" -- there is no second
+        error, just one long message that got truncated."""
+        reason = "a" * (run_pilot._EXCLUDE_REASON_PRINT_MAX_CHARS + 50)
+        capped = run_pilot._capped_exclude_reason(reason)
+        self.assertNotRegex(capped, r"more errors?")
+        self.assertTrue(capped.endswith("...(truncated)"))
+
+    def test_cutoff_within_final_segment_does_not_claim_nonexistent_more_errors(
+        self,
+    ):
+        """Regression test (Copilot review, PR #274): if the char-count cap
+        falls inside the LAST "; "-joined segment (all separators are
+        already included in the truncated text), no segment was actually
+        omitted -- only the last one's text was cut short. This must not
+        be reported as "...N more errors" for any N >= 1; a naive
+        `max(total - shown, 1)` floor previously fabricated "...1 more
+        error" here even though there is no additional error."""
+        head = "; ".join(f"error{i}" for i in range(3))
+        long_last_segment = "x" * (run_pilot._EXCLUDE_REASON_PRINT_MAX_CHARS + 100)
+        reason = f"{head}; {long_last_segment}"
+
+        capped = run_pilot._capped_exclude_reason(reason)
+
+        self.assertNotRegex(capped, r"more errors?")
+        self.assertTrue(capped.endswith("...(truncated)"))
+
+
 if __name__ == "__main__":
     unittest.main()
