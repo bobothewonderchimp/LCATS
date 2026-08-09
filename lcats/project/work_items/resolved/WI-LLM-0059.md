@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #266 (commit 27d772fb). Reminder mitigation replicated for qwen3:8b (2/8 combined success across two sessions) and showed no success/latency regression on Anthropic, but did surface a minor granularity side effect (2/3 modified runs split into 5 segments vs. baseline's 4). OpenAI leg could not be verified - real API key present but zero account credits. Per the WI's own Required Changes item 5, an untested OpenAI path forces the documented no-change outcome: SCENE_SEQUEL_SYSTEM_PROMPT was NOT edited. Full write-up in PROP-ERW-LOCAL-MODEL-EVALUATION's Decision 3 update (2026-08-08)."
 blocked_reason: null
 blocked: false
 id: WI-LLM-0059
 title: Investigate reminder mitigation for the production segmentation system prompt
 type: investigation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
