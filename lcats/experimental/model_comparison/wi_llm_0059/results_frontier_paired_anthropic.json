@@ -1,0 +1,198 @@
+[
+  {
+    "backend": "anthropic_opus",
+    "pair_index": 1,
+    "baseline": {
+      "success": true,
+      "latency_seconds": 27.096665791003034,
+      "segment_count": 4,
+      "segments": [
+        {
+          "segment_id": 1,
+          "segment_type": "other",
+          "summary": "Watson's framing preamble about the Holmes case archive and the year '87, introducing the remarkable case to follow."
+        },
+        {
+          "segment_id": 2,
+          "segment_type": "dramatic_scene",
+          "summary": "On a stormy September night at Baker Street, John Openshaw recounts the K.K.K. orange-pip deaths; Holmes advises action and deduces the Ku Klux Klan is behind it."
+        },
+        {
+          "segment_id": 3,
+          "segment_type": "dramatic_sequel",
+          "summary": "Next morning at breakfast, news arrives of Openshaw's death. Holmes, shaken and prideful, resolves to hunt the gang himself."
+        },
+        {
+          "segment_id": 4,
+          "segment_type": "dramatic_scene",
+          "summary": "That evening Holmes returns having traced the murderers to the barque Lone Star; he sends pips and alerts police, but the ship is lost at sea before justice is served."
+        }
+      ],
+      "error_type": null,
+      "error_message": null
+    },
+    "modified": {
+      "success": true,
+      "latency_seconds": 34.70376683399081,
+      "segment_count": 4,
+      "segments": [
+        {
+          "segment_id": 1,
+          "segment_type": "other",
+          "summary": "Watson's framing preamble about selecting a case from his records; meta-commentary rather than narrative scene."
+        },
+        {
+          "segment_id": 2,
+          "segment_type": "dramatic_scene",
+          "summary": "On a stormy night at Baker Street, John Openshaw brings his case; Holmes hears the story, advises action, and deduces the KKK is behind the threats."
+        },
+        {
+          "segment_id": 3,
+          "segment_type": "dramatic_scene",
+          "summary": "Next morning at breakfast, Watson reads the newspaper: Openshaw is dead. Holmes, shaken, vows to hunt the gang and goes out to act."
+        },
+        {
+          "segment_id": 4,
+          "segment_type": "dramatic_scene",
+          "summary": "Late that evening Holmes returns exhausted, reveals he has traced the murderers to the Lone Star and sent them orange pips, but the ship is lost at sea."
+        }
+      ],
+      "error_type": null,
+      "error_message": null
+    }
+  },
+  {
+    "backend": "anthropic_opus",
+    "pair_index": 2,
+    "baseline": {
+      "success": true,
+      "latency_seconds": 25.44954550001421,
+      "segment_count": 4,
+      "segments": [
+        {
+          "segment_id": 1,
+          "segment_type": "other",
+          "summary": "Watson's framing preamble introducing the memorable case among the 1887 records; meta-commentary, not a narrative scene."
+        },
+        {
+          "segment_id": 2,
+          "segment_type": "dramatic_scene",
+          "summary": "Stormy night at Baker Street: John Openshaw arrives and recounts the K.K.K. orange-pip deaths; Holmes takes the case, advises action, and deduces the Ku Klux Klan connection."
+        },
+        {
+          "segment_id": 3,
+          "segment_type": "dramatic_scene",
+          "summary": "Next morning at breakfast Holmes plans his inquiries; Watson reads of Openshaw's death in the paper; a shaken Holmes vows revenge and sets out."
+        },
+        {
+          "segment_id": 4,
+          "segment_type": "dramatic_scene",
+          "summary": "Late that evening Holmes returns exhausted, reveals he has traced the murderers to the barque Lone Star and posts them pips; but the ship is lost at sea before justice is served."
+        }
+      ],
+      "error_type": null,
+      "error_message": null
+    },
+    "modified": {
+      "success": true,
+      "latency_seconds": 25.979528791009216,
+      "segment_count": 5,
+      "segments": [
+        {
+          "segment_id": 1,
+          "segment_type": "other",
+          "summary": "Watson's framing preamble about selecting among Holmes cases and introducing the remarkable case of \u201987."
+        },
+        {
+          "segment_id": 2,
+          "segment_type": "dramatic_scene",
+          "summary": "On a stormy night at Baker Street, John Openshaw tells Holmes the terrifying story of the orange pips and family deaths; Holmes advises him and deduces the Ku Klux Klan connection."
+        },
+        {
+          "segment_id": 3,
+          "segment_type": "dramatic_sequel",
+          "summary": "The next morning Holmes learns from the newspaper that Openshaw has been killed; deeply shaken, he resolves to hunt down the gang himself."
+        },
+        {
+          "segment_id": 4,
+          "segment_type": "narrative_scene",
+          "summary": "Late that evening Holmes returns worn and hungry, explains how he traced the Lone Star and Captain Calhoun through Lloyd's registers, and sends the pips to the culprits."
+        },
+        {
+          "segment_id": 5,
+          "segment_type": "narrative_scene",
+          "summary": "Epilogue: the Lone Star is lost at sea in the gales; the murderers never receive Holmes's pips, and their fate remains unknown."
+        }
+      ],
+      "error_type": null,
+      "error_message": null
+    }
+  },
+  {
+    "backend": "anthropic_opus",
+    "pair_index": 3,
+    "baseline": {
+      "success": true,
+      "latency_seconds": 25.83782341700862,
+      "segment_count": 4,
+      "segments": [
+        {
+          "segment_id": 1,
+          "segment_type": "other",
+          "summary": "Watson's framing preamble introducing the case, listing other unrecorded cases of 1887, and promising to narrate this remarkable one."
+        },
+        {
+          "segment_id": 2,
+          "segment_type": "dramatic_scene",
+          "summary": "On a stormy night at Baker Street, John Openshaw brings his family's terrifying story of the K.K.K. orange pips; Holmes questions him, advises action, then deduces the nature of the threat."
+        },
+        {
+          "segment_id": 3,
+          "segment_type": "dramatic_sequel",
+          "summary": "Next morning at breakfast, Watson reads that Openshaw has drowned; Holmes, shaken and shamed, resolves to hunt down the gang himself and goes out."
+        },
+        {
+          "segment_id": 4,
+          "segment_type": "dramatic_scene",
+          "summary": "Late that evening Holmes returns worn out, reveals he traced the murderers to the barque Lone Star and sent them the pips; but the ship is lost at sea, thwarting justice."
+        }
+      ],
+      "error_type": null,
+      "error_message": null
+    },
+    "modified": {
+      "success": true,
+      "latency_seconds": 26.716376915981527,
+      "segment_count": 5,
+      "segments": [
+        {
+          "segment_id": 1,
+          "segment_type": "other",
+          "summary": "Watson's framing introduction about selecting cases and the year '87, promising to describe this remarkable case."
+        },
+        {
+          "segment_id": 2,
+          "segment_type": "dramatic_scene",
+          "summary": "On a stormy night, John Openshaw visits Baker Street, recounts the family curse of the K.K.K. orange pips and two deaths; Holmes advises him and deduces the Ku Klux Klan."
+        },
+        {
+          "segment_id": 3,
+          "segment_type": "dramatic_sequel",
+          "summary": "The next morning Holmes learns from the newspaper that Openshaw is dead; deeply shaken, he reasons about his failure and resolves to hunt the gang himself."
+        },
+        {
+          "segment_id": 4,
+          "segment_type": "dramatic_scene",
+          "summary": "That evening Holmes returns exhausted but triumphant, having traced the killers to the barque Lone Star and Captain Calhoun; he prepares his own orange-pip warning and a plan to have them arrested."
+        },
+        {
+          "segment_id": 5,
+          "segment_type": "narrative_scene",
+          "summary": "Epilogue: the Lone Star is lost at sea in the gales; the murderers never receive the pips, and their fate remains unknown."
+        }
+      ],
+      "error_type": null,
+      "error_message": null
+    }
+  }
+]
