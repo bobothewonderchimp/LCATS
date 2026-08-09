@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Both mechanisms investigated with real evidence via PR #277. Mechanism (a) (silent ignore): reminder-retry mitigation adapted from WI-LLM-0051 to run_entity_extraction() - ollama_gemma4_12b showed partial recovery (1 of 2 applicable retries succeeded, after correcting a max_tokens=8192 truncation confound by raising to 16384); ollama_deepseek_r1_14b showed no recovery (0/3), and a tuned temperature=0.6 didn't help either - a more robust instance of the mechanism. Mechanism (b) (active filter rejection): the original schema-complexity hypothesis was disproven - gemini_flash's real, unmodified ENTITY_TOOL_SCHEMA succeeds 3/3 at max_tokens=32000 (vs. failing at 8192/16384); a minimal synthetic schema also succeeded 3/3. The real constraint is token budget, not schema shape. A resource-accounting bug in the new retry wrapper (caught by automatic first-push review) was fixed and all affected result files regenerated with real reruns. Verdicts written into PROP-ERW-LOCAL-MODEL-EVALUATION and each affected candidate's README."
 blocked_reason: null
 blocked: false
 id: WI-LLM-0062
 title: Investigate the two distinct tool_choice failure mechanisms found in WI-LLM-0056's tranche 1
 type: investigation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []

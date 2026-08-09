@@ -31,6 +31,7 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `abandoned/WI-ANNOTATE-0053.md` — superseded by `WI-STATS-0049`, which landed the identical `lcats stats` selector fix independently
 
 ## Resolved Items
+- `resolved/WI-LLM-0062.md` — Investigate WI-LLM-0056's two distinct tool_choice failure mechanisms; silent-ignore mitigation partially recovers gemma4:12b (1/2) but not deepseek-r1:14b (0/3); gemini_flash's filter rejection was a token-budget confound, not schema complexity (3/3 success at max_tokens=32000)
 - `resolved/WI-LLM-0056.md` — Tranche 1: expand the benchmark harness to cross-provider coverage; all 6 cells landed with real evidence (3 succeeded, 3 documented failures revealing two distinct tool_choice failure mechanisms)
 - `resolved/WI-LLM-0058.md` — Fix ASSESSMENT_TOOL secondary_genre schema-adjacent field corruption (39% combined rate across two real runs); sanitized via a new non-fatal AssessmentResult.secondary_genre_sanitized flag, checkpoint-version bumps across all 3 assess_story() callers, GO recommendation for WI-ASSESS-0051's --full run
 - `resolved/WI-LLM-0051.md` — Investigate Ollama's forced tool_choice reliability; 0/5 baseline success, but a system-prompt reminder retry helps (2/5, 40%) - implemented as an automatic retry in the harness
