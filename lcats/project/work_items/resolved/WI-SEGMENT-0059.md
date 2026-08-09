@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: Merged via https://github.com/xenotaur/LCATS/pull/269 (merge commit 72bb313143dca27594ddbfc43a2487a125c55c98). Fixed the silent misalignment fallback in text_segmenter.py's scene-segmentation aligner (paragraph-collapse detection for single-newline source text; both start_exact/end_exact anchor failures now propagate as a raised alignment_error instead of silently producing wrong offsets). Centralized the resulting extracted_output-shape fix in JSONPromptExtractor.extract() itself so every current and future caller is protected, not just the ones enumerated during implementation (story_processors.py, run_pilot.py, check_segmentation_reliability.py, generate_sample_segment.py, and a notebook).
 blocked_reason: null
 blocked: false
 id: WI-SEGMENT-0059
 title: Fix silent misalignment fallback in text_segmenter.py's scene-segmentation aligner
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
