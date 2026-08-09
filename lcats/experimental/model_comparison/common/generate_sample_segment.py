@@ -100,6 +100,13 @@ def main() -> None:
     result = extractor.extract(story_body, model_name=MODEL)
     if result.get("api_error"):
         raise RuntimeError(f"Segmentation failed: {result['api_error']}")
+    if result.get("alignment_error"):
+        # extracted_output would be None here regardless (cleared by
+        # JSONPromptExtractor.extract() itself on an alignment failure,
+        # WI-SEGMENT-0059) -- this check exists to report the real cause
+        # via a clear error rather than a generic "None is not iterable"
+        # from _pick_segment below.
+        raise RuntimeError(f"Segmentation alignment failed: {result['alignment_error']}")
 
     segments = result["extracted_output"]
     chosen = _pick_segment(segments)

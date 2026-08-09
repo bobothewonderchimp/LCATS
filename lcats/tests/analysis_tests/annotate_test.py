@@ -29,8 +29,18 @@ _SEGMENT_TOOL_RESULT = {
             "segment_type": "narrative_scene",
             "start_par_id": 1,
             "end_par_id": 1,
-            "start_exact": "Once upon a time",
-            "end_exact": "a dragon.",
+            # Deliberately empty: this fixture is reused across tests with
+            # different story bodies ("Once upon a time there was a
+            # dragon.", "A dragon story.", etc.). Empty anchors fall back
+            # to paragraph bounds unconditionally (align_segment's
+            # existing, unaffected contract) -- a hardcoded non-empty
+            # anchor matching only one body used to silently "work" for
+            # all of them under the old lenient fallback (a genuinely
+            # unresolvable anchor fell back to paragraph bounds too, not
+            # just an empty one); WI-SEGMENT-0059 correctly rejects that
+            # case now, so this fixture must not rely on it.
+            "start_exact": "",
+            "end_exact": "",
             "start_prefix": "",
             "end_suffix": "",
             "start_char": None,

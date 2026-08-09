@@ -504,10 +504,21 @@ def _segment_story(
     """
     seg_extractor = scene_analysis.make_segment_extractor(backend)
     seg_result = seg_extractor.extract(body, model_name=model)
-    error = seg_result.get("api_error") or seg_result.get("extraction_error")
+    # alignment_error must be checked here too, not just api_error/
+    # extraction_error: this function's own "error" return contract
+    # requires the real cause to be reported explicitly rather than the
+    # generic "segmentation produced no segments" fallback that would
+    # otherwise fire silently (extracted_output is already cleared to
+    # None on an alignment failure by JSONPromptExtractor.extract()
+    # itself, WI-SEGMENT-0059).
+    error = (
+        seg_result.get("api_error")
+        or seg_result.get("extraction_error")
+        or seg_result.get("alignment_error")
+    )
     segments = seg_result.get("extracted_output") or []
     usage = seg_result.get("usage")
-    if not segments:
+    if error or not segments:
         return [], error or "segmentation produced no segments", usage
     return segments, error, usage
 

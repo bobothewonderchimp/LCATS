@@ -1,8 +1,10 @@
 """Unit tests for lcats.analysis.text_indexing."""
 
+import json
 import unittest
 
 from lcats.analysis import text_segmenter
+from lcats.utils import paths as lcats_paths
 
 
 class TestTextIndexing(unittest.TestCase):
@@ -110,14 +112,17 @@ class TestTextIndexing(unittest.TestCase):
         self.assertEqual(span, (p3_start, p3_end))
 
     def test_align_segment_handles_reversed_par_ids_gracefully(self):
-        """If end < start, it clamps to a single paragraph instead of crashing."""
+        """If end < start, it clamps to a single paragraph (paragraph 3, the
+        larger of the two 1-based ids) instead of crashing -- but the
+        anchors here are p2's text, which does not occur within paragraph
+        3's range, so this is a genuine alignment failure (WI-SEGMENT-0059:
+        a real anchor-not-found case, not a silent fallback to bounds)."""
         parts, spans = text_segmenter.build_paragraph_index(self.story, splitter="\n\n")
-        p2_start, p2_end = spans[1]
 
         start_exact = self.p2[:6]
         end_exact = self.p2[-6:]
 
-        # Intentionally reversed: start_par_id=3, end_par_id=2 -> clamped to 3 (or 2) per implementation
+        # Intentionally reversed: start_par_id=3, end_par_id=2 -> clamped to paragraph 3.
         span = text_segmenter.align_segment(
             self.story,
             spans,
@@ -126,11 +131,33 @@ class TestTextIndexing(unittest.TestCase):
             start_exact=start_exact,
             end_exact=end_exact,
         )
-        # May fall back to bounds if anchors don't fit paragraph 3; just ensure it returns a valid span.
+        self.assertIsNone(span)
+
+    def test_align_segment_reversed_par_ids_with_anchors_present_still_aligns(self):
+        """Reversed par_ids clamp to a single paragraph; if the anchors
+        actually occur within that clamped paragraph's own range, alignment
+        still succeeds cleanly (this is the "clamps gracefully" case the
+        original test intended -- see the sibling test above for the
+        anchor-genuinely-missing case introduced by WI-SEGMENT-0059)."""
+        parts, spans = text_segmenter.build_paragraph_index(self.story, splitter="\n\n")
+        p3_start, p3_end = spans[2]
+
+        start_exact = self.p3[:5]  # "Third"
+        end_exact = self.p3[-5:]  # "end."
+
+        span = text_segmenter.align_segment(
+            self.story,
+            spans,
+            start_par_id=3,
+            end_par_id=2,  # reversed; clamps to paragraph 3
+            start_exact=start_exact,
+            end_exact=end_exact,
+        )
         self.assertIsNotNone(span)
         s, e = span
+        self.assertGreaterEqual(s, p3_start)
+        self.assertLessEqual(e, p3_end)
         self.assertGreater(e, s)
-        self.assertLessEqual(e, len(self.story))
 
     def test_paragraph_text_indexer_outputs_indexed_text_and_meta(self):
         """Indexer returns indexed text with markers and meta that maps back to canonical text."""
@@ -187,8 +214,13 @@ class TestTextIndexing(unittest.TestCase):
         self.assertTrue(self.story[s:].startswith(self.p2[:6]))
         self.assertTrue(self.story[:e].endswith(self.p2[-7:]))
 
-    def test_segments_result_aligner_is_resilient_to_missing_fields(self):
-        """Segments missing required fields should be left unchanged (no crash)."""
+    def test_segments_result_aligner_raises_on_missing_par_ids(self):
+        """A segment missing start_par_id/end_par_id used to be silently
+        left unchanged (no start_char/end_char, no error) -- WI-SEGMENT-0059
+        treats a missing/wrong-typed par_id the same as any other alignment
+        failure: align_segment returns None cleanly (not a raw TypeError),
+        and segments_result_aligner raises rather than silently producing a
+        story with some segments aligned and others quietly left null."""
         _, meta = text_segmenter.paragraph_text_indexer(self.story_raw)
         parsed_output = {
             "segments": [
@@ -200,12 +232,9 @@ class TestTextIndexing(unittest.TestCase):
                 }
             ]
         }
-        aligned = text_segmenter.segments_result_aligner(
-            parsed_output, self.story, meta
-        )
-        seg = aligned["segments"][0]
-        self.assertNotIn("start_char", seg)
-        self.assertNotIn("end_char", seg)
+        with self.assertRaises(ValueError) as ctx:
+            text_segmenter.segments_result_aligner(parsed_output, self.story, meta)
+        self.assertIn("segment_id=99", str(ctx.exception))
 
 
 class TestCanonicalizeCROnly(unittest.TestCase):
@@ -646,6 +675,269 @@ class TestSegmentsAuditor(unittest.TestCase):
         result = text_segmenter.segments_auditor(parsed_output, self.story, self.meta)
         self.assertGreater(result["counts"]["gaps"], 0)
         self.assertLess(result["coverage"]["coverage_pct"], 100.0)
+
+
+class TestSingleNewlineParagraphFallback(unittest.TestCase):
+    """WI-SEGMENT-0059: build_paragraph_index/paragraph_text_indexer must
+    not collapse single-newline-formatted source text (no blank-line
+    breaks at all) into one giant paragraph -- that forced every
+    segment's anchor search across the entire document and silently
+    produced overlapping offsets on real corpora/london stories."""
+
+    def setUp(self):
+        self.story = (
+            "First line of the first paragraph.\n"
+            "Second line, still paragraph one.\n"
+            "First line of the second paragraph.\n"
+            "First line of the third paragraph."
+        )
+
+    def test_build_paragraph_index_falls_back_to_single_newline(self):
+        parts, spans = text_segmenter.build_paragraph_index(self.story, splitter="\n\n")
+        self.assertEqual(len(parts), 4)
+        self.assertGreater(len(spans), 1)
+        for (start, end), expected in zip(spans, parts):
+            self.assertEqual(self.story[start:end], expected)
+
+    def test_build_paragraph_index_unaffected_when_blank_lines_present(self):
+        """A story that genuinely has blank-line paragraph breaks must not
+        be affected by the fallback -- splitting stays on "\\n\\n"."""
+        story = "Paragraph one.\n\nParagraph two."
+        parts, _ = text_segmenter.build_paragraph_index(story, splitter="\n\n")
+        self.assertEqual(parts, ["Paragraph one.", "Paragraph two."])
+
+    def test_build_paragraph_index_respects_non_newline_splitter(self):
+        """A caller-supplied splitter with no newline at all must never
+        trigger the fallback, even if it doesn't occur in the text."""
+        story = "a|b|c"
+        parts, _ = text_segmenter.build_paragraph_index(story, splitter="::")
+        self.assertEqual(parts, ["a|b|c"])
+
+    def test_paragraph_text_indexer_n_paragraphs_reflects_fallback(self):
+        _, meta = text_segmenter.paragraph_text_indexer(self.story)
+        self.assertEqual(meta["n_paragraphs"], 4)
+        self.assertEqual(meta["splitter"], "\n")
+
+    def test_paragraph_text_indexer_markers_use_consistent_delimiter(self):
+        """The indexed text's paragraph markers must use the same
+        delimiter build_paragraph_index actually split on, not the
+        unconditional default -- otherwise the marked-up text shown to
+        the model would misrepresent the real paragraph boundaries."""
+        indexed_text, meta = text_segmenter.paragraph_text_indexer(self.story)
+        self.assertEqual(indexed_text.count("[P"), meta["n_paragraphs"])
+        # Markers are joined by the single-newline fallback, not "\n\n".
+        self.assertNotIn("\n\n", indexed_text)
+
+    def test_align_segment_search_range_is_narrow_after_fallback(self):
+        """The whole point: with the fallback applied, a segment's anchor
+        search range is one real paragraph, not the entire document."""
+        _, meta = text_segmenter.paragraph_text_indexer(self.story)
+        span = text_segmenter.align_segment(
+            meta["canonical_text"],
+            meta["para_spans"],
+            start_par_id=3,
+            end_par_id=3,
+            start_exact="First line of the second paragraph.",
+            end_exact="First line of the second paragraph.",
+        )
+        self.assertIsNotNone(span)
+        s, e = span
+        # Must not spill into paragraph 4's text.
+        self.assertNotIn("third paragraph", self.story[s:e])
+
+
+class TestAlignSegmentFailsOnEitherAnchor(unittest.TestCase):
+    """WI-SEGMENT-0059: a genuinely unresolvable anchor must return None
+    (alignment failure), never a silent fallback to a paragraph bound --
+    for both start_exact and end_exact, not just end_exact (the original
+    scope only covered end_exact; review finding, PR #255)."""
+
+    def setUp(self):
+        self.story = "Paragraph one text here.\n\nParagraph two text here."
+        _, self.spans = text_segmenter.build_paragraph_index(
+            self.story, splitter="\n\n"
+        )
+
+    def test_unresolvable_start_exact_returns_none(self):
+        span = text_segmenter.align_segment(
+            self.story,
+            self.spans,
+            start_par_id=1,
+            end_par_id=1,
+            start_exact="this text does not appear anywhere",
+            end_exact="",
+        )
+        self.assertIsNone(span)
+
+    def test_unresolvable_end_exact_returns_none(self):
+        span = text_segmenter.align_segment(
+            self.story,
+            self.spans,
+            start_par_id=1,
+            end_par_id=1,
+            start_exact="",
+            end_exact="this text does not appear anywhere",
+        )
+        self.assertIsNone(span)
+
+    def test_both_anchors_resolvable_still_succeeds(self):
+        span = text_segmenter.align_segment(
+            self.story,
+            self.spans,
+            start_par_id=1,
+            end_par_id=1,
+            start_exact="Paragraph one",
+            end_exact="text here.",
+        )
+        self.assertIsNotNone(span)
+
+
+class TestWiAnnotate0054RealTrialDataReplay(unittest.TestCase):
+    """WI-SEGMENT-0059's own deterministic-replay acceptance criterion:
+    replay the exact recorded segment metadata from WI-ANNOTATE-0054's 3
+    real corpora/london trial failures (love_of_life, story_of_keesh,
+    brown_wolf) through the fixed text_segmenter functions against the
+    real story text, and confirm the fixed alignment no longer produces
+    overlapping/degenerate offsets for that same recorded input.
+
+    This deliberately reads real committed files
+    (corpora/london/<story>/story.json and this trial's own committed
+    scenes.json output under lcats/experimental/annotation_feasibility_
+    trial/), unlike every other test in this module -- an intentional,
+    narrow exception to this project's general test-isolation
+    convention (never depend on the real data/corpora/ tree, per
+    gather_promote_e2e_test.py's own documented rationale). This is not
+    a generic corpus-processing test; it is a regression test tied to
+    specific, permanently-committed real defect-evidence files that
+    exist for exactly this purpose. If those files are ever pruned,
+    this test should be updated or removed alongside them, not treated
+    as a signal to add more real-corpus dependencies elsewhere.
+
+    Does not test, and does not need to test, whether a fresh model
+    call would segment any of these stories differently -- that is a
+    separate, nondeterministic question outside this item's scope. It
+    tests only whether replaying the exact same (already-recorded,
+    now-fixed-in-place) input through the fixed alignment code produces
+    a safe outcome: either valid non-overlapping offsets, or a clean
+    raised failure -- never the old silent overlap/degenerate result.
+
+    As of this writing, all 3 real cases raise (their recorded
+    start_par_id/end_par_id/anchors were generated by the model against
+    the OLD, buggy single-paragraph indexing, so replaying them against
+    the FIXED, correctly-multi-paragraph indexing means the recorded
+    anchors no longer resolve within their narrower, correct search
+    range) -- none currently exercise the non-overlapping-success branch
+    below. That branch is retained because a clean success is still a
+    valid, in-scope outcome this fix permits (e.g. for a hypothetical
+    future recorded case whose anchors do still resolve), not because
+    it is expected for these specific 3 stories today.
+    """
+
+    REPO_ROOT = lcats_paths.find_pyproject_root(__file__).parent
+    CORPORA_ROOT = REPO_ROOT / "corpora" / "london"
+    TRIAL_ROOT = (
+        REPO_ROOT
+        / "lcats"
+        / "experimental"
+        / "annotation_feasibility_trial"
+        / "source"
+        / "trial"
+    )
+
+    # (story, whether the historical run degenerated to a single segment
+    # spanning the whole document rather than overlapping segments)
+    CASES = (
+        ("love_of_life", False),
+        ("story_of_keesh", False),
+        ("brown_wolf", True),
+    )
+
+    def _load(self, story_name: str):
+        story_path = self.CORPORA_ROOT / story_name / "story.json"
+        scenes_path = self.TRIAL_ROOT / story_name / "scenes.json"
+        if not story_path.is_file() or not scenes_path.is_file():
+            # These files are this WI's own required regression evidence
+            # (acceptance criteria), not an optional/environmental
+            # dependency -- a missing file must fail the suite, not
+            # silently skip it (AGENTS.md: "Do not suppress or skip
+            # failing tests"; review finding, PR #269). A corpora/
+            # restructuring or an experimental/ cleanup that removes
+            # these files should break this test loudly, forcing a
+            # deliberate decision about this coverage, not silently
+            # losing it.
+            self.fail(
+                f"real trial evidence files not present for {story_name} "
+                f"({story_path}, {scenes_path}) -- see class docstring. "
+                "This is required regression evidence, not optional; if "
+                "these files were intentionally moved or removed, update "
+                "or remove this test explicitly rather than letting it "
+                "silently stop exercising this coverage."
+            )
+        body = json.loads(story_path.read_text(encoding="utf-8"))["body"]
+        segments = json.loads(scenes_path.read_text(encoding="utf-8"))["segments"]
+        return body, segments
+
+    def test_paragraph_collapse_no_longer_occurs(self):
+        """The root cause: these stories have no blank-line breaks, so the
+        old build_paragraph_index collapsed each to n_paragraphs=1. The
+        fix must produce more than one real paragraph for all 3."""
+        for story_name, _ in self.CASES:
+            with self.subTest(story=story_name):
+                body, _segments = self._load(story_name)
+                _, meta = text_segmenter.paragraph_text_indexer(body)
+                self.assertGreater(
+                    meta["n_paragraphs"],
+                    1,
+                    f"{story_name}: still collapsing to a single paragraph",
+                )
+
+    def test_replay_never_silently_overlaps_or_degenerates(self):
+        for story_name, was_degenerate in self.CASES:
+            with self.subTest(story=story_name):
+                body, segments = self._load(story_name)
+                _, meta = text_segmenter.paragraph_text_indexer(body)
+                parsed_output = {"segments": segments}
+
+                try:
+                    aligned = text_segmenter.segments_result_aligner(
+                        parsed_output, meta["canonical_text"], meta
+                    )
+                except ValueError:
+                    # A clean failure is an acceptable, safe outcome --
+                    # the whole point of this fix is that a story is
+                    # never silently shipped with wrong offsets.
+                    continue
+
+                # If alignment succeeded, the offsets must be genuinely
+                # non-overlapping and non-degenerate -- recompute
+                # directly from the returned segments, not by trusting
+                # any historical characterization.
+                aligned_segments = sorted(
+                    aligned["segments"], key=lambda s: s["segment_id"]
+                )
+                prev_end = -1
+                overlap_chars = 0
+                for seg in aligned_segments:
+                    start, end = seg["start_char"], seg["end_char"]
+                    if start < prev_end:
+                        overlap_chars += prev_end - start
+                    prev_end = max(prev_end, end)
+                self.assertEqual(
+                    overlap_chars,
+                    0,
+                    f"{story_name}: fixed alignment still overlaps by "
+                    f"{overlap_chars} chars",
+                )
+                if was_degenerate:
+                    # brown_wolf's historical failure mode was a single
+                    # segment spanning the whole document -- if alignment
+                    # now succeeds, it must not still be degenerate.
+                    self.assertFalse(
+                        len(aligned_segments) == 1
+                        and aligned_segments[0]["start_char"] == 0
+                        and aligned_segments[0]["end_char"] == len(body),
+                        f"{story_name}: still a single whole-document segment",
+                    )
 
 
 if __name__ == "__main__":

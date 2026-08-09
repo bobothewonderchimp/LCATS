@@ -153,6 +153,15 @@ def make_annotated_segment_extractor(
                 result["segmentation"]["validation_report"] = seg_extraction.get(
                     "validation_report"
                 )
+            if result["segmentation"]["alignment_error"]:
+                # extracted_output is already cleared to a falsy value by
+                # JSONPromptExtractor.extract() itself on an alignment
+                # failure (WI-SEGMENT-0059), so this is defense-in-depth,
+                # not strictly required -- but explicit here for clarity
+                # and to avoid relying on a shared library's internal
+                # contract without checking the error field it exists to
+                # report.
+                segments = []
 
             # 2) Per-segment semantic judgments (text-only, no external labels).
             annotated = scene_analysis.annotate_segments_with_semantics(

@@ -133,6 +133,14 @@ def classify(result: dict, segments: list) -> str:
         return f"api_error:{label or 'unknown'}"
     if result.get("extraction_error"):
         return f"extraction_error:{result['extraction_error']}"
+    if result.get("alignment_error"):
+        # extracted_output is None here regardless (cleared by
+        # JSONPromptExtractor.extract() itself on an alignment failure,
+        # WI-SEGMENT-0059) -- this check exists so the story is reported
+        # under its real cause instead of silently falling through to
+        # "included", exactly the class of silent misreporting this
+        # script exists to measure and prevent.
+        return f"alignment_error:{result['alignment_error']}"
     if not segments:
         return "no_segments"
     return "included"
@@ -256,6 +264,12 @@ def main() -> int:
         word_counts.append(word_count)
         api_error = result.get("api_error")
         segments = result.get("extracted_output") or []
+        if result.get("alignment_error"):
+            # segments would already be [] here regardless (extracted_
+            # output is cleared to None by JSONPromptExtractor.extract()
+            # itself on an alignment failure, WI-SEGMENT-0059) -- kept
+            # explicit for clarity, not strict necessity.
+            segments = []
         outcome = classify(result, segments)
         counts[outcome] += 1
         # Persist immediately - both raw_output (empty for this extractor:
