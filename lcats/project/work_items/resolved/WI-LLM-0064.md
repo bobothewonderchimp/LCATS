@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #281 (commit 2897d982b9bf5884db04513b9f5a458ee29e21c2)"
 blocked_reason: null
 blocked: false
 id: WI-LLM-0064
 title: Establish a best-of-breed config for ollama_gpt_oss_20b and fix harness diagnostic gaps
 type: investigation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []

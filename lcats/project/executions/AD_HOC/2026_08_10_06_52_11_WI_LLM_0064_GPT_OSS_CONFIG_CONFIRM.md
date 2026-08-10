@@ -2,14 +2,14 @@
 execution_id: 2026_08_10_06_52_11_WI_LLM_0064_GPT_OSS_CONFIG_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_LLM_0064_GPT_OSS_CONFIG_CONFIRM)[2026-08-10T06:52:01+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/281
-commit: 9d663cc6956d67c7180279f01219881fdee0b4cd
+commit: 2897d982b9bf5884db04513b9f5a458ee29e21c2
 created_at: 2026-08-10T06:52:11+00:00
 agent: codex_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/281
-session_transcript: pending
+session_transcript: none
 ---
 
 # Summary
