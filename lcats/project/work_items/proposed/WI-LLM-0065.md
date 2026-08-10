@@ -39,6 +39,7 @@ forbidden_actions:
 acceptance:
   - "A candidate-scoped gpt-oss:20b entity-extraction mitigation is tested with 3+ real runs, reporting raw entity count, grounded entity count, grounded mention count, and grounding/item errors"
   - "The evaluation uses production build_entities() semantics as the pass/fail grounding check; raw tool-call success alone is not counted as entity-extraction success"
+  - "The mitigation characterizes and addresses the complete malformed entity shape observed in results_entity_bestconfig_run*.json, including entity name/type keys and missing entity_id/canonical_name/entity_type fields, not only string-valued mentions"
   - "If any output-compatibility adapter is added, it is conservative, candidate-scoped or explicitly production-reviewed, tested, and does not fabricate evidence spans or weaken quote-substring grounding"
   - "The gpt-oss:20b README and ERW local-model proposal are updated to either mark grounded entity extraction viable under the tested mitigation or demote gpt-oss:20b to genre-only"
   - "No production default model, segmentation routing, or grounding strictness change is made"
@@ -67,8 +68,11 @@ evaluation to demote `gpt-oss:20b` to genre-only.
 `WI-LLM-0064` showed that `gpt-oss:20b` is reliable at the raw entity tool-call
 layer but not production-grounded: the candidate returned 11, 11, and 13 raw
 entities across three runs, yet `build_entities()` produced 0 grounded entities
-and 0 grounded mentions every time because `mentions` were emitted as strings
-rather than mention objects
+and 0 grounded mentions every time because the returned shape was not the
+production entity schema. The committed per-run JSON uses entity objects shaped
+like `{"name": "...", "mentions": ["..."]}` - and sometimes `type` - rather
+than the `entity_id`, `canonical_name`, `entity_type`, and mention-object fields
+that `build_entities()` consumes
 (`lcats/experimental/model_comparison/ollama_gpt_oss_20b/README.md:169`). The
 production builder explicitly drops ungrounded mentions and drops entities with
 no grounded mentions rather than fabricating spans
@@ -104,9 +108,9 @@ grounding without weakening production semantics
 
 - Evaluate entity extraction only for `gpt-oss:20b`; segmentation has already
   been fairly demoted for this candidate.
-- Test at least one candidate-scoped mitigation aimed at producing
-  production-grounded mention objects, such as a schema-specific prompt reminder
-  and/or conservative output compatibility handling.
+- Test at least one candidate-scoped mitigation aimed at producing the complete
+  production-grounded entity and mention object shape, such as a schema-specific
+  prompt reminder and/or conservative output compatibility handling.
 - Use the real `build_entities()` path as the decisive grounding check.
 - Update the candidate README and governing proposal with either a viable
   grounded-entity verdict or an explicit genre-only demotion.
@@ -114,15 +118,18 @@ grounding without weakening production semantics
 ## Required Changes
 
 1. Inspect the committed `results_entity_bestconfig*.json` failures to
-   characterize the malformed `mentions` shape and item-level grounding errors.
+   characterize the complete malformed entity shape: entity `name`/`type`
+   aliases, missing `entity_id`/`canonical_name`/`entity_type`, string-valued
+   `mentions`, missing `mention_id`, and item-level grounding errors.
 2. Add a candidate-local benchmark script, expected as
    `ollama_gpt_oss_20b/benchmark_entity_production_grounded.py`, that tests the
    mitigation under the same local Ollama `gpt-oss:20b` installation and
    records raw vs. grounded counts.
-3. If adding output compatibility handling, keep it conservative: only preserve
-   evidence that is a verbatim substring of the segment, do not invent offsets,
-   do not weaken `build_entities()` grounding semantics, and add focused tests
-   if production or shared harness code changes.
+3. If adding output compatibility handling, keep it conservative: normalize only
+   the documented malformed shape, synthesize stable IDs only where production
+   semantics permit, preserve only evidence that is a verbatim substring of the
+   segment, do not invent offsets, do not weaken `build_entities()` grounding
+   semantics, and add focused tests if production or shared harness code changes.
 4. Run at least 3 real entity-extraction runs for each tested mitigation and
    commit the aggregate result JSON plus any per-run evidence needed to review
    failures.
@@ -151,6 +158,10 @@ grounding without weakening production semantics
 - The evaluation uses production `build_entities()` semantics as the pass/fail
   grounding check; raw tool-call success alone is not counted as
   entity-extraction success.
+- The mitigation characterizes and addresses the complete malformed entity shape
+  observed in `results_entity_bestconfig_run*.json`, including entity name/type
+  keys and missing `entity_id`/`canonical_name`/`entity_type` fields, not only
+  string-valued mentions.
 - If any output-compatibility adapter is added, it is conservative,
   candidate-scoped or explicitly production-reviewed, tested, and does not
   fabricate evidence spans or weaken quote-substring grounding.
@@ -163,8 +174,8 @@ grounding without weakening production semantics
 ## Validation
 
 - `scripts/test tests/llm_tests`
-- `python lcats/experimental/model_comparison/ollama_gpt_oss_20b/setup.py`
-- `python lcats/experimental/model_comparison/ollama_gpt_oss_20b/benchmark_entity_production_grounded.py`
+- `python experimental/model_comparison/ollama_gpt_oss_20b/setup.py`
+- `python experimental/model_comparison/ollama_gpt_oss_20b/benchmark_entity_production_grounded.py`
 - `lrh validate`
 
 ## Risk Notes
