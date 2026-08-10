@@ -174,6 +174,7 @@ grounding without weakening production semantics
 ## Validation
 
 - `cd lcats`
+- `scripts/test`
 - `scripts/test tests/llm_tests`
 - `python experimental/model_comparison/ollama_gpt_oss_20b/setup.py`
 - `python experimental/model_comparison/ollama_gpt_oss_20b/benchmark_entity_production_grounded.py`
