@@ -356,14 +356,16 @@ validated genre ground-truth file rather than the fixture manifest's
 unvalidated plumbing labels. It made 8 real Anthropic generation calls:
 2 models x 2 stories x 2 stages. Results:
 
-- Baseline `claude-opus-4-8`: 18,748 input tokens, 2,294 output tokens,
-  measured cost $0.15109; genre-detect schema validity 2/2, genre accuracy
-  2/2, truncation 0/2; segmentation schema validity 2/2, truncation 0/2.
-- Candidate `claude-haiku-4-5-20251001`: 14,358 input tokens, 2,156 output
-  tokens, measured cost $0.025138; genre-detect schema validity 2/2, genre
-  accuracy 2/2, truncation 0/2; segmentation schema validity 2/2,
+- Baseline `claude-opus-4-8`: 18,748 input tokens, 2,365 output tokens,
+  measured cost $0.152865; genre-detect raw/schema validity 2/2, genre
+  accuracy 2/2, truncation 0/2; segmentation schema validity 1/2,
+  truncation 0/2. The segmentation miss was an alignment failure on
+  `king_of_the_hill` (`segment_id=2` anchor text not found), not truncation.
+- Candidate `claude-haiku-4-5-20251001`: 14,358 input tokens, 2,106 output
+  tokens, measured cost $0.024888; genre-detect raw/schema validity 2/2,
+  genre accuracy 2/2, truncation 0/2; segmentation schema validity 2/2,
   truncation 0/2.
-- Cost delta: -$0.125952 on the fixture set, an 83.36% reduction for these
+- Cost delta: -$0.127977 on the fixture set, an 83.72% reduction for these
   two stages in this run.
 
 Caveat: both Opus 4.8 and Haiku 4.5 marked `king_of_the_hill` as

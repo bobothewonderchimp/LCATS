@@ -38,14 +38,16 @@ real Anthropic comparison after explicit approval, and update Decision 5 in
   plus tests and a separate validated fixture genre ground-truth file.
 - Ran the explicitly-approved real comparison against the two WI-PILOT-0051
   fixture stories:
-  - Baseline `claude-opus-4-8`: 4 calls, 18,748 input tokens, 2,294 output
-    tokens, $0.15109; genre-detect schema validity 2/2, genre accuracy 2/2,
-    truncation 0/2; segmentation schema validity 2/2, truncation 0/2.
+  - Baseline `claude-opus-4-8`: 4 calls, 18,748 input tokens, 2,365 output
+    tokens, $0.152865; genre-detect raw/schema validity 2/2, genre accuracy
+    2/2, truncation 0/2; segmentation schema validity 1/2, truncation 0/2.
+    The segmentation miss was an alignment failure on `king_of_the_hill`, not
+    truncation.
   - Candidate `claude-haiku-4-5-20251001`: 4 calls, 14,358 input tokens,
-    2,156 output tokens, $0.025138; genre-detect schema validity 2/2, genre
-    accuracy 2/2, truncation 0/2; segmentation schema validity 2/2,
+    2,106 output tokens, $0.024888; genre-detect raw/schema validity 2/2,
+    genre accuracy 2/2, truncation 0/2; segmentation schema validity 2/2,
     truncation 0/2.
-  - Savings: $0.125952 on this fixture set, an 83.36% reduction for the two
+  - Savings: $0.127977 on this fixture set, an 83.72% reduction for the two
     measured stages.
 - Updated Decision 5 with a bounded go recommendation for a follow-on
   configuration/defaulting change: use Haiku 4.5 for genre-detection and
@@ -71,8 +73,8 @@ real Anthropic comparison after explicit approval, and update Decision 5 in
 - Environment drift checks:
   - Initial checks found `lcats` resolving to a sibling worktree and PATH
     resolving Homebrew `ruff`/`black`.
-  - Repaired with `conda run -n LCATS scripts/develop` and validated via
-    `conda run -n LCATS env PATH=/Users/centaur/anaconda3/envs/LCATS/bin:$PATH`.
+  - Repaired with `conda run -n LCATS scripts/develop` and validated with
+    the LCATS conda environment's `bin` directory first on `PATH`.
   - `python -c "import lcats; print(lcats.__file__)"` resolved to this
     worktree's `lcats/src/lcats/__init__.py`.
 - `scripts/version tools` under the LCATS env/PATH: Python 3.11.9,
@@ -85,7 +87,7 @@ real Anthropic comparison after explicit approval, and update Decision 5 in
 - Experiment-specific checks under LCATS env/PATH:
   - `python -m unittest experiments/03_cross_segment_relation_pilot/run_pilot_test.py
     experiments/03_cross_segment_relation_pilot/measure_model_tiering_test.py`:
-    39 tests OK.
+    41 tests OK after review-response tests were added.
   - `python -m black --check --diff` on changed experiment Python files:
     4 files unchanged.
   - `python -m ruff check` on changed experiment Python files: all checks

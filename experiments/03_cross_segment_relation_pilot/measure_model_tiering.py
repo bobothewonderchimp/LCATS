@@ -22,7 +22,7 @@ import json
 import pathlib
 import sys
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
@@ -46,6 +46,18 @@ _MODEL_PRICING_PER_MTOK: Dict[str, Dict[str, float]] = {
 
 def _fixtures_dir() -> pathlib.Path:
     return pathlib.Path(__file__).resolve().parent / "fixtures"
+
+
+def _repo_root() -> pathlib.Path:
+    return pathlib.Path(__file__).resolve().parents[2]
+
+
+def _display_path(path: pathlib.Path) -> str:
+    resolved = path.resolve()
+    try:
+        return str(resolved.relative_to(_repo_root()))
+    except ValueError:
+        return str(resolved)
 
 
 def _fixture_stories(fixtures_dir: Optional[pathlib.Path] = None) -> List[pathlib.Path]:
@@ -89,6 +101,78 @@ def _compute_cost_usd(
     ) / 1_000_000
 
 
+def _expected_json_type(schema_type: Any) -> Tuple[type, ...]:
+    if isinstance(schema_type, list):
+        return tuple(
+            expected
+            for item in schema_type
+            for expected in _expected_json_type(item)
+        )
+    if schema_type == "object":
+        return (dict,)
+    if schema_type == "array":
+        return (list,)
+    if schema_type == "string":
+        return (str,)
+    if schema_type == "number":
+        return (int, float)
+    if schema_type == "integer":
+        return (int,)
+    if schema_type == "boolean":
+        return (bool,)
+    return (object,)
+
+
+def _validate_schema_subset(
+    value: Any, schema: Dict[str, Any], path: str = "$"
+) -> List[str]:
+    """Validate the JSON-schema subset used by ASSESSMENT_TOOL.
+
+    This deliberately validates the raw tool arguments before assess_story()
+    applies defaults and Python coercions, so malformed structured output
+    cannot be counted as schema-valid in the model-tiering measurement.
+    """
+    errors: List[str] = []
+    schema_type = schema.get("type")
+    expected = _expected_json_type(schema_type)
+    if expected != (object,) and not isinstance(value, expected):
+        errors.append(f"{path} expected {schema_type}, got {type(value).__name__}")
+        return errors
+    if schema_type == "number" and isinstance(value, bool):
+        errors.append(f"{path} expected number, got bool")
+        return errors
+    if "enum" in schema and value not in schema["enum"]:
+        errors.append(f"{path} value {value!r} not in enum {schema['enum']!r}")
+    if schema_type == "object":
+        properties = schema.get("properties") or {}
+        required = schema.get("required") or []
+        for key in required:
+            if key not in value:
+                errors.append(f"{path}.{key} missing required field")
+        if schema.get("additionalProperties") is False:
+            for key in value:
+                if key not in properties:
+                    errors.append(f"{path}.{key} unexpected field")
+        for key, child_schema in properties.items():
+            if key in value:
+                errors.extend(
+                    _validate_schema_subset(value[key], child_schema, f"{path}.{key}")
+                )
+    if schema_type == "array":
+        item_schema = schema.get("items") or {}
+        for index, item in enumerate(value):
+            errors.extend(_validate_schema_subset(item, item_schema, f"{path}[{index}]"))
+    return errors
+
+
+def _validate_assessment_tool_result(raw_tool_result: Any) -> List[str]:
+    if raw_tool_result is None:
+        return ["$ expected object, got None"]
+    return _validate_schema_subset(
+        raw_tool_result, corpus_assess.ASSESSMENT_TOOL["input_schema"]
+    )
+
+
 class _RecordingBackend:
     """Record every real/fake backend call while preserving behavior."""
 
@@ -106,6 +190,7 @@ class _RecordingBackend:
                 "model": response.model,
                 "input_tokens": response.input_tokens,
                 "output_tokens": response.output_tokens,
+                "tool_result": response.tool_result,
             }
         )
         return response
@@ -171,15 +256,19 @@ def _run_genre_detection(
     ground_truth: Dict[str, Any],
 ) -> Dict[str, Any]:
     result = corpus_assess.assess_story(story_path, backend=backend, model=model)
-    truth = ground_truth[_story_key(story_path)]
-    schema_valid = not result.error and result.detected_genre in (
-        list(corpus_assess.VALID_GENRES) + ["other"]
+    raw_call = (getattr(backend, "calls", None) or [{}])[-1]
+    raw_validation_errors = _validate_assessment_tool_result(
+        raw_call.get("tool_result")
     )
+    truth = ground_truth[_story_key(story_path)]
+    schema_valid = not result.error and not raw_validation_errors
     genre_matches = result.detected_genre == truth["validated_genre"]
     return {
         "story_id": run_pilot._story_identity(story_path),
         "stage": "genre_detect",
         "schema_valid": bool(schema_valid),
+        "raw_schema_valid": not raw_validation_errors,
+        "raw_schema_errors": raw_validation_errors,
         "truncated": _is_truncation(result.error),
         "detected_genre": result.detected_genre,
         "validated_genre": truth["validated_genre"],
@@ -281,8 +370,8 @@ def run_comparison(
         "baseline_model": baseline_model,
         "candidate_model": candidate_model,
         "stories": [run_pilot._story_identity(story) for story in stories],
-        "fixture_root": str(fixture_root),
-        "ground_truth_path": str(_ground_truth_path(fixture_root)),
+        "fixture_root": _display_path(fixture_root),
+        "ground_truth_path": _display_path(_ground_truth_path(fixture_root)),
         "runs": {},
     }
 
