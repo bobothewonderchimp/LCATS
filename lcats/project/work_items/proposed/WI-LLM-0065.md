@@ -112,6 +112,10 @@ grounding without weakening production semantics
   production-grounded entity and mention object shape, such as a schema-specific
   prompt reminder and/or conservative output compatibility handling.
 - Use the real `build_entities()` path as the decisive grounding check.
+- Treat a benchmark-local adapter as diagnostic only. A viable production
+  verdict requires either schema-compliant raw model output or an adapter wired
+  into and tested on the production candidate path that feeds
+  `build_entities()`; otherwise demote `gpt-oss:20b` to genre-only.
 - Update the candidate README and governing proposal with either a viable
   grounded-entity verdict or an explicit genre-only demotion.
 
@@ -130,12 +134,17 @@ grounding without weakening production semantics
    semantics permit, preserve only evidence that is a verbatim substring of the
    segment, do not invent offsets, do not weaken `build_entities()` grounding
    semantics, and add focused tests if production or shared harness code changes.
-4. Run at least 3 real entity-extraction runs for each tested mitigation and
+4. If an adapter is needed for viability, wire it into the production candidate
+   path before `build_entities()` and test that production path. If the adapter
+   remains only in the candidate-local benchmark, report the benchmark result as
+   diagnostic and keep the production recommendation genre-only.
+5. Run at least 3 real entity-extraction runs for each tested mitigation and
    commit the aggregate result JSON plus any per-run evidence needed to review
    failures.
-5. Update `ollama_gpt_oss_20b/README.md` and
+6. Update `ollama_gpt_oss_20b/README.md` and
    `PROP-ERW-LOCAL-MODEL-EVALUATION` with the final recommendation: viable for
-   grounded entity extraction under the tested mitigation, or genre-only.
+   grounded entity extraction only when the production candidate path is
+   schema-compliant or adapter-wired and tested, or genre-only.
 
 ## Non-Goals
 
@@ -163,11 +172,12 @@ grounding without weakening production semantics
   keys and missing `entity_id`/`canonical_name`/`entity_type` fields, not only
   string-valued mentions.
 - If any output-compatibility adapter is added, it is conservative,
-  candidate-scoped or explicitly production-reviewed, tested, and does not
-  fabricate evidence spans or weaken quote-substring grounding.
+  candidate-scoped or explicitly production-reviewed, tested on the production
+  candidate path before any viable verdict, and does not fabricate evidence
+  spans or weaken quote-substring grounding.
 - The `gpt-oss:20b` README and ERW local-model proposal are updated to either
-  mark grounded entity extraction viable under the tested mitigation or demote
-  `gpt-oss:20b` to genre-only.
+  mark grounded entity extraction viable under schema-compliant raw output or a
+  production-wired and tested adapter, or demote `gpt-oss:20b` to genre-only.
 - No production default model, segmentation routing, or grounding strictness
   change is made.
 
@@ -184,7 +194,7 @@ grounding without weakening production semantics
 
 - A compatibility adapter could make the candidate look better than it is if it
   silently upgrades malformed output; require explicit evidence-preserving
-  behavior and tests.
+  behavior, production-path wiring for any viable verdict, and tests.
 - Nonzero grounded entity counts are necessary but not sufficient for quality;
   this item should not overclaim precision/recall.
 - Local model latency and nondeterminism may make a borderline result hard to
