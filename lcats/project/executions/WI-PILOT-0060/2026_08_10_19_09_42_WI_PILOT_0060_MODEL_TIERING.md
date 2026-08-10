@@ -4,7 +4,7 @@ prompt_id: PROMPT(WI-PILOT-0060:WI_PILOT_0060_MODEL_TIERING)[2026-08-10T18:54:49
 work_item: WI-PILOT-0060
 status: in_progress
 rerun_of: 
-pr: 
+pr: https://github.com/xenotaur/LCATS/pull/286
 commit: 
 agent: codex_app
 instruction_source: project/work_items/proposed/WI-PILOT-0060.md
