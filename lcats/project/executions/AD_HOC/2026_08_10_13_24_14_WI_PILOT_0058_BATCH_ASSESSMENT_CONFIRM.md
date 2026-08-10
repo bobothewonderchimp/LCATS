@@ -2,10 +2,10 @@
 execution_id: 2026_08_10_13_24_14_WI_PILOT_0058_BATCH_ASSESSMENT_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_PILOT_0058_BATCH_ASSESSMENT_CONFIRM)[2026-08-10T17:24:14+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_10_03_27_47_WI_PILOT_0058_BATCH_ASSESSMENT
 pr: https://github.com/xenotaur/LCATS/pull/284
-commit:
+commit: 56c491a8c5efed775cad015be54c46606948a6f8
 agent: codex
 instruction_source: https://github.com/xenotaur/LCATS/pull/284
 session_transcript: none

@@ -2,10 +2,10 @@
 execution_id: 2026_08_10_03_33_44_WI_PILOT_0058_BATCH_ASSESSMENT_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_PILOT_0058_BATCH_ASSESSMENT_SELFREVIEW)[2026-08-10T07:33:44+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/284
-commit:
+commit: 56c491a8c5efed775cad015be54c46606948a6f8
 agent: codex
 instruction_source: promptspace:manual-lrh-self-review-diff-mode
 session_transcript: none
