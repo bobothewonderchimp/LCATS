@@ -23,6 +23,7 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `proposed/WI-RELEASE-0039.md` — Pre-launch verification of the gutenbergpy dependency resolution before real PyPI publish
 - `proposed/WI-STORY-0042.md` — Make LCATS story discovery and identity dual-layout-compatible
 - `proposed/WI-LLM-0055.md` — Capture full entity lists and diff them across benchmark candidates
+- `proposed/WI-LLM-0065.md` — Make gpt-oss:20b entity extraction production-grounded, or explicitly demote it to genre-only
 - `proposed/WI-ANNOTATE-0052.md` — Validate sidecar content in lcats promote's release gate
 - `proposed/WI-ANNOTATE-0054.md` — Run lcats annotate over a per-genre subset and collect statistics
 
