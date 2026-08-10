@@ -1,0 +1,232 @@
+{
+  "baseline_model": "claude-opus-4-8",
+  "candidate_model": "claude-haiku-4-5-20251001",
+  "stories": [
+    "fixtures__five_o_clock_tea_farce",
+    "fixtures__king_of_the_hill"
+  ],
+  "fixture_root": "/Users/centaur/Workspace/LCATS/Workstreams/Codex/EventExtractor/LCATS/experiments/03_cross_segment_relation_pilot/fixtures",
+  "ground_truth_path": "/Users/centaur/Workspace/LCATS/Workstreams/Codex/EventExtractor/LCATS/experiments/03_cross_segment_relation_pilot/fixtures/genre_ground_truth.json",
+  "runs": {
+    "baseline": {
+      "model": "claude-opus-4-8",
+      "calls": 4,
+      "total_input_tokens": 18748,
+      "total_output_tokens": 2294,
+      "cost_usd": 0.15109,
+      "stages": {
+        "genre_detect": {
+          "total": 2,
+          "schema_valid_count": 2,
+          "schema_valid_rate": 1.0,
+          "truncation_count": 0,
+          "truncation_rate": 0.0,
+          "genre_accuracy_count": 2,
+          "genre_accuracy_rate": 1.0
+        },
+        "segment": {
+          "total": 2,
+          "schema_valid_count": 2,
+          "schema_valid_rate": 1.0,
+          "truncation_count": 0,
+          "truncation_rate": 0.0
+        }
+      },
+      "results": [
+        {
+          "story_id": "fixtures__five_o_clock_tea_farce",
+          "stage": "genre_detect",
+          "schema_valid": true,
+          "truncated": false,
+          "detected_genre": "other",
+          "validated_genre": "other",
+          "genre_matches_ground_truth": true,
+          "wellformed": false,
+          "validated_wellformed": false,
+          "error": "",
+          "input_tokens": 4029,
+          "output_tokens": 537,
+          "model": "claude-opus-4-8"
+        },
+        {
+          "story_id": "fixtures__five_o_clock_tea_farce",
+          "stage": "segment",
+          "schema_valid": true,
+          "truncated": false,
+          "segment_count": 1,
+          "error": null,
+          "input_tokens": 6103,
+          "output_tokens": 329,
+          "model": "claude-opus-4-8"
+        },
+        {
+          "story_id": "fixtures__king_of_the_hill",
+          "stage": "genre_detect",
+          "schema_valid": true,
+          "truncated": false,
+          "detected_genre": "science fiction",
+          "validated_genre": "science fiction",
+          "genre_matches_ground_truth": true,
+          "wellformed": false,
+          "validated_wellformed": true,
+          "error": "",
+          "input_tokens": 3313,
+          "output_tokens": 436,
+          "model": "claude-opus-4-8"
+        },
+        {
+          "story_id": "fixtures__king_of_the_hill",
+          "stage": "segment",
+          "schema_valid": true,
+          "truncated": false,
+          "segment_count": 2,
+          "error": null,
+          "input_tokens": 5303,
+          "output_tokens": 992,
+          "model": "claude-opus-4-8"
+        }
+      ],
+      "backend_calls": [
+        {
+          "tool_name": "record_story_assessment",
+          "requested_model": "claude-opus-4-8",
+          "model": "claude-opus-4-8",
+          "input_tokens": 4029,
+          "output_tokens": 537
+        },
+        {
+          "tool_name": "record_segments",
+          "requested_model": "claude-opus-4-8",
+          "model": "claude-opus-4-8",
+          "input_tokens": 6103,
+          "output_tokens": 329
+        },
+        {
+          "tool_name": "record_story_assessment",
+          "requested_model": "claude-opus-4-8",
+          "model": "claude-opus-4-8",
+          "input_tokens": 3313,
+          "output_tokens": 436
+        },
+        {
+          "tool_name": "record_segments",
+          "requested_model": "claude-opus-4-8",
+          "model": "claude-opus-4-8",
+          "input_tokens": 5303,
+          "output_tokens": 992
+        }
+      ]
+    },
+    "candidate": {
+      "model": "claude-haiku-4-5-20251001",
+      "calls": 4,
+      "total_input_tokens": 14358,
+      "total_output_tokens": 2156,
+      "cost_usd": 0.025138,
+      "stages": {
+        "genre_detect": {
+          "total": 2,
+          "schema_valid_count": 2,
+          "schema_valid_rate": 1.0,
+          "truncation_count": 0,
+          "truncation_rate": 0.0,
+          "genre_accuracy_count": 2,
+          "genre_accuracy_rate": 1.0
+        },
+        "segment": {
+          "total": 2,
+          "schema_valid_count": 2,
+          "schema_valid_rate": 1.0,
+          "truncation_count": 0,
+          "truncation_rate": 0.0
+        }
+      },
+      "results": [
+        {
+          "story_id": "fixtures__five_o_clock_tea_farce",
+          "stage": "genre_detect",
+          "schema_valid": true,
+          "truncated": false,
+          "detected_genre": "other",
+          "validated_genre": "other",
+          "genre_matches_ground_truth": true,
+          "wellformed": false,
+          "validated_wellformed": false,
+          "error": "",
+          "input_tokens": 2993,
+          "output_tokens": 329,
+          "model": "claude-haiku-4-5-20251001"
+        },
+        {
+          "story_id": "fixtures__five_o_clock_tea_farce",
+          "stage": "segment",
+          "schema_valid": true,
+          "truncated": false,
+          "segment_count": 1,
+          "error": null,
+          "input_tokens": 4608,
+          "output_tokens": 293,
+          "model": "claude-haiku-4-5-20251001"
+        },
+        {
+          "story_id": "fixtures__king_of_the_hill",
+          "stage": "genre_detect",
+          "schema_valid": true,
+          "truncated": false,
+          "detected_genre": "science fiction",
+          "validated_genre": "science fiction",
+          "genre_matches_ground_truth": true,
+          "wellformed": false,
+          "validated_wellformed": true,
+          "error": "",
+          "input_tokens": 2614,
+          "output_tokens": 295,
+          "model": "claude-haiku-4-5-20251001"
+        },
+        {
+          "story_id": "fixtures__king_of_the_hill",
+          "stage": "segment",
+          "schema_valid": true,
+          "truncated": false,
+          "segment_count": 3,
+          "error": null,
+          "input_tokens": 4143,
+          "output_tokens": 1239,
+          "model": "claude-haiku-4-5-20251001"
+        }
+      ],
+      "backend_calls": [
+        {
+          "tool_name": "record_story_assessment",
+          "requested_model": "claude-haiku-4-5-20251001",
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 2993,
+          "output_tokens": 329
+        },
+        {
+          "tool_name": "record_segments",
+          "requested_model": "claude-haiku-4-5-20251001",
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 4608,
+          "output_tokens": 293
+        },
+        {
+          "tool_name": "record_story_assessment",
+          "requested_model": "claude-haiku-4-5-20251001",
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 2614,
+          "output_tokens": 295
+        },
+        {
+          "tool_name": "record_segments",
+          "requested_model": "claude-haiku-4-5-20251001",
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 4143,
+          "output_tokens": 1239
+        }
+      ]
+    }
+  },
+  "cost_delta_usd": -0.125952,
+  "cost_savings_usd": 0.125952
+}

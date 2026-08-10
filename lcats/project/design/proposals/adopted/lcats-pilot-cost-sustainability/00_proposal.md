@@ -341,20 +341,44 @@ model for entity/event/relation/discourse/cross-segment extraction?
 - Adopt a specific cheaper model now.
 - Evaluate empirically first, using the Decision 2 harness.
 
-**Chosen: evaluate first.** Anthropic's current model-comparison pricing
-(`platform.claude.com/docs/en/about-claude/models/overview`) shows a
-real spread (e.g. Haiku 4.5 at $1/$5 per MTok vs. legacy Opus 4.8 at
-$5/$25) that could meaningfully cut genre-detect's 200-candidate scan cost
-specifically. But this session directly observed the *top-tier* model
-producing malformed structured output under real conditions (the
-`speech_acts`-as-string bug, `lcats/project/design/backlog.md` lines
-164-180) — a cheaper model's reliability on the same strict-schema
-tool-use is an open, unvalidated question, not a safe assumption.
-`run_pilot.py:1153`'s single global `--model` flag also needs to become
-per-stage before this is
-even testable. This decision is deferred to a follow-on work item that
-evaluates real output quality against the Decision 2 fixture set before
-any adoption.
+**Chosen: go, bounded to genre-detection and segmentation, after real
+measurement.** Anthropic's current model-comparison pricing
+(`platform.claude.com/docs/en/about-claude/pricing`, verified 2026-08-10)
+shows the relevant spread: Claude Opus 4.8 at $5/$25 per MTok versus Claude
+Haiku 4.5 at $1/$5 per MTok. `WI-PILOT-0060` added per-stage model overrides
+to `run_pilot.py` so this can be evaluated without changing the global model
+default.
+
+The real bounded comparison
+(`experiments/03_cross_segment_relation_pilot/results/model_tiering_eval/model_tiering_comparison.json`)
+ran against the two `WI-PILOT-0051` fixture stories, using a separate
+validated genre ground-truth file rather than the fixture manifest's
+unvalidated plumbing labels. It made 8 real Anthropic generation calls:
+2 models x 2 stories x 2 stages. Results:
+
+- Baseline `claude-opus-4-8`: 18,748 input tokens, 2,294 output tokens,
+  measured cost $0.15109; genre-detect schema validity 2/2, genre accuracy
+  2/2, truncation 0/2; segmentation schema validity 2/2, truncation 0/2.
+- Candidate `claude-haiku-4-5-20251001`: 14,358 input tokens, 2,156 output
+  tokens, measured cost $0.025138; genre-detect schema validity 2/2, genre
+  accuracy 2/2, truncation 0/2; segmentation schema validity 2/2,
+  truncation 0/2.
+- Cost delta: -$0.125952 on the fixture set, an 83.36% reduction for these
+  two stages in this run.
+
+Caveat: both Opus 4.8 and Haiku 4.5 marked `king_of_the_hill` as
+`wellformed: false` while the WI-PILOT-0060 ground truth marks it
+wellformed. That does not change this decision's genre-detection metric,
+because `run_pilot.py`'s genre-detect scan consumes `detected_genre`, not
+`wellformed`, but it is a reminder not to treat the assessment call as a
+complete corpus-QA substitute.
+
+Recommendation: adopt Haiku 4.5 for the pilot's genre-detection and
+segmentation stages in a follow-on configuration/defaulting change, while
+continuing to reserve the top-tier model for entity/event/relation/
+discourse/cross-segment extraction. This decision does **not** default model
+tiering on in `WI-PILOT-0060`; every stage still uses the global model unless
+an explicit per-stage override is supplied.
 
 ### Decision 6: Reject fusing the 4 per-segment extractor calls
 
