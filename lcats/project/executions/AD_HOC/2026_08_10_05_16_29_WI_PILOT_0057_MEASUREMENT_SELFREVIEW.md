@@ -2,10 +2,11 @@
 execution_id: 2026_08_10_05_16_29_WI_PILOT_0057_MEASUREMENT_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_PILOT_0057_MEASUREMENT_SELFREVIEW)[2026-08-10T05:16:11+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
-pr: 
-commit: 
+pr: https://github.com/xenotaur/LCATS/pull/282
+commit: f9795838e77b7232b59ffe43ce3dc92ced00da66
+session_transcript: none
 created_at: 2026-08-10T05:16:29+00:00
 ---
 
