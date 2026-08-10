@@ -618,6 +618,45 @@ Non-Goals. See `lcats/experimental/model_comparison/ollama_gpt_oss_20b/README.md
 "Follow-up" section for the full per-stage write-up and committed
 evidence.
 
+### Decision 3 update (2026-08-10, `gpt-oss:20b` best-config/grounding follow-up, `WI-LLM-0064`)
+
+`WI-LLM-0064` tested whether the `WI-LLM-0063` `gpt-oss:20b` verdict was
+unfairly pessimistic because the harness was still using shared
+Anthropic/OpenAI-tuned settings, and because prior entity results counted
+raw tool-result entities rather than production-grounded entities. The
+local Ollama installation's bundled parameters for `gpt-oss:20b` report
+`temperature 1`, so this follow-up added candidate-local best-config
+scripts at `temperature=1.0` and extra diagnostics only for this
+candidate.
+
+- **Entity extraction at `temperature=1.0`: raw tool-call success 3/3,
+  grounded success 0/3.** The model still called `extract_entities`
+  reliably and returned 11, 11, and 13 raw entities, but every run emitted
+  `mentions` as plain strings rather than the mention objects expected by
+  production `build_entities()`. The new grounded diagnostic therefore
+  found 0 grounded entities and 0 grounded mentions in every run. This
+  corrects the earlier "entity extraction reliable" framing: it was
+  reliable at the API/tool-call layer, but not yet production-usable as an
+  ERW entity-extraction replacement.
+- **Segmentation at `temperature=1.0`: 0/3.** All three runs still
+  ignored the forced `record_segments` tool call and emitted
+  schema-shaped JSON in message content instead.
+- **Segmentation with `temperature=1.0` plus an explicit verbatim-anchor
+  reminder: 0/3.** The reminder changed the failure mode in 2 of 3 runs
+  by getting the model to call `record_segments`, but the captured
+  pre-alignment anchors still failed production alignment (ellipses,
+  invented/paraphrased boundary text, case drift). The third reminder run
+  returned no tool call/refusal.
+
+**Recommendation, updated:** `gpt-oss:20b` remains a good local candidate
+for genre detection only. It is a plausible follow-up target for entity
+extraction prompt/schema/output-handling work, because it reliably calls
+the tool and returns plausible raw names, but it should no longer be
+treated as production-ready for grounded ERW entity extraction. It remains
+not viable for segmentation under the current OpenAI-compatible Ollama
+harness: the fairer best-config test stayed 0/6 usable across the two
+segmentation variants.
+
 ### Landscape context (not itself decision-grade evidence)
 
 A web survey (Aug 2026) of runtimes and models informs which candidates to
@@ -722,7 +761,15 @@ adopted):
    `common/harness.py`'s `run_segmentation()` and verified end-to-end
    with a real call. See the "Decision 3 update (2026-08-08 ...)" section
    above.
-4. Only after (1)-(3): revisit Decision 3 in a follow-on proposal or
+4. ~~Test whether `gpt-oss:20b` improves under its bundled local
+   best-config (`temperature=1.0`) and a targeted verbatim-anchor
+   reminder.~~ **Done (`WI-LLM-0064`).** Genre detection remains the only
+   clean local use case. Entity extraction stays raw-tool-call reliable
+   but not production-grounded (0/3 grounded entity runs), and
+   segmentation remains not viable (0/6 across plain `temperature=1.0`
+   and verbatim-reminder variants). See the "Decision 3 update
+   (2026-08-10 ... `WI-LLM-0064`)" section above.
+5. Only after (1)-(4): revisit Decision 3 in a follow-on proposal or
    amendment.
 
 ## Cross-References
@@ -792,14 +839,23 @@ adopted):
   suggest; and whether Ollama's native `/api/chat` endpoint (still
   untested, per `WI-LLM-0051`'s own open item) would do better on either
   Ollama candidate.
-- Is `ollama_gpt_oss_20b`'s segmentation-stage alignment-rejection
-  failure (`WI-LLM-0063`) - the reminder retry does get the tool called,
-  but the resulting segment fails downstream anchor-text alignment -
-  addressable by a different mitigation (e.g. instructing the model to
-  quote source text verbatim), or is it a distinct, likely-unmitigable
-  failure mode the same way `deepseek-r1:14b`'s silent-ignore proved
-  fully unresponsive? Not tested - out of this WI's own scope (Non-Goals:
-  no mitigation beyond the existing automatic reminder retry).
+- ~~Is `ollama_gpt_oss_20b`'s segmentation-stage alignment-rejection
+  failure (`WI-LLM-0063`) addressable by a different mitigation (e.g.
+  instructing the model to quote source text verbatim)?~~ **Answered
+  (`WI-LLM-0064`):** not by the tested best-config mitigation.
+  `temperature=1.0` alone stayed 0/3 because the model emitted
+  schema-shaped JSON in message content rather than a tool call; adding a
+  candidate-local verbatim-anchor reminder changed 2 of 3 runs into real
+  tool calls, but both still failed anchor alignment, and the third run
+  returned no tool call/refusal. Segmentation remains not viable for this
+  candidate under the current OpenAI-compatible Ollama path.
+- Is `gpt-oss:20b`'s grounded entity-extraction failure addressable by a
+  prompt/schema/output-handling follow-up? `WI-LLM-0064` showed raw
+  tool-call reliability at `temperature=1.0` (3/3) but 0 grounded
+  entities because `mentions` were emitted as strings rather than
+  production mention objects. Not yet tested: whether a schema-specific
+  reminder, stricter output validation, or a small compatibility adapter
+  can preserve grounding without weakening production semantics.
 - Is MLX (native Apple Silicon) meaningfully more reliable than
   Ollama/llama.cpp for this pipeline's tool-schema calls? Not yet tested.
 - What is the actual VRAM-bound model-size sweet spot on the Kubuntu Focus

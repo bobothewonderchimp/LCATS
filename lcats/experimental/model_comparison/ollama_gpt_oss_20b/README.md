@@ -136,9 +136,86 @@ baseline) - the reminder mitigation changes *how* it fails (silent-ignore
 
 ### Overall verdict
 
-`gpt-oss:20b` is a strong candidate for genre detection (3/3) and entity
-extraction (3/3, with real output/entity-count variance not yet
-precision/recall characterized), but **not viable for segmentation** (0/3, same as every
+`gpt-oss:20b` is a strong candidate for genre detection (3/3) and looked
+promising for entity extraction at the raw tool-call level (3/3, with
+real output/entity-count variance not yet precision/recall
+characterized), but **not viable for segmentation** (0/3, same as every
 other local model tested on this stage in this tranche) - the pipeline's
 segmentation stage remains an Anthropic-only stage for now, independent
 of which local model is chosen for the other two.
+
+## Best-config/grounding follow-up (`WI-LLM-0064`)
+
+`WI-LLM-0064` tested whether the prior `gpt-oss:20b` findings were
+unfairly pessimistic because the harness was still using the shared
+Anthropic/OpenAI-tuned defaults. The local installation's bundled Ollama
+parameters report `temperature 1`, so the follow-up added candidate-local
+scripts at that setting and recorded diagnostics that the prior harness
+did not preserve:
+
+- `benchmark_entity_bestconfig.py` - 3 entity-extraction runs at
+  `temperature=1.0`, recording both raw tool-result counts and the
+  production `build_entities()` grounded counts.
+- `benchmark_segmentation_bestconfig.py` - 3 segmentation runs at
+  `temperature=1.0`, plus 3 runs at `temperature=1.0` with an explicit
+  verbatim-anchor reminder, recording pre-alignment `start_exact`/
+  `end_exact` strings.
+
+### Entity extraction best-config - raw success, grounding failure
+
+`results_entity_bestconfig.json`,
+`results_entity_bestconfig_run{1,2,3}.json`:
+
+| Run | Result | Latency | Output tokens | Raw entities | Grounded entities | Grounded mentions |
+|---|---|---:|---:|---:|---:|---:|
+| 1 | raw tool success | 44.6s | 1464 | 11 | 0 | 0 |
+| 2 | raw tool success | 49.8s | 1904 | 11 | 0 | 0 |
+| 3 | raw tool success | 110.8s | 3403 | 13 | 0 | 0 |
+
+The API/tool-call layer worked 3/3, but every run emitted `mentions` as
+plain strings (for example `"Sherlock Holmes"`) rather than the mention
+objects expected by `build_entities()`. The new grounded diagnostic
+therefore reports 0 grounded entities and 0 grounded mentions in all
+three runs, with item-level errors checked into the per-run JSON.
+
+**Verdict: entity extraction is not production-usable in its current
+shape.** `gpt-oss:20b` remains interesting because it calls the tool
+reliably and produces plausible raw names, but it needs a targeted
+prompt/schema/output-handling follow-up before it should be treated as a
+real ERW entity-extraction candidate. The earlier "3/3 success" verdict
+should be read as raw tool-call success only, not downstream grounded
+entity success.
+
+### Segmentation best-config - still 0/3 usable
+
+`results_segmentation_bestconfig.json`,
+`results_segmentation_bestconfig_temperature_1_run{1,2,3}.json`,
+`results_segmentation_bestconfig_verbatim_quote_reminder_run{1,2,3}.json`:
+
+| Variant | Runs | Result | Latency range | Output-token range | Failure mode |
+|---|---:|---|---:|---:|---|
+| `temperature_1` | 3 | 0/3 | 126.5-175.1s | 4246-5610 | no tool call; schema-shaped JSON in message content |
+| `verbatim_quote_reminder` | 3 | 0/3 | 99.8-127.2s | 2220-4164 | 2 alignment failures with captured bad anchors; 1 no tool call/refusal |
+
+The verbatim-anchor reminder improved observability and partially changed
+the failure mode, but did not produce a usable segmentation result. In
+two runs the model called `record_segments`, yet the captured anchors show
+why the production aligner rejected the output: ellipses, invented text,
+case drift, and paraphrased boundary strings such as
+`"...to illustrate."` or a fabricated paragraph-start sentence were not
+verbatim substrings of the story.
+
+**Verdict: segmentation remains not viable for `gpt-oss:20b`.**
+`temperature=1.0` and an explicit verbatim-anchor reminder are not enough
+to rescue the stage through the OpenAI-compatible Ollama path.
+
+### Updated recommendation
+
+- **Prefer for genre detection only**, where the prior 3/3 result remains
+  clean and cheap.
+- **Consider for entity extraction only as a follow-up target**, not as a
+  production-ready local replacement, because raw entities are not
+  grounded by the production builder.
+- **Do not consider for segmentation** under the current harness/API
+  shape; the fairer best-config test stayed 0/6 usable across the two
+  variants.
