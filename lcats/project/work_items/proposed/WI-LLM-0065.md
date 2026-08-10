@@ -40,8 +40,9 @@ acceptance:
   - "A candidate-scoped gpt-oss:20b entity-extraction mitigation is tested with 3+ real runs, reporting raw entity count, grounded entity count, grounded mention count, and grounding/item errors"
   - "The evaluation uses production build_entities() semantics as the pass/fail grounding check; raw tool-call success alone is not counted as entity-extraction success"
   - "The mitigation characterizes and addresses the complete malformed entity shape observed in results_entity_bestconfig_run*.json, including entity name/type keys and missing entity_id/canonical_name/entity_type fields, not only string-valued mentions"
-  - "If any output-compatibility adapter is added, it is conservative, candidate-scoped or explicitly production-reviewed, tested, and does not fabricate evidence spans or weaken quote-substring grounding"
-  - "The gpt-oss:20b README and ERW local-model proposal are updated to either mark grounded entity extraction viable under the tested mitigation or demote gpt-oss:20b to genre-only"
+  - "Any mitigation supporting a viable grounded-entity verdict, including prompt/schema changes or output-compatibility adapters, is wired into and tested through the production candidate path before build_entities(); benchmark-local-only mitigations are diagnostic and require genre-only demotion"
+  - "If any output-compatibility adapter is added, it is conservative, candidate-scoped or explicitly production-reviewed, production-path tested, and does not fabricate evidence spans or weaken quote-substring grounding"
+  - "The gpt-oss:20b README and ERW local-model proposal are updated to either mark grounded entity extraction viable under a production-wired and tested mitigation or demote gpt-oss:20b to genre-only"
   - "No production default model, segmentation routing, or grounding strictness change is made"
 artifacts_expected:
   - lcats/experimental/model_comparison/ollama_gpt_oss_20b/benchmark_entity_production_grounded.py
