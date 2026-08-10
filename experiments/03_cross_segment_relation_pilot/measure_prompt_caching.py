@@ -44,6 +44,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import run_pilot  # noqa: E402 - see sys.path.insert above
 
 from lcats.utils import checkpoint  # noqa: E402
+from lcats.utils import secrets  # noqa: E402
 
 
 class _RecordingBackend:
@@ -395,9 +396,9 @@ def main() -> int:
     args = parser.parse_args()
 
     output_dir = pathlib.Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
 
     if not args.dry_run:
+        secrets.load_secrets()
         # Preflight, per Required Change 3: a prefix below Anthropic's
         # minimum cacheable length makes a later zero cache_read result
         # expected, not a signal something is wrong - record it
@@ -419,6 +420,7 @@ def main() -> int:
     )
     report["preflight_prefix_token_counts"] = prefix_token_counts
 
+    output_dir.mkdir(parents=True, exist_ok=True)
     report_path = output_dir / "caching_comparison.json"
     report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(f"Wrote comparison report to {report_path}")
