@@ -588,6 +588,254 @@ def run_segmentation(
     return retry_result
 
 
+def _segments_from_parsed_output(parsed_output: Any) -> list:
+    if isinstance(parsed_output, dict):
+        segments = parsed_output.get("segments")
+    else:
+        segments = parsed_output
+    return segments if isinstance(segments, list) else []
+
+
+def summarize_segment_anchor_diagnostics(
+    parsed_output: Any, story_text: str
+) -> list[dict[str, Any]]:
+    """Return raw anchor strings and simple presence checks for segment output."""
+    diagnostics = []
+    for segment in _segments_from_parsed_output(parsed_output):
+        if not isinstance(segment, dict):
+            diagnostics.append(
+                {
+                    "segment_id": None,
+                    "malformed_segment_type": type(segment).__name__,
+                    "raw_segment_repr": repr(segment)[:500],
+                }
+            )
+            continue
+        start_exact = segment.get("start_exact")
+        end_exact = segment.get("end_exact")
+        diagnostics.append(
+            {
+                "segment_id": segment.get("segment_id"),
+                "segment_type": segment.get("segment_type"),
+                "start_par_id": segment.get("start_par_id"),
+                "end_par_id": segment.get("end_par_id"),
+                "start_exact": start_exact,
+                "start_exact_found": (
+                    start_exact in story_text if isinstance(start_exact, str) else False
+                ),
+                "end_exact": end_exact,
+                "end_exact_found": (
+                    end_exact in story_text if isinstance(end_exact, str) else False
+                ),
+                "summary": segment.get("summary"),
+            }
+        )
+    return diagnostics
+
+
+def run_segmentation_diagnostic(
+    *,
+    candidate: str,
+    backend_kind: str,
+    backend: llm_backend.LLMBackend,
+    model: str,
+    story_path: pathlib.Path = DEFAULT_SAMPLE_STORY,
+    max_tokens: int = DEFAULT_SEGMENTATION_MAX_TOKENS,
+    temperature: float = DEFAULT_TEMPERATURE,
+    system_prompt_suffix: str = "",
+    variant: str = "diagnostic",
+) -> dict[str, Any]:
+    """Run one segmentation call and preserve pre-alignment anchor diagnostics.
+
+    This is additive, candidate-scoped diagnostic plumbing for WI-LLM-0064. It
+    deliberately does not change run_segmentation()'s return contract or retry
+    behavior, because existing committed candidate results depend on that
+    stable shape.
+    """
+    story_name, story_text = load_sample_story(story_path)
+    extractor = scene_analysis.make_segment_extractor(backend, max_tokens=max_tokens)
+    extractor.default_model = model
+    extractor.temperature = temperature
+    if system_prompt_suffix:
+        extractor.system_prompt = extractor.system_prompt + system_prompt_suffix
+
+    start = time.monotonic()
+    try:
+        result = extractor.extract(story_text, model_name=model)
+    except Exception as exc:  # noqa: BLE001 - benchmark harness records, not raises
+        return {
+            "candidate": candidate,
+            "backend_kind": backend_kind,
+            "model": model,
+            "story_name": story_name,
+            "stage": "segmentation",
+            "variant": variant,
+            "success": False,
+            "latency_seconds": time.monotonic() - start,
+            "error_type": type(exc).__name__,
+            "error_message": str(exc),
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "system_prompt_suffix_applied": bool(system_prompt_suffix),
+        }
+    latency = time.monotonic() - start
+
+    api_error = result.get("api_error")
+    extraction_error = result.get("extraction_error")
+    alignment_error = result.get("alignment_error")
+    validation_error = result.get("validation_error")
+    parsed = result.get("parsed_output")
+    extracted = result.get("extracted_output")
+    usage = result.get("usage") or {}
+
+    error_type = None
+    if api_error:
+        error_type = (api_error or {}).get("code")
+    elif extraction_error or alignment_error or validation_error:
+        error_type = "extraction_or_alignment_error"
+    elif not isinstance(extracted, list):
+        error_type = "malformed_tool_result"
+    elif not extracted:
+        error_type = "empty_segment_list"
+
+    return {
+        "candidate": candidate,
+        "backend_kind": backend_kind,
+        "model": model,
+        "story_name": story_name,
+        "stage": "segmentation",
+        "variant": variant,
+        "success": error_type is None,
+        "latency_seconds": latency,
+        "input_tokens": usage.get("input_tokens", 0) or 0,
+        "output_tokens": usage.get("output_tokens", 0) or 0,
+        "segment_count": len(extracted) if isinstance(extracted, list) else None,
+        "error_type": error_type,
+        "error_message": (
+            (api_error or {}).get("message")
+            if api_error
+            else (
+                f"extraction_error={extraction_error!r}, "
+                f"alignment_error={alignment_error!r}, "
+                f"validation_error={validation_error!r}"
+                if error_type == "extraction_or_alignment_error"
+                else None
+            )
+        ),
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+        "system_prompt_suffix_applied": bool(system_prompt_suffix),
+        "anchor_diagnostics": summarize_segment_anchor_diagnostics(parsed, story_text),
+        "parsed_output": parsed,
+        "raw_output_preview": (result.get("raw_output") or "")[
+            :_RAW_OUTPUT_PREVIEW_CHARS
+        ]
+        or None,
+    }
+
+
+def run_entity_extraction_with_grounding(
+    *,
+    candidate: str,
+    backend_kind: str,
+    backend: llm_backend.LLMBackend,
+    model: str,
+    segment_path: pathlib.Path = DEFAULT_SAMPLE_SEGMENT,
+    max_tokens: int = DEFAULT_MAX_TOKENS,
+    temperature: float = DEFAULT_TEMPERATURE,
+    variant: str = "grounded",
+) -> dict[str, Any]:
+    """Run one entity call and report raw vs. build_entities()-grounded counts."""
+    story_name, segment_text = load_sample_segment(segment_path)
+    extractor = erw_entity.make_entity_extractor(backend)
+    extractor.default_model = model
+    extractor.max_tokens = max_tokens
+    extractor.temperature = temperature
+
+    start = time.monotonic()
+    try:
+        extraction = extractor.extract(segment_text, model_name=model)
+    except Exception as exc:  # noqa: BLE001 - benchmark harness records, not raises
+        return {
+            "candidate": candidate,
+            "backend_kind": backend_kind,
+            "model": model,
+            "story_name": story_name,
+            "stage": "entity_extraction",
+            "variant": variant,
+            "success": False,
+            "latency_seconds": time.monotonic() - start,
+            "error_type": type(exc).__name__,
+            "error_message": str(exc),
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "raw_entity_count": None,
+            "grounded_entity_count": None,
+            "grounded_mention_count": None,
+            "grounding_item_errors": [],
+            "tool_result": None,
+        }
+    latency = time.monotonic() - start
+
+    api_error = extraction.get("api_error")
+    parsed = extraction.get("extracted_output") or extraction.get("parsed_output") or {}
+    entities = parsed.get("entities") if isinstance(parsed, dict) else None
+    usage = extraction.get("usage") or {}
+    raw_output = extraction.get("raw_output") or ""
+    grounded_entities = []
+    grounded_mentions = []
+    item_errors = []
+    schema_error = None
+    if api_error is None and not isinstance(entities, list):
+        schema_error = "malformed_tool_result"
+    if api_error is None and schema_error is None and isinstance(parsed, dict):
+        grounded_entities, grounded_mentions, item_errors = erw_entity.build_entities(
+            parsed, segment_text
+        )
+
+    return {
+        "candidate": candidate,
+        "backend_kind": backend_kind,
+        "model": model,
+        "story_name": story_name,
+        "stage": "entity_extraction",
+        "variant": variant,
+        "success": api_error is None and schema_error is None,
+        "latency_seconds": latency,
+        "input_tokens": usage.get("input_tokens", 0) or 0,
+        "output_tokens": usage.get("output_tokens", 0) or 0,
+        "entity_count": len(entities) if isinstance(entities, list) else None,
+        "error_type": (api_error or {}).get("code") if api_error else schema_error,
+        "error_message": (
+            (api_error or {}).get("message")
+            if api_error
+            else (
+                "Tool result parsed but 'entities' was missing or not a "
+                f"list (got {type(entities).__name__ if entities is not None else 'None'})."
+                if schema_error
+                else None
+            )
+        ),
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+        "raw_entity_count": len(entities) if isinstance(entities, list) else None,
+        "grounded_entity_count": len(grounded_entities),
+        "grounded_mention_count": len(grounded_mentions),
+        "grounding_item_errors": item_errors,
+        "tool_result": parsed if api_error is None and schema_error is None else None,
+        "raw_output_preview": raw_output[:_RAW_OUTPUT_PREVIEW_CHARS] or None,
+    }
+
+
+def save_json_result(
+    data: Any, candidate_dir: pathlib.Path, filename: str
+) -> pathlib.Path:
+    """Write arbitrary diagnostic JSON beside candidate BenchmarkResult files."""
+    out_path = candidate_dir / filename
+    out_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    return out_path
+
+
 def save_result(
     result: BenchmarkResult, candidate_dir: pathlib.Path, filename: str = "results.json"
 ) -> pathlib.Path:
