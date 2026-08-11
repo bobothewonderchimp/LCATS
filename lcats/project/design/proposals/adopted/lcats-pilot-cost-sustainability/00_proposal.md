@@ -358,13 +358,14 @@ unvalidated plumbing labels. It made 8 real Anthropic generation calls:
 
 - Baseline `claude-opus-4-8`: 18,748 input tokens, 2,365 output tokens,
   measured cost $0.152865; genre-detect raw/schema validity 2/2, genre
-  accuracy 2/2, truncation 0/2; segmentation schema validity 1/2,
-  truncation 0/2. The segmentation miss was an alignment failure on
-  `king_of_the_hill` (`segment_id=2` anchor text not found), not truncation.
+  accuracy 2/2, truncation 0/2, secondary-genre sanitization 0/2;
+  segmentation schema validity 1/2, truncation 0/2. The segmentation miss
+  was an alignment failure on `king_of_the_hill` (`segment_id=2` anchor text
+  not found), not truncation.
 - Candidate `claude-haiku-4-5-20251001`: 14,358 input tokens, 2,106 output
   tokens, measured cost $0.024888; genre-detect raw/schema validity 2/2,
-  genre accuracy 2/2, truncation 0/2; segmentation schema validity 2/2,
-  truncation 0/2.
+  genre accuracy 2/2, truncation 0/2, secondary-genre sanitization 1/2;
+  segmentation schema validity 2/2, truncation 0/2.
 - Cost delta: -$0.127977 on the fixture set, an 83.72% reduction for these
   two stages in this run.
 
@@ -373,11 +374,15 @@ Caveat: both Opus 4.8 and Haiku 4.5 marked `king_of_the_hill` as
 wellformed. That does not change this decision's genre-detection metric,
 because `run_pilot.py`'s genre-detect scan consumes `detected_genre`, not
 `wellformed`, but it is a reminder not to treat the assessment call as a
-complete corpus-QA substitute.
+complete corpus-QA substitute. Haiku also produced one schema-valid but
+sanitized `secondary_genre` value containing leaked tool-call syntax; this
+did not affect the consumed `detected_genre` signal, but it is real evidence
+that cheaper-tier structured-output reliability is not perfect.
 
 Recommendation: adopt Haiku 4.5 for the pilot's genre-detection and
-segmentation stages in a follow-on configuration/defaulting change, while
-continuing to reserve the top-tier model for entity/event/relation/
+segmentation stages in a follow-on configuration/defaulting change only if
+that change keeps the existing assessment sanitization/telemetry visible,
+while continuing to reserve the top-tier model for entity/event/relation/
 discourse/cross-segment extraction. This decision does **not** default model
 tiering on in `WI-PILOT-0060`; every stage still uses the global model unless
 an explicit per-stage override is supplied.

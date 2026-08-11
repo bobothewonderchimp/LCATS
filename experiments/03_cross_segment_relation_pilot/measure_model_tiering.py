@@ -104,9 +104,7 @@ def _compute_cost_usd(
 def _expected_json_type(schema_type: Any) -> Tuple[type, ...]:
     if isinstance(schema_type, list):
         return tuple(
-            expected
-            for item in schema_type
-            for expected in _expected_json_type(item)
+            expected for item in schema_type for expected in _expected_json_type(item)
         )
     if schema_type == "object":
         return (dict,)
@@ -161,7 +159,9 @@ def _validate_schema_subset(
     if schema_type == "array":
         item_schema = schema.get("items") or {}
         for index, item in enumerate(value):
-            errors.extend(_validate_schema_subset(item, item_schema, f"{path}[{index}]"))
+            errors.extend(
+                _validate_schema_subset(item, item_schema, f"{path}[{index}]")
+            )
     return errors
 
 
@@ -271,6 +271,7 @@ def _run_genre_detection(
         "raw_schema_errors": raw_validation_errors,
         "truncated": _is_truncation(result.error),
         "detected_genre": result.detected_genre,
+        "secondary_genre_sanitized": result.secondary_genre_sanitized,
         "validated_genre": truth["validated_genre"],
         "genre_matches_ground_truth": bool(genre_matches),
         "wellformed": result.wellformed,
@@ -322,6 +323,12 @@ def _summarize_stage(
         )
         summary["genre_accuracy_rate"] = (
             summary["genre_accuracy_count"] / total if total else 0.0
+        )
+        summary["secondary_genre_sanitized_count"] = sum(
+            1 for row in rows if row.get("secondary_genre_sanitized")
+        )
+        summary["secondary_genre_sanitized_rate"] = (
+            summary["secondary_genre_sanitized_count"] / total if total else 0.0
         )
     return summary
 

@@ -5,7 +5,7 @@ work_item: AD_HOC
 status: in_progress
 rerun_of: 2026_08_10_19_09_42_WI_PILOT_0060_MODEL_TIERING
 pr: https://github.com/xenotaur/LCATS/pull/286
-commit: 
+commit:
 agent: codex_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/286
 session_transcript: pending
@@ -39,6 +39,12 @@ Confirm the PR #286 review fixes before merge as part of `/lrh-land`.
   `PRRT_kwDOKlhIbM6YAILR` and `PRRT_kwDOKlhIbM6YALqD`.
 - Did not manually trigger GitHub review agents. The user explicitly asked
   to avoid paid/manual review-agent retriggers and prefer self-review.
+- Post-confirm PR head `bd5c1647f5ce62e96a826af282ef72920fe82470` reached
+  green CI (`coverage`, `lint`, `test`, `test`) and clean merge state.
+- A fresh independent self-review found three issues before merge:
+  frontmatter trailing whitespace, the need to surface
+  `secondary_genre_sanitized` in the model-tiering report, and stale
+  confirm-record wording. These were fixed before the merge gate.
 - Created `project/config/chain-defaults.yaml` from the confirmed
   `/lrh-land` chain gate values, stamped to the PR head active at the gate.
 
@@ -58,11 +64,16 @@ Confirm the PR #286 review fixes before merge as part of `/lrh-land`.
   unfiltered `test`, `coverage`, `lint`, and `test` checks all passed.
 - Post-resolution thread check: all three review threads report
   `isResolved: true`.
+- Post-confirm CI check on `bd5c1647f5ce62e96a826af282ef72920fe82470`:
+  `coverage`, `lint`, `test`, and `test` all passed.
+- Fresh independent self-review on post-confirm head: found three issues;
+  all addressed before the merge gate.
+- Self-review fix validation under the LCATS env/PATH:
+  `scripts/format --check --diff` left 185 files unchanged; `scripts/lint`
+  passed; `scripts/test` ran 1705 tests OK; `git diff --check` passed.
 - `lrh validate`: 0 errors, 133 pre-existing warnings.
 
 # Follow-up
 
-- Re-check CI and review-landed state on the post-confirm commit before the
-  merge gate.
 - Replace `session_transcript: pending` with the durable Codex task pointer
   when available.

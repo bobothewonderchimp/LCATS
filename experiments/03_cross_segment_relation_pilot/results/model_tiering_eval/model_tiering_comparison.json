@@ -22,7 +22,9 @@
           "truncation_count": 0,
           "truncation_rate": 0.0,
           "genre_accuracy_count": 2,
-          "genre_accuracy_rate": 1.0
+          "genre_accuracy_rate": 1.0,
+          "secondary_genre_sanitized_count": 0,
+          "secondary_genre_sanitized_rate": 0.0
         },
         "segment": {
           "total": 2,
@@ -41,6 +43,7 @@
           "raw_schema_errors": [],
           "truncated": false,
           "detected_genre": "other",
+          "secondary_genre_sanitized": false,
           "validated_genre": "other",
           "genre_matches_ground_truth": true,
           "wellformed": false,
@@ -69,6 +72,7 @@
           "raw_schema_errors": [],
           "truncated": false,
           "detected_genre": "science fiction",
+          "secondary_genre_sanitized": false,
           "validated_genre": "science fiction",
           "genre_matches_ground_truth": true,
           "wellformed": false,
@@ -274,7 +278,9 @@
           "truncation_count": 0,
           "truncation_rate": 0.0,
           "genre_accuracy_count": 2,
-          "genre_accuracy_rate": 1.0
+          "genre_accuracy_rate": 1.0,
+          "secondary_genre_sanitized_count": 1,
+          "secondary_genre_sanitized_rate": 0.5
         },
         "segment": {
           "total": 2,
@@ -293,6 +299,7 @@
           "raw_schema_errors": [],
           "truncated": false,
           "detected_genre": "other",
+          "secondary_genre_sanitized": true,
           "validated_genre": "other",
           "genre_matches_ground_truth": true,
           "wellformed": false,
@@ -321,6 +328,7 @@
           "raw_schema_errors": [],
           "truncated": false,
           "detected_genre": "science fiction",
+          "secondary_genre_sanitized": false,
           "validated_genre": "science fiction",
           "genre_matches_ground_truth": true,
           "wellformed": false,

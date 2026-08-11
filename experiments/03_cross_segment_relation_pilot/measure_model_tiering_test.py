@@ -126,6 +126,12 @@ class TestMeasureModelTiering(unittest.TestCase):
         self.assertFalse(genre_results[0]["schema_valid"])
         self.assertFalse(genre_results[0]["raw_schema_valid"])
         self.assertIn("issues expected array", genre_results[0]["raw_schema_errors"][0])
+        self.assertEqual(
+            report["runs"]["baseline"]["stages"]["genre_detect"][
+                "secondary_genre_sanitized_count"
+            ],
+            0,
+        )
 
     def test_pricing_returns_none_for_unverified_model(self):
         self.assertIsNone(
