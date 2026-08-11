@@ -2,10 +2,10 @@
 execution_id: 2026_08_10_23_02_55_WI_PILOT_0060_MODEL_TIERING_REVIEW
 prompt_id: PROMPT(AD_HOC:WI_PILOT_0060_MODEL_TIERING_REVIEW)[2026-08-10T23:01:00+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_10_19_09_42_WI_PILOT_0060_MODEL_TIERING
 pr: https://github.com/xenotaur/LCATS/pull/286
-commit:
+commit: e1434d9daf180ec4bafc04becf684588901ed3fd
 agent: codex_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/286
 session_transcript: pending
