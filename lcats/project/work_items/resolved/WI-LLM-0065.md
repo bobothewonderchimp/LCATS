@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Resolved by PR #288: gpt-oss:20b entity extraction is production-grounded behind the candidate-scoped adapter (3/3 final runs), but remains consider-only pending precision/recall evaluation; no default model, segmentation routing, or grounding strictness changes."
 blocked_reason: null
 blocked: false
 id: WI-LLM-0065
 title: Make gpt-oss:20b entity extraction production-grounded, or explicitly demote it to genre-only
 type: evaluation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
