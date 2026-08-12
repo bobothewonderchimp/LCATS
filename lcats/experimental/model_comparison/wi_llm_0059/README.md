@@ -44,21 +44,66 @@ about output *quality*.
   not one-off noise, in mild tension with the production prompt's own
   "prefer FEWER, LARGER segments" rule. Not a functional failure - every
   segment across all 6 calls used a valid label and read coherently - but
-  not a clean "neutral" result either. OpenAI could not be verified at
-  all in this session (real API key present, but the organization had
-  zero remaining credits - both baseline and modified calls failed
-  identically with `429 insufficient_quota`).
+  not a clean "neutral" result either. OpenAI originally could not be
+  verified at all (real API key present, but the organization had zero
+  remaining credits - both baseline and modified calls failed identically
+  with `429 insufficient_quota`).
+- **2026-08-09 follow-up, after credits were added** - 3 distinct real
+  attempts at `harness.DEFAULT_SEGMENTATION_MAX_TOKENS` (16384), plus one
+  rejected probe that never reached the model at all (a review finding on
+  this follow-up's own PR, #272, correctly identified that the first
+  write-up conflated these into "both attempts reproduced the same
+  result," which overstated what the rejected probe actually showed -
+  nothing, since it errored before either condition could run):
+  1. First real attempt: **baseline** `truncated_output` (101.2s) -
+     **modified** `extraction_or_alignment_error` (38.4s).
+  2. Probe: attempted `max_tokens=24576` to rule out a fixable
+     truncation. Rejected outright by the OpenAI API before contacting
+     the model at all: *"max_tokens is too large: 24576. This model
+     supports at most 16384 completion tokens, whereas you provided
+     24576."* - 16384 is `gpt-4o`'s own hard ceiling, not a value this
+     harness chose and could raise. No comparable result from this
+     attempt on either condition.
+  3. Confirmation re-run at the reverted default: **baseline**
+     `truncated_output` (106.1s) - **modified**
+     `extraction_or_alignment_error` (68.1s), reproducing attempt 1.
+  4. Review-round re-run (after fixing `_call_once` to preserve real
+     `extraction_error`/`alignment_error`/`validation_error` detail
+     instead of collapsing to the bare classification string - a
+     separate review finding on PR #272): **baseline** `truncated_output`
+     (101.2s) - **modified** `truncated_output` this time (100.8s),
+     rather than the `extraction_or_alignment_error` seen in attempts 1
+     and 3. Only this latest attempt's raw data is committed in
+     `results_frontier_paired_openai.json` (the script always writes the
+     most recent run); attempts 1 and 3 are preserved here in prose since
+     the script overwrites its own output file each run.
+
+  **Baseline hit `truncated_output` in all 3 real attempts (3/3)** - a
+  reproducible, not one-off, result. **Modified failed in all 3 real
+  attempts too (3/3)**, but via two different observed error
+  classifications (`extraction_or_alignment_error` x2,
+  `truncated_output` x1) - both consistent with running out of the same
+  16384-token budget at a slightly different point in the response each
+  time, but this is an inference from the pattern, not confirmed for the
+  two `extraction_or_alignment_error` occurrences specifically (their
+  underlying detail wasn't preserved by `_call_once` until attempt 4's
+  code fix, and that attempt happened to land on `truncated_output`
+  instead). This story/prompt combination cannot reliably complete on
+  `gpt-4o` within its own maximum possible output, on either condition,
+  independent of the reminder - a structural finding, not evidence the
+  reminder specifically caused either failure.
 
 ## Verdict
 
-Per `WI-LLM-0059`'s own Required Changes item 5, an untested OpenAI path
-forces the documented no-change outcome regardless of the Anthropic
-result. `SCENE_SEQUEL_SYSTEM_PROMPT` was **not** edited - see
+Per `WI-LLM-0059`'s own Required Changes item 5, an unverified OpenAI
+path forces the documented no-change outcome regardless of the Anthropic
+result - now confirmed by a real, credits-enabled attempt rather than an
+absence of one. `SCENE_SEQUEL_SYSTEM_PROMPT` was **not** edited - see
 `PROP-ERW-LOCAL-MODEL-EVALUATION`'s "Decision 3 update (2026-08-08,
-production system-prompt reminder, `WI-LLM-0059`)" section for the full
-write-up. Even a fully clean OpenAI result would not have made this an
-obviously-safe edit, given the Anthropic granularity side effect above -
-a future revisit should weigh that finding on its own merits. Re-running
-just `python run_frontier_paired.py --legs openai` once real API credits
-are available is a legitimate, low-cost way to revisit the OpenAI half of
-this verdict without new billed Anthropic calls.
+production system-prompt reminder, `WI-LLM-0059`)" section (updated
+2026-08-09) for the full write-up. Even a working OpenAI result would not
+have made this an obviously-safe edit, given the Anthropic granularity
+side effect above - a future revisit should weigh that finding on its
+own merits. A real OpenAI/GPT comparison for this question would now need
+a smaller/shorter test story that fits within `gpt-4o`'s 16384-completion-
+token ceiling - a methodology fix, not just a bigger API budget.
