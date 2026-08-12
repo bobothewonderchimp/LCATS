@@ -20,6 +20,7 @@ related_design:
 depends_on:
   - WI-EVENT-0029
   - WI-ASSESS-0031
+  - WI-ASSESS-0051
 blocked_by: []
 expected_actions:
   - create_file
@@ -134,14 +135,40 @@ to size the effect precisely across genres.
 
 ## Dependencies / Order
 
-**Added 2026-07-26 (via `depends_on`):** this item now also depends on
+**Added 2026-07-26 (via `depends_on`):** this item depends on
 `WI-ASSESS-0031`, which extends `VALID_GENRES` from 4 to 8 genres per
-`project/design/event-role-world-genre-target-reconciliation.md` (PR #161).
-The four-genre framing throughout this item's Scope, Summary, and Required
-Changes sections (below) is stale as written and should be re-scoped to the
-8-genre list once `WI-ASSESS-0031` lands — do **not** execute this item's
-pilot against the current four-genre set in the meantime, since that would
-spend real API budget producing an obsolete four-genre experiment.
+`project/design/event-role-world-genre-target-reconciliation.md` ("Gap 1").
+**Resolved 2026-08-07:** `WI-ASSESS-0031` landed (PR #224) — `VALID_GENRES`
+now has all 8 genres.
+
+**Added 2026-08-08 (via `depends_on`):** this item also depends on
+`WI-ASSESS-0051` ("Gap 2" — run the current-classifier full-corpus genre
+survey). The design doc doesn't name either work item directly, but its
+own Gap 3 sequencing (`event-role-world-genre-target-reconciliation.md:274-277`)
+says both follow-up items ("A", the corpus survey, and "B", this item's
+re-scope) depend on Gap 1 landing first, and that A should run before B
+"so B's per-genre sampling draws from an actual current genre census
+rather than the stale 2025-10 numbers" - i.e. B (this item) depends on A's
+(`WI-ASSESS-0051`'s) output, even though the doc predates either work
+item's ID. As of this note, `WI-ASSESS-0051` is `status: proposed`, not
+yet implemented - its survey has not run.
+
+**Why the content re-scope below is still deferred, not done in this
+edit:** this item's Scope/Summary/Required Changes sections still commit
+to "5-10 stories per genre" against the original 4 genres (SF, horror,
+western, romance) — a number chosen when those 4 genres' corpus
+representation was already roughly known. The 4 new genres (humor,
+mystery, fantasy, adventure) have no verified current-classifier counts —
+`WI-ASSESS-0051`'s survey is what will produce them. Rewriting this item's
+strata list and sample-size language *now*, before that survey exists,
+would mean guessing at exactly the numbers the reconciliation effort has
+been deliberately avoiding guessing at (see the design doc's own
+open-flag note on the original genre thresholds not holding up under the
+one existing, older corpus count). **Do not execute this item's pilot, and
+do not finalize its 8-genre content, until `WI-ASSESS-0051` has produced
+real per-genre counts** — at that point, re-scope the Scope/Summary/
+Required Changes/Risk Notes sections below using those real numbers, not
+before.
 
 ## Required Changes
 
