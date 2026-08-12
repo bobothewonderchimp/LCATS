@@ -2,10 +2,10 @@
 execution_id: 2026_08_12_21_26_38_WI_EVENT_0030_GAP3_DEPENDENCY_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0030_GAP3_DEPENDENCY_CONFIRM)[2026-08-12T21:26:25+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_07_18_25_42_WI_EVENT_0030_GAP3_DEPENDENCY
 pr: https://github.com/xenotaur/LCATS/pull/246
-commit: faba102e52d56a724b7040be6bd6ed9c6208e732
+commit: 07a34eccee39be938dda4cc7ab3674873273fed5
 created_at: 2026-08-12T21:26:38+00:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/246

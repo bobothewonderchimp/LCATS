@@ -2,10 +2,10 @@
 execution_id: 2026_08_07_18_25_42_WI_EVENT_0030_GAP3_DEPENDENCY
 prompt_id: PROMPT(WI-EVENT-0030:WI_EVENT_0030_GAP3_DEPENDENCY)[2026-08-07T18:24:45+00:00]
 work_item: WI-EVENT-0030
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/246
-commit: b0b100c91f0a419ff503df6f88930d01f4f2d4aa
+commit: 07a34eccee39be938dda4cc7ab3674873273fed5
 created_at: 2026-08-07T18:25:42+00:00
 agent: claude_app
 instruction_source: project/work_items/proposed/WI-EVENT-0030.md
