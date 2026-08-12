@@ -8,7 +8,7 @@ pr: https://github.com/xenotaur/LCATS/pull/286
 commit: e1434d9daf180ec4bafc04becf684588901ed3fd
 agent: codex_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/286
-session_transcript: pending
+session_transcript: codex-app:019fea05-63b0-7e02-80d2-e570de36c7c3
 created_at: 2026-08-11T22:43:13+00:00
 ---
 
@@ -75,5 +75,4 @@ Confirm the PR #286 review fixes before merge as part of `/lrh-land`.
 
 # Follow-up
 
-- Replace `session_transcript: pending` with the durable Codex task pointer
-  when available.
+- Session transcript has been updated to the durable Codex task pointer.

@@ -8,7 +8,7 @@ pr: https://github.com/xenotaur/LCATS/pull/286
 commit: e1434d9daf180ec4bafc04becf684588901ed3fd
 agent: codex_app
 instruction_source: promptspace:lrh-land https://github.com/xenotaur/LCATS/pull/286
-session_transcript: pending
+session_transcript: codex-app:019fea05-63b0-7e02-80d2-e570de36c7c3
 created_at: 2026-08-11T23:06:47+00:00
 ---
 
@@ -47,5 +47,5 @@ Close out WI-PILOT-0060 after PR #286 merged.
 - Decide whether to close `WS-PILOT-COST-SUSTAINABILITY` now or create a
   separate follow-on item for model-tiering adoption/defaulting with
   sanitization telemetry visible.
-- Replace `session_transcript: pending` with the durable Codex task pointer
-  for the primary, review, confirm, and closeout records when available.
+- Session transcripts for the primary, review, confirm, and closeout records
+  have been updated to the durable Codex task pointer.
