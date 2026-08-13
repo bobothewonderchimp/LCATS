@@ -2,10 +2,10 @@
 execution_id: 2026_08_13_06_25_07_WS_PILOT_IMPROVEMENTS
 prompt_id: PROMPT(AD_HOC:WS_PILOT_IMPROVEMENTS)[2026-08-13T06:18:23+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/295
-commit: 4bae1f991dfc574f584f759293ea46c395fd710f
+commit: 6ff3acd6e0ccd83834f6ae60929fce1c72e57d14
 agent: codex_app
 instruction_source: project/workstreams/proposed/WS-PILOT-IMPROVEMENTS.md
 session_transcript: codex-app:019fea05-63b0-7e02-80d2-e570de36c7c3
