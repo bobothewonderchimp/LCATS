@@ -113,9 +113,9 @@ satisfied; it will not simply be present in a fresh checkout of `main`.
   unscoped future work, not something already covered elsewhere. This
   item is the `run_census.py` analog of that same deferred wiring, not a
   duplicate of anything the proposal itself did.
-- `WI-LLM-0065` (proposed, open) covers `gpt-oss:20b` *entity extraction*
+- `WI-LLM-0065` (resolved) covers `gpt-oss:20b` *entity extraction*
   production-grounding specifically - a different pipeline stage,
-  non-overlapping with this item's genre-only scope.
+  non-overlapping with this item's genre-census scope.
 - Sibling repos / external libraries: none identified.
 - Recommendation: proceed.
 
@@ -197,8 +197,9 @@ satisfied; it will not simply be present in a fresh checkout of `main`.
   explicitly human-gated decision informed by this item's findings, not
   authorized here.
 - Do not modify entity-extraction or segmentation production routing -
-  `WI-LLM-0065` (open) owns `gpt-oss:20b`'s entity-extraction production
-  readiness; this item is genre-only.
+  `WI-LLM-0065` resolved `gpt-oss:20b` entity extraction as
+  production-grounded only behind its candidate-scoped adapter, while
+  segmentation remains demoted; this item is genre-only.
 - Do not change `run_census.py`'s default backend or model - Claude
   remains the default; `--base-url`/local-model usage is strictly
   opt-in.
