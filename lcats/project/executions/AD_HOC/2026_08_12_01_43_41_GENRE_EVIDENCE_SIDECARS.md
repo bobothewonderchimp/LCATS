@@ -2,10 +2,10 @@
 execution_id: 2026_08_12_01_43_41_GENRE_EVIDENCE_SIDECARS
 prompt_id: PROMPT(AD_HOC:GENRE_EVIDENCE_SIDECARS)[2026-08-12T01:30:52+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/290
-commit: e986740a
+commit: 4d6903236a2fe3a9ad692a8ced2d88bb50839d56
 created_at: 2026-08-12T01:43:41+00:00
 agent: codex_app
 instruction_source: promptspace:PR-290-genre-evidence-sidecar-proposal
