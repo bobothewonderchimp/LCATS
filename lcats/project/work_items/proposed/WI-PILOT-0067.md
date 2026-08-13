@@ -39,6 +39,7 @@ forbidden_actions:
   - implement_model_tiering_adoption
   - implement_batch_api_adoption
   - tune_prompts_after_negative_gate_result
+  - redefine_quality_thresholds_after_seeing_real_results
   - default_enable_prompt_caching
   - default_enable_model_tiering
 acceptance:
@@ -62,6 +63,7 @@ artifacts_expected:
   - experiments/03_cross_segment_relation_pilot/results/stability_gate/pilot_summary.json
   - experiments/03_cross_segment_relation_pilot/fixtures/<second-wellformed-story>/story.json
   - experiments/03_cross_segment_relation_pilot/fixtures/genre_ground_truth.json
+  - lcats/project/design/proposals/proposed/lcats-pilot-improvements/00_proposal.md
 ---
 
 ## Summary
@@ -120,6 +122,11 @@ ground truth file.
   well-formed standalone fixture story as the bounded end-to-end story set.
   Do not use `fixtures/five_o_clock_tea_farce` as a pass/fail stability
   sample unless it is first replaced with a validated story body.
+- Treat the two-story sample as a deliberate minimum-spend sentinel gate, not
+  as a broad quality estimate. If implementation argues for a larger
+  four-to-five-story stratified set, that change must be made explicitly in
+  the pre-spend run plan before approval and must include fresh validated
+  genre and well-formedness ground truth for every added story.
 - Separately run real genre detection for the same two well-formed fixture
   stories and compare against
   `experiments/03_cross_segment_relation_pilot/fixtures/genre_ground_truth.json`.
@@ -163,10 +170,15 @@ ground truth file.
    support, any cross-segment relation claims, genre-detection correctness,
    and whether the output is useful for inspecting cross-segment relation
    density.
-9. Record a clear pass/fail recommendation. A fail result must name the
+9. Record a clear pass/fail recommendation in the stability report and update
+   Decision 2 of
+   `lcats/project/design/proposals/proposed/lcats-pilot-improvements/00_proposal.md`
+   with the real outcome, matching the prior cost-sustainability pattern of
+   writing measured conclusions back into the governing proposal.
+10. A fail result must name the
    blocking failure mode and stop downstream adoption work; do not tune
-   prompts, change defaults, or retry repeatedly within this work item to
-   obtain a pass.
+   prompts, redefine thresholds after seeing real results, change defaults,
+   or retry repeatedly within this work item to obtain a pass.
 
 ## Non-Goals
 
@@ -202,6 +214,9 @@ ground truth file.
 - The final report records actual spend, generated artifacts, mechanical
   validation results, semantic-review results, pass/fail conclusion, and any
   named blocker.
+- Decision 2 of
+  `lcats/project/design/proposals/proposed/lcats-pilot-improvements/00_proposal.md`
+  is updated with the measured gate outcome and go/no-go conclusion.
 - A fail result stops downstream adoption work and is considered a complete
   outcome for this item.
 
@@ -218,13 +233,20 @@ ground truth file.
 - Artifact parser/validator output for `pilot_stories.jsonl`,
   `pilot_usage.jsonl`, `pilot_summary.json`,
   `stability_gate_results.json`, and `genre_detection_results.json`
+- Decision 2 update in
+  `lcats/project/design/proposals/proposed/lcats-pilot-improvements/00_proposal.md`
 
 ## Risk Notes
 
 - The bounded sample is intentionally tiny. Passing this gate proves the
   pilot is no longer obviously producing a null result on the bounded
   harness; it is not a statistically robust quality estimate for large
-  research runs.
+  research runs. The two-story scope is a deliberate first sentinel because
+  prior real runs were expensive enough that the next step must first prove
+  the path is not a null-result spend trap. A larger four-to-five-story,
+  genre-stratified gate is a valid alternative only if the implementor names
+  that tradeoff before real spend and commits validated genre/well-formedness
+  ground truth for the expanded set.
 - The current `five_o_clock_tea_farce` fixture is useful evidence about
   fixture hygiene but is not a valid pass/fail stability sample while
   `genre_ground_truth.json` marks it `wellformed: false`.
@@ -239,7 +261,9 @@ ground truth file.
   directory, or intentionally reused, and why that choice preserves the
   gate's evidentiary value.
 - A negative result is useful evidence. It should block downstream adoption
-  until a separate follow-on WI names and fixes the failure mode.
+  until a separate follow-on WI names and fixes the failure mode. Do not
+  loosen the predeclared thresholds after seeing real outputs in order to
+  convert a fail into a pass.
 
 ## Dependencies / Order
 
