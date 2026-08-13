@@ -2,14 +2,14 @@
 execution_id: 2026_08_10_04_33_46_WI_LLM_0059_OPENAI_RERUN_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_LLM_0059_OPENAI_RERUN_SELFREVIEW)[2026-08-10T04:33:37+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_09_04_20_28_WI_LLM_0059_OPENAI_RERUN
 pr: https://github.com/xenotaur/LCATS/pull/272
-commit: 
+commit: 0eaa83af26e496cb2e677e485f1a829cef87d7ff
 created_at: 2026-08-10T04:33:46+00:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/272
-session_transcript: pending
+session_transcript: claude-app:09cc36a2-b3ce-4fdd-b160-05cc302b92af
 ---
 
 # Summary
