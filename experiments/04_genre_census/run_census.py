@@ -35,6 +35,10 @@ Other flags:
     --seed N          Sample-selection shuffle seed (default: 42).
     --backend NAME    "anthropic" (default) or "openai".
     --model NAME      Model string (default: claude-opus-4-8 / gpt-4o).
+    --base-url URL    Optional OpenAI-compatible endpoint override for
+                       --backend openai (for example Ollama's
+                       http://localhost:11434/v1). Local endpoint calls are
+                       reported at $0 API cost.
     --output DIR      Results/checkpoint directory (default: ./results next
                        to this script).
     --dry-run         Use a FakeBackend (zero API cost) instead of a real
@@ -79,6 +83,7 @@ import pathlib
 import random
 import sys
 import time
+import urllib.parse
 
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -144,6 +149,9 @@ _PRICING_USD_PER_MILLION_TOKENS: Dict[str, Tuple[float, float]] = {
 # above, so an unrecognized model never silently understates the cost
 # estimate.
 _DEFAULT_PRICING_USD_PER_MILLION_TOKENS: Tuple[float, float] = (15.0, 75.0)
+_DETECTED_GENRE_ALIASES = {
+    genre.replace(" ", "_"): genre for genre in corpus_assess.VALID_GENRES
+}
 
 
 class FatalCensusError(RuntimeError):
@@ -164,11 +172,42 @@ def _price_for_model(model: str) -> Tuple[float, float]:
     return _DEFAULT_PRICING_USD_PER_MILLION_TOKENS
 
 
-def _estimate_cost_usd(model: str, input_tokens: int, output_tokens: int) -> float:
+def _estimate_cost_usd(
+    model: str,
+    input_tokens: int,
+    output_tokens: int,
+    *,
+    is_local_endpoint: bool = False,
+) -> float:
+    if is_local_endpoint:
+        return 0.0
     input_price, output_price = _price_for_model(model)
     return (input_tokens / 1_000_000) * input_price + (
         output_tokens / 1_000_000
     ) * output_price
+
+
+def _canonical_detected_genre(value: Any) -> Tuple[str, bool, str]:
+    raw = str(value or "other").strip().lower()
+    if raw in corpus_assess.VALID_GENRES or raw == "other":
+        return raw, False, raw
+    if raw in _DETECTED_GENRE_ALIASES:
+        return _DETECTED_GENRE_ALIASES[raw], True, raw
+    return "other", True, raw
+
+
+def _normalize_record_detected_genre(record: Dict[str, Any]) -> Dict[str, Any]:
+    normalized, changed, raw = _canonical_detected_genre(
+        record.get("detected_genre", "other")
+    )
+    record["detected_genre"] = normalized
+    if changed:
+        record["detected_genre_raw"] = raw
+        record["detected_genre_normalized"] = True
+    else:
+        record.pop("detected_genre_raw", None)
+        record.pop("detected_genre_normalized", None)
+    return record
 
 
 def _story_identity(path: pathlib.Path) -> str:
@@ -187,24 +226,148 @@ def _hash_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8", errors="replace")).hexdigest()
 
 
-def _fingerprint(model: str, backend_name: str, raw_text: str) -> Dict[str, Any]:
+def _fingerprint(
+    model: str, backend_name: str, raw_text: str, base_url: Optional[str] = None
+) -> Dict[str, Any]:
     """Fingerprint hashes the actual story text (not just model/backend
     config) so a story corrected in place invalidates its own cached
     classification, plus a classifier-version marker so an assess.py
     classifier change invalidates every cached genre_census checkpoint."""
-    return {
+    fingerprint = {
         "model": model,
         "backend": backend_name,
         "classifier_version": _CLASSIFIER_VERSION,
         "raw_text_hash": _hash_text(raw_text),
     }
+    if base_url:
+        fingerprint["base_url"] = base_url
+    return fingerprint
+
+
+def _slugify_component(value: str) -> str:
+    return "".join(char if char.isalnum() else "_" for char in value.lower()).strip("_")
+
+
+def _slugify_model(model: str) -> str:
+    return _slugify_component(model)
+
+
+def _is_local_base_url(base_url: Optional[str]) -> bool:
+    if not base_url:
+        return False
+    host = (urllib.parse.urlparse(base_url).hostname or "").lower()
+    return host in {"localhost", "127.0.0.1", "::1"}
+
+
+def _endpoint_slug(base_url: str) -> str:
+    parsed = urllib.parse.urlparse(base_url)
+    pieces = [parsed.scheme or "endpoint"]
+    pieces.append(parsed.hostname or parsed.netloc or base_url)
+    if parsed.port:
+        pieces.append(str(parsed.port))
+    path = parsed.path.strip("/")
+    if path:
+        pieces.extend(part for part in path.split("/") if part)
+    return _slugify_component("_".join(pieces)) or "endpoint"
+
+
+def _output_prefix(
+    mode: str, model: str, base_url: Optional[str], dry_run: bool
+) -> str:
+    if not base_url:
+        return f"census_{mode}"
+    run_kind = "dry_run_" if dry_run else ""
+    return f"census_{_slugify_model(model)}_{_endpoint_slug(base_url)}_{run_kind}{mode}"
+
+
+def _compare_detected_genres(
+    records: List[Dict[str, Any]], reference_records: List[Dict[str, Any]]
+) -> Dict[str, Any]:
+    by_story = {record["story_id"]: record for record in records}
+    reference_by_story = {record["story_id"]: record for record in reference_records}
+    common_story_ids = sorted(by_story.keys() & reference_by_story.keys())
+    disagreements = []
+    exact_matches = 0
+    for story_id in common_story_ids:
+        detected_genre = _canonical_detected_genre(
+            by_story[story_id].get("detected_genre", "other")
+        )[0]
+        reference_genre = _canonical_detected_genre(
+            reference_by_story[story_id].get("detected_genre", "other")
+        )[0]
+        if detected_genre == reference_genre:
+            exact_matches += 1
+        else:
+            disagreements.append(
+                {
+                    "story_id": story_id,
+                    "reference_detected_genre": reference_genre,
+                    "candidate_detected_genre": detected_genre,
+                }
+            )
+    return {
+        "reference_story_count": len(reference_records),
+        "candidate_story_count": len(records),
+        "common_story_count": len(common_story_ids),
+        "detected_genre_exact_matches": exact_matches,
+        "detected_genre_disagreements": disagreements,
+        "missing_from_candidate": sorted(reference_by_story.keys() - by_story.keys()),
+        "extra_in_candidate": sorted(by_story.keys() - reference_by_story.keys()),
+    }
+
+
+def _read_jsonl(path: pathlib.Path) -> List[Dict[str, Any]]:
+    rows = []
+    with path.open(encoding="utf-8") as f:
+        for line in f:
+            rows.append(json.loads(line))
+    return rows
+
+
+def _fresh_metered_call_count(records: List[Dict[str, Any]]) -> int:
+    return sum(
+        1
+        for record in records
+        if not record.get("from_cache")
+        and (record.get("input_tokens", 0) > 0 or record.get("output_tokens", 0) > 0)
+    )
+
+
+def _add_reference_comparison(
+    summary: Dict[str, Any],
+    records: List[Dict[str, Any]],
+    reference_stories_path: pathlib.Path,
+) -> None:
+    try:
+        reference_records = _read_jsonl(reference_stories_path)
+    except (OSError, json.JSONDecodeError) as exc:
+        print(
+            f"warning: could not read optional reference comparison file "
+            f"{reference_stories_path}: {exc}; omitting comparison.",
+            file=sys.stderr,
+        )
+        summary["reference_comparison_error"] = str(exc)
+        return
+
+    try:
+        reference_path = reference_stories_path.relative_to(pathlib.Path.cwd())
+    except ValueError:
+        reference_path = reference_stories_path
+    summary["reference_comparison_path"] = str(reference_path)
+    summary["reference_comparison"] = _compare_detected_genres(
+        records, reference_records
+    )
 
 
 def _is_valid_cache_payload(data: Any) -> bool:
     return isinstance(data, dict) and "detected_genre" in data
 
 
-def _build_backend(backend_name: str, model: Optional[str]):
+def _build_backend(
+    backend_name: str, model: Optional[str], base_url: Optional[str] = None
+):
+    if base_url and backend_name != "openai":
+        raise ValueError("--base-url is only supported with --backend openai")
     if backend_name == "anthropic":
         from lcats.llm import anthropic_backend
 
@@ -212,18 +375,30 @@ def _build_backend(backend_name: str, model: Optional[str]):
     if backend_name == "openai":
         from lcats.llm import openai_backend
 
+        if base_url:
+            if _is_local_base_url(base_url):
+                return (
+                    openai_backend.OpenAIBackend(api_key="ollama", base_url=base_url),
+                    model or "gpt-4o",
+                )
+            return (
+                openai_backend.OpenAIBackend(base_url=base_url),
+                model or "gpt-4o",
+            )
         return openai_backend.OpenAIBackend(), model or "gpt-4o"
     raise ValueError(f"Unknown backend: {backend_name!r}")
 
 
-def _build_fake_backend():
+def _build_fake_backend(model: Optional[str] = None):
     from lcats.llm import fake_backend
 
+    resolved_model = model or "fake-1.0"
     return (
         fake_backend.FakeBackend(
-            tool_result={"verdict": "keep", "detected_genre": "other"}
+            tool_result={"verdict": "keep", "detected_genre": "other"},
+            model=resolved_model,
         ),
-        "fake-1.0",
+        resolved_model,
     )
 
 
@@ -292,6 +467,7 @@ def _classify_story(
     backend: Any,
     model: str,
     backend_name: str,
+    base_url: Optional[str],
     roots: checkpoint.CheckpointRoots,
 ) -> Dict[str, Any]:
     """Classify one story (checkpointed), returning a per-story record dict.
@@ -321,14 +497,14 @@ def _classify_story(
             "from_cache": False,
         }
 
-    fingerprint = _fingerprint(model, backend_name, raw_text)
+    fingerprint = _fingerprint(model, backend_name, raw_text, base_url)
     cached = checkpoint.read_checkpoint(
         roots.working_root, item_id, "genre_census", fingerprint
     )
     if cached.done and _is_valid_cache_payload(cached.data):
         record = dict(cached.data)
         record["from_cache"] = True
-        return record
+        return _normalize_record_detected_genre(record)
 
     start = time.perf_counter()
     result = corpus_assess.assess_story(path, genre="", backend=backend, model=model)
@@ -338,7 +514,10 @@ def _classify_story(
         _check_fatal(result.error, context=f"genre-census {path.name}")
 
     cost = _estimate_cost_usd(
-        result.backend_model or model, result.input_tokens, result.output_tokens
+        result.backend_model or model,
+        result.input_tokens,
+        result.output_tokens,
+        is_local_endpoint=_is_local_base_url(base_url),
     )
     record = {
         "story_id": item_id,
@@ -355,6 +534,7 @@ def _classify_story(
         "backend_model": result.backend_model or model,
         "from_cache": False,
     }
+    _normalize_record_detected_genre(record)
     checkpoint.write_checkpoint(
         roots.working_root,
         item_id,
@@ -381,6 +561,7 @@ def summarize(
     total_elapsed = 0.0
     billed_count = 0
     secondary_genre_sanitized_count = 0
+    detected_genre_normalized_count = 0
 
     for record in records:
         total_cost += record.get("estimated_cost_usd", 0.0)
@@ -395,10 +576,15 @@ def summarize(
         # a genuine "no secondary genre applies" "", indistinguishable.
         if record.get("secondary_genre_sanitized"):
             secondary_genre_sanitized_count += 1
+        detected_genre = _canonical_detected_genre(
+            record.get("detected_genre", "other")
+        )
+        if record.get("detected_genre_normalized") or detected_genre[1]:
+            detected_genre_normalized_count += 1
         if record.get("error"):
             excluded.append({"story_id": record["story_id"], "reason": record["error"]})
             continue
-        genre_counts[record.get("detected_genre", "other")] += 1
+        genre_counts[detected_genre[0]] += 1
 
     for genre in corpus_assess.VALID_GENRES:
         genre_counts.setdefault(genre, 0)
@@ -425,6 +611,7 @@ def summarize(
         "excluded_stories": excluded,
         "excluded_by_collection": dict(excluded_by_collection),
         "secondary_genre_sanitized_count": secondary_genre_sanitized_count,
+        "detected_genre_normalized_count": detected_genre_normalized_count,
         "genre_counts": dict(genre_counts),
         "total_estimated_cost_usd": total_cost,
         "total_input_tokens": total_input_tokens,
@@ -447,6 +634,14 @@ def main() -> int:
     )
     parser.add_argument("--model", default=None)
     parser.add_argument(
+        "--base-url",
+        default=None,
+        help=(
+            "Optional OpenAI-compatible endpoint override for --backend openai "
+            "(for example http://localhost:11434/v1 for Ollama)."
+        ),
+    )
+    parser.add_argument(
         "--output",
         default=str(pathlib.Path(__file__).resolve().parent / "results"),
     )
@@ -464,6 +659,11 @@ def main() -> int:
         return 1
     if args.sample_size is not None and args.full:
         print("error: --sample-size and --full are mutually exclusive", file=sys.stderr)
+        return 1
+    if args.base_url and args.backend != "openai":
+        print(
+            "error: --base-url is only supported with --backend openai", file=sys.stderr
+        )
         return 1
 
     load_secrets()
@@ -506,11 +706,13 @@ def main() -> int:
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    local_endpoint = _is_local_base_url(args.base_url)
+
     if args.dry_run:
-        backend, model = _build_fake_backend()
+        backend, model = _build_fake_backend(args.model)
     else:
         try:
-            backend, model = _build_backend(args.backend, args.model)
+            backend, model = _build_backend(args.backend, args.model, args.base_url)
         except Exception as exc:  # noqa: BLE001
             print(
                 f"error: could not construct {args.backend} backend: {exc}",
@@ -538,7 +740,9 @@ def main() -> int:
     aborted = False
     for i, path in enumerate(targets, start=1):
         try:
-            record = _classify_story(path, backend, model, args.backend, roots)
+            record = _classify_story(
+                path, backend, model, args.backend, args.base_url, roots
+            )
         except FatalCensusError as exc:
             print(f"\nfatal: {exc}", file=sys.stderr)
             print(
@@ -550,7 +754,12 @@ def main() -> int:
             aborted = True
             break
         records.append(record)
-        tag = "cached" if record.get("from_cache") else "billed"
+        if record.get("from_cache"):
+            tag = "cached"
+        elif local_endpoint:
+            tag = "local"
+        else:
+            tag = "billed"
         print(
             f"  [{i}/{len(targets)}] {record['story_id']} -> "
             f"{record['detected_genre']} ({tag})"
@@ -560,8 +769,13 @@ def main() -> int:
     summary["mode"] = mode
     summary["backend"] = args.backend
     summary["model"] = model
+    summary["base_url"] = args.base_url or ""
+    summary["local_endpoint"] = local_endpoint
     summary["dry_run"] = args.dry_run
     summary["corpus_story_count"] = len(files)
+    if local_endpoint:
+        summary["local_call_count"] = _fresh_metered_call_count(records)
+        summary["billed_call_count"] = 0
 
     if mode == "sample" and records:
         # Use only freshly-classified (non-cached) records for the
@@ -594,12 +808,17 @@ def main() -> int:
             files
         )
 
-    stories_path = output_dir / f"census_{mode}_stories.jsonl"
+    prefix = _output_prefix(mode, model, args.base_url, args.dry_run)
+    stories_path = output_dir / f"{prefix}_stories.jsonl"
     with stories_path.open("w", encoding="utf-8") as f:
         for record in records:
             f.write(json.dumps(record, sort_keys=True) + "\n")
 
-    summary_path = output_dir / f"census_{mode}_summary.json"
+    reference_stories_path = output_dir / f"census_{mode}_stories.jsonl"
+    if args.base_url and mode == "sample" and reference_stories_path.exists():
+        _add_reference_comparison(summary, records, reference_stories_path)
+
+    summary_path = output_dir / f"{prefix}_summary.json"
     with summary_path.open("w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2, sort_keys=True)
 
@@ -617,11 +836,23 @@ def main() -> int:
             f"secondary_genre sanitized (corrupted tool-call output "
             f"repaired, WI-LLM-0058): {summary['secondary_genre_sanitized_count']}"
         )
-    print(
-        f"Measured cost: ${summary['total_estimated_cost_usd']:.4f} over "
-        f"{summary['billed_call_count']} billed call(s), "
-        f"{summary['total_elapsed_seconds']:.1f}s wall clock."
-    )
+    if summary["detected_genre_normalized_count"]:
+        print(
+            f"detected_genre normalized (non-canonical model output "
+            f"repaired): {summary['detected_genre_normalized_count']}"
+        )
+    if local_endpoint:
+        print(
+            f"Measured API cost: ${summary['total_estimated_cost_usd']:.4f} "
+            f"over {summary['local_call_count']} local call(s), "
+            f"{summary['total_elapsed_seconds']:.1f}s wall clock."
+        )
+    else:
+        print(
+            f"Measured cost: ${summary['total_estimated_cost_usd']:.4f} over "
+            f"{summary['billed_call_count']} billed call(s), "
+            f"{summary['total_elapsed_seconds']:.1f}s wall clock."
+        )
     if mode == "sample" and records:
         print(
             f"\nExtrapolated FULL CORPUS estimate ({len(files)} stories): "
