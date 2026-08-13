@@ -1,5 +1,6 @@
 """Library for chunking long stories into manageable pieces using tiktoken."""
 
+import codecs
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -39,6 +40,12 @@ def chunk_story(
     - end_token_limit: if set, truncate to this many tokens total
     - max_chunks: if set, return at most this many chunks
     """
+    if overlap_tokens > 0 and overlap_tokens >= max_tokens:
+        raise ValueError(
+            f"overlap_tokens ({overlap_tokens}) must be less than max_tokens "
+            f"({max_tokens}), or chunking never advances."
+        )
+
     enc = tiktoken.encoding_for_model(model_name)
     tokens = enc.encode(story_text)
 
@@ -48,6 +55,17 @@ def chunk_story(
     chunks: List[Chunk] = []
     current_token = 0
     chunk_count = 0
+
+    # Track the character offset of each new start_token incrementally: decode
+    # only the newly-seen token slice with a stateful UTF-8 decoder (which
+    # buffers any incomplete trailing multi-byte sequence across calls) and
+    # add its length to a running total, rather than re-decoding the entire
+    # accumulated prefix on every chunk (which stays O(N^2) even when the
+    # re-decoded prefix is raw bytes instead of tokens).
+    last_idx = 0
+    running_char_count = 0
+    incremental_decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
+    start_char_cache = {}
 
     step = max_tokens if overlap_tokens == 0 else max_tokens - overlap_tokens
 
@@ -65,7 +83,14 @@ def chunk_story(
         end_token = min(current_token + max_tokens, len(tokens))
         chunk_tokens = tokens[start_token:end_token]
         chunk_text = enc.decode(chunk_tokens)
-        start_char = len(enc.decode(tokens[:start_token]))
+
+        if start_token not in start_char_cache:
+            new_bytes = enc.decode_bytes(tokens[last_idx:start_token])
+            running_char_count += len(incremental_decoder.decode(new_bytes))
+            last_idx = start_token
+            start_char_cache[start_token] = running_char_count
+
+        start_char = start_char_cache[start_token]
 
         chunks.append(
             Chunk(
