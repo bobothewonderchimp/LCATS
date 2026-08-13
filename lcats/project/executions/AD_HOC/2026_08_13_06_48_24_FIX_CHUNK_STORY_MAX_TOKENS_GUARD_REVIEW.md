@@ -2,10 +2,10 @@
 execution_id: 2026_08_13_06_48_24_FIX_CHUNK_STORY_MAX_TOKENS_GUARD_REVIEW
 prompt_id: PROMPT(AD_HOC:FIX_CHUNK_STORY_MAX_TOKENS_GUARD_REVIEW)[2026-08-13T06:43:52+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/296
-commit: b9cc9174
+commit: 6bbd31bd5ca011a4c5c431f5351d75ba9d4ef6bb
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/296
 session_transcript: claude-app:7383c2e8-035c-4f1e-9eef-e9cdd209e46e
