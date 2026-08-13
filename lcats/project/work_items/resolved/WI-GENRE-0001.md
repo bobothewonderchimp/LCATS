@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via https://github.com/xenotaur/LCATS/pull/297 (squash commit 542fab3423af86a9b3ebe222e7431f58db5842c2)."
 blocked_reason: null
 blocked: false
 id: WI-GENRE-0001
 title: Create metadata genre prefilter scaffold
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
