@@ -2,10 +2,10 @@
 execution_id: 2026_08_13_15_51_37_WI_GENRE_0002_CONFIRM_FIXES
 prompt_id: PROMPT(AD_HOC:WI_GENRE_0002_CONFIRM_FIXES)[2026-08-13T15:51:37+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_13_15_21_47_WI_GENRE_0002
 pr: https://github.com/xenotaur/LCATS/pull/300
-commit: 
+commit: f5b3fdc00c485ead839c5ef7b7b26bb2809408d1
 created_at: 2026-08-13T15:51:37+00:00
 agent: codex_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/300
