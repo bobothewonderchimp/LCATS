@@ -9,7 +9,7 @@ commit: 4d6903236a2fe3a9ad692a8ced2d88bb50839d56
 created_at: 2026-08-12T01:43:41+00:00
 agent: codex_app
 instruction_source: promptspace:PR-290-genre-evidence-sidecar-workstream
-session_transcript: pending
+session_transcript: codex-app:019ff36e-af10-7da3-9222-02c0a2bee6a4
 ---
 
 # Summary
