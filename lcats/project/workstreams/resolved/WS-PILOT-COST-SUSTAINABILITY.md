@@ -2,10 +2,10 @@
 id: WS-PILOT-COST-SUSTAINABILITY
 kind: planning_node
 title: Sustainable-cost validation harness and evaluation gates for the ERW cross-segment relation pilot
-status: proposed
-stage: planned
+status: resolved
+stage: closed
 origin: design_review
-summary: Deliver PROP-LCATS-PILOT-COST-SUSTAINABILITY's targeted test harness, then gate prompt caching, Batch API, and model-tiering adoption behind real, measured evaluations against that harness, so run_pilot.py stays cheap enough to iterate on before any further full, expensive real run.
+summary: Deliver PROP-LCATS-PILOT-COST-SUSTAINABILITY's targeted test harness, then gate prompt caching, Batch API, and model-tiering adoption behind real, measured evaluations against that harness, so run_pilot.py stays cheap enough to iterate on before any further full, expensive real run. Resolved 2026-08-14 as the completed-evaluation workstream — implementation follow-through for any "go" conclusion is tracked in WS-PILOT-IMPROVEMENTS, per PROP-LCATS-PILOT-IMPROVEMENTS.
 related_focus:
   - FOCUS-WORLDCON-2026
 related_roadmap: []
@@ -21,7 +21,7 @@ work_items:
 exit_criteria:
   - A targeted single/small-story test harness exists on run_pilot.py (--story/--story-list flag, fixture set, per-stage cost reporting), per Decision 2
   - Prompt caching, Batch API, and model-tiering each have a completed, measured evaluation against the harness's fixture set (adopt or reject, with real numbers) — none is a foregone commitment, per Decisions 3-5
-  - Any evaluation that concludes "adopt" has landed as an implemented change, not left as an open recommendation
+  - Any evaluation that concludes "adopt" has a named follow-on implementation item tracked in WS-PILOT-IMPROVEMENTS — this workstream's own scope ends at a measured, real-numbers evaluation, not the implementation itself, per the 2026-08-14 reinterpretation recorded in the Purpose section below
   - All work items resolved and lrh validate reports 0 errors
 ---
 
@@ -42,6 +42,23 @@ explicitly held pending this discussion. It coordinates building a
 targeted, cheap-to-run test harness first, then using that harness to
 gate — not pre-commit to — three cost-reduction techniques (prompt
 caching, the Batch API, and per-stage model tiering).
+
+**Reinterpreted and closed 2026-08-14.** All four work items are
+resolved and all three evaluations concluded "go" (prompt caching,
+opt-in; Batch API, gated behind a new durable ledger; per-stage model
+tiering, Haiku 4.5 for genre-detect/segmentation), but none had landed
+as an implemented change — this workstream's original exit criteria
+required that before closure, which this workstream itself was never
+scoped to deliver (it built the harness and ran the evaluations, not the
+adoption work). `PROP-LCATS-PILOT-IMPROVEMENTS`
+(`lcats/project/design/proposals/proposed/lcats-pilot-improvements/00_proposal.md`)
+scopes that follow-on implementation work as a new workstream,
+`WS-PILOT-IMPROVEMENTS`
+(`lcats/project/workstreams/proposed/WS-PILOT-IMPROVEMENTS.md`, merged
+2026-08-13), which carries every "go" conclusion forward behind its own
+stability gate. This workstream's exit criteria are amended accordingly
+(see frontmatter) and it is closed as the completed-evaluation
+workstream, per the proposal's own recommendation.
 
 ## Scope
 
@@ -104,15 +121,23 @@ sequence (each of WI 2-4 depends on WI 1's harness):
   the real, narrower caching benefit against WI 1's fixture set given
   the per-call different-tool-schema constraint; only proceeds to
   `cache_control` adoption if it shows a real, worthwhile saving.
-  Created 2026-08-07.
+  Resolved 2026-08-10, PR #282 — go, opt-in only (real ~8% cost saving,
+  concentrated in the extractors whose tools+system prefix cleared
+  Anthropic's minimum cacheable length). Implementation tracked in
+  `WS-PILOT-IMPROVEMENTS`.
 - **WI-PILOT-0058 — Batch API evaluation** (Decision 4): go/no-go
   assessment using WI 1's (and, if it lands, WI 2's) now-measurable
   baseline; only proceeds to implementation if the assessment favors
-  it. Created 2026-08-08.
+  it. Resolved 2026-08-10, PR #284 — go, but for a separate follow-on
+  design item: the real 50% discount is strong, but `checkpoint.py`'s
+  synchronous model needs a new async submit/poll/result ledger first.
+  Implementation tracked in `WS-PILOT-IMPROVEMENTS`.
 - **WI-PILOT-0060 — model tiering evaluation** (Decision 5): per-stage
   `--model` support plus real output-quality comparison against WI 1's
-  fixtures; only proceeds to adoption if quality holds. Created
-  2026-08-08.
+  fixtures; only proceeds to adoption if quality holds. Resolved
+  2026-08-11, PR #286 — go, bounded: Haiku 4.5 for genre-detect and
+  segmentation only, real evidence quality held (with one noted
+  caveat). Implementation tracked in `WS-PILOT-IMPROVEMENTS`.
 
 ## Exit Criteria
 
@@ -139,6 +164,11 @@ sequence (each of WI 2-4 depends on WI 1's harness):
   (Prefect/Dagster/Airflow) for cost logging — the 2026-07-27 audit's own
   Category E1 table already considered and set these aside as overkill
   for a single-researcher local pipeline; nothing here revisits that.
+- Does not implement any evaluation's "go" conclusion itself — per the
+  2026-08-14 reinterpretation above, `WI-PILOT-0057`/`0058`/`0060`'s go
+  recommendations are implemented in the follow-on `WS-PILOT-IMPROVEMENTS`
+  workstream, not here; this workstream's scope ends at a measured,
+  real-numbers evaluation.
 
 ## Open Questions
 
