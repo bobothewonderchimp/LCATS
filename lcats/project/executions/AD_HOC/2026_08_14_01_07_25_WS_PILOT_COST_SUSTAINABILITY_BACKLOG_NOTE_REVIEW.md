@@ -2,10 +2,10 @@
 execution_id: 2026_08_14_01_07_25_WS_PILOT_COST_SUSTAINABILITY_BACKLOG_NOTE_REVIEW
 prompt_id: PROMPT(AD_HOC:WS_PILOT_COST_SUSTAINABILITY_BACKLOG_NOTE_REVIEW)[2026-08-14T01:06:57+00:00]
 work_item: AD_HOC
-status: in_progress
-rerun_of: 
+status: landed
+rerun_of: 2026_08_14_02_06_21_WS_PILOT_COST_SUSTAINABILITY_BACKLOG_NOTE
 pr: https://github.com/xenotaur/LCATS/pull/304
-commit: 337676f5
+commit: a7bd3d3ca6abe5b8347b85d3ac6a2c6937148f9b
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/304
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
