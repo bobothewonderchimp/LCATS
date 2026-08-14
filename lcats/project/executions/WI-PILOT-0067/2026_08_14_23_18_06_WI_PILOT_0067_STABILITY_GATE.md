@@ -5,7 +5,7 @@ work_item: WI-PILOT-0067
 status: in_progress
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/310
-commit: 86f34fef
+commit: ed3c7f5f
 agent: codex_app
 instruction_source: project/work_items/proposed/WI-PILOT-0067.md
 session_transcript: pending
