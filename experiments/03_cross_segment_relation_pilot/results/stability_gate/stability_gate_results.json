@@ -23,6 +23,7 @@
     "parse_errors": [],
     "parseable_artifacts": true,
     "schema_invalid_or_truncation_marked_final_artifacts": 0,
+    "spend_evidence_complete": true,
     "story_count": 2,
     "usage_stages_by_story": {
       "fixtures__king_of_the_hill": [

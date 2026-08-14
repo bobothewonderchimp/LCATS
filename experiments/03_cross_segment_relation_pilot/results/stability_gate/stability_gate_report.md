@@ -28,6 +28,7 @@
 - Independent well-formedness pass: 1/2
 - Fatal pilot errors: 0
 - Schema/truncation-marked final artifacts: 0
+- Spend evidence complete: `True`
 - Total input/output tokens: 34077 / 19025
 - Actual spend: $0.6460
 

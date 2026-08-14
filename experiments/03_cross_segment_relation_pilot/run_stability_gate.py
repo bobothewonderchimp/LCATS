@@ -441,7 +441,7 @@ def _checkpoint_outcome(output_dir: pathlib.Path, story_id: str, filename: str) 
 
 
 def _checkpoint_covers_stage(
-    output_dir: pathlib.Path, story_id: str, stage: str
+    output_dir: pathlib.Path, story_id: str, stage: str, *, model: str, backend: str
 ) -> bool:
     stage_file = {
         "segment": "segment.json",
@@ -452,8 +452,22 @@ def _checkpoint_covers_stage(
         "discourse": "erw_extract.json",
         "story_relation": "cross_segment_relation.json",
     }.get(stage)
-    return bool(
-        stage_file and _checkpoint_outcome(output_dir, story_id, stage_file) == "success"
+    if not stage_file:
+        return False
+    path = output_dir / story_id / stage_file
+    if not path.is_file():
+        return False
+    try:
+        payload = _read_json(path)
+    except (OSError, json.JSONDecodeError):
+        return False
+    if not isinstance(payload, dict) or payload.get("outcome") != "success":
+        return False
+    fingerprint = payload.get("fingerprint")
+    return (
+        isinstance(fingerprint, dict)
+        and fingerprint.get("model") == model
+        and fingerprint.get("backend") == backend
     )
 
 
@@ -581,13 +595,30 @@ def _validate_outputs(
             stage
             for stage in missing
             if story_id not in excluded_ids
-            and _checkpoint_covers_stage(output_dir, story_id, stage)
+            and _checkpoint_covers_stage(
+                output_dir,
+                story_id,
+                stage,
+                model=model,
+                backend=str(parsed.get("pilot_summary.json", {}).get("backend", "")),
+            )
         }
         if checkpointed:
             checkpointed_stages_by_story[story_id] = sorted(checkpointed)
             missing -= checkpointed
         if missing:
             errors.append(f"{story_id}: missing usage stages {sorted(missing)}")
+
+    checkpointed_stage_count = sum(
+        len(stages) for stages in checkpointed_stages_by_story.values()
+    )
+    spend_evidence_complete = checkpointed_stage_count == 0
+    if checkpointed_stage_count and not dry_run:
+        errors.append(
+            "actual spend evidence is incomplete because "
+            f"{checkpointed_stage_count} required stage(s) were satisfied by "
+            "cached checkpoints without current usage rows"
+        )
 
     genre_items = genre_results["results"]
     genre_errors = [
@@ -637,6 +668,7 @@ def _validate_outputs(
         },
         "usage_stages_by_story": stages_by_story,
         "checkpointed_stages_by_story": checkpointed_stages_by_story,
+        "spend_evidence_complete": spend_evidence_complete,
         "errors": errors,
     }
     mechanical["mechanical_pass"] = not errors
@@ -744,6 +776,7 @@ def _render_report(results: Dict[str, Any], genre_results: Dict[str, Any]) -> st
             f"- Fatal pilot errors: {validation['fatal_pilot_errors']}",
             "- Schema/truncation-marked final artifacts: "
             f"{validation['schema_invalid_or_truncation_marked_final_artifacts']}",
+            f"- Spend evidence complete: `{validation['spend_evidence_complete']}`",
             f"- Total input/output tokens: {usage['total_input_tokens']} / {usage['total_output_tokens']}",
             f"- Actual spend: {cost_text}",
             "",

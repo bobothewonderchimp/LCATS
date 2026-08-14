@@ -315,7 +315,7 @@ class TestValidation(unittest.TestCase):
             results["mechanical_validation"]["errors"],
         )
 
-    def test_validate_outputs_accepts_cached_completed_stage(self):
+    def test_validate_outputs_reports_cached_completed_stage_with_partial_spend(self):
         self._write_outputs()
         usage_rows = []
         for story in self.stories:
@@ -333,7 +333,16 @@ class TestValidation(unittest.TestCase):
             checkpoint_dir = self.output_dir / story.story_id
             checkpoint_dir.mkdir()
             (checkpoint_dir / "segment.json").write_text(
-                json.dumps({"outcome": "success"}), encoding="utf-8"
+                json.dumps(
+                    {
+                        "outcome": "success",
+                        "fingerprint": {
+                            "model": "claude-opus-4-8",
+                            "backend": "anthropic",
+                        },
+                    }
+                ),
+                encoding="utf-8",
             )
         (self.output_dir / "pilot_usage.jsonl").write_text(
             "\n".join(json.dumps(row) for row in usage_rows) + "\n",
@@ -365,12 +374,86 @@ class TestValidation(unittest.TestCase):
             False,
         )
 
-        self.assertTrue(results["mechanical_validation"]["mechanical_pass"])
+        self.assertFalse(results["mechanical_validation"]["mechanical_pass"])
         self.assertEqual(
             results["mechanical_validation"]["checkpointed_stages_by_story"][
                 "fixtures__king_of_the_hill"
             ],
             ["segment"],
+        )
+        self.assertFalse(results["mechanical_validation"]["spend_evidence_complete"])
+        self.assertIn(
+            "actual spend evidence is incomplete because 2 required stage(s) "
+            "were satisfied by cached checkpoints without current usage rows",
+            results["mechanical_validation"]["errors"],
+        )
+
+    def test_validate_outputs_rejects_cached_stage_with_wrong_fingerprint(self):
+        self._write_outputs()
+        usage_rows = []
+        for story in self.stories:
+            for stage in run_stability_gate.EXPECTED_STAGES - {"segment"}:
+                usage_rows.append(
+                    {
+                        "story_id": story.story_id,
+                        "pass_name": stage,
+                        "input_tokens": 10,
+                        "output_tokens": 2,
+                        "is_llm_backed": True,
+                        "model": "claude-opus-4-8",
+                    }
+                )
+            checkpoint_dir = self.output_dir / story.story_id
+            checkpoint_dir.mkdir()
+            (checkpoint_dir / "segment.json").write_text(
+                json.dumps(
+                    {
+                        "outcome": "success",
+                        "fingerprint": {"model": "fake-1.0", "backend": "anthropic"},
+                    }
+                ),
+                encoding="utf-8",
+            )
+        (self.output_dir / "pilot_usage.jsonl").write_text(
+            "\n".join(json.dumps(row) for row in usage_rows) + "\n",
+            encoding="utf-8",
+        )
+        genre_results = {
+            "results": [
+                {
+                    "story_id": story.story_id,
+                    "expected_genre": story.genre,
+                    "detected_genre": story.genre,
+                    "genre_correct": True,
+                    "schema_valid": True,
+                    "truncation_marked": False,
+                    "wellformed": True,
+                }
+                for story in self.stories
+            ],
+            "total_input_tokens": 20,
+            "total_output_tokens": 6,
+        }
+
+        results = run_stability_gate._validate_outputs(
+            self.output_dir,
+            self.stories,
+            {"returncode": 0},
+            genre_results,
+            "claude-opus-4-8",
+            False,
+        )
+
+        self.assertFalse(results["mechanical_validation"]["mechanical_pass"])
+        self.assertEqual(
+            results["mechanical_validation"]["checkpointed_stages_by_story"][
+                "fixtures__king_of_the_hill"
+            ],
+            [],
+        )
+        self.assertIn(
+            "fixtures__king_of_the_hill: missing usage stages ['segment']",
+            results["mechanical_validation"]["errors"],
         )
 
     def test_validate_outputs_reports_malformed_story_id_instead_of_crashing(self):
@@ -503,6 +586,7 @@ class TestValidation(unittest.TestCase):
                 "schema_invalid_or_truncation_marked_final_artifacts": 0,
                 "excluded_story_reasons": {},
                 "checkpointed_stages_by_story": {},
+                "spend_evidence_complete": True,
                 "errors": [],
             },
             "usage_totals": {
