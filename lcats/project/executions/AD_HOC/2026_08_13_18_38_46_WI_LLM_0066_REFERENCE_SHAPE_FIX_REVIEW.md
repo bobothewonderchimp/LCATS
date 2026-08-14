@@ -2,10 +2,10 @@
 execution_id: 2026_08_13_18_38_46_WI_LLM_0066_REFERENCE_SHAPE_FIX_REVIEW
 prompt_id: PROMPT(AD_HOC:WI_LLM_0066_REFERENCE_SHAPE_FIX_REVIEW)[2026-08-13T18:22:26+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/299
-commit: aac9083b3c1ae37b0ed89eadcd5e9dfa1961d8c8
+commit: 679965c1592641b08f4e596ecad1e5069a75991f
 created_at: 2026-08-13T18:38:46+00:00
 agent: codex_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/299
