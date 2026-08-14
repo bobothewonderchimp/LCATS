@@ -22,6 +22,7 @@ import time
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "lcats" / "src"))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
 import run_pilot  # noqa: E402
@@ -34,6 +35,7 @@ from lcats.utils import secrets  # noqa: E402
 DEFAULT_MODEL = "claude-opus-4-8"
 EXPECTED_STORY_COUNT = 2
 EXPECTED_STORY_IDS = ("fixtures__king_of_the_hill", "fixtures__unwelcomed_visitor")
+STABILITY_MANIFEST = "stability_gate_manifest.txt"
 EXPECTED_STAGES = {
     "segment",
     "surface_feature",
@@ -157,7 +159,7 @@ def _read_jsonl(path: pathlib.Path) -> List[Dict[str, Any]]:
 
 
 def _load_story_set(fixtures_dir: pathlib.Path) -> List[FixtureStory]:
-    manifest = fixtures_dir / "manifest.txt"
+    manifest = fixtures_dir / STABILITY_MANIFEST
     truth = _read_json(fixtures_dir / "genre_ground_truth.json")
     stories: List[FixtureStory] = []
     for raw_line in manifest.read_text(encoding="utf-8").splitlines():
@@ -209,7 +211,7 @@ def _run_pilot(
         "--model",
         model,
         "--story-list",
-        str(_fixtures_dir() / "manifest.txt"),
+        str(_fixtures_dir() / STABILITY_MANIFEST),
         "--nlp-backend",
         nlp_backend,
         "--output",
@@ -291,6 +293,204 @@ def _contains_truncation_marker(value: Any) -> bool:
     return False
 
 
+def _is_nonempty_string(value: Any) -> bool:
+    return isinstance(value, str) and bool(value)
+
+
+def _is_nonnegative_int(value: Any) -> bool:
+    return isinstance(value, int) and value >= 0
+
+
+def _is_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _validate_summary_shape(summary: Any) -> List[str]:
+    errors: List[str] = []
+    if not isinstance(summary, dict):
+        return ["pilot_summary.json: expected object"]
+    required = {
+        "backend": _is_nonempty_string,
+        "by_genre": lambda value: isinstance(value, dict),
+        "candidates_scanned": _is_nonnegative_int,
+        "dry_run": lambda value: isinstance(value, bool),
+        "model": _is_nonempty_string,
+        "sample_size_target": _is_nonnegative_int,
+        "stage_models": lambda value: isinstance(value, dict),
+    }
+    for key, predicate in required.items():
+        if key not in summary:
+            errors.append(f"pilot_summary.json: missing required field {key!r}")
+        elif not predicate(summary[key]):
+            errors.append(f"pilot_summary.json: invalid field {key!r}")
+
+    by_genre = summary.get("by_genre")
+    if isinstance(by_genre, dict):
+        for genre in run_pilot.GENRES:
+            item = by_genre.get(genre)
+            if not isinstance(item, dict):
+                errors.append(f"pilot_summary.json: missing by_genre entry {genre!r}")
+                continue
+            for key in (
+                "included_count",
+                "excluded_count",
+                "mean_cross_segment_density_per_1000_words",
+                "mean_weakly_inferred_cross_segment_density_per_1000_words",
+                "mean_folded_relations_per_1000_words",
+                "mean_folded_weakly_inferred_relations_per_1000_words",
+            ):
+                if key not in item:
+                    errors.append(
+                        f"pilot_summary.json: missing by_genre[{genre!r}][{key!r}]"
+                    )
+                elif not _is_number(item[key]):
+                    errors.append(
+                        f"pilot_summary.json: invalid by_genre[{genre!r}][{key!r}]"
+                    )
+
+    stage_models = summary.get("stage_models")
+    if isinstance(stage_models, dict):
+        for key in (
+            "genre_detect",
+            "segment",
+            "entity",
+            "event",
+            "relation",
+            "discourse",
+            "cross_segment_relation",
+        ):
+            if not _is_nonempty_string(stage_models.get(key)):
+                errors.append(f"pilot_summary.json: invalid stage_models[{key!r}]")
+    return errors
+
+
+def _validate_story_row_shape(row: Any, index: int) -> List[str]:
+    prefix = f"pilot_stories.jsonl row {index}"
+    errors: List[str] = []
+    if not isinstance(row, dict):
+        return [f"{prefix}: expected object"]
+    required = {
+        "story_id": _is_nonempty_string,
+        "genre": _is_nonempty_string,
+        "path": _is_nonempty_string,
+        "word_count": _is_nonnegative_int,
+        "excluded": lambda value: isinstance(value, bool),
+        "exclude_reason": lambda value: isinstance(value, str),
+    }
+    for key, predicate in required.items():
+        if key not in row:
+            errors.append(f"{prefix}: missing required field {key!r}")
+        elif not predicate(row[key]):
+            errors.append(f"{prefix}: invalid field {key!r}")
+    if not row.get("excluded"):
+        for key in (
+            "segment_count",
+            "cross_segment_relation_count",
+            "weakly_inferred_cross_segment_relation_count",
+        ):
+            if key not in row:
+                errors.append(f"{prefix}: missing required field {key!r}")
+            elif not _is_nonnegative_int(row[key]):
+                errors.append(f"{prefix}: invalid field {key!r}")
+        for key in (
+            "cross_segment_density_per_1000_words",
+            "weakly_inferred_cross_segment_density_per_1000_words",
+            "folded_relations_per_1000_words",
+            "folded_weakly_inferred_relations_per_1000_words",
+        ):
+            if key not in row:
+                errors.append(f"{prefix}: missing required field {key!r}")
+            elif not _is_number(row[key]):
+                errors.append(f"{prefix}: invalid field {key!r}")
+    return errors
+
+
+def _validate_usage_row_shape(row: Any, index: int) -> List[str]:
+    prefix = f"pilot_usage.jsonl row {index}"
+    errors: List[str] = []
+    if not isinstance(row, dict):
+        return [f"{prefix}: expected object"]
+    required = {
+        "story_id": _is_nonempty_string,
+        "pass_name": _is_nonempty_string,
+        "input_tokens": _is_nonnegative_int,
+        "output_tokens": _is_nonnegative_int,
+        "is_llm_backed": lambda value: isinstance(value, bool),
+        "model": _is_nonempty_string,
+    }
+    for key, predicate in required.items():
+        if key not in row:
+            errors.append(f"{prefix}: missing required field {key!r}")
+        elif not predicate(row[key]):
+            errors.append(f"{prefix}: invalid field {key!r}")
+    return errors
+
+
+def _checkpoint_outcome(output_dir: pathlib.Path, story_id: str, filename: str) -> str:
+    path = output_dir / story_id / filename
+    if not path.is_file():
+        return ""
+    try:
+        payload = _read_json(path)
+    except (OSError, json.JSONDecodeError):
+        return ""
+    if not isinstance(payload, dict):
+        return ""
+    outcome = payload.get("outcome")
+    return outcome if isinstance(outcome, str) else ""
+
+
+def _checkpoint_covers_stage(
+    output_dir: pathlib.Path, story_id: str, stage: str
+) -> bool:
+    stage_file = {
+        "segment": "segment.json",
+        "surface_feature": "erw_extract.json",
+        "entity": "erw_extract.json",
+        "event_anchor": "erw_extract.json",
+        "relation": "erw_extract.json",
+        "discourse": "erw_extract.json",
+        "story_relation": "cross_segment_relation.json",
+    }.get(stage)
+    return bool(
+        stage_file and _checkpoint_outcome(output_dir, story_id, stage_file) == "success"
+    )
+
+
+def _manual_review_from_existing(output_dir: pathlib.Path) -> Dict[str, Any]:
+    path = output_dir / "stability_gate_results.json"
+    if not path.is_file():
+        return {}
+    try:
+        existing = _read_json(path)
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if not isinstance(existing, dict):
+        return {}
+    semantic = existing.get("semantic_review")
+    if not isinstance(semantic, dict):
+        return {}
+    status = semantic.get("status")
+    if status not in {"reviewed_fail", "reviewed_pass"}:
+        return {}
+    return {
+        "semantic_review": semantic,
+        "final_recommendation": existing.get("final_recommendation"),
+    }
+
+
+def _apply_manual_review(
+    results: Dict[str, Any], manual_review: Dict[str, Any]
+) -> Dict[str, Any]:
+    semantic = manual_review.get("semantic_review")
+    if isinstance(semantic, dict):
+        results["semantic_review"] = semantic
+    recommendation = manual_review.get("final_recommendation")
+    if isinstance(recommendation, str) and recommendation:
+        results["final_recommendation"] = recommendation
+    return results
+
+
 def _validate_outputs(
     output_dir: pathlib.Path,
     stories: List[FixtureStory],
@@ -321,15 +521,36 @@ def _validate_outputs(
 
     story_rows = parsed.get("pilot_stories.jsonl", [])
     usage_rows = parsed.get("pilot_usage.jsonl", [])
+    summary = parsed.get("pilot_summary.json", {})
+    if "pilot_summary.json" in parsed:
+        errors.extend(_validate_summary_shape(summary))
+    for index, row in enumerate(story_rows, 1):
+        errors.extend(_validate_story_row_shape(row, index))
+    for index, row in enumerate(usage_rows, 1):
+        errors.extend(_validate_usage_row_shape(row, index))
+
     if len(story_rows) != len(stories):
         errors.append(f"expected {len(stories)} story rows, found {len(story_rows)}")
-    row_ids = {row.get("story_id") for row in story_rows}
+    invalid_story_id_count = sum(
+        1
+        for row in story_rows
+        if not isinstance(row, dict) or not _is_nonempty_string(row.get("story_id"))
+    )
+    if invalid_story_id_count:
+        errors.append(f"{invalid_story_id_count} story row(s) have invalid story_id")
+    row_ids = {
+        row.get("story_id")
+        for row in story_rows
+        if isinstance(row, dict) and _is_nonempty_string(row.get("story_id"))
+    }
     if row_ids != expected_ids:
         errors.append(
             f"story ids mismatch: expected {sorted(expected_ids)}, got {sorted(row_ids)}"
         )
 
-    excluded_rows = [row for row in story_rows if row.get("excluded")]
+    excluded_rows = [
+        row for row in story_rows if isinstance(row, dict) and row.get("excluded")
+    ]
     truncation_rows = [row for row in story_rows if _contains_truncation_marker(row)]
     if excluded_rows:
         errors.append(f"{len(excluded_rows)} story row(s) were excluded")
@@ -339,13 +560,32 @@ def _validate_outputs(
     expected_stages = (
         EXPECTED_STAGES - {"segment", "story_relation"} if dry_run else EXPECTED_STAGES
     )
+    excluded_ids = {
+        row.get("story_id")
+        for row in excluded_rows
+        if _is_nonempty_string(row.get("story_id"))
+    }
+    checkpointed_stages_by_story: Dict[str, List[str]] = {
+        story.story_id: [] for story in stories
+    }
     stages_by_story: Dict[str, List[str]] = {story.story_id: [] for story in stories}
     for usage in usage_rows:
+        if not isinstance(usage, dict):
+            continue
         story_id = usage.get("story_id")
         if story_id in stages_by_story:
             stages_by_story[story_id].append(str(usage.get("pass_name", "")))
     for story_id, stages in stages_by_story.items():
         missing = expected_stages - set(stages)
+        checkpointed = {
+            stage
+            for stage in missing
+            if story_id not in excluded_ids
+            and _checkpoint_covers_stage(output_dir, story_id, stage)
+        }
+        if checkpointed:
+            checkpointed_stages_by_story[story_id] = sorted(checkpointed)
+            missing -= checkpointed
         if missing:
             errors.append(f"{story_id}: missing usage stages {sorted(missing)}")
 
@@ -389,7 +629,14 @@ def _validate_outputs(
         ),
         "genre_correct_count": sum(1 for item in genre_items if item["genre_correct"]),
         "genre_total_count": len(genre_items),
+        "wellformed_count": sum(1 for item in genre_items if item.get("wellformed")),
+        "excluded_story_reasons": {
+            row.get("story_id"): row.get("exclude_reason", "")
+            for row in excluded_rows
+            if _is_nonempty_string(row.get("story_id"))
+        },
         "usage_stages_by_story": stages_by_story,
+        "checkpointed_stages_by_story": checkpointed_stages_by_story,
         "errors": errors,
     }
     mechanical["mechanical_pass"] = not errors
@@ -493,6 +740,7 @@ def _render_report(results: Dict[str, Any], genre_results: Dict[str, Any]) -> st
             f"- Mechanical pass: `{validation['mechanical_pass']}`",
             f"- Completed stories: {validation['completed_story_count']}/{EXPECTED_STORY_COUNT}",
             f"- Genre correctness: {validation['genre_correct_count']}/{validation['genre_total_count']}",
+            f"- Independent well-formedness pass: {validation['wellformed_count']}/{validation['genre_total_count']}",
             f"- Fatal pilot errors: {validation['fatal_pilot_errors']}",
             "- Schema/truncation-marked final artifacts: "
             f"{validation['schema_invalid_or_truncation_marked_final_artifacts']}",
@@ -513,6 +761,26 @@ def _render_report(results: Dict[str, Any], genre_results: Dict[str, Any]) -> st
         lines.extend(f"- {error}" for error in validation["errors"])
     else:
         lines.append("- None")
+    blocking_lines: List[str] = []
+    for story_id, reason in validation["excluded_story_reasons"].items():
+        if reason:
+            blocking_lines.append(f"`{story_id}` did not complete the pipeline: {reason}.")
+    for item in genre_results["results"]:
+        if not item.get("wellformed", False):
+            issue_text = ""
+            issues = item.get("issues")
+            if isinstance(issues, list) and issues:
+                first_issue = issues[0]
+                if isinstance(first_issue, dict):
+                    issue_text = str(first_issue.get("description", ""))
+            blocking_lines.append(
+                f"`{item['story_id']}` was independently marked "
+                f"`wellformed: false`/`verdict: {item.get('verdict', '')}`"
+                + (f": {issue_text}" if issue_text else ".")
+            )
+    if blocking_lines:
+        lines.extend(["", "Blocking failure modes:", ""])
+        lines.extend(f"- {line}" for line in blocking_lines)
     lines.extend(
         [
             "",
@@ -544,6 +812,7 @@ def run_gate(*, output_dir: pathlib.Path, model: str, dry_run: bool, nlp_backend
     if not dry_run:
         secrets.load_secrets()
     output_dir.mkdir(parents=True, exist_ok=True)
+    manual_review = _manual_review_from_existing(output_dir)
     stories = _load_story_set(_fixtures_dir())
     pilot_run = _run_pilot(
         output_dir=output_dir,
@@ -555,6 +824,8 @@ def run_gate(*, output_dir: pathlib.Path, model: str, dry_run: bool, nlp_backend
     genre_results = _run_genre_detection(stories, model=model, dry_run=dry_run)
     _write_json(output_dir / "genre_detection_results.json", genre_results)
     results = _validate_outputs(output_dir, stories, pilot_run, genre_results, model, dry_run)
+    if not dry_run:
+        results = _apply_manual_review(results, manual_review)
     _write_json(output_dir / "stability_gate_results.json", results)
     (output_dir / "stability_gate_report.md").write_text(
         _render_report(results, genre_results), encoding="utf-8"

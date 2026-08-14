@@ -27,6 +27,18 @@ class TestStorySet(unittest.TestCase):
         )
         self.assertEqual([story.genre for story in stories], ["science fiction"] * 2)
 
+    def test_gate_manifest_does_not_replace_run_pilot_default_manifest(self):
+        fixtures_dir = run_stability_gate._fixtures_dir()
+
+        default_manifest = (fixtures_dir / "manifest.txt").read_text(encoding="utf-8")
+        gate_manifest = (
+            fixtures_dir / run_stability_gate.STABILITY_MANIFEST
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("fixtures/five_o_clock_tea_farce:romance", default_manifest)
+        self.assertNotIn("fixtures/unwelcomed_visitor", default_manifest)
+        self.assertIn("fixtures/unwelcomed_visitor:science fiction", gate_manifest)
+
 
 class TestPricing(unittest.TestCase):
     def test_compute_cost_usd_uses_input_and_output_rates(self):
@@ -69,8 +81,17 @@ class TestValidation(unittest.TestCase):
             {
                 "story_id": story.story_id,
                 "genre": story.genre,
+                "path": str(story.path),
                 "excluded": False,
                 "exclude_reason": "",
+                "word_count": 100,
+                "segment_count": 2,
+                "cross_segment_relation_count": 1,
+                "weakly_inferred_cross_segment_relation_count": 0,
+                "cross_segment_density_per_1000_words": 10.0,
+                "weakly_inferred_cross_segment_density_per_1000_words": 0.0,
+                "folded_relations_per_1000_words": 10.0,
+                "folded_weakly_inferred_relations_per_1000_words": 0.0,
             }
             for story in self.stories
         ]
@@ -87,6 +108,8 @@ class TestValidation(unittest.TestCase):
                         "pass_name": stage,
                         "input_tokens": 10,
                         "output_tokens": 2,
+                        "is_llm_backed": True,
+                        "model": "claude-opus-4-8",
                     }
                 )
         (self.output_dir / "pilot_usage.jsonl").write_text(
@@ -94,7 +117,36 @@ class TestValidation(unittest.TestCase):
             encoding="utf-8",
         )
         (self.output_dir / "pilot_summary.json").write_text(
-            json.dumps({"dry_run": False}), encoding="utf-8"
+            json.dumps(
+                {
+                    "backend": "anthropic",
+                    "by_genre": {
+                        genre: {
+                            "included_count": 0,
+                            "excluded_count": 0,
+                            "mean_cross_segment_density_per_1000_words": 0.0,
+                            "mean_weakly_inferred_cross_segment_density_per_1000_words": 0.0,
+                            "mean_folded_relations_per_1000_words": 0.0,
+                            "mean_folded_weakly_inferred_relations_per_1000_words": 0.0,
+                        }
+                        for genre in run_stability_gate.run_pilot.GENRES
+                    },
+                    "candidates_scanned": 0,
+                    "dry_run": False,
+                    "model": "claude-opus-4-8",
+                    "sample_size_target": 5,
+                    "stage_models": {
+                        "cross_segment_relation": "claude-opus-4-8",
+                        "discourse": "claude-opus-4-8",
+                        "entity": "claude-opus-4-8",
+                        "event": "claude-opus-4-8",
+                        "genre_detect": "claude-opus-4-8",
+                        "relation": "claude-opus-4-8",
+                        "segment": "claude-opus-4-8",
+                    },
+                }
+            ),
+            encoding="utf-8",
         )
 
     def test_validate_outputs_passes_clean_artifacts(self):
@@ -176,6 +228,8 @@ class TestValidation(unittest.TestCase):
                         "pass_name": stage,
                         "input_tokens": 10,
                         "output_tokens": 2,
+                        "is_llm_backed": True,
+                        "model": "claude-opus-4-8",
                     }
                 )
         (self.output_dir / "pilot_usage.jsonl").write_text(
@@ -221,6 +275,8 @@ class TestValidation(unittest.TestCase):
                         "pass_name": stage,
                         "input_tokens": 10,
                         "output_tokens": 2,
+                        "is_llm_backed": True,
+                        "model": "claude-opus-4-8",
                     }
                 )
         (self.output_dir / "pilot_usage.jsonl").write_text(
@@ -256,6 +312,145 @@ class TestValidation(unittest.TestCase):
         self.assertFalse(results["mechanical_validation"]["mechanical_pass"])
         self.assertIn(
             "fixtures__king_of_the_hill: missing usage stages ['story_relation']",
+            results["mechanical_validation"]["errors"],
+        )
+
+    def test_validate_outputs_accepts_cached_completed_stage(self):
+        self._write_outputs()
+        usage_rows = []
+        for story in self.stories:
+            for stage in run_stability_gate.EXPECTED_STAGES - {"segment"}:
+                usage_rows.append(
+                    {
+                        "story_id": story.story_id,
+                        "pass_name": stage,
+                        "input_tokens": 10,
+                        "output_tokens": 2,
+                        "is_llm_backed": True,
+                        "model": "claude-opus-4-8",
+                    }
+                )
+            checkpoint_dir = self.output_dir / story.story_id
+            checkpoint_dir.mkdir()
+            (checkpoint_dir / "segment.json").write_text(
+                json.dumps({"outcome": "success"}), encoding="utf-8"
+            )
+        (self.output_dir / "pilot_usage.jsonl").write_text(
+            "\n".join(json.dumps(row) for row in usage_rows) + "\n",
+            encoding="utf-8",
+        )
+        genre_results = {
+            "results": [
+                {
+                    "story_id": story.story_id,
+                    "expected_genre": story.genre,
+                    "detected_genre": story.genre,
+                    "genre_correct": True,
+                    "schema_valid": True,
+                    "truncation_marked": False,
+                    "wellformed": True,
+                }
+                for story in self.stories
+            ],
+            "total_input_tokens": 20,
+            "total_output_tokens": 6,
+        }
+
+        results = run_stability_gate._validate_outputs(
+            self.output_dir,
+            self.stories,
+            {"returncode": 0},
+            genre_results,
+            "claude-opus-4-8",
+            False,
+        )
+
+        self.assertTrue(results["mechanical_validation"]["mechanical_pass"])
+        self.assertEqual(
+            results["mechanical_validation"]["checkpointed_stages_by_story"][
+                "fixtures__king_of_the_hill"
+            ],
+            ["segment"],
+        )
+
+    def test_validate_outputs_reports_malformed_story_id_instead_of_crashing(self):
+        self._write_outputs()
+        row = {
+            "genre": "science fiction",
+            "path": "fixtures/broken/story.json",
+            "word_count": 1,
+            "excluded": False,
+            "exclude_reason": "",
+        }
+        (self.output_dir / "pilot_stories.jsonl").write_text(
+            json.dumps(row) + "\n", encoding="utf-8"
+        )
+        genre_results = {
+            "results": [
+                {
+                    "story_id": story.story_id,
+                    "expected_genre": story.genre,
+                    "detected_genre": story.genre,
+                    "genre_correct": True,
+                    "schema_valid": True,
+                    "truncation_marked": False,
+                    "wellformed": True,
+                }
+                for story in self.stories
+            ],
+            "total_input_tokens": 20,
+            "total_output_tokens": 6,
+        }
+
+        results = run_stability_gate._validate_outputs(
+            self.output_dir,
+            self.stories,
+            {"returncode": 0},
+            genre_results,
+            "claude-opus-4-8",
+            False,
+        )
+
+        self.assertFalse(results["mechanical_validation"]["mechanical_pass"])
+        self.assertIn(
+            "1 story row(s) have invalid story_id",
+            results["mechanical_validation"]["errors"],
+        )
+
+    def test_validate_outputs_fails_incomplete_summary_shape(self):
+        self._write_outputs()
+        (self.output_dir / "pilot_summary.json").write_text(
+            json.dumps({"dry_run": False}), encoding="utf-8"
+        )
+        genre_results = {
+            "results": [
+                {
+                    "story_id": story.story_id,
+                    "expected_genre": story.genre,
+                    "detected_genre": story.genre,
+                    "genre_correct": True,
+                    "schema_valid": True,
+                    "truncation_marked": False,
+                    "wellformed": True,
+                }
+                for story in self.stories
+            ],
+            "total_input_tokens": 20,
+            "total_output_tokens": 6,
+        }
+
+        results = run_stability_gate._validate_outputs(
+            self.output_dir,
+            self.stories,
+            {"returncode": 0},
+            genre_results,
+            "claude-opus-4-8",
+            False,
+        )
+
+        self.assertFalse(results["mechanical_validation"]["mechanical_pass"])
+        self.assertIn(
+            "pilot_summary.json: missing required field 'backend'",
             results["mechanical_validation"]["errors"],
         )
 
@@ -303,8 +498,11 @@ class TestValidation(unittest.TestCase):
                 "completed_story_count": 1,
                 "genre_correct_count": 2,
                 "genre_total_count": 2,
+                "wellformed_count": 2,
                 "fatal_pilot_errors": 0,
                 "schema_invalid_or_truncation_marked_final_artifacts": 0,
+                "excluded_story_reasons": {},
+                "checkpointed_stages_by_story": {},
                 "errors": [],
             },
             "usage_totals": {

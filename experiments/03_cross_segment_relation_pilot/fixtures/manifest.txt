@@ -7,4 +7,4 @@
 # genre classification of the source text (no genre-detect call is made
 # in targeted mode; see run_pilot.py's --genre help).
 fixtures/king_of_the_hill:science fiction
-fixtures/unwelcomed_visitor:science fiction
+fixtures/five_o_clock_tea_farce:romance

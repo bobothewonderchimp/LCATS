@@ -2,19 +2,26 @@
   "dry_run": false,
   "final_recommendation": "fail_no_go",
   "mechanical_validation": {
+    "checkpointed_stages_by_story": {
+      "fixtures__king_of_the_hill": [],
+      "fixtures__unwelcomed_visitor": []
+    },
     "completed_story_count": 1,
     "errors": [
       "1 story row(s) were excluded",
       "fixtures__unwelcomed_visitor: missing usage stages ['discourse', 'entity', 'event_anchor', 'relation', 'surface_feature']",
       "1 genre-detection result(s) failed"
     ],
+    "excluded_story_reasons": {
+      "fixtures__unwelcomed_visitor": "segmentation failed: alignment failed: ValueError('alignment failed for segment_id=2: anchor text not found in story text')"
+    },
     "fatal_pilot_errors": 0,
     "genre_correct_count": 2,
     "genre_total_count": 2,
     "mechanical_pass": false,
     "missing_artifacts": [],
-    "parseable_artifacts": true,
     "parse_errors": [],
+    "parseable_artifacts": true,
     "schema_invalid_or_truncation_marked_final_artifacts": 0,
     "story_count": 2,
     "usage_stages_by_story": {
@@ -35,7 +42,8 @@
       "fixtures__unwelcomed_visitor": [
         "segment"
       ]
-    }
+    },
+    "wellformed_count": 1
   },
   "model": "claude-opus-4-8",
   "pilot_run": {
@@ -47,7 +55,7 @@
       "--model",
       "claude-opus-4-8",
       "--story-list",
-      "experiments/03_cross_segment_relation_pilot/fixtures/manifest.txt",
+      "experiments/03_cross_segment_relation_pilot/fixtures/stability_gate_manifest.txt",
       "--nlp-backend",
       "spacy",
       "--output",

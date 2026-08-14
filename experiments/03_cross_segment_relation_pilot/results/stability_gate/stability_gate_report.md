@@ -44,13 +44,8 @@
 
 Blocking failure modes:
 
-- `fixtures__unwelcomed_visitor` did not complete the pipeline. The
-  segmentation stage wrote a failure checkpoint:
-  `alignment failed for segment_id=2: anchor text not found in story text`.
-- `fixtures__king_of_the_hill` completed the pipeline, but the separate real
-  genre-detection/well-formedness check returned `wellformed: false` and
-  `verdict: review`, judging the fixture to read as an excerpt with missing
-  prior context.
+- `fixtures__unwelcomed_visitor` did not complete the pipeline: segmentation failed: alignment failed: ValueError('alignment failed for segment_id=2: anchor text not found in story text').
+- `fixtures__king_of_the_hill` was independently marked `wellformed: false`/`verdict: review`: The text appears to be only the closing scene/fragment of a longer story. It opens mid-action ('He sat down before the bombardier board') with no established beginning and relies on prior context (Gascoigne, the confrontation, ULTIMAC) that is not present, indicating this is an excerpt rather than a complete standalone narrative.
 
 ## Semantic Review
 
@@ -58,22 +53,10 @@ Blocking failure modes:
 - Source-supported semantic output: `False`
 - Intended-purpose fit: `False`
 
-The completed `fixtures__king_of_the_hill` output is broadly useful for
-inspection: it identifies the station/bombardier-board scene, Peter, Joan,
-the Joint Chiefs, ULTIMAC, and relations around the gun, tape, station-captain
-test, and possible dud bombs. It also reports four strong cross-segment
-relations plus two weakly inferred relations.
-
-That partial success does not satisfy the gate. The gate required both
-well-formed fixture stories to complete with source-supported output and
-explicit genre/well-formedness coverage. One story failed segmentation, and
-the other story was independently flagged as not well-formed.
+- Gate failed before full semantic acceptance because only 1/2 stories completed: fixtures__unwelcomed_visitor stopped at segmentation with alignment failed for segment_id=2.
+- The separate real genre-detection assessment classified both stories as science fiction, but marked fixtures__king_of_the_hill wellformed=false/review because it reads as an excerpt with missing prior context.
+- The completed fixtures__king_of_the_hill pipeline output is broadly source-supported for inspection: it identifies the station/bombardier-board scene, Peter/Joan/Joint Chiefs/ULTIMAC entities, and relations around the gun, tape, station-captain test, and possible dud bombs. However, this single completed story cannot satisfy the gate's intended-purpose threshold.
 
 ## Recommendation
 
 `fail_no_go`
-
-Downstream prompt-caching, model-tiering, Batch API, and run-mode adoption
-work should remain blocked until a separate follow-on work item fixes the
-fixture/pipeline failure mode and reruns a newly predeclared gate. No prompt
-tuning, threshold loosening, or repeated retry was performed in this work item.
