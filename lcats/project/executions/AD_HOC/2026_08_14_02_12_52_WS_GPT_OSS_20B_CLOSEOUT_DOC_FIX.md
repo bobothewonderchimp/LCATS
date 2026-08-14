@@ -2,10 +2,10 @@
 execution_id: 2026_08_14_02_12_52_WS_GPT_OSS_20B_CLOSEOUT_DOC_FIX
 prompt_id: PROMPT(AD_HOC:WS_GPT_OSS_20B_CLOSEOUT_DOC_FIX)[2026-08-14T02:06:33+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/307
-commit: c2273769ffb3ad5b2488bd40abed5aff35581642
+commit: 8bb559adc1015f4a18f7c8b7f201f01baea8450b
 created_at: 2026-08-14T02:12:52+00:00
 agent: claude_app
 instruction_source: user request to check WS-GPT-OSS-20B-EVALUATION exit criteria and close out if satisfied

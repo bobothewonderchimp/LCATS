@@ -2,10 +2,10 @@
 execution_id: 2026_08_14_18_11_54_WS_GPT_OSS_20B_CLOSEOUT_DOC_FIX_CONFIRM
 prompt_id: PROMPT(AD_HOC:WS_GPT_OSS_20B_CLOSEOUT_DOC_FIX_CONFIRM)[2026-08-14T18:11:46+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_14_02_12_52_WS_GPT_OSS_20B_CLOSEOUT_DOC_FIX
 pr: https://github.com/xenotaur/LCATS/pull/307
-commit: 0fc1a7a9633840bb5760d039b678a80ca749ba4f
+commit: 8bb559adc1015f4a18f7c8b7f201f01baea8450b
 created_at: 2026-08-14T18:11:54+00:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/307
