@@ -863,7 +863,7 @@ satisfied - `WS-PILOT-IMPROVEMENTS` merged via PR #295 on 2026-08-13 - but
 no session has acted on the recommendation yet.
 
 First concrete step: with a human present, either close
-`WS-PILOT-COST-SUSTAINABILITY` (move to `workstreams/resolved/`) or edit
+`WS-PILOT-COST-SUSTAINABILITY` (move to `project/workstreams/resolved/`) or edit
 its `status`/summary to explicitly mark it as the completed-evaluation-only
 workstream, per the proposal's own recommendation - this is a housekeeping
 decision, not new engineering work. Remove this backlog entry once done.
