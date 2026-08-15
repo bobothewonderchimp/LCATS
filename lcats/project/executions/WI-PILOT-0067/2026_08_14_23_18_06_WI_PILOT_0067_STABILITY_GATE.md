@@ -2,10 +2,10 @@
 execution_id: 2026_08_14_23_18_06_WI_PILOT_0067_STABILITY_GATE
 prompt_id: PROMPT(WI-PILOT-0067:WI_PILOT_0067)[2026-08-14T18:10:48+00:00]
 work_item: WI-PILOT-0067
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/310
-commit: ed3c7f5f
+commit: a22e9f5287c0072e469cccd7df5d879c6c525ad1
 agent: codex_app
 instruction_source: project/work_items/proposed/WI-PILOT-0067.md
 session_transcript: pending
