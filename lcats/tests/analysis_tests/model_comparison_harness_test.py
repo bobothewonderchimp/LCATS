@@ -115,6 +115,7 @@ class TestModelComparisonDiagnostics(unittest.TestCase):
                     '  "candidate": "ollama_qwen3_8b",\n'
                     '  "entities": [\n'
                     '    {"canonical_name": "the   machine", "entity_type": "device"},\n'
+                    '    {"canonical_name": "THE MACHINE", "entity_type": ""},\n'
                     '    {"canonical_name": "Laboratory", "entity_type": "place"}\n'
                     "  ]\n"
                     "}\n"
@@ -128,7 +129,7 @@ class TestModelComparisonDiagnostics(unittest.TestCase):
             ]
             report = entity_diff.build_report(candidates)
 
-        self.assertRegex(report, r"the machine \[(artifact|device)\]")
+        self.assertRegex(report, r"(?i:the machine) \[(artifact|device)\]")
         self.assertIn("Professor X [person]", report)
         self.assertIn("Laboratory [place]", report)
         self.assertIn("### anthropic_opus", report)
@@ -170,7 +171,9 @@ class TestModelComparisonDiagnostics(unittest.TestCase):
                     '  "candidate": "ollama_qwen3_30b_a3b",\n'
                     '  "success": false,\n'
                     '  "error_type": "truncated_output",\n'
-                    '  "entities": null\n'
+                    '  "entities": [\n'
+                    '    {"canonical_name": "Should Not Compare", "entity_type": "artifact"}\n'
+                    "  ]\n"
                     "}\n"
                 ),
                 encoding="utf-8",
@@ -203,6 +206,7 @@ class TestModelComparisonDiagnostics(unittest.TestCase):
         self.assertNotIn("### ollama_qwen3_30b_a3b", report)
         self.assertNotIn("### anthropic_haiku", report)
         self.assertIn("Professor X [person]", report)
+        self.assertNotIn("Should Not Compare", report)
 
     def test_segment_anchor_diagnostics_reads_pre_alignment_wrapper(self):
         parsed_output = {

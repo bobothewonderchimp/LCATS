@@ -75,34 +75,86 @@ def _entity_identity(entity: Any) -> EntityIdentity | None:
     )
 
 
+def _not_comparable_reason(row: dict[str, Any]) -> str:
+    error_type = row.get("error_type")
+    if row.get("success") is False and error_type:
+        return f"not comparable: {error_type}"
+    if row.get("success") is False:
+        return "not comparable: benchmark failed"
+    return "stale result: rerun benchmark to populate `entities`"
+
+
+def _identity_preference(identity: EntityIdentity) -> tuple[int, str, str, str, str]:
+    """Sort key for a stable representative of one normalized entity name."""
+    return (
+        0 if identity.entity_type else 1,
+        identity.display_name.casefold(),
+        identity.entity_type.casefold(),
+        identity.display_name,
+        identity.entity_type,
+    )
+
+
+def _best_identity(
+    existing: EntityIdentity | None, candidate: EntityIdentity
+) -> EntityIdentity:
+    if existing is None:
+        return candidate
+    if _identity_preference(candidate) < _identity_preference(existing):
+        return candidate
+    return existing
+
+
+def _dedupe_identities(identities: Iterable[EntityIdentity]) -> frozenset[EntityIdentity]:
+    by_name: dict[str, EntityIdentity] = {}
+    for identity in identities:
+        by_name[identity.normalized_name] = _best_identity(
+            by_name.get(identity.normalized_name), identity
+        )
+    return frozenset(by_name.values())
+
+
+def _representative_entities(
+    candidates: Iterable[CandidateEntities],
+) -> dict[str, EntityIdentity]:
+    representatives: dict[str, EntityIdentity] = {}
+    for candidate in candidates:
+        for identity in candidate.entities:
+            representatives[identity.normalized_name] = _best_identity(
+                representatives.get(identity.normalized_name), identity
+            )
+    return representatives
+
+
 def load_candidate_entities(path: pathlib.Path) -> CandidateEntities:
     """Load one candidate results file into a normalized entity set."""
     row = json.loads(path.read_text(encoding="utf-8"))
-    entities = row.get("entities")
-    if not isinstance(entities, list):
-        success = row.get("success")
-        error_type = row.get("error_type")
-        if success is False and error_type:
-            reason = f"not comparable: {error_type}"
-        elif success is False:
-            reason = "not comparable: benchmark failed"
-        else:
-            reason = "stale result: rerun benchmark to populate `entities`"
+    if row.get("success") is False:
         return CandidateEntities(
             candidate=_candidate_name(path, row),
             path=path,
             entities=frozenset(),
             comparable=False,
-            not_comparable_reason=reason,
+            not_comparable_reason=_not_comparable_reason(row),
         )
 
-    identities = {
+    entities = row.get("entities")
+    if not isinstance(entities, list):
+        return CandidateEntities(
+            candidate=_candidate_name(path, row),
+            path=path,
+            entities=frozenset(),
+            comparable=False,
+            not_comparable_reason=_not_comparable_reason(row),
+        )
+
+    identities = _dedupe_identities(
         identity for entity in entities if (identity := _entity_identity(entity)) is not None
-    }
+    )
     return CandidateEntities(
         candidate=_candidate_name(path, row),
         path=path,
-        entities=frozenset(identities),
+        entities=identities,
     )
 
 
@@ -162,29 +214,45 @@ def build_report(candidates: list[CandidateEntities]) -> str:
         )
         return "\n".join(lines).rstrip() + "\n"
 
-    entity_sets = [candidate.entities for candidate in comparable_candidates]
-    common = set.intersection(*(set(entity_set) for entity_set in entity_sets))
-    union = set.union(*(set(entity_set) for entity_set in entity_sets))
+    representative_by_name = _representative_entities(comparable_candidates)
+    entity_name_sets = [
+        {identity.normalized_name for identity in candidate.entities}
+        for candidate in comparable_candidates
+    ]
+    common_names = set.intersection(*entity_name_sets)
+    union_names = set.union(*entity_name_sets)
 
-    lines.extend(["", "## Shared By All", "", _format_entities(common), ""])
+    lines.extend(
+        [
+            "",
+            "## Shared By All",
+            "",
+            _format_entities(representative_by_name[name] for name in common_names),
+            "",
+        ]
+    )
     lines.extend(["## Candidate-Only Entities", ""])
     for candidate in comparable_candidates:
         other_sets = [
-            set(other.entities) for other in comparable_candidates if other is not candidate
+            {identity.normalized_name for identity in other.entities}
+            for other in comparable_candidates
+            if other is not candidate
         ]
         other_entities = set.union(*other_sets) if other_sets else set()
-        only = set(candidate.entities) - other_entities
+        candidate_names = {identity.normalized_name for identity in candidate.entities}
+        only_names = candidate_names - other_entities
         lines.append(f"### {candidate.candidate}")
         lines.append("")
-        lines.append(_format_entities(only))
+        lines.append(_format_entities(representative_by_name[name] for name in only_names))
         lines.append("")
 
     lines.extend(["## Missing Per Candidate", ""])
     for candidate in comparable_candidates:
-        missing = union - set(candidate.entities)
+        candidate_names = {identity.normalized_name for identity in candidate.entities}
+        missing_names = union_names - candidate_names
         lines.append(f"### {candidate.candidate}")
         lines.append("")
-        lines.append(_format_entities(missing))
+        lines.append(_format_entities(representative_by_name[name] for name in missing_names))
         lines.append("")
 
     return "\n".join(lines).rstrip() + "\n"
