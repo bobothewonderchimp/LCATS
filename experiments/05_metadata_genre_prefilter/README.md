@@ -107,7 +107,12 @@ Direct target-label normalization:
 
 This experiment does not write `genre.json` sidecars into `data/` or
 `corpora/`, promote sidecars, modify `lcats annotate`, modify `lcats promote`,
-define the final `genre-sidecar-v1` validator, run local or remote models,
-run full-corpus metadata labeling for commit, or implement the larger 100-200
-story sample. Those remain later workstream steps after the 40-story metadata
-pilot path is reviewed.
+run local or remote models, run full-corpus metadata labeling for commit, or
+implement the larger 100-200 story sample. Those remain later workstream steps
+after the 40-story metadata pilot path is reviewed.
+
+The reusable `genre-sidecar-v1` validator now lives in
+`lcats.analysis.corpus.genre_sidecar`. It validates the production sidecar
+shape and detects legacy flat `AssessmentResult.to_dict()` genre sidecars, but
+this experiment still remains experiment-local and does not materialize or
+promote production `genre.json` files.
