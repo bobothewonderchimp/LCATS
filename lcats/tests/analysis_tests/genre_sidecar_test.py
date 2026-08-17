@@ -102,6 +102,12 @@ def _finding_kinds(result: genre_sidecar.ValidationResult) -> set[str]:
     return {finding.kind for finding in result.findings}
 
 
+def _findings_for_path(
+    result: genre_sidecar.ValidationResult, path: str
+) -> list[genre_sidecar.ValidationFinding]:
+    return [finding for finding in result.findings if finding.path == path]
+
+
 class GenreSidecarValidationTest(unittest.TestCase):
     def test_valid_metadata_assessment_sidecar(self):
         result = genre_sidecar.validate_sidecar(_sidecar(_metadata_assessment()))
@@ -188,6 +194,26 @@ class GenreSidecarValidationTest(unittest.TestCase):
 
         self.assertFalse(result.valid)
         self.assertIn("missing_required_field", _finding_kinds(result))
+        self.assertNotIn("invalid_schema_version", _finding_kinds(result))
+
+    def test_wrong_type_schema_version_does_not_report_invalid_version(self):
+        sidecar = _sidecar(_metadata_assessment())
+        sidecar["schema_version"] = 1
+
+        result = genre_sidecar.validate_sidecar(sidecar)
+
+        self.assertFalse(result.valid)
+        self.assertIn("wrong_type", _finding_kinds(result))
+        self.assertNotIn("invalid_schema_version", _finding_kinds(result))
+
+    def test_present_wrong_schema_version_is_reported_as_invalid_version(self):
+        sidecar = _sidecar(_metadata_assessment())
+        sidecar["schema_version"] = "genre-sidecar-v0"
+
+        result = genre_sidecar.validate_sidecar(sidecar)
+
+        self.assertFalse(result.valid)
+        self.assertIn("invalid_schema_version", _finding_kinds(result))
 
     def test_wrong_assessments_type_is_reported(self):
         sidecar = _sidecar(_metadata_assessment())
@@ -215,6 +241,19 @@ class GenreSidecarValidationTest(unittest.TestCase):
 
         self.assertFalse(result.valid)
         self.assertIn("$.assessments[0].method", {f.path for f in result.findings})
+        self.assertEqual(1, len(_findings_for_path(result, "$.assessments[0].method")))
+
+    def test_missing_scalar_assessment_field_is_reported_once(self):
+        assessment = _metadata_assessment()
+        assessment.pop("assessment_id")
+
+        result = genre_sidecar.validate_sidecar(_sidecar(assessment))
+
+        self.assertFalse(result.valid)
+        self.assertEqual(
+            [finding.kind for finding in result.findings],
+            ["missing_required_field"],
+        )
 
     def test_invalid_timestamp_is_reported(self):
         assessment = _metadata_assessment()
@@ -275,6 +314,21 @@ class GenreSidecarValidationTest(unittest.TestCase):
 
         self.assertFalse(result.valid)
         self.assertIn("missing_model_run_identity", _finding_kinds(result))
+
+    def test_future_model_assessment_run_identity_message_is_label_agnostic(self):
+        assessment = _model_assessment()
+        assessment["label"] = "model_detect_openai_compatible"
+        assessment.pop("run_id")
+        assessment["provenance"].pop("run_id")
+
+        result = genre_sidecar.validate_sidecar(_sidecar(assessment))
+
+        self.assertFalse(result.valid)
+        messages = [finding.message for finding in result.findings]
+        self.assertIn(
+            "model assessments must include run_id or provenance.run_id", messages
+        )
+        self.assertFalse(any("model_detect assessments" in msg for msg in messages))
 
     def test_legacy_flat_genre_sidecar_is_detected_but_not_accepted_as_v1(self):
         legacy = {

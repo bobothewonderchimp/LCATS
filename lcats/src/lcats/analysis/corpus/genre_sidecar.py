@@ -7,8 +7,8 @@ only validates already-loaded JSON-like values and returns structured findings.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from datetime import datetime
+import dataclasses
+import datetime
 from typing import Any
 
 SCHEMA_VERSION = "genre-sidecar-v1"
@@ -41,19 +41,8 @@ SCOPES = frozenset(
     }
 )
 
-_REQUIRED_ASSESSMENT_FIELDS = (
-    "assessment_id",
-    "label",
-    "generated_at",
-    "scope",
-    "method",
-    "provenance",
-    "evidence",
-    "result",
-)
 
-
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class ValidationFinding:
     """One structural validation finding for a genre sidecar."""
 
@@ -63,7 +52,7 @@ class ValidationFinding:
     message: str
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class ValidationResult:
     """Validation outcome for one loaded genre sidecar value."""
 
@@ -104,8 +93,9 @@ def validate_sidecar(data: Any) -> ValidationResult:
         )
         return _result(findings)
 
+    schema_version = data.get("schema_version")
     _require_string(data, "schema_version", "$.schema_version", findings)
-    if data.get("schema_version") != SCHEMA_VERSION:
+    if _is_non_empty_string(schema_version) and schema_version != SCHEMA_VERSION:
         findings.append(
             _finding(
                 "$.schema_version",
@@ -170,12 +160,10 @@ def _validate_assessments(
             )
             continue
 
-        for key in _REQUIRED_ASSESSMENT_FIELDS:
-            if key not in assessment:
-                findings.append(_missing(f"{path}.{key}"))
-
         assessment_id = assessment.get("assessment_id")
-        if not _is_non_empty_string(assessment_id):
+        if "assessment_id" not in assessment:
+            findings.append(_missing(f"{path}.assessment_id"))
+        elif not _is_non_empty_string(assessment_id):
             findings.append(_string_finding(f"{path}.assessment_id"))
         elif assessment_id in seen_ids:
             findings.append(
@@ -190,7 +178,9 @@ def _validate_assessments(
             seen_ids.add(assessment_id)
 
         label = assessment.get("label")
-        if not _is_non_empty_string(label):
+        if "label" not in assessment:
+            findings.append(_missing(f"{path}.label"))
+        elif not _is_non_empty_string(label):
             findings.append(_string_finding(f"{path}.label"))
         elif not _is_valid_assessment_label(label):
             findings.append(
@@ -206,7 +196,9 @@ def _validate_assessments(
             )
 
         generated_at = assessment.get("generated_at")
-        if not _is_non_empty_string(generated_at):
+        if "generated_at" not in assessment:
+            findings.append(_missing(f"{path}.generated_at"))
+        elif not _is_non_empty_string(generated_at):
             findings.append(_string_finding(f"{path}.generated_at"))
         elif not _is_iso_timestamp(generated_at):
             findings.append(
@@ -219,7 +211,9 @@ def _validate_assessments(
             )
 
         scope = assessment.get("scope")
-        if not _is_non_empty_string(scope):
+        if "scope" not in assessment:
+            findings.append(_missing(f"{path}.scope"))
+        elif not _is_non_empty_string(scope):
             findings.append(_string_finding(f"{path}.scope"))
         elif scope not in SCOPES:
             findings.append(
@@ -266,7 +260,7 @@ def _validate_model_run_identity(
                 path,
                 "error",
                 "missing_model_run_identity",
-                "model_detect assessments must include run_id or provenance.run_id",
+                "model assessments must include run_id or provenance.run_id",
             )
         )
         return
@@ -395,7 +389,7 @@ def _is_iso_timestamp(value: str) -> bool:
     if "T" not in value:
         return False
     try:
-        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        parsed = datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError:
         return False
     return parsed.tzinfo is not None
