@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: Implemented and merged in PR #314 (commit c33e6a5791b3581515216f072ea4d937df055498).
 blocked_reason: null
 blocked: false
 id: WI-GENRE-0003
 title: Define and validate genre-sidecar-v1
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
