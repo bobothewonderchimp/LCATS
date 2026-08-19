@@ -12,7 +12,7 @@ related_roadmap: []
 related_design:
   - lcats/project/design/proposals/proposed/lcats-pilot-improvements/00_proposal.md
   - lcats/project/design/proposals/adopted/lcats-pilot-cost-sustainability/00_proposal.md
-  - lcats/project/workstreams/proposed/WS-PILOT-COST-SUSTAINABILITY.md
+  - lcats/project/workstreams/resolved/WS-PILOT-COST-SUSTAINABILITY.md
   - lcats/project/design/proposals/adopted/lcats-pipeline-checkpointing/00_proposal.md
   - lcats/project/audits/2026-07-27-erw-pipeline-structured-output-reliability-audit.md
   - lcats/project/design/backlog.md

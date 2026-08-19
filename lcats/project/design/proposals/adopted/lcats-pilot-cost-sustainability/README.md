@@ -28,5 +28,6 @@ explicitly held pending this discussion.
   implementation plan.
 
 Governed by
-[`WS-PILOT-COST-SUSTAINABILITY`](../../../../workstreams/proposed/WS-PILOT-COST-SUSTAINABILITY.md),
-created 2026-08-06 per the Implementation Plan.
+[`WS-PILOT-COST-SUSTAINABILITY`](../../../../workstreams/resolved/WS-PILOT-COST-SUSTAINABILITY.md),
+created 2026-08-06 per the Implementation Plan, resolved 2026-08-14 as the
+completed-evaluation workstream.

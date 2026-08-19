@@ -247,5 +247,5 @@ both depending on WI 1).
 
 ## Related Workstream and Designs
 
-- Workstream: `project/workstreams/proposed/WS-PILOT-COST-SUSTAINABILITY.md`
+- Workstream: `project/workstreams/resolved/WS-PILOT-COST-SUSTAINABILITY.md`
 - Design: `project/design/proposals/adopted/lcats-pilot-cost-sustainability/00_proposal.md`
