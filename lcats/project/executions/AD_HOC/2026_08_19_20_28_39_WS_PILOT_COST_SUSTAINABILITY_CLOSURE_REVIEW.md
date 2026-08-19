@@ -2,10 +2,10 @@
 execution_id: 2026_08_19_20_28_39_WS_PILOT_COST_SUSTAINABILITY_CLOSURE_REVIEW
 prompt_id: PROMPT(AD_HOC:WS_PILOT_COST_SUSTAINABILITY_CLOSURE_REVIEW)[2026-08-15T00:10:03+00:00]
 work_item: AD_HOC
-status: in_progress
-rerun_of: 
+status: landed
+rerun_of: 2026_08_19_22_11_09_WS_PILOT_COST_SUSTAINABILITY_CLOSURE
 pr: https://github.com/xenotaur/LCATS/pull/308
-commit: a1155970b5e93b6e35975dd50c876a65ab0002db
+commit: d6908533abc1f562d48caf41753b973fd08b84e8
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/308
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
