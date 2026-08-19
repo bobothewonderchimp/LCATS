@@ -2,10 +2,10 @@
 execution_id: 2026_08_14_01_17_17_WI_ASSESS_0051_ADD_LLM_0066_DEPENDENCY_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_ASSESS_0051_ADD_LLM_0066_DEPENDENCY_CONFIRM)[2026-08-14T01:15:47+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/302
-commit: c8cfa3fc6d1f3eb99f6cca3898c9e0a31bff808c
+commit: 9c3f481d17e9e327d22fc5e11f1bda2965348bad
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/302
 session_transcript: claude-app:b0d48070-0faf-4a35-942d-a29ec96d603a
