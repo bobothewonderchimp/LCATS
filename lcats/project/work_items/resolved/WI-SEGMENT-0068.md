@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via PR #317 (commit d461d188): find_anchor_in_range's second stage now builds a whitespace-tolerant regex directly from the anchor (splitting into whitespace/non-whitespace runs, escaping only the non-whitespace runs, joining with \\s+) and searches it against the full segment via re.search, instead of re-searching a heuristic window with the original, non-normalized anchor string. Removed the now-unused _norm_ws/_WS helpers. A real P1 bug was found and fixed during review (Codex): align_segment's end_exact branch computed e_idx = e_pos + len(end_exact), which silently truncated the segment's final character(s) whenever the matched whitespace run's length differed from the anchor's own -- fixed by extracting _locate_anchor_span() to return the real (start, end) span, with a regression test reproducing the exact off-by-one truncation. Regression tests replay the exact captured real case (mass_quantities/junior__abernathy) against the real committed corpus text. See execution records project/executions/WI-SEGMENT-0068/2026_08_18_22_19_44_WI_SEGMENT_0068.md and project/executions/AD_HOC/2026_08_18_22_18_12_WI_SEGMENT_0068_SELFREVIEW.md."
 blocked_reason: null
 blocked: false
 id: WI-SEGMENT-0068
 title: Fix find_anchor_in_range's whitespace-normalized fallback so it actually returns a match
 type: deliverable
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
