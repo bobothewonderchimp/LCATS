@@ -899,38 +899,6 @@ upstream PRs
 
 ---
 
-### `WS-PILOT-COST-SUSTAINABILITY`'s closure trigger is now met but unacted on — P3, decision needed
-
-Surfaced 2026-08-13. All four of `WS-PILOT-COST-SUSTAINABILITY`'s work
-items (`WI-PILOT-0051/0057/0058/0060`) are resolved, and all three
-completed evaluations (prompt caching, Batch API, model tiering)
-concluded "go" - but none has landed as an implemented change, so the
-workstream's own exit criterion ("any evaluation that concludes 'adopt'
-has landed as an implemented change, not left as an open recommendation")
-is not met by WI resolution alone. `PROP-LCATS-PILOT-IMPROVEMENTS`
-(merged via PR #289) already recommends the resolution: close or
-explicitly reinterpret `WS-PILOT-COST-SUSTAINABILITY` as the completed-
-evaluation workstream once its follow-on, `WS-PILOT-IMPROVEMENTS`, exists
-to carry the implementation work forward. That trigger condition is now
-satisfied - `WS-PILOT-IMPROVEMENTS` merged via PR #295 on 2026-08-13 - but
-no session has acted on the recommendation yet.
-
-First concrete step: with a human present, either close
-`WS-PILOT-COST-SUSTAINABILITY` (move to `project/workstreams/resolved/`) or edit
-its `status`/summary to explicitly mark it as the completed-evaluation-only
-workstream, per the proposal's own recommendation - this is a housekeeping
-decision, not new engineering work. Remove this backlog entry once done.
-
-**Related:** `WS-PILOT-COST-SUSTAINABILITY`
-(`project/workstreams/proposed/WS-PILOT-COST-SUSTAINABILITY.md`);
-`WS-PILOT-IMPROVEMENTS`
-(`project/workstreams/proposed/WS-PILOT-IMPROVEMENTS.md`);
-`PROP-LCATS-PILOT-IMPROVEMENTS`
-(`project/design/proposals/proposed/lcats-pilot-improvements/00_proposal.md`);
-`WI-PILOT-0051`, `WI-PILOT-0057`, `WI-PILOT-0058`, `WI-PILOT-0060`.
-
----
-
 ### `nbstripout` pre-commit hook was added unverified — P1, scoped as WI-INFRA-0012
 
 Surfaced 2026-08-18 closing out PR #315 (secrets-hygiene incident
