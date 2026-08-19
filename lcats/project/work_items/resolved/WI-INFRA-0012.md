@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #318 (commit b2163991). Verified nbstripout strips notebook output for real (found and stripped 15 notebooks, 2 with genuine unstripped content); added CI enforcement (nbstripout --verify in lint.yml) so protection doesn't depend on local hook installation; documented the verified outcome in secrets-setup.md."
 blocked_reason: null
 blocked: false
 id: WI-INFRA-0012
 title: Verify nbstripout pre-commit hook actually strips notebook output
 type: operation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []

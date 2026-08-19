@@ -2,10 +2,10 @@
 execution_id: 2026_08_19_04_27_30_WI_INFRA_0012_CONFIRM_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_INFRA_0012_CONFIRM_SELFREVIEW)[2026-08-19T04:27:20+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_19_02_15_32_WI_INFRA_0012
 pr: https://github.com/xenotaur/LCATS/pull/318
-commit: ab22b4d3
+commit: b216399134dc5f91a6dea5c0ee0373106906178a
 created_at: 2026-08-19T04:27:30+00:00
 agent: claude-sonnet-5
 instruction_source: https://github.com/xenotaur/LCATS/pull/318
