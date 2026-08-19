@@ -2,7 +2,7 @@
 id: WI-PILOT-0067
 title: Run pilot API/output stability gate
 type: evaluation
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
@@ -23,7 +23,7 @@ depends_on:
 blocked_by: []
 blocked: false
 blocked_reason: null
-resolution: null
+resolution: "Completed in PR #310 (commit a22e9f5287c0072e469cccd7df5d879c6c525ad1): bounded real stability gate ran and produced a valid fail/no-go result, blocking downstream adoption until follow-on segmentation/fixture issues are addressed."
 expected_actions:
   - create_file
   - edit_file
