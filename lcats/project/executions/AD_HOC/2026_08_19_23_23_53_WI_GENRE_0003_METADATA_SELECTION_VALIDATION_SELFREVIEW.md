@@ -2,10 +2,10 @@
 execution_id: 2026_08_19_23_23_53_WI_GENRE_0003_METADATA_SELECTION_VALIDATION_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_GENRE_0003_METADATA_SELECTION_VALIDATION_SELFREVIEW)[2026-08-19T23:23:47+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_19_22_38_32_WI_GENRE_0003_METADATA_SELECTION_VALIDATION_CONFIRM
 pr: https://github.com/xenotaur/LCATS/pull/305
-commit: 4fc38b1e8e053be4302c16cf5e62ccd74004ce73
+commit: 76f19835ed2430d94ef626f8c7b95a1c02abc2f6
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/305
 session_transcript: claude-app:b0d48070-0faf-4a35-942d-a29ec96d603a
