@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Investigation complete via PR #320 (commit e52b0ea8, merged fd883a0a). check_segmentation_reliability.py now persists parsed_output so an alignment_error can be analyzed without a fresh live call. A 30-story live smoke test (claude-haiku-4-5-20251001) classified all 21 alignment_error failures into 3 named categories with real counts: anchor_absent_from_document (15/21), paragraph_misnumbering_large_margin (4/21), paragraph_misnumbering_narrow_margin (2/21). Manual inspection of the 15 anchor-absent cases found two concrete, narrowly-fixable sub-patterns (paragraph-index marker leakage into anchor text; Unicode curly-quote/dash typography mismatch, 5/21 combined) recommended as a follow-up deliverable WI; the remaining near-miss-quoting bucket (10/21) is reported as a likely inherent floor with no safe targeted fix identified; paragraph mis-numbering (6/21) is deferred pending further evidence (no correlation with paragraph count observed in this small sample). Findings delivered as lcats/project/design/segmentation-alignment-failure-categories.md, following WI-EVENT-0028's investigation-type precedent."
 blocked_reason: null
 blocked: false
 id: WI-SEGMENT-0069
 title: Investigate segmentation alignment failures beyond whitespace mismatches
 type: investigation
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
