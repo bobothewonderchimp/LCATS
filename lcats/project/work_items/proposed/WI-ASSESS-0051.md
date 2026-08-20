@@ -3,7 +3,7 @@ resolution: null
 blocked_reason: null
 blocked: false
 id: WI-ASSESS-0051
-title: Run current-classifier full-corpus genre survey (Gap 2)
+title: Genre-census sample and cost-estimate tooling (Gap 2) - full-corpus run retired, see WI-GENRE-0004
 type: evaluation
 status: proposed
 owner: unassigned
@@ -32,13 +32,10 @@ forbidden_actions:
   - run_full_corpus_before_cost_approval
   - run_paid_sample_before_user_go_ahead
 acceptance:
-  - "A small, population-weighted stratified real-API sample (~20-30 stories, sampled proportionally to each collection's real share of the corpus, not equally per collection) is run through detect-mode assess_story() and per-story token counts, latency, and $ cost are measured"
-  - "The sample's measured per-story cost/latency is extrapolated to the full ~1,868-story corpus via the population-weighted sample mean and reported to the user as a total $ and wall-clock estimate BEFORE any full-corpus run begins"
-  - "The full-corpus run proceeds only after explicit user go-ahead on the cost estimate - a human checkpoint inside this work item's own execution, not implicit"
-  - "The full-corpus survey uses a resumable, checkpointed design via lcats.utils.checkpoint, so an interruption doesn't require redoing already-completed stories"
-  - "Failed assessments (result.error populated) are excluded from genre/classification counts only (both the cost-estimate sample's and the final census's), never counted as a genuine other classification, and the excluded count/reasons are reported explicitly rather than silently absorbed - but a failed-but-billed call's real token usage (forwarded via the generalized backend/assess.py fix, see Non-Goals carve-out) still counts toward the cost estimate"
-  - "Final output includes both an aggregate per-genre story count across all 8 VALID_GENRES values plus other, AND a per-story record (identity, detected genre, confidence, classifier/model identity, failure status), committed under experiments/04_genre_census/results/"
-  - "Findings state plainly whether corpus representation is adequate per genre for the paper's eventual stratified sampling needs, without deciding sourcing/ingestion follow-up"
+  - "A small, population-weighted stratified real-API sample (~20-30 stories, sampled proportionally to each collection's real share of the corpus, not equally per collection) is run through detect-mode assess_story() and per-story token counts, latency, and $ cost are measured - DONE (PR #251/#292: $4.66/20 stories measured, committed under experiments/04_genre_census/results/)"
+  - "The sample's measured per-story cost/latency is extrapolated to the full ~1,868-story corpus via the population-weighted sample mean and reported to the user as a total $ and wall-clock estimate - DONE (~$435/~4.2h extrapolated)"
+  - "run_census.py itself supports a resumable, checkpointed --full mode via lcats.utils.checkpoint, and correctly excludes failed assessments from genre counts (never silently counted as other) while still billing their real token usage - DONE, tooling only (Required Changes #1-5); this criterion is about the tool's capability, not that --full was actually executed"
+  - "RETIRED, not required for this item's resolution: running --full on Claude alone and committing its full-corpus output/findings. Superseded by WI-GENRE-0004 (full-corpus metadata scan -> genre-balanced 100-200 story selection -> bounded ~$45 Opus validation, landing as genre-sidecar-v1 assessments) - see Risk Notes for the full rationale (WI-LLM-0058's secondary_genre corruption finding, WI-LLM-0066's mixed local-model result, and run_pilot.py's $67.54 unwired-cost-containment precedent)"
   - "scripts/test passes with no new failures"
   - "lrh validate reports 0 errors"
 required_evidence:
@@ -60,11 +57,13 @@ artifacts_expected:
 
 ## Summary
 
-Run `lcats assess`'s current (8-genre) classifier in detect mode across
-the full corpus (~1,868 stories) to get an authoritative current per-genre
-count, gated behind a real small-sample cost estimate and a resumable
-checkpointed design given the real API cost and wall-clock duration
-involved.
+Build a small-sample, cost-gated survey tool (`run_census.py`) for
+`lcats assess`'s current (8-genre) classifier, and use it to measure a
+real per-story cost/latency estimate for a full-corpus run (~1,868
+stories). **Delivered.** The full-corpus `--full` execution itself is
+**retired**, not pending — superseded by `WI-GENRE-0004`'s cheaper,
+targeted, sidecar-native approach (see Acceptance Criteria and Risk
+Notes).
 
 ## Problem / Context
 
@@ -197,12 +196,16 @@ authoritative for the current 8-genre scheme.
    reviewing the sample-based cost estimate first.
 3. **`experiments/README.md`**: register the new `04_genre_census`
    experiment, per the existing table's convention.
-4. **`experiments/04_genre_census/results/`**: the actual census output,
-   populated once the full run executes and is committed. Must include
-   **both** an aggregate per-genre summary table AND a per-story record
-   (stable story identity, detected genre, confidence, classifier/model
-   identity, failure status) for every discovered story — an aggregate-only
-   summary is not sufficient, since
+4. **`experiments/04_genre_census/results/`**: **DONE for the sample phase**
+   (PR #251/#292's 20-story sample output is committed here). The
+   full-corpus population of this directory described below is
+   **retired**, not pending — see Acceptance Criteria and Risk Notes; the
+   directory will not be further populated via `--full`. Kept here as the
+   historical spec for what a full run would have needed to include, in
+   case that changes: both an aggregate per-genre summary table AND a
+   per-story record (stable story identity, detected genre, confidence,
+   classifier/model identity, failure status) for every discovered story
+   — an aggregate-only summary would not have been sufficient, since
    `project/design/event-role-world-genre-target-reconciliation.md:274-277`
    requires the eventual stratified pilot (Gap 3) to draw its per-genre
    sample *from this census*, which is impossible from counts alone
@@ -273,37 +276,35 @@ authoritative for the current 8-genre scheme.
 
 ## Acceptance Criteria
 
+(see frontmatter `acceptance:` - kept in sync)
+
+**Status: tooling and sample-phase criteria satisfied; full-corpus
+execution criteria retired.** The sample and cost-estimate criteria below
+are historical record of what was delivered (PR #251/#292). The
+full-corpus-execution criteria that originally followed them (full-corpus
+run proceeds after go-ahead; final output committed under
+`experiments/04_genre_census/results/`; findings on full-corpus
+representation) are **retired**, not pending — see the frontmatter
+`acceptance:` list and the Risk Notes "`--full`-on-Claude-alone scope
+superseded" entry for the full rationale and the concrete replacement
+plan (`WI-GENRE-0004`).
+
 - A small, population-weighted stratified real-API sample (~20-30 stories
   across multiple collections and body lengths, sampled proportionally to
   each collection's real share of the corpus, not equally per collection)
   is run and measured for real per-story token counts, latency, and $
-  cost.
+  cost. **DONE.**
 - The measured per-story cost/latency is extrapolated to the full
   ~1,868-story corpus via the population-weighted sample mean and reported
-  as a total $ and wall-clock estimate before any full-corpus run begins.
-- The full-corpus run proceeds only after explicit user go-ahead on that
-  estimate.
-- The full-corpus survey is resumable via `lcats.utils.checkpoint` —
-  an interruption does not require redoing already-completed stories.
-- Failed assessments (`result.error` populated) are excluded from
-  **genre/classification counts** (both the cost-estimate sample's and
-  the final census's) — never silently counted as a genuine `"other"`
-  classification. They are **not** excluded from cost statistics: a
-  failed-but-billed call's real token usage still counts toward the cost
-  estimate, per the generalized backend/`assess.py` fix (see Non-Goals
-  carve-out). The excluded/failed story count and reasons are reported
-  explicitly alongside the final census, and a high or non-random-looking
-  exclusion rate is flagged as a data-quality concern, not silently
-  absorbed into a smaller total.
-- Final output, committed under `experiments/04_genre_census/results/`,
-  includes both an aggregate per-genre story count across all 8
-  `VALID_GENRES` plus `"other"`, AND a per-story record (identity,
-  detected genre, confidence, classifier/model identity, failure status)
-  for every discovered story — required so the eventual stratified pilot
-  (Gap 3) can draw its per-genre sample from this census directly.
-- Findings state plainly whether corpus representation looks adequate per
-  genre for the paper's eventual stratified sampling needs, without
-  deciding sourcing/ingestion follow-up.
+  as a total $ and wall-clock estimate. **DONE** (~$435/~4.2h).
+- `run_census.py`'s `--full` mode is resumable via `lcats.utils.checkpoint`
+  and correctly excludes failed assessments (`result.error` populated)
+  from **genre/classification counts** only — never silently counted as a
+  genuine `"other"` classification — while a failed-but-billed call's real
+  token usage still counts toward cost, per the generalized
+  backend/`assess.py` fix (see Non-Goals carve-out). **DONE, tooling
+  only** — this is a capability of the script, not a claim that `--full`
+  was executed.
 - `scripts/test` passes with no new failures.
 - `lrh validate` reports 0 errors.
 
@@ -328,10 +329,13 @@ the `lcats/` working directory the commands above use:
   information, not run anything)
 - `python experiments/04_genre_census/run_census.py --sample-size 20`
   (run from the repository root; real API cost — requires
-  `ANTHROPIC_API_KEY` and explicit go-ahead before running)
-- Full-corpus run (`python experiments/04_genre_census/run_census.py
-  --full`, from the repository root) only after the sample-size estimate
-  above has been reviewed and approved
+  `ANTHROPIC_API_KEY` and explicit go-ahead before running) — **DONE**
+  (PR #251/#292); this item's own validation does not require re-running
+  it
+- `--full` is **not** part of this item's validation — retired, see
+  Acceptance Criteria and Risk Notes. `run_census.py --full` remains a
+  supported, tested capability of the script for whoever eventually needs
+  it, but running it is no longer required to resolve this work item
 
 ## Risk Notes
 
@@ -379,3 +383,19 @@ the `lcats/` working directory the commands above use:
   — so `--full` (on either backend) still requires an explicit human
   decision informed by both findings, not an automatic default to
   whichever ran first.
+- **`--full`-on-Claude-alone scope superseded.** Given `run_pilot.py`'s own
+  $67.54 unwired-cost-containment precedent (`WS-PILOT-COST-SUSTAINABILITY`
+  — prompt caching, Batch API, and model tiering were each evaluated "go"
+  but none landed as an implemented change) and `run_census.py`'s identical
+  gap (no batch/caching/tiering wired in; defaults to `claude-opus-4-8`,
+  `experiments/04_genre_census/run_census.py:37`), this item's original
+  `--full`-corpus-on-Claude-alone acceptance criteria are superseded rather
+  than pending. The live plan is `WI-GENRE-0004`: a full-corpus metadata
+  scan for genre-balanced candidate selection, a bounded ~100-200 story
+  sample, and a real (small, ~$45) Opus validation run against that sample
+  only — with results landing as `genre.json` sidecar assessments
+  conforming to `genre-sidecar-v1` (the schema `WI-GENRE-0003` defined and
+  landed via PR #314), not a standalone
+  `experiments/04_genre_census/results/` table. This item's own sample data
+  and cost measurement remain valid evidence either way; only the
+  `--full`-run acceptance criteria are retired.
