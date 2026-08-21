@@ -2,10 +2,10 @@
 execution_id: 2026_08_21_06_30_03_WI_EVENT_0030_GENRE_0004_GATE_CONFIRM_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0030_GENRE_0004_GATE_CONFIRM_SELFREVIEW)[2026-08-21T06:29:46+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/326
-commit: 338e07f4
+commit: 55c8d256
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/326
 session_transcript: claude-app:e8e46d5d-35d3-4ccc-9cba-137bd31bf3a5
