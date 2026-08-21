@@ -124,6 +124,53 @@ experiment's own output directory only — never promoted into `corpora/`,
 which remains a separately-gated, unimplemented later step (see Current
 Boundary below).
 
+**Checkpointed, resumable, and crash-safe** — the real run
+(`--run-real-validation`) uses `lcats.utils.checkpoint`, the same
+per-item checkpoint mechanism `run_census.py`/`run_pilot.py` use, one
+checkpoint per story under `--output/<collection>__<slug>/validation.json`:
+
+- **Intermediate work is saved as it happens**, not just at the end —
+  each story's result is checkpointed to disk immediately after its API
+  call, before moving to the next story.
+- **Resumable**: re-running the exact same command skips any
+  already-checkpointed story (no repeat API call, no repeat spend) and
+  only processes what's left. There is no separate `--resume` flag — the
+  same invocation that started the run is also how you resume it. The
+  checkpoint fingerprint hashes both the manifest row's own metadata
+  content and the actual story file's bytes, so either an edited manifest
+  row or a story corrected in place invalidates only its own cached
+  result — a resume never silently describes an earlier version of the
+  story text.
+- **A single story's unexpected failure never loses the batch.** Any
+  exception other than an account-level failure (bad/expired API key,
+  exhausted quota) is caught, logged (`stderr` plus the story's own
+  checkpoint, recorded with `outcome: "failure"` and the error text) and
+  the run continues to the next story — mirrors
+  `run_pilot.py`'s own `_run_stories` pattern, built after a real past
+  incident (`WI-EVENT-0032`) where an unhandled per-story exception
+  silently discarded every already-completed story's results.
+- **An account-level failure (bad key, exhausted quota) aborts the whole
+  run instead of burning through the rest of the sample** — every
+  remaining story would fail identically — but everything completed so
+  far is still written out, never discarded. The CLI's exit status
+  reflects this too: a fatal abort returns `3` (mirroring
+  `run_census.py`'s own exit code for the same condition), not `0` — a
+  partially processed, paid run must not look successful to a calling
+  script or CI.
+
+**Run log** — the real run also appends one JSON line per event to
+`--output/validation_run_log.jsonl` (`run_start`, one `story_cached`/
+`story_completed`/`story_unexpected_error` per story, `run_aborted_fatal`
+on a fatal abort, `run_end`): a durable, human-greppable record of what
+happened, in order, including errors — distinct from the per-item
+checkpoints above, which answer "is this item done and resume-safe?"
+rather than "what actually happened, when, and why did the run stop?"
+Each line is opened, written, and closed individually (not held open for
+the whole run), so a hard interruption never loses a buffered-but-
+unflushed event. The file is append-only, so a resumed run's events land
+after the interrupted run's own — `tail -f` or `cat` it to watch or
+review a run.
+
 The cost estimate's default per-story token averages (13,449 input / 416
 output) are the real measured values from
 `experiments/04_genre_census/results/census_sample_summary.json`
