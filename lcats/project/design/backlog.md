@@ -975,3 +975,103 @@ outcome. Remove this backlog entry once `WI-INFRA-0012` resolves.
 
 **Related:** `lcats/docs/how-to/secrets-hygiene.md`;
 `lcats/experimental/secrets_hygiene/` (PR #315); `.gitleaks.toml`.
+
+---
+
+### `align_segment`'s paragraph-mis-numbering failures — P2, real cause still unknown
+
+Surfaced 2026-08-19 during `WI-SEGMENT-0069`'s investigation; expanded
+2026-08-21. 6 of the 21 `alignment_error` failures in that investigation's
+30-story smoke test (`claude-haiku-4-5-20251001`) are cases where the
+model's `start_exact`/`end_exact` anchor text is genuinely real, verbatim
+story text — but the model's own `start_par_id`/`end_par_id` point
+`align_segment` (`lcats/src/lcats/analysis/text_segmenter.py:215`) at the
+wrong paragraph range entirely. Unlike
+`WI-SEGMENT-0070`'s two fixed categories (marker leakage, quote/dash
+typography), this isn't a text-matching problem `_locate_anchor_span` can
+solve — the quote is correct, the search window it's given is wrong.
+`WI-SEGMENT-0069`'s own investigation
+(`project/design/segmentation-alignment-failure-categories.md:135-155`)
+explicitly deferred this category: no safe fix design emerged, and that
+WI's own `forbidden_actions` (`widen_search_range_without_distribution_data`,
+`reintroduce_full_document_fallback`) bar the two obvious "fixes" without
+more evidence — the latter is exactly what `WI-SEGMENT-0059` already tried
+and had to revert after it produced silently wrong, overlapping segment
+boundaries on real corpora.
+
+Three hypotheses tested since, all inconclusive or negative. (Review
+finding, PR #329: the first version of this entry reported wrong
+paragraph-drift numbers for several stories, using the *far* edge of the
+claimed range as the reference point even when the real text sat *before*
+the claimed range's *near* edge — e.g. reporting `no_charge_for_alterations__gold`
+as "overcounting by 37 paragraphs" when the real text is only 2 paragraphs
+before the claimed range's start. Corrected below; recomputed and
+independently re-verified against the real committed corpus text before
+this fix.)
+
+Real paragraph containing the anchor, vs. the claimed `[start_par_id,
+end_par_id]` range, for all 6 cases:
+
+| Story | Claimed range | Real paragraph | Drift (nearest edge) |
+|---|---|---:|---:|
+| `love_among_the_robots__mcdowell` | `[7,51]` | 59 | +8 |
+| `the_last_days_of_l_a__smith` | `[121,144]` | 119 | −2 |
+| `the_spinster_1905__hichens` | `[44,75]` | 91 | +16 |
+| `way_of_a_rebel__miller` | `[5,8]` | 30 | +22 |
+| `no_charge_for_alterations__gold` | `[52,87]` | 50 | −2 |
+| `peace_manoeuvres__davis` | `[37,86]` | 87 | +1 |
+
+(positive = model undercounted, real text is later than claimed; negative
+= model overcounted, real text is earlier than claimed)
+
+1. **Correlates with total paragraph count (`n_par`)?** No — mis-numbered
+   stories (110-341 paragraphs) span the same range as successfully-aligned
+   ones (48-373).
+   (`segmentation-alignment-failure-categories.md:149-155`)
+2. **Correlates with empty/zero-length paragraphs the literal
+   `\n\n`-splitter produces** (`build_paragraph_index`,
+   `text_segmenter.py:35-64`), **which consume a marker ID slot with no
+   visible content?** No — checked 2026-08-21: `way_of_a_rebel__miller`
+   has only 1 empty paragraph before its claimed range yet the largest
+   drift (+22), while `the_spinster_1905__hichens` has *zero* empty
+   paragraphs nearby yet the second-largest drift (+16). Doesn't
+   generalize.
+3. **Clusters in the "middle" of the document** (the documented
+   long-context "lost in the middle" degradation pattern)? No, not in this
+   small sample — checked 2026-08-21: the 6 claimed boundaries sit at 14%,
+   16%, 28%, 39%, 41%, and 71% through their respective documents (by
+   character offset, so unaffected by the paragraph-drift correction
+   above). No middle-clustering.
+
+One confirmed-but-unproven structural observation: all 6 mis-numbered
+stories have a substantial number of paragraphs (26-73 of 110-341 total)
+containing 3+ internal single-newlines — i.e., the deterministic
+`\n\n`-splitter bundles multiple dialogue beats (short back-and-forth
+lines) under one paragraph marker. Worked example:
+`peace_manoeuvres__davis` mis-numbered by exactly one paragraph (claimed
+`end_par_id=86`, real text is paragraph 87) in the middle of six short
+back-to-back dialogue paragraphs (83-88) — a plausible spot for a model
+tracking paragraph count "by feel" to drop one. This doesn't explain the
+larger-margin cases equally well (undercounts reach +22, overcounts are
+both small at −2), so it's a lead, not a confirmed cause. Direction is
+also inconsistent: 4 of 6 cases undercount, 2 overcount (both by only 2
+paragraphs — the two "overcount" cases are actually narrow misses, not
+dramatic ones), one is a clean +1 undercount.
+
+**Why not a fresh investigation-type WI yet:** mis-numbering was only 6 of
+21 `alignment_error` cases (≈29%) in one 30-story sample — getting enough
+examples to test competing hypotheses with real statistical power would
+likely need on the order of 100+ freshly-sampled stories (real API cost),
+not another 20-30. Not worth committing to that spend, or to a WI whose
+acceptance criteria can't yet be honestly written, while other work (the
+Worldcon paper) has priority. Revisit once either (a) a future smoke-test
+run for an unrelated purpose organically accumulates more mis-numbering
+examples, or (b) someone deliberately authorizes a larger dedicated
+sample.
+
+**Related:** `WI-SEGMENT-0069`
+(`project/work_items/resolved/WI-SEGMENT-0069.md`); `WI-SEGMENT-0070`
+(`project/work_items/resolved/WI-SEGMENT-0070.md`); `WI-SEGMENT-0059`
+(`project/work_items/resolved/WI-SEGMENT-0059.md`, prior art on why a
+full-document fallback is unsafe);
+`project/design/segmentation-alignment-failure-categories.md`.
