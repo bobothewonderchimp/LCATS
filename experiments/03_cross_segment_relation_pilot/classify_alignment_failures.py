@@ -131,11 +131,21 @@ def classify_anchor(text: str, anchor: str, lo: int, hi: int) -> dict:
 
 
 def _load_story_text(data_dir: pathlib.Path, story_id: str) -> str:
-    collection, slug = story_id.split("/", 1)
+    try:
+        collection, slug = story_id.split("/", 1)
+    except ValueError as exc:
+        raise ValueError(
+            f"invalid story_id {story_id!r}; expected '<collection>/<slug>'"
+        ) from exc
     story_path = data_dir / collection / slug / "story.json"
-    return story_analysis.coerce_text(
-        json.loads(story_path.read_text("utf-8")).get("body", "")
-    )
+    try:
+        story = json.loads(story_path.read_text("utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(
+            f"could not load story_id {story_id!r} from {story_path}: "
+            f"{type(exc).__name__}: {exc}"
+        ) from exc
+    return story_analysis.coerce_text(story.get("body", ""))
 
 
 def _paragraph_id_for_pos(para_spans: list[tuple[int, int]], pos: int) -> int:
@@ -242,12 +252,8 @@ def classify_story(record: dict, data_dir: pathlib.Path) -> tuple[str, list[str]
     # must degrade to a diagnostic category -- not crash the whole batch
     # report over one bad story (review finding, PR #320).
     try:
-        collection, slug = story_id.split("/", 1)
-        story_path = data_dir / collection / slug / "story.json"
-        body = story_analysis.coerce_text(
-            json.loads(story_path.read_text("utf-8")).get("body", "")
-        )
-    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        body = _load_story_text(data_dir, story_id)
+    except ValueError as exc:
         return "story_file_unreadable", [f"{story_id}: {type(exc).__name__}: {exc}"]
     _, index_meta = text_segmenter.paragraph_text_indexer(body)
     text = index_meta.get("canonical_text") or body

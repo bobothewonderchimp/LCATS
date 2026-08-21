@@ -92,7 +92,7 @@ source text were:
 |---|---|---|
 | `love_among_the_robots__mcdowell` | `paragraph_misnumbering_narrow_margin` | `segment_id=3`, `end_exact` beginning `"He returned the book to his pocket..."`, claimed char range `[10573, 15791]`, real position `15793`, margin `2` chars |
 | `the_spinster_1905__hichens` | `paragraph_misnumbering_large_margin` | `segment_id=3`, `end_exact` beginning `"There were lights in the inn..."`, claimed char range `[4283, 8848]`, real position `11170`, margin `2322` chars |
-| `no_charge_for_alterations__gold` | `anchor_absent_from_document` | `segment_id=17`, `end_exact` beginning `"Finished, they left the three uroariously drunk..."`; the quoted anchor was not found anywhere in source text |
+| `no_charge_for_alterations__gold` | `anchor_absent_from_document` | `segment_id=17`, `end_exact` beginning `"Finished, they left the three uroariously [sic] drunk..."`; the quoted anchor was not found anywhere in source text because the source says "uproariously" |
 | `way_of_a_rebel__miller` | `anchor_absent_from_document` | `segment_id=2`, `start_exact` beginning `"Mitch Laskell switched off the short wave set..."`; the quoted anchor was not found anywhere in source text |
 
 `the_last_days_of_l_a__smith` and `peace_manoeuvres__davis` aligned

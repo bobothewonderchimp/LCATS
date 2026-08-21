@@ -174,6 +174,18 @@ class TestClassifyStory(unittest.TestCase):
             self.assertEqual(category, "story_file_unreadable")
             self.assertEqual(len(details), 1)
 
+    def test_load_story_text_error_includes_story_context(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            data_dir = pathlib.Path(tmp) / "corpora"
+            data_dir.mkdir(parents=True)
+            with self.assertRaisesRegex(
+                ValueError,
+                "could not load story_id 'coll/story_never_written'.*story.json",
+            ):
+                classify_alignment_failures._load_story_text(
+                    data_dir, "coll/story_never_written"
+                )
+
     def test_paragraph_misnumbering_diagnostics_report_nearest_edge_drift(self):
         with tempfile.TemporaryDirectory() as tmp:
             data_dir = pathlib.Path(tmp) / "corpora"
