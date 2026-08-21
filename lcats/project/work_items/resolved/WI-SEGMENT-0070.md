@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via PR #324 (commit ad7717e2, merged 1db7a49e). _locate_anchor_span now strips a leaked \\[P\\d{4,}\\]\\s* paragraph-index marker (add_paragraph_markers' f\"[P{idx+1:04d}]\" format, widened from 4 to 4-or-more digits after a review finding that :04d is a minimum width, not exact) and normalizes Unicode curly quotes/dashes to ASCII via a length-preserving str.translate, before the whitespace-tolerant regex fallback. Regression tests replay all 16 real anchors from WI-SEGMENT-0069's committed fixture end-to-end via align_segment. A live 5-story smoke-test re-run confirmed 0 marker-leakage/typography-mismatch alignment_error outcomes (2 of 5 stories, the marker-leakage cases, now align successfully; the other 3 hit different, explicitly out-of-scope failure modes). backlog.md updated per WI-SEGMENT-0068's convention. Paragraph mis-numbering and the near-miss-quoting bucket remain explicitly out of scope, per this WI's own Non-Goals."
 blocked_reason: null
 blocked: false
 id: WI-SEGMENT-0070
 title: Fix segmentation alignment anchor-matching gaps: paragraph-marker leakage and quote/dash typography
 type: deliverable
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
