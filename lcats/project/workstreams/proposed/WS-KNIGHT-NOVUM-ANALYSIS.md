@@ -19,7 +19,18 @@ related_design:
   - lcats/project/design/proposals/proposed/genre-evidence-sidecars/00_proposal.md
   - lcats/project/workstreams/proposed/WS-GENRE-EVIDENCE-SIDECARS.md
   - lcats/project/work_items/proposed/WI-GENRE-0004.md
-work_items: []
+work_items:
+  - WI-SF-0001
+  - WI-SF-0002
+  - WI-SF-0003
+  - WI-SF-0004
+  - WI-SF-0005
+  - WI-SF-0006
+  - WI-SF-0007
+  - WI-SF-0008
+  - WI-SF-0009
+  - WI-SF-0010
+  - WI-SF-0011
 exit_criteria:
   - All approved Phase 1 work items are resolved with no-cost tests and lrh validate passing
   - The approximately 30-story feasibility pilot completes and satisfies or explicitly fails its preregistered gates
@@ -65,7 +76,7 @@ The workstream exists now because the proposal has landed through review, but it
 
 ## Work Items
 
-The following work items are planned but not created by this workstream PR. They should be created through `/lrh-work-item` as reviewable planning artifacts before runtime implementation begins. Each item must retain the proposal's paid-run and corpus-write gates.
+The following work items are created by this planning PR through `/lrh-work-item` as reviewable planning artifacts before runtime implementation begins. Each item must retain the proposal's paid-run and corpus-write gates.
 
 - **WI-SF-0001 - Rubric/source packet and data contracts.** Define and version `knight-seven-v1`, `suvin-novum-v1`, theory-neutral evidence types, anchors, identifiers, Knight criterion states/materiality, Novum candidate and N/C/H records, estrangement profiles, provenance, failures, validation, partial-success records, and the `science-fiction-sidecar-v1` envelope. This item is blocked on the authoritative primary-source Knight and Suvin excerpts before freezing rubric text; planning can proceed but source-dependent implementation must stop.
 - **WI-SF-0002 - Deterministic story preparation and chunk manifests.** Implement normalized story loading without source mutation, deterministic story hashing, stable paragraph IDs, whole-story eligibility, paragraph-aligned adaptive chunk planning, preferred chapter/section boundaries, overlap accounting, deterministic manifests, and gap-free coverage. This is an immediate no-cost Phase 1 leaf.
