@@ -1,0 +1,221 @@
+{
+  "llm_call_made": true,
+  "outcome": "alignment_error:alignment failed: ValueError('alignment failed for segment_id=3: anchor text not found in story text')",
+  "parsed_output": {
+    "segments": [
+      {
+        "cohesion": {
+          "characters": [
+            "Inley",
+            "Lady Inley",
+            "Narrator"
+          ],
+          "place": "Inley Abbey, dining room",
+          "time": "Afternoon/early evening, during and immediately after dinner"
+        },
+        "confidence": 0.75,
+        "end_char": null,
+        "end_exact": "She turned, and went out in her delicious, thin way. No wonder she had\nmade skeletons the rage in London. When I came back to the dinner-table",
+        "end_par_id": 19,
+        "end_suffix": "\nInley was sitting with both his brown hands clenched on the cloth. His",
+        "erac": null,
+        "gacd": null,
+        "reason": "Unified time/place (dinner at Abbey); dialogue and reactions, but no on-stage conflict or action meeting resistance; no clear ERAC structure. Primarily narrative exposition establishing the news of Miss Bassett's death and Inley's emotional reaction.",
+        "segment_id": 1,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "I had arrived at Inley Abbey that afternoon, and was sitting at dinner\nwith Inley and his pretty wife, whom I had not seen for five years,",
+        "start_par_id": 1,
+        "start_prefix": "",
+        "summary": "Dinner at Inley Abbey; church bell tolls, Lady Inley mentions Miss Bassett's death from pneumonia; Inley becomes visibly agitated upon hearing this news."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Inley",
+            "Narrator"
+          ],
+          "place": "Inley Abbey, dining room",
+          "time": "Continuing evening, dinner table and immediately after"
+        },
+        "confidence": 0.85,
+        "end_char": null,
+        "end_exact": "\"I couldn't say, my lord.\"\n\nWhen the servants had gone Inley continued, at first in a calmer voice:",
+        "end_par_id": 44,
+        "end_suffix": "\n\"Miss Bassett lived in the red cottage just beyond the gate of the South",
+        "erac": {
+          "anticipation": "Anticipates that the tolling bell is likely for Miss Bassett; fears the implications",
+          "choice": "Decides to tell the narrator everything; resolves to confess what Vere does not know",
+          "emotion": "Agitation, shock, anguish at the news of Miss Bassett's possible death",
+          "reason": "Reflects on Lady Inley's dismissive description of Miss Bassett; recalls their own acquaintance; realizes the depth of his feelings"
+        },
+        "gacd": null,
+        "reason": "Clear emotional reaction to the news (shock, agitation), deliberation about what Miss Bassett means to him, and a commitment to reveal his secret to the narrator. This is classic ERAC structure: Emotion (shock), Reason (reflection on what she means), Anticipation (dread of her death), and Choice (decide to confess). No on-stage conflict or outcome.",
+        "segment_id": 2,
+        "segment_type": "dramatic_sequel",
+        "start_char": null,
+        "start_exact": "\"What is it, Nino?\" I asked as I sat down.\n\nWe had been such intimate friends that even my five years' absence",
+        "start_par_id": 20,
+        "start_prefix": "Inley was sitting with both his brown hands clenched on the cloth. His",
+        "summary": "Inley wrestles with emotion and shock, confides in narrator about Miss Bassett; questions what she means to him; butler interrupts; Inley becomes calmer before continuing his confession."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Inley (narrator of past)",
+            "Narrator (listener)",
+            "Vere",
+            "Glynd",
+            "Swedish masseuse"
+          ],
+          "place": "Primarily the dinner table at Abbey where Inley narrates; flashback to Ashdridge Station, train, and village street approach",
+          "time": "Narrative of past events (about two years prior), with progression from dinner party to Inley's discovery to late-night train journey"
+        },
+        "confidence": 0.7,
+        "end_char": null,
+        "end_exact": "There were lights in the inn and in the schoolmaster's house,\nbut there were no people about. I got through without meeting a soul,",
+        "end_par_id": 75,
+        "end_suffix": "\nand came on towards the gates of the Abbey.\"",
+        "erac": null,
+        "gacd": null,
+        "reason": "Extended narrative exposition of past events. Inley is recounting the backstory in dialogue/monologue form rather than enacting events in real time. No on-stage conflict or ERAC resolution here; this is primarily plot summary serving the dramatic revelation of his intent to murder. Unified by Inley's act of storytelling and the logical progression of past events leading to his secret mission.",
+        "segment_id": 3,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "\"Miss Bassett lived in the red cottage just beyond the gate of the South\nLodge from time immemorial. You generally came to us in Scotland, I",
+        "start_par_id": 45,
+        "start_prefix": "When the servants had gone Inley continues, at first in a calmer voice:",
+        "summary": "Inley recounts past events: his passionate love for Vere, suspicions about Seymour Glynd, and the evening he discovered the cancelled massage appointment. He learns of Glynd's injury and takes the night train back."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Inley",
+            "Miss Bassett",
+            "The cat"
+          ],
+          "place": "Path outside Miss Bassett's cottage, the garden, the road near Abbey gates",
+          "time": "Late evening, continuous; past-tense narrative of the night Inley returned by train"
+        },
+        "confidence": 0.9,
+        "end_char": null,
+        "end_exact": "I resolved to hide in the field\nat the corner where the road turns off to Charfield. As I opened the\nwicket, instinctively I put my hand into my pocket for my revolver.\"",
+        "end_par_id": 123,
+        "end_suffix": "\n\nHe bent down, looking full into my eyes.\n\n\"It wasn't there.\"",
+        "erac": null,
+        "gacd": {
+          "action": "Inley hides in Miss Bassett's garden with revolver drawn, waits for Vere and Glynd to pass, helps Miss Bassett with her cat, returns to the hideout",
+          "conflict": "Miss Bassett unexpectedly confronts him; he must dissemble and maintain his cover while the old lady searches for her cat; internal conflict as he witnesses her innocence and her prim, gentle demeanor; the cat interferes with his plans and forces him to act against his will",
+          "goal": "To kill Vere and Glynd in revenge for the affair; to maintain secrecy and carry out the murder",
+          "outcome": "Disaster"
+        },
+        "reason": "Strong GACD structure: Inley has an explicit murderous goal, takes action (hiding, waiting, handling the cat), meets unexpected and escalating conflict (Miss Bassett's appearance, her requests, the cat's persistence, his need to dissemble), and reaches a clear disaster outcome\u2014the loss of his revolver, which derails his murder plan. The conflict is on-stage and vivid; the outcome is definitive within this segment (he discovers the revolver is gone).",
+        "segment_id": 4,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "He had let his cigar out, and now he noticed that he had. He tossed it\ninto the fire.\n\n\"I said, 'Good-morning' to the woman quite quietly,",
+        "start_par_id": 76,
+        "start_prefix": "All of a sudden I seemed to understand a lot of things.']\"",
+        "summary": "Inley returns to the Abbey grounds with murder weapon, encounters Miss Bassett searching for her cat, struggles to maintain composure, and discovers his revolver is missing from his pocket after helping her with the cat."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Inley",
+            "Miss Bassett",
+            "Lodge keeper",
+            "Vere",
+            "Hugo"
+          ],
+          "place": "Miss Bassett's cottage, Abbey lodge, Abbey and child's room",
+          "time": "Late evening, continuous; the night of Inley's return"
+        },
+        "confidence": 0.9,
+        "end_char": null,
+        "end_exact": "She looked flushed, and was breathing hard, as if she had just been running.\"",
+        "end_par_id": 145,
+        "end_suffix": "\n\nHe stopped, and took out his cigar-case.\n\n\"Running!\" I said.",
+        "erac": null,
+        "gacd": {
+          "action": "Realizes Miss Bassett took the revolver; races back to confront her; searches her roughly; rushes out to intercept the fly/Vere and Glynd on the road; discovers the fly is gone; goes to the Abbey lodge",
+          "conflict": "Miss Bassett refuses to return the revolver despite his threats and violence; he cannot find it in the cottage; the fly has already passed; when he arrives at the Abbey, he discovers Hugo is critically ill with quinsy, interrupting any confrontation with Vere",
+          "goal": "To recover the revolver and carry out his murder plan; to confront Vere and Glynd",
+          "outcome": "Disaster"
+        },
+        "reason": "Strong GACD structure: Inley's goal is clear (recover the revolver, execute his plan); his actions are on-stage and forceful (search, confrontation, pursuit); conflict is manifest (Miss Bassett's defiance, the missing revolver, the fly's disappearance, Hugo's illness); outcome is disaster\u2014the entire plan collapses when Hugo's critical illness becomes known, redirecting Vere's focus and preventing the murder.",
+        "segment_id": 5,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "He bent down, looking full into my eyes.\n\n\"It wasn't there.\"\n\n\"Miss Bassett!\" I exclaimed.\n\n\"In a moment I realised that Miss Bassett",
+        "start_par_id": 124,
+        "start_prefix": "",
+        "summary": "Inley realizes Miss Bassett stole his revolver to prevent murder; he searches her cottage violently; discovers the fly is gone; learns from the lodge keeper about Hugo's quinsy illness; finds Vere at Hugo's bedside looking flushed."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Inley",
+            "Narrator",
+            "Vere",
+            "Hugo",
+            "Glynd"
+          ],
+          "place": "Primarily the dining room (present moment); flashback to child's room and town confrontation",
+          "time": "Subsequent days after Hugo's illness; back in the present (the dining evening)"
+        },
+        "confidence": 0.85,
+        "end_char": null,
+        "end_exact": "Just then the dining-room door opened, and Lady Inley put in her pretty\nhead.",
+        "end_par_id": 157,
+        "end_suffix": "\n\n\"Are you never coming?\" she said with her little childish drawl.",
+        "erac": {
+          "anticipation": "Anticipates that he must live with Vere without ever confronting the affair; recognizes they have reached a new equilibrium",
+          "choice": "Decides to keep the secret, never tell Vere of his murderous intent, and maintain their marriage as it stands",
+          "emotion": "Calm acceptance; realization of the power of Vere's maternal love; forgiveness or at least cessation of murderous intent",
+          "reason": "Inley reflects on the chain of events: Hugo's illness stopped the elopement, Vere's devotion to the child showed her true nature, Glynd confessed and departed; Inley recognizes that revenge is now impossible and unnecessary"
+        },
+        "gacd": null,
+        "reason": "Clear ERAC structure: Emotion (acceptance, calm), Reason (reflection on Vere's maternal love, Glynd's account), Anticipation (realization he must live with the secret), and Choice (commitment to silence and continuation of marriage). No on-stage conflict or outcome; this is the aftermath and psychological resolution of the murder plot.",
+        "segment_id": 6,
+        "segment_type": "dramatic_sequel",
+        "start_char": null,
+        "start_exact": "He stopped, and took out his cigar-case.\n\n\"Running!\" I said.\n\n\"She had parted finally from Glynd in front of Miss Bassett's cottage,\"",
+        "start_par_id": 146,
+        "start_prefix": "She looked flushed, and was breathing hard, as if she had just been running.\"",
+        "summary": "Inley reveals the aftermath: Hugo's illness saved both Vere and Glynd from the consequences of their affair; Inley confronted Glynd; Vere's love for Hugo prevented further transgression; Inley resolved to keep the secret and live with Vere."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Lady Inley",
+            "Narrator",
+            "Inley"
+          ],
+          "place": "Dining room and transition to drawing room",
+          "time": "Return to the present evening after dinner"
+        },
+        "confidence": 0.8,
+        "end_char": null,
+        "end_exact": "\"\\n_Requiescat in Pace_.\"",
+        "end_par_id": 162,
+        "end_suffix": "",
+        "erac": null,
+        "gacd": null,
+        "reason": "Brief closing passage; returns to present time/place after the extended narrative exposition. Lady Inley's observation about the bell confirms the tolling was for Miss Bassett. Inley's final Latin blessing provides closure. Unified by time/place (the dinner evening) but lacks GACD/ERAC structure; serves as epilogue/denouement.",
+        "segment_id": 7,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "\"Are you never coming?\" she said with her little childish drawl.\n\nI got up, and went towards her.\n\n\"By the way, Nino,\" she added, \"the bell was for poor, funny old Miss\nBassett.",
+        "start_par_id": 158,
+        "start_prefix": "Just then the dining-room door opened, and Lady Inley put in her pretty\nhead.",
+        "summary": "Lady Inley interrupts, mentions the bell tolled for Miss Bassett; narrator follows her to the drawing room; Inley speaks the Latin requiem; scene ends."
+      }
+    ]
+  },
+  "story_id": "mass_quantities/the_spinster_1905__hichens",
+  "usage": {
+    "input_tokens": 10799,
+    "output_tokens": 3480
+  },
+  "word_count": 4308
+}

@@ -1,0 +1,243 @@
+{
+  "llm_call_made": true,
+  "outcome": "alignment_error:alignment failed: ValueError('alignment failed for segment_id=2: anchor text not found in story text')",
+  "parsed_output": {
+    "segments": [
+      {
+        "cohesion": {
+          "characters": [
+            "Lieutenant Mitch Laskell"
+          ],
+          "place": "one-man submarine, 50 miles off Florida coast",
+          "time": "evening, 8 PM news broadcast"
+        },
+        "confidence": 0.85,
+        "end_char": null,
+        "end_exact": "suffer the consequences.\n\n\"In Secretary Garson's ultimatum to the enemy, he stated: 'Heretofore we",
+        "end_par_id": 3,
+        "end_suffix": "",
+        "erac": null,
+        "gacd": null,
+        "reason": "Time/place stable (sub off Florida coast, evening). No GACD (no goal/action/conflict met) and no ERAC (no clear emotional reaction or deliberation). Narrative exposition of radio news.",
+        "segment_id": 1,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "Lieutenant Laskell surfaced his one-man submarine fifty miles off the\nFlorida coast where he had been patrolling in search of enemy subs.",
+        "start_par_id": 1,
+        "start_prefix": "",
+        "summary": "Lieutenant Mitch Laskell surfaces his sub off Florida and hears news of the Manlin Bill, giving Secretary Garson absolute power and issuing an ultimatum to the Eurasian Soviets to surrender or face nuclear attack."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Mitch Laskell"
+          ],
+          "place": "submarine deck, off Florida",
+          "time": "same evening, shortly after radio announcement"
+        },
+        "confidence": 0.8,
+        "end_char": null,
+        "end_exact": "the routine of daily living had to go on, despite the big business of governments whose leaders invoked the Deity in the cause of slaughter.",
+        "end_par_id": 8,
+        "end_suffix": "",
+        "erac": {
+          "anticipation": "expects destruction of cities and continuation of daily routine despite war",
+          "choice": "implicit acceptance of new political reality while processing implications",
+          "emotion": "clammy, shaking, gloomy uneasiness",
+          "reason": "reflects that men accept facts after they occur; human capacity for calm is unlimited ex post facto"
+        },
+        "gacd": null,
+        "reason": "Mitch responds emotionally (clammy, shaking) and reasons about human behavior and acceptance. No on-stage conflict or outcome. Deliberation and emotional processing fit ERAC threshold.",
+        "segment_id": 2,
+        "segment_type": "dramatic_sequel",
+        "start_char": null,
+        "start_exact": "Mitch Laskell switched off the short wave set and muttered an oath. He\nsqueezed his way up through the narrow conning tower and sits on the",
+        "start_par_id": 4,
+        "start_prefix": "",
+        "summary": "Mitch reacts emotionally to the news, climbing to the deck and smoking while reflecting on the acceptance of despotism and war. He realizes people adapt to catastrophic events."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Mitch Laskell",
+            "Radio operators (Commsubron Killer)"
+          ],
+          "place": "submarine conning tower and interior",
+          "time": "same evening, minutes after reflection"
+        },
+        "confidence": 0.85,
+        "end_char": null,
+        "end_exact": "He stood touching his fingertips to his temples and breathing in shallow gasps. Had he gone completely insane?",
+        "end_par_id": 25,
+        "end_suffix": "",
+        "erac": null,
+        "gacd": {
+          "action": "repeatedly resists radio commands, eventually defiantly announces his resignation and tells the Navy to 'go to hell'",
+          "conflict": "escalating pressure from radio operators and command authority; internal rebellion against military duty versus patriotic obligation; mounting tension with each repeated message",
+          "goal": "to avoid orders to return to base and participate in the planned radiological attack",
+          "outcome": "Success"
+        },
+        "reason": "Clear GACD structure: Mitch has goal (escape orders), takes action (resistance, defiant broadcast), meets conflict (repeated pressure, escalation), reaches outcome (success\u2014he hangs up, severing command contact). Conflict is strongly indicated through repeated radio demands and his mounting resistance.",
+        "segment_id": 3,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "A voice, echoing up out of the conning tower, made him jump. The command\nset was barking his call letters.",
+        "start_par_id": 9,
+        "start_prefix": "",
+        "summary": "Radio command orders Mitch to return to base for rearmament. He resists, expressing resentment against war and government orders. After internal struggle, he impulsively resigns from the Navy and hangs up, realizing the gravity of his actions."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Mitch Laskell",
+            "Computer (dialogue via keyboard)"
+          ],
+          "place": "submarine interior compartment",
+          "time": "same evening, immediately following his broadcast"
+        },
+        "confidence": 0.82,
+        "end_char": null,
+        "end_exact": "He switched on the radio again, goosed the engines to full speed, and\nafter a moment's thought, swung around on a northeasterly heading. His",
+        "end_par_id": 46,
+        "end_suffix": "",
+        "erac": {
+          "anticipation": "anticipates pursuit and escape to South America; expects confrontation with authority; worries about his sanity and moral standing",
+          "choice": "decides firmly to flee, not return to base; chooses to run away rather than face discipline or explain his actions",
+          "emotion": "bitter resentment, fear, shock at his own behavior",
+          "reason": "reflects on his motives for desertion; queries the computer for guidance on decision-making amid conflicting input; realizes his true reason: he cannot abide destruction of mechanical civilization"
+        },
+        "gacd": null,
+        "reason": "Post-action processing: Mitch experiences shock and fear, reasons about his motivations through internal debate and interaction with the computer, anticipates consequences, and commits to escape. Meets ERAC threshold with clear emotion, reason, anticipation, and choice. No on-stage conflict/outcome.",
+        "segment_id": 4,
+        "segment_type": "dramatic_sequel",
+        "start_char": null,
+        "start_exact": "He sat down on the floor of the tiny compartment and tried to think. But\nhe could only feel a bitter resentment welling up out of nowhere. Why?",
+        "start_par_id": 26,
+        "start_prefix": "",
+        "summary": "Mitch sits in shock and grapples with his sudden impulse to desert. He questions his motives, debates duty versus conscience, and realizes he loves technological civilization. He decides to flee and prepares the sub for escape."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Mitch Laskell",
+            "Captain Barkley",
+            "Admiral Harrinore (radio voices)"
+          ],
+          "place": "submarine, underwater, crossing Atlantic",
+          "time": "evening and night, pursuit phase"
+        },
+        "confidence": 0.8,
+        "end_char": null,
+        "end_exact": "He began to feel a frightening loneliness, although scarcely two hours\nhad passed since his rebellious decision, and he was accustomed to long",
+        "end_par_id": 70,
+        "end_suffix": "",
+        "erac": null,
+        "gacd": null,
+        "reason": "Time/place unified (sub submerging, heading northeast). Mitch receives radio threats and reflects philosophically on his actions and civilizational values, but there is no clear GACD (no live conflict/outcome unfolding) or ERAC (established in prior segment; no new emotional crisis or decision). Primarily narrative exposition of his escape and internal musings.",
+        "segment_id": 5,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "after a moment's thought, swung around on a northeasterly heading. His\nfirst impulse had been to head south, aiming for Yucatan, or the",
+        "start_par_id": 47,
+        "start_prefix": "",
+        "summary": "Mitch sets a northeasterly course and submerges to evade pursuit. Captain Barkley and Admiral Harrinore issue threats over the radio. Mitch listens to their warnings while contemplating his decision and the nature of civilization."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Mitch Laskell"
+          ],
+          "place": "submarine interior",
+          "time": "same night, during escape"
+        },
+        "confidence": 0.8,
+        "end_char": null,
+        "end_exact": "Was _he_ basing action on analytic reason?",
+        "end_par_id": 75,
+        "end_suffix": "",
+        "erac": {
+          "anticipation": "implicitly anticipates further destruction if he does not act; questions whether his escape itself will address the problem",
+          "choice": "implicit commitment to his course based on this philosophical clarification, though beginning to doubt whether his action makes sense analytically",
+          "emotion": "dismay, disgust at prospect of civilization's destruction",
+          "reason": "realizes that his rebellion stems from unwillingness to see mechanical civilization wrecked; understands that killing men is tolerable but destroying industry/tools is insufferable; fears 'amputation' of civilization's hands"
+        },
+        "gacd": null,
+        "reason": "Mitch experiences deep emotional realization (dismay, disgust), reasons about his true motivation (love of civilization), anticipates outcomes, and reflects on his choice. Meets ERAC threshold with strong emotion, reason, anticipation, and self-questioning about commitment.",
+        "segment_id": 6,
+        "segment_type": "dramatic_sequel",
+        "start_char": null,
+        "start_exact": "Mitch realized dismally that he loved technological civilization, its\ngiant tools, its roar of mighty engines, its proud structures of",
+        "start_par_id": 71,
+        "start_prefix": "",
+        "summary": "Mitch deeply reflects on his love of technological civilization and realizes the true source of his rebellion: his horror at a war that would destroy industry and infrastructure, amputating humanity's tools."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Mitch Laskell",
+            "Enemy submarines",
+            "Commsubron Killer (radio)"
+          ],
+          "place": "ocean near and around submarine, engagement zone",
+          "time": "hours after submersion, night"
+        },
+        "confidence": 0.85,
+        "end_char": null,
+        "end_exact": "A sickening blast shivered his tiny craft, and then another. He dropped to sixty feet, then knifed ahead.",
+        "end_par_id": 98,
+        "end_suffix": "",
+        "erac": null,
+        "gacd": {
+          "action": "detects sonar signals and radar blips; surfaces and radios warning to base; attacks with depth charges; evades enemy return fire and submersion",
+          "conflict": "four/five enemy submarines spotted approaching; enemy subs submerge and hunt him; exchange of fire; multiple depth charges exploding around him",
+          "goal": "to detect and defend against the approaching enemy submarines; to alert base to the threat",
+          "outcome": "Unclear"
+        },
+        "reason": "Clear GACD: Mitch has goal (detect/defend/warn), takes action (detection, reporting, combat), encounters strong conflict (enemy contact, depth charges, evasion). Outcome is Unclear because engagement is ongoing and not resolved within the segment. Conflict strongly indicated.",
+        "segment_id": 7,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "Another hour had passed. And then he heard it. The sound of faint sonar\ncommunication. Quickly he nosed upward to twenty feet, throttled back to",
+        "start_par_id": 76,
+        "start_prefix": "",
+        "summary": "Mitch detects and identifies four (then five) enemy submarines approaching from the southeast. He surfaces and reports to base, then attacks with depth charges and evades return fire."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Mitch Laskell",
+            "Enemy submarines (implied)"
+          ],
+          "place": "submarine interior during combat",
+          "time": "continuation of enemy engagement, night"
+        },
+        "confidence": 0.87,
+        "end_char": null,
+        "end_exact": "The switch--the damn double-toggle _red switch_! He screamed a curse and struck at it with both fists.\n\nThere came a beautiful, blinding light.",
+        "end_par_id": 110,
+        "end_suffix": "",
+        "erac": null,
+        "gacd": {
+          "action": "reaches for the rocket fusing switch; struggles through explosions to activate the detonator",
+          "conflict": "depth charges falling on all sides; controls refusing to respond; physical and psychological pressure to detonate despite the risk; moment-by-moment decision amid extreme danger",
+          "goal": "to destroy the enemy submarines carrying radiological weapons before they can wreak civilization",
+          "outcome": "Success"
+        },
+        "reason": "Clear GACD: Mitch has goal (destroy enemy subs to save civilization), takes action (reaching for and striking the fusing switch), encounters immediate conflict (explosions, failing controls, urgent pressure), and reaches outcome (Success\u2014he detonates, indicated by 'beautiful, blinding light'). Conflict strongly indicated through combat emergency.",
+        "segment_id": 8,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "God! Why was he doing this? There was no sense in it, if he meant to run\naway. But then the thought came: they're returning Old Man Garson's",
+        "start_par_id": 99,
+        "start_prefix": "",
+        "summary": "Amid ongoing depth-charge bombardment, Mitch realizes the enemy is delivering Garson's threatened radiological attack. He decides to fuse and detonate his uranium-tipped rocket, destroying the enemy submarines to prevent civilization's destruction."
+      }
+    ]
+  },
+  "story_id": "mass_quantities/way_of_a_rebel__miller",
+  "usage": {
+    "input_tokens": 11055,
+    "output_tokens": 3231
+  },
+  "word_count": 4588
+}

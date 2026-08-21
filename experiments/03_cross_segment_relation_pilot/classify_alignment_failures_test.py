@@ -13,6 +13,7 @@ import pathlib
 import sys
 import tempfile
 import unittest
+import collections
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
@@ -172,6 +173,96 @@ class TestClassifyStory(unittest.TestCase):
             )
             self.assertEqual(category, "story_file_unreadable")
             self.assertEqual(len(details), 1)
+
+    def test_load_story_text_error_includes_story_context(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            data_dir = pathlib.Path(tmp) / "corpora"
+            data_dir.mkdir(parents=True)
+            with self.assertRaisesRegex(
+                ValueError,
+                "could not load story_id 'coll/story_never_written'.*story.json",
+            ):
+                classify_alignment_failures._load_story_text(
+                    data_dir, "coll/story_never_written"
+                )
+
+    def test_paragraph_misnumbering_diagnostics_report_nearest_edge_drift(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            data_dir = pathlib.Path(tmp) / "corpora"
+            body = "One.\n\nTwo.\n\nThree anchor here.\n\nFour."
+            _write_story(data_dir, "coll", "story_five", body)
+            real_pos = body.index("Three anchor here")
+            row = classify_alignment_failures.diagnose_paragraph_misnumbering_case(
+                {
+                    "story_id": "coll/story_five",
+                    "category": "paragraph_misnumbering_narrow_margin",
+                    "start_par_id": 1,
+                    "end_par_id": 2,
+                    "real_pos": real_pos,
+                    "margin_chars": 2,
+                },
+                data_dir,
+            )
+            self.assertEqual(row["real_par_id"], 3)
+            self.assertEqual(row["nearest_edge_drift_pars"], 1)
+            self.assertTrue(row["boundary_off_by_one"])
+            self.assertTrue(row["boundary_near_miss"])
+
+    def test_paragraph_misnumbering_diagnostics_count_multi_line_paragraphs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            data_dir = pathlib.Path(tmp) / "corpora"
+            body = (
+                "Plain paragraph.\n\n"
+                "A line.\nB line.\nC line.\nD line.\n\n"
+                "Real anchor paragraph."
+            )
+            _write_story(data_dir, "coll", "story_six", body)
+            row = classify_alignment_failures.diagnose_paragraph_misnumbering_case(
+                {
+                    "story_id": "coll/story_six",
+                    "category": "paragraph_misnumbering_large_margin",
+                    "start_par_id": 1,
+                    "end_par_id": 1,
+                    "real_pos": body.index("Real anchor paragraph"),
+                    "margin_chars": 15,
+                },
+                data_dir,
+            )
+            self.assertEqual(row["multi_line_paragraphs"], 1)
+            self.assertFalse(row["boundary_off_by_one"])
+            self.assertTrue(row["boundary_near_miss"])
+
+    def test_committed_wi_segment_0071_replay_fixture_reproduces_counts(self):
+        repo_root = pathlib.Path(__file__).resolve().parents[2]
+        fixture_dir = (
+            repo_root
+            / "experiments"
+            / "03_cross_segment_relation_pilot"
+            / "results"
+            / "segmentation_paragraph_misnumbering_diagnostics"
+            / "replay_fixture"
+        )
+        data_dir = repo_root / "corpora"
+        counts = collections.Counter()
+        for result_path in sorted(fixture_dir.glob("*/*.json")):
+            record = json.loads(result_path.read_text("utf-8"))
+            outcome = record.get("outcome", "")
+            if outcome.startswith("alignment_error:"):
+                category, _ = classify_alignment_failures.classify_story(
+                    record, data_dir
+                )
+                counts[category] += 1
+            else:
+                counts[outcome] += 1
+        self.assertEqual(
+            counts,
+            {
+                "anchor_absent_from_document": 2,
+                "included": 2,
+                "paragraph_misnumbering_large_margin": 1,
+                "paragraph_misnumbering_narrow_margin": 1,
+            },
+        )
 
 
 if __name__ == "__main__":

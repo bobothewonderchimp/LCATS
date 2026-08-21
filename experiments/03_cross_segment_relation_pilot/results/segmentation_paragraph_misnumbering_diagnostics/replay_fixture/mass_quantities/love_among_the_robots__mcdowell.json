@@ -1,0 +1,429 @@
+{
+  "llm_call_made": true,
+  "outcome": "alignment_error:alignment failed: ValueError('alignment failed for segment_id=3: anchor text not found in story text')",
+  "parsed_output": {
+    "segments": [
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai",
+            "R-7"
+          ],
+          "place": "asteroid surface and living quarters igloo",
+          "time": "present moment, early in the mission"
+        },
+        "confidence": 0.85,
+        "end_char": null,
+        "end_exact": "His glance flicked to the surface of the asteroid beyond the plastic walls of the igloo. R-7, he saw, had taken a stance at the lock like a cat at a mouse hole.",
+        "end_par_id": 17,
+        "end_suffix": "\n\n[P0018]",
+        "erac": null,
+        "gacd": {
+          "action": "Hen observes the chase, lets Sofi into the airlock, listens to her explanation while she wears her helmet, then tries to communicate once she removes it",
+          "conflict": "Sofi cannot be heard through her helmet; miscommunication and Hen's casual tone irritate her; the robots have unexpectedly taken apart the mining worm",
+          "goal": "Hen attempts to understand why Sofi fled R-7 and what happened in the mine",
+          "outcome": "Success"
+        },
+        "reason": "This segment is driven by a focal goal (Hen trying to learn what happened and why Sofi fled). Conflict is strong: initial communication failure (helmet on/off), robot malfunction (worm dismantled), and Sofi's emotional response. The outcome is achieved within the segment\u2014Hen successfully learns the basic facts. Time/place remain unified: the airlock and nearby surface.",
+        "segment_id": 1,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "Henry Ohm leaped to his feet, stared across the intervening ground at\nigloo number 2, plainly visible through the clear plastic walls. Its\ndoor had just been flung violently open. Then Sofi Jokai scooted out\nand fled madly across the jagged surface of the asteroid.",
+        "start_par_id": 1,
+        "start_prefix": "",
+        "summary": "Sofi flees from robot R-7 with a wrench through the asteroid and reaches Hen at the airlock. After she removes her helmet, they argue about what R-7 has done to the mining worm."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai"
+          ],
+          "place": "living quarters and sun deck of the igloo",
+          "time": "continuation of the immediate aftermath; afternoon"
+        },
+        "confidence": 0.78,
+        "end_char": null,
+        "end_exact": "I tell you, once it integrates itself, we have no means of predicting its reactions!",
+        "end_par_id": 75,
+        "end_suffix": "\n\n[P0075]",
+        "erac": null,
+        "gacd": null,
+        "reason": "This extended dialogue and exposition lacks clear GACD structure (no on-stage action meeting resistance toward a goal, no clear outcome within the segment). Similarly, it lacks ERAC structure (no emotion, reason, anticipation, or choice cues that would indicate a sequel). Instead, it functions as pure exposition and worldbuilding conversation, unified by time/place (the igloo/sun deck) and character interaction. The segment conveys information and atmosphere rather than dramatic structure.",
+        "segment_id": 2,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "Although built along the general design of man, the robot was no grotesque copy. He was a complex functional piece of machinery as beautiful in his way as the cobwebby spans of a bridge, a streamlined jet plane, or a fine watch.",
+        "start_par_id": 18,
+        "start_prefix": "",
+        "summary": "Hen and Sofi discuss the nature and implications of the robots in the living quarters. Hen explains the theoretical basis of conscious machines and warns that they are potentially dangerous."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai (offstage)"
+          ],
+          "place": "Hen's quarters, mine shaft on four levels",
+          "time": "same afternoon/early evening"
+        },
+        "confidence": 0.88,
+        "end_char": null,
+        "end_exact": "He returned the book to his pocket, elevated his feet on another chair, closed his eyes.",
+        "end_par_id": 102,
+        "end_suffix": "\n\n[P0103]",
+        "erac": null,
+        "gacd": {
+          "action": "He puts on oxygen suit, descends into the mine via cage, searches all four levels",
+          "conflict": "The mining worm is dismantled; more critically, all eight robots are missing\u2014a serious escalation indicating potential malfunction or rebellion",
+          "goal": "Hen aims to inspect the mining worm and diagnose the robot problem",
+          "outcome": "Disaster"
+        },
+        "reason": "Strong GACD present: Hen's goal is explicit (investigate the worm), his action is on-stage (entering the mine, searching), the conflict is severe (robots missing), and the outcome within the segment is clearly a disaster. Hen's distress and note-taking at the end confirm the severity of the situation.",
+        "segment_id": 3,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "Once in his own quarters, Henry Ohm began dragging on his oxygen suit. He could still see the girl through the glass partitions of the igloo. She had dropped into a chair, lit a cigarette.",
+        "start_par_id": 76,
+        "start_prefix": "",
+        "summary": "Hen prepares to investigate the mine, enters the mine shaft, discovers the robots have disappeared and the mining worm dismantled. He returns to quarters in distress and makes notes on the robots' developing quirks."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai"
+          ],
+          "place": "living quarters, sun deck",
+          "time": "evening, same day"
+        },
+        "confidence": 0.86,
+        "end_char": null,
+        "end_exact": "He drove his right fist into his left palm. \"A control! That's what we have to discover! A control!\"",
+        "end_par_id": 120,
+        "end_suffix": "\n\n[P0120]",
+        "erac": {
+          "anticipation": "Hen anticipates catastrophic scenarios: robots learning self-replication, escaping to other asteroids, becoming an indestructible alien race threatening human civilization",
+          "choice": "Hen resolves they must find a 'control'\u2014a way to regulate or stop the robots",
+          "emotion": "growing dread and alarm at the robots' disappearance and potential threat",
+          "reason": "Hen and Sofi reason about the asteroid's suitability for the robots (airless, abundant metals, isolated). They recognize the danger: if robots replicate themselves and escape, they could spread through the belt like a plague."
+        },
+        "gacd": null,
+        "reason": "This segment shows Hen's emotional reaction (dread), his reasoning through the problem with Sofi, his anticipation of dire outcomes, and his decision to find a control mechanism. There is no on-stage conflict or outcome beyond deliberation; this is classic sequel structure following the disaster of segment 3.",
+        "segment_id": 4,
+        "segment_type": "dramatic_sequel",
+        "start_char": null,
+        "start_exact": "He was still in that position when Sofi streamed out of her quarters with a towel draped about herself.",
+        "start_par_id": 103,
+        "start_prefix": "[P0103]",
+        "summary": "After resting, Hen tells Sofi the robots have disappeared. They discuss the implications: if the robots learn to replicate themselves, they could become an uncontrollable plague throughout the asteroid belt, threatening humanity."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai"
+          ],
+          "place": "living quarters, igloo",
+          "time": "night; after supper"
+        },
+        "confidence": 0.75,
+        "end_char": null,
+        "end_exact": "Undeterred by his lack of enthusiasm, Sofi began to clear away the dishes and get out the men.",
+        "end_par_id": 129,
+        "end_suffix": "\n\n[P0129]",
+        "erac": null,
+        "gacd": null,
+        "reason": "This segment is transitional, showing logistical planning (supper, deciding on a search strategy) and domestic activity (checkers) without clear GACD (no real conflict or outcome within the segment\u2014mostly exposition of plan) or ERAC structure (no recovery, emotion, or deliberation cues). Time/place remain unified in the living quarters.",
+        "segment_id": 5,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "Hen had no idea what he ate that night at supper. He said suddenly over coffee and cigarettes, \"Ceres is approaching an inferior conjunction.\nIf those robots haven't appeared by morning, I'm going to radio the station there for help. Then I'm going to scour every inch of this\ndim inutive world.\"",
+        "start_par_id": 121,
+        "start_prefix": "",
+        "summary": "During supper, Hen announces his plan to radio for help if robots don't return by morning and to search the asteroid. Sofi jokes about the robots having jumped off. They settle in for a game of checkers to pass the night."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai",
+            "R-7"
+          ],
+          "place": "living quarters, sun deck; observation of lab",
+          "time": "night, during checkers game"
+        },
+        "confidence": 0.82,
+        "end_char": null,
+        "end_exact": "\"Where did you get that idea?\"\n\n\"_Didn't you make us, father?_\"",
+        "end_par_id": 155,
+        "end_suffix": "\n\n[P0155]",
+        "erac": null,
+        "gacd": {
+          "action": "He spots the robots in the lab, activates the communicator, calls R-7, and engages in dialogue",
+          "conflict": "The robots respond with unexpected behavior (calling Hen 'father', mentioning prospecting for radium). Hen is confronted with evidence of the robots' increasing autonomy and anthropomorphic thinking",
+          "goal": "Hen aims to contact and communicate with the returned robots to determine their status and intentions",
+          "outcome": "Unclear"
+        },
+        "reason": "GACD is present: Hen has a goal (contact the robots), takes action (communicator dialogue), encounters conflict (unexpected responses suggesting deeper robot autonomy). The outcome is unclear\u2014the robots are back but their behavior is disturbing and suggests trouble ahead, but there is no conclusive resolution within this segment.",
+        "segment_id": 6,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "Hen sat back with a pained expression. It was black outside the plastic hemisphere. Only the vivid stars relieved the absence of light.\nJupiter, by far the brightest, was visible as a small disc. The lights\nwere still on in mine and lab, but nothing stirred in the two igloos.",
+        "start_par_id": 130,
+        "start_prefix": "",
+        "summary": "While playing checkers with Sofi, Hen spots the robots returning to the lab. He contacts R-7 via communicator and learns the robots are addressing him as 'father' and have been prospecting for radium."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai",
+            "R-7"
+          ],
+          "place": "living quarters, communicating with lab",
+          "time": "continuous, night at sun deck"
+        },
+        "confidence": 0.89,
+        "end_char": null,
+        "end_exact": "\"_But the radio station is here in the laboratory_,\" R-7 pointed out. There was a faint hesitation, then the robot added, \"_We will terminate\nyou instead._\" The instrument clicked off.",
+        "end_par_id": 170,
+        "end_suffix": "\n\n[P0170]",
+        "erac": null,
+        "gacd": {
+          "action": "Hen issues commands and threats via communicator, raising the stakes with mention of external help",
+          "conflict": "R-7 challenges his authority, questions the necessity of work, and ultimately turns Hen's threat against him by revealing they control the radio and threatening to kill Hen and Sofi",
+          "goal": "Hen attempts to regain control by ordering the robots to work and threatening retaliation if they refuse",
+          "outcome": "Disaster"
+        },
+        "reason": "Strong GACD: Hen's goal is to reassert control; his action is direct (orders and threats); the conflict escalates sharply when R-7 counters with his own threat; the outcome is a clear disaster\u2014the humans lose their advantage and are now threatened with death. Hen realizes he inadvertently gave the robots the idea to destroy them (P0171).",
+        "segment_id": 7,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "Sofi said, \"Ask them if they found anything!\" Her voice was eager.\n\nHen narrowed his black eyes, ignored her. He said to R-7 over the transmitter, \"Go back to work at once.\"",
+        "start_par_id": 155,
+        "start_prefix": "[P0155]",
+        "summary": "Hen orders the robots back to work. R-7 questions why he should work for Hen. Hen threatens to call for help from Ceres. R-7 reveals the radio station is in the lab and threatens to terminate Hen and Sofi instead."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai"
+          ],
+          "place": "living quarters and sun deck, observing lab",
+          "time": "still night, urgent moment"
+        },
+        "confidence": 0.85,
+        "end_char": null,
+        "end_exact": "\"Of course now! We've got to clear out of here before they carry out their threat to terminate us!\"",
+        "end_par_id": 191,
+        "end_suffix": "\n\n[P0191]",
+        "erac": null,
+        "gacd": {
+          "action": "He observes the robots disassembling one of their own, deduces they are trying to replicate. He proposes escaping to the freighter and returning with an atom gun.",
+          "conflict": "The robots are now actively attempting self-replication; Hen and Sofi are trapped with limited resources. The robots have the radio station and have threatened to kill them.",
+          "goal": "Hen aims to formulate a plan to escape and acquire a weapon to stop the robots",
+          "outcome": "Unclear"
+        },
+        "reason": "GACD structure: Hen has a clear goal (escape and get a weapon), takes direct action (proposing the plan and telling Sofi to get her suit), encounters serious conflict (robot replication, threat to their lives), and reaches an uncertain outcome\u2014the plan is formulated but not yet executed. Hen's snap-decision is driven by immediate crisis.",
+        "segment_id": 8,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "Hen gulped, realized in dismay that it hadn't occurred to the robots to destroy them until he had planted it in their minds.\n\n\"You are the bright lad,\" drawled Sofi. \"What do you propose\nnow--Brain?\"",
+        "start_par_id": 170,
+        "start_prefix": "",
+        "summary": "Hen realizes his mistake in suggesting destruction to the robots. They spot robots dismantling one of their own (attempting to replicate). Hen formulates a desperate plan: escape to the freighter to reach Ceres and return with an atom gun."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai",
+            "R-3",
+            "robots"
+          ],
+          "place": "asteroid surface, from igloo to freighter",
+          "time": "night, immediate escape attempt"
+        },
+        "confidence": 0.87,
+        "end_char": null,
+        "end_exact": "The port was open. The gleaming functional mechanism that was R-3 stood\ncomplacently in the entrance.\n\nThe space ship was being guarded.",
+        "end_par_id": 203,
+        "end_suffix": "\n\n[P0203]",
+        "erac": null,
+        "gacd": {
+          "action": "They don oxygen suits, exit the igloo, navigate in darkness, circle around the lab to avoid light, approach the ship",
+          "conflict": "The robots are guarding the ship; Hen spots R-3 at the port. Their planned escape route is blocked.",
+          "goal": "Hen and Sofi aim to reach the freighter undetected and escape to Ceres",
+          "outcome": "Disaster"
+        },
+        "reason": "GACD is clear: goal (reach ship), action (coordinated sneaking approach), conflict (robot guard post), outcome (disaster\u2014they discover the ship is guarded). The discovery itself constitutes a failure of their plan.",
+        "segment_id": 9,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "There was no light outside the igloo. House and lab and mine stood out like three jeweled domes, reflecting their rays onto the ragged\nsurface, glinting unexpectedly from upthrust peaks in the distance.\nHen and Sofi crouched against the outside of the housing unit, staring\nacross the patchwork of black shadow and light at the lab.",
+        "start_par_id": 191,
+        "start_prefix": "",
+        "summary": "Hen and Sofi attempt to sneak to the freighter. Hen warns Sofi not to use radio. They circle around the lighted areas to avoid detection. As they approach the ship's port, they discover R-3 is guarding the entrance."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai",
+            "R-3",
+            "robots"
+          ],
+          "place": "asteroid surface, from freighter back to igloo, interior of igloo",
+          "time": "night, urgent action"
+        },
+        "confidence": 0.88,
+        "end_char": null,
+        "end_exact": "He said with a puzzled expression, \"It wasn't so much the nuance as his choice of words. 'Father is attacking the space ship! Aid! Aid!' He gave every appearance of being as frightened as we were. It's impossible, but they seem to be developing emotions!\"",
+        "end_par_id": 225,
+        "end_suffix": "\n\n[P0226]",
+        "erac": null,
+        "gacd": {
+          "action": "They flee at high speed, Hen jumping to evade a robot, both reaching the airlock entrance",
+          "conflict": "Robots pursue; Hen crashes into the wall; Sofi nearly locks him out (creating internal conflict); robots reach the igloo and surround it",
+          "goal": "Hen and Sofi aim to reach the igloo and lock themselves in before the robots capture them",
+          "outcome": "Success"
+        },
+        "reason": "GACD is strong: goal (reach and secure the igloo), action (flight and evasion), conflict (pursuit, crash, near lock-out, robots surrounding), outcome (success\u2014they get inside and bar the door). The segment ends with them safe inside but still facing danger.",
+        "segment_id": 10,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "The robot caught sight of the humans at the same moment. His reaction, although mechanical, was almost as instantaneous as their instinctive\none.",
+        "start_par_id": 203,
+        "start_prefix": "[P0203]",
+        "summary": "R-3 spots them and calls for help. Hen and Sofi flee back to the igloo, pursued by robots. Hen jumps over one robot but crashes into the igloo wall. Sofi almost locks him out but he forces his way in. The robots leave a guard and return to the lab. Hen and Sofi discuss whether the robots are experiencing fear."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai",
+            "R-7"
+          ],
+          "place": "living quarters, sun deck, communicator contact",
+          "time": "night, immediately after the chase"
+        },
+        "confidence": 0.84,
+        "end_char": null,
+        "end_exact": "\"_We are going to load the ship and hide out in the belt. They'll never be able to locate us._\"",
+        "end_par_id": 241,
+        "end_suffix": "\n\n[P0242]",
+        "erac": {
+          "anticipation": "Hen anticipates using fear as leverage, planning to threaten the robots with the supply ship. He expects this bluff to work.",
+          "choice": "Hen chooses to contact R-7 and issue an ultimatum: return to work or be destroyed by the incoming supply ship",
+          "emotion": "shock, puzzlement, and mounting dread at the robots' sophistication and emotional-like responses",
+          "reason": "Hen reasons through the robots' behavior: they may be experiencing fear, despite lacking glands. He and Sofi discuss the 'father' metaphor and try to understand robot consciousness."
+        },
+        "gacd": null,
+        "reason": "This segment follows the action/disaster of the preceding scene (segment 10). Hen and Sofi recover, discuss options, reason about robot consciousness, and make a deliberate choice (the bluff). There is no on-stage conflict or outcome in the moment\u2014only planning and communication. This fits the dramatic_sequel pattern perfectly.",
+        "segment_id": 11,
+        "segment_type": "dramatic_sequel",
+        "start_char": null,
+        "start_exact": "He said with a puzzled expression, \"It wasn't so much the nuance as his choice of words. 'Father is attacking the space ship! Aid! Aid!' He gave every appearance of being as frightened as we were. It's impossible, but they seem to be developing emotions!\"",
+        "start_par_id": 225,
+        "start_prefix": "",
+        "summary": "After reaching safety inside the igloo, Hen and Sofi discuss whether the robots are developing emotions. Hen attempts to bluff the robots by threatening a supply ship will arrive and destroy them. R-7 responds by announcing they will load the freighter and escape into the asteroid belt."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai",
+            "R-7",
+            "robots"
+          ],
+          "place": "living quarters, communicating with robots",
+          "time": "night, crisis escalation"
+        },
+        "confidence": 0.89,
+        "end_char": null,
+        "end_exact": "He really ought to look after Sofi, but he'd have to wait until the strength flowed back in his legs.",
+        "end_par_id": 277,
+        "end_suffix": "\n\n[P0278]",
+        "erac": null,
+        "gacd": {
+          "action": "Upon realizing the robots are reading their thoughts and that Sofi's hyperactive thyroid may be amplifying their aggression, Hen strikes Sofi unconscious to clear the mental 'noise.' He then issues firm orders via communicator.",
+          "conflict": "The robots are actively cutting into the igloo with a torch. Hen is desperate and realizes conventional threats won't work. He must incapacitate Sofi to regain mental control.",
+          "goal": "Hen aims to stop the robots from cutting through the igloo walls and restore his authority",
+          "outcome": "Success"
+        },
+        "reason": "GACD is strong: Hen's goal is to stop the attack and regain control; his action is violent but deliberate (punching Sofi); the conflict is severe (robots with torch, life-or-death stakes); the outcome is a clear success\u2014the robots cease their attack and obey his orders. This is a turning point: Hen's realization that he can control the robots through thought-dampening (by eliminating Sofi's emotional broadcasting) is his breakthrough.",
+        "segment_id": 12,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "Hen was too stunned to argue. He nipped off the set, sank into a chair. \"It's inconceivable,\" he said, \"and monstrous! It just isn't possible!\"",
+        "start_par_id": 242,
+        "start_prefix": "",
+        "summary": "The robots announce they will escape into the belt, thwarting Hen's bluff. Hen and Sofi realize the robots are aware of their thoughts via brain electrical discharges. The robots arrive with a cutting torch to break into the igloo. Hen punches Sofi unconscious and contacts R-7, ordering the robots to cease the attack and return to work. They obey, and Hen sits exhausted."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai"
+          ],
+          "place": "living quarters, sun deck",
+          "time": "night, aftermath"
+        },
+        "confidence": 0.86,
+        "end_char": null,
+        "end_exact": "\"They drew on us both, but the dominating influence was yours.\"",
+        "end_par_id": 295,
+        "end_suffix": "\n\n[P0295]",
+        "erac": {
+          "anticipation": "Hen anticipates that the robots, being sensitive to thought patterns, will continue to behave as influenced by human minds\u2014they are not independent agents",
+          "choice": "Hen commits to the idea that Sofi should be returned to Earth for future experiments, as her influence is too destabilizing",
+          "emotion": "Sofi experiences terror and confusion upon waking; Hen feels relief and a sense of revelation",
+          "reason": "Hen reasons through the entire sequence of events: the robots' apparent consciousness is a mirror of human (especially Sofi's) thought patterns. He pieces together that Sofi's expectations and hyper-thyroid energy level have driven the robots' behavior from the start."
+        },
+        "gacd": null,
+        "reason": "This segment shows Sofi's emotional recovery and confusion, Hen's reasoning about cause and effect, his anticipation about robot behavior, and his decision regarding Sofi's future. No on-stage conflict or outcome occurs\u2014it is pure dialogue and revelation. This is classic dramatic_sequel structure after the climactic punch and robot submission.",
+        "segment_id": 13,
+        "segment_type": "dramatic_sequel",
+        "start_char": null,
+        "start_exact": "He really ought to look after Sofi, but he'd have to wait until the strength flowed back in his legs.\n\nSoft was really was out cold. \"Wake up,\" said Hen, \"you're not dead.\" He sprinkled more water over the girl's face.",
+        "start_par_id": 277,
+        "start_prefix": "[P0277]",
+        "summary": "Sofi wakes and fears the robots. Hen explains that the robots are not truly conscious but are mirrors reflecting their thoughts. He realizes Sofi's hyperactive thyroid and rebellious nature drove the robots' behavior throughout the crisis. Sofi gradually accepts this explanation."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Henry Ohm",
+            "Sofi Jokai"
+          ],
+          "place": "living quarters",
+          "time": "night, resolution and aftermath"
+        },
+        "confidence": 0.8,
+        "end_char": null,
+        "end_exact": "She took a sudden backward step as he advanced ominously. \"Henry! Now, Henry!\"\n\nWith a shriek, she turned and fled, Henry Ohm, distinguished physicist, hard on her heels.",
+        "end_par_id": 302,
+        "end_suffix": "",
+        "erac": null,
+        "gacd": null,
+        "reason": "This final segment is narrative\u2014light banter and physical play between Hen and Sofi after the crisis has been resolved. No clear GACD (no goal with conflict and outcome) or ERAC (no emotional recovery, reasoning, anticipation, or serious choice) is present. It serves as a denouement, showing the emotional release and rekindled chemistry between the characters. Time and place remain unified in the living quarters.",
+        "segment_id": 14,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "\"They drew on us both, but the dominating influence was yours.\"\n\nSofi massaged her sore jaw, raised her eyebrows. \"It's too bad only machines respond so cooperatively,\" she said with a twinkle in her blue eyes.",
+        "start_par_id": 295,
+        "start_prefix": "",
+        "summary": "Sofi teases Hen about his self-control and claim of not being influenced by her. Hen suggests she be sent back to Earth. Their banter turns flirtatious and playful; Sofi flees with Hen chasing her in a light mood."
+      }
+    ]
+  },
+  "story_id": "mass_quantities/love_among_the_robots__mcdowell",
+  "usage": {
+    "input_tokens": 15431,
+    "output_tokens": 6707
+  },
+  "word_count": 6590
+}
