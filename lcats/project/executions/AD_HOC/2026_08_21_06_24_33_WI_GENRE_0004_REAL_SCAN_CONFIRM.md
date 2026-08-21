@@ -2,10 +2,10 @@
 execution_id: 2026_08_21_06_24_33_WI_GENRE_0004_REAL_SCAN_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_GENRE_0004_REAL_SCAN_CONFIRM)[2026-08-21T06:24:19+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_21_06_21_56_WI_GENRE_0004_REAL_SCAN_REVIEW
 pr: https://github.com/xenotaur/LCATS/pull/328
-commit: 3905dd693a1edc455791895d0e400ea345a734b7
+commit: bd7991f730d1f4f023e653e1a702ab589c4782d8
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/328
 session_transcript: claude-app:b0d48070-0faf-4a35-942d-a29ec96d603a
