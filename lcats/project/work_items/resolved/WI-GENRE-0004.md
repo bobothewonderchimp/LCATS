@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #322 (commit 777ef3361adb3ec618a28c94dcf90e0b609a7561)."
 blocked_reason: null
 blocked: false
 id: WI-GENRE-0004
 title: Full-corpus metadata scan, genre-balanced 100-200 story selection, and bounded Opus validation
 type: evaluation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []

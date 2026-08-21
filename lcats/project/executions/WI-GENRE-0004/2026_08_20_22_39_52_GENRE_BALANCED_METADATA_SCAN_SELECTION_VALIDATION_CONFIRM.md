@@ -2,10 +2,10 @@
 execution_id: 2026_08_20_22_39_52_GENRE_BALANCED_METADATA_SCAN_SELECTION_VALIDATION_CONFIRM
 prompt_id: PROMPT(WI-GENRE-0004:GENRE_BALANCED_METADATA_SCAN_SELECTION_VALIDATION_CONFIRM)[2026-08-20T22:39:42+00:00]
 work_item: WI-GENRE-0004
-status: in_progress
+status: landed
 rerun_of: 2026_08_20_22_29_48_GENRE_BALANCED_METADATA_SCAN_SELECTION_VALIDATION_REVIEW
 pr: https://github.com/xenotaur/LCATS/pull/322
-commit: 9d918a96a86e8d01e23d7eb50d4a05fa8748e439
+commit: 777ef3361adb3ec618a28c94dcf90e0b609a7561
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/322
 session_transcript: claude-app:b0d48070-0faf-4a35-942d-a29ec96d603a
