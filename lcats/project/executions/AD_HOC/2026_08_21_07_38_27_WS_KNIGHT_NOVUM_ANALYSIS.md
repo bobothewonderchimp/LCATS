@@ -18,7 +18,7 @@ Create the LRH governing workstream for the Knight/Novum science-fiction analysi
 
 # Result
 
-Added `project/workstreams/proposed/WS-KNIGHT-NOVUM-ANALYSIS.md` in draft PR #332. The workstream records the proposal relationship, current prior-art reconciliation, experiment-local boundaries, a dependency-aware proposed work-item decomposition, parallelizable leaves, primary-source rubric blocker, Phase 2/Phase 3 gates, and the later production-integration gate. The frontmatter keeps `work_items: []` until `/lrh-work-item` creates actual WI files, because `lrh validate` rejects unknown work-item IDs in workstream frontmatter.
+Added `project/workstreams/proposed/WS-KNIGHT-NOVUM-ANALYSIS.md` in PR #332. The workstream records the proposal relationship, current prior-art reconciliation, experiment-local boundaries, a dependency-aware proposed work-item decomposition, parallelizable leaves, primary-source rubric blocker, Phase 2/Phase 3 gates, and the later production-integration gate. The frontmatter initially kept `work_items: []` until `/lrh-work-item` created actual WI files, because `lrh validate` rejects unknown work-item IDs in workstream frontmatter.
 
 # Validation
 

@@ -44,9 +44,9 @@ exit_criteria:
 
 ## Purpose
 
-This workstream coordinates execution of `PROP-LCATS-KNIGHT-NOVUM-ANALYSIS-SIDECAR`, which adopts a checkpointed, evidence-grounded science-fiction analysis pipeline that prepares each story once, extracts a shared theory-neutral evidence layer, and applies independent Damon Knight and Darko Suvin adjudicators before assembling a versioned `science-fiction.json` sidecar (`project/design/proposals/proposed/knight-novum-analysis-sidecar/00_proposal.md:26`).
+This workstream coordinates planning for `PROP-LCATS-KNIGHT-NOVUM-ANALYSIS-SIDECAR`, which proposes a checkpointed, evidence-grounded science-fiction analysis pipeline that prepares each story once, extracts a shared theory-neutral evidence layer, and applies independent Damon Knight and Darko Suvin adjudicators before assembling a versioned `science-fiction.json` sidecar (`project/design/proposals/proposed/knight-novum-analysis-sidecar/00_proposal.md:26`).
 
-The workstream exists now because the proposal has landed through review, but its implementation plan explicitly says the multi-stage effort should be delivered through a new workstream and separately scoped work items rather than treated as authorization for a monolithic runtime change (`project/design/proposals/proposed/knight-novum-analysis-sidecar/00_proposal.md:466`). This workstream preserves the proposal's boundaries: Phases 1-3 remain experiment-local, paid calls require reviewed manifests and explicit approval, and production corpus integration is a later gate.
+The proposal was merged by PR #323 but still lives in the `proposed/` proposal bucket with `status: proposed`; its implementation plan says the multi-stage effort should be delivered through a new workstream after proposal adoption and through separately scoped work items rather than treated as authorization for a monolithic runtime change (`project/design/proposals/proposed/knight-novum-analysis-sidecar/00_proposal.md:466`). This workstream therefore records reviewable, provisional planning artifacts only: runtime implementation remains blocked until proposal adoption, this planning PR lands through the LRH lifecycle, and a ready leaf work item is explicitly selected.
 
 ## Scope
 
@@ -106,17 +106,17 @@ WI-SF-0007 (Phase 2 preregistration)
   + WI-SF-0006 -> WI-SF-0008 (Phase 2 pilot)
 
 WI-GENRE-0004 final sample
-  + WI-SF-0008 Phase 2 decision -> WI-SF-0009 -> WI-SF-0010
+  + WI-SF-0008 passed Phase 2 scale decision -> WI-SF-0009 -> WI-SF-0010
 
 WI-SF-0010 decision -> WI-SF-0011 (separate integration gate)
 ```
 
 ### Parallelizable leaves
 
-- WI-SF-0002 can begin immediately with no primary-source dependency and no paid calls.
-- WI-SF-0001 can begin as a source-packet/data-contract planning item, but must not freeze Knight or Suvin rubric wording until authoritative primary-source excerpts or an approved repository source are supplied.
-- WI-SF-0007 can draft sampling and evaluation scaffolding in parallel once enough contract vocabulary exists, but final gates must wait for Phase 1 contract stability.
-- WI-SF-0003 can start after WI-SF-0002 without final Knight/Suvin rubric wording because it is theory-neutral by design.
+- After proposal adoption, this planning PR landing, readiness review, and explicit leaf selection, WI-SF-0002 can begin with no primary-source dependency and no paid calls.
+- After proposal adoption, WI-SF-0001 can begin as a source-packet/data-contract planning item, but must not freeze Knight or Suvin rubric wording until authoritative primary-source excerpts or an approved repository source are supplied.
+- After proposal adoption and sufficient contract vocabulary, WI-SF-0007 can draft sampling and evaluation scaffolding in parallel, but final gates must wait for Phase 1 contract stability.
+- After proposal adoption and WI-SF-0002, WI-SF-0003 can start without final Knight/Suvin rubric wording because it is theory-neutral by design.
 
 ## Exit Criteria
 
