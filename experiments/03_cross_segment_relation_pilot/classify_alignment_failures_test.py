@@ -13,6 +13,7 @@ import pathlib
 import sys
 import tempfile
 import unittest
+import collections
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
@@ -218,6 +219,38 @@ class TestClassifyStory(unittest.TestCase):
             self.assertEqual(row["multi_line_paragraphs"], 1)
             self.assertFalse(row["boundary_off_by_one"])
             self.assertTrue(row["boundary_near_miss"])
+
+    def test_committed_wi_segment_0071_replay_fixture_reproduces_counts(self):
+        repo_root = pathlib.Path(__file__).resolve().parents[2]
+        fixture_dir = (
+            repo_root
+            / "experiments"
+            / "03_cross_segment_relation_pilot"
+            / "results"
+            / "segmentation_paragraph_misnumbering_diagnostics"
+            / "replay_fixture"
+        )
+        data_dir = repo_root / "corpora"
+        counts = collections.Counter()
+        for result_path in sorted(fixture_dir.glob("*/*.json")):
+            record = json.loads(result_path.read_text("utf-8"))
+            outcome = record.get("outcome", "")
+            if outcome.startswith("alignment_error:"):
+                category, _ = classify_alignment_failures.classify_story(
+                    record, data_dir
+                )
+                counts[category] += 1
+            else:
+                counts[outcome] += 1
+        self.assertEqual(
+            counts,
+            {
+                "anchor_absent_from_document": 2,
+                "included": 2,
+                "paragraph_misnumbering_large_margin": 1,
+                "paragraph_misnumbering_narrow_margin": 1,
+            },
+        )
 
 
 if __name__ == "__main__":

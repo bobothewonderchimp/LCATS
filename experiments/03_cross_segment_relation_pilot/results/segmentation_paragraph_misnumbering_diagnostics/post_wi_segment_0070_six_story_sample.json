@@ -11,7 +11,7 @@
   "notes": [
     "Six explicitly-approved segmentation-only Anthropic calls.",
     "First attempt with the worktree-local key failed with 401 auth and is excluded.",
-    "This distilled artifact omits full raw parsed segment payloads; local full records were written per story by check_segmentation_reliability.py."
+    "A sanitized exact replay fixture preserving parsed_output is committed under replay_fixture/."
   ],
   "records": [
     {
@@ -91,5 +91,6 @@
       "word_count": 4588
     }
   ],
+  "replay_fixture_dir": "experiments/03_cross_segment_relation_pilot/results/segmentation_paragraph_misnumbering_diagnostics/replay_fixture",
   "source_output_dir": "local scratch: segmentation_reliability_wi_segment_0071_workspace_key"
 }

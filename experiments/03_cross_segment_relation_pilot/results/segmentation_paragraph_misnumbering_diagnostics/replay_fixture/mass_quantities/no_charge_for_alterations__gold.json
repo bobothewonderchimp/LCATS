@@ -1,0 +1,552 @@
+{
+  "llm_call_made": true,
+  "outcome": "alignment_error:alignment failed: ValueError('alignment failed for segment_id=17: anchor text not found in story text')",
+  "parsed_output": {
+    "segments": [
+      {
+        "cohesion": {
+          "characters": [
+            "H.L. Gold (editor)"
+          ],
+          "place": "Outside narrative",
+          "time": "Outside narrative"
+        },
+        "confidence": 0.95,
+        "end_char": null,
+        "end_exact": "_Hold it, Madam! H. L. Gold said that; not us. Personally, we like\ngirls--not Percherons!_]",
+        "end_par_id": 2,
+        "end_suffix": "\n\n[P0003]",
+        "erac": null,
+        "gacd": null,
+        "reason": "Epigraph/editorial material prior to the main story narrative; not part of the dramatic action.",
+        "segment_id": 1,
+        "segment_type": "other",
+        "start_char": null,
+        "start_exact": "\"_We got a way to handle that on Deneb. A girl gets highfalutin up\nthere, the Doc puts her in the Ego Alter room. Thicken up her ankles a\nlittle, take some of the sparkle out of her eyes and hair, and you get a\nwoman fit to pull a plow!_\"",
+        "start_par_id": 1,
+        "start_prefix": "",
+        "summary": "Epigraph: editor commentary on Ego Alter procedure used on Deneb."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Kalmar"
+          ],
+          "place": "Dr. Kalmar's thoughts; journey to spaceport",
+          "time": "Present time (before arrival)"
+        },
+        "confidence": 0.85,
+        "end_char": null,
+        "end_exact": "That's what must have happened to him, because\nhis attitude had certainly been humble when he landed.",
+        "end_par_id": 5,
+        "end_suffix": "\n\n[P0006]",
+        "erac": null,
+        "gacd": null,
+        "reason": "Narrative exposition establishing Dr. Kalmar's character, his concerns, and context for Dr. Hoyt's arrival. No clear GACD or ERAC structure; unified by character perspective and time/place continuity.",
+        "segment_id": 2,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "If there was one thing Dr. Kalmar hated, and there were many, it was\nhaving a new assistant fresh from a medical school on Earth.",
+        "start_par_id": 3,
+        "start_prefix": "",
+        "summary": "Dr. Kalmar's internal thoughts on young Dr. Hoyt's arrival, his preference for experienced staff, and his journey to the spaceport to meet him."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Kalmar",
+            "unnamed man"
+          ],
+          "place": "Spaceport on Deneb",
+          "time": "At the spaceport, moment of ship arrival"
+        },
+        "confidence": 0.8,
+        "end_char": null,
+        "end_exact": "The man looked at him sympathetically. \"Meeting a female?\"",
+        "end_par_id": 12,
+        "end_suffix": "\n\n[P0012]",
+        "erac": null,
+        "gacd": null,
+        "reason": "Narrative scene unified by place (spaceport) and time (ship arrival moment). Dialogue and interaction without clear goal-conflict-outcome; primarily descriptive setup.",
+        "segment_id": 3,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "The spaceport was jammed, naturally. Ship arrivals were infrequent\nenough to bring everybody from all over the planet who was not on duty\nat the farms, mines, factories, freight and passenger jets and all the\nrest of the busy activities of this comparatively new colony.",
+        "start_par_id": 6,
+        "start_prefix": "",
+        "summary": "Dr. Kalmar arrives at the spaceport, waits for the ship landing, and makes a brief conversation with another man."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Hoyt",
+            "Dr. Kalmar"
+          ],
+          "place": "Spaceport arrival platform to jetcab",
+          "time": "Arrival moment to jetcab ride"
+        },
+        "confidence": 0.82,
+        "end_char": null,
+        "end_exact": "It seemed as though it might, for the sight of the modest little hospital was too much for the\nyoungster who had just come from the mammoth health factories of Earth.",
+        "end_par_id": 27,
+        "end_suffix": "\n\n[P0028]",
+        "erac": null,
+        "gacd": {
+          "action": "Hoyt fires off rapid-fire questions; Kalmar responds with subtle put-downs (boasting about Deneb's vastness)",
+          "conflict": "Hoyt's Earth-centric assumptions clash with Deneb's frontier reality; Kalmar's pride in his world vs. Hoyt's dismissiveness",
+          "goal": "Dr. Hoyt seeks to establish rapport and gather information; Dr. Kalmar seeks to discourage him via contrasts",
+          "outcome": "Success"
+        },
+        "reason": "GACD test: Goal (establish rapport / discourage assistant), Action (dialogue and responses), Conflict (ideological clash, Hoyt's naivety), Outcome (Dr. Kalmar successfully silences Hoyt with a witty riposte). Boundaries marked by arrival interaction and transition to hospital.",
+        "segment_id": 4,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "Dr. Hoyt spotted him instantly and came striding over to grab his hand\nin a grip like an ore-crusher.",
+        "start_par_id": 13,
+        "start_prefix": "[P0012]",
+        "summary": "Dr. Hoyt arrives, aggressively greets Dr. Kalmar, dismisses Deneb's barren landscape and city, and is silenced by Dr. Kalmar's contrast with Earth's massive urban sprawl."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Hoyt",
+            "Dr. Kalmar",
+            "Miss Dupont"
+          ],
+          "place": "Hospital quarters and office",
+          "time": "Upon arrival at hospital"
+        },
+        "confidence": 0.78,
+        "end_char": null,
+        "end_exact": "Dr. Kalmar went to his office and had his nurse, Miss Dupont, send in\nthe first patient.",
+        "end_par_id": 32,
+        "end_suffix": "\n\n[P0033]",
+        "erac": null,
+        "gacd": null,
+        "reason": "Narrative scene establishing logistics and expectations for Hoyt's stay. Time/place unity in hospital setting. No clear GACD or ERAC (Hoyt's hesitation is observational, not a deliberation that drives choice).",
+        "segment_id": 5,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "Dr. Hoyt revived somewhat when he saw the patients waiting in the\nscantily furnished outer room, but Dr. Kalmar said, \"Better get yourself\nsettled,\" and opened a door for his immature colleague.",
+        "start_par_id": 28,
+        "start_prefix": "",
+        "summary": "Dr. Hoyt reacts with surprise to his sparse quarters; Dr. Kalmar explains Deneb's spaciousness and anticipates a six-month adjustment period."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Kalmar",
+            "Avis Emery",
+            "Mr. Emery",
+            "Mrs. Emery",
+            "Miss Dupont"
+          ],
+          "place": "Dr. Kalmar's office and medical treatment rooms",
+          "time": "Hospital treatment session (continuous)"
+        },
+        "confidence": 0.88,
+        "end_char": null,
+        "end_exact": "\"I'm glad, Avis. Miss Dupont, better have a sedative ready when her\nfather sees her. I think he'll need it.\"",
+        "end_par_id": 87,
+        "end_suffix": "\n\n[P0088]",
+        "erac": null,
+        "gacd": {
+          "action": "Interrogation, Ego Alter procedure, Rephysical transformation",
+          "conflict": "Avis's rebellion (wanting Earth life); social control mandate vs. Hoyt's unspoken resistance (observed later); parental despair",
+          "goal": "Dr. Kalmar: modify Avis's personality and body to make her content with farm life and marriage",
+          "outcome": "Success"
+        },
+        "reason": "GACD test: Goal (transform rebellious girl to fit society), Action (Ego Alter and Rephysical on-stage), Conflict (girl's resistance overcome; ethical tension with Hoyt watching), Outcome (Success\u2014girl accepts her new role). Boundaries: from patient's entrance to treatment conclusion with her acceptance.",
+        "segment_id": 6,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "It was a girl of 17, Avis Emery, who had been brought by her parents.\nShe sat sullenly, dark-haired, too daintily pretty and delicately\nshapely for a frontier world like this, while Mr. Emery put the file\nfrom Social Control on the doctor's desk.",
+        "start_par_id": 33,
+        "start_prefix": "",
+        "summary": "Dr. Kalmar treats Avis Emery: interviews her about her desire to leave Deneb, applies Ego Alter to reduce selfish drives, then performs Rephysical to transform her body to suit farming needs."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Hoyt",
+            "Dr. Kalmar",
+            "Avis Emery",
+            "Mr. Emery",
+            "Mrs. Emery",
+            "Miss Dupont"
+          ],
+          "place": "Hospital office",
+          "time": "Immediately after Avis's treatment (hospital office)"
+        },
+        "confidence": 0.79,
+        "end_char": null,
+        "end_exact": "Dr. Kalmar buzzed for Miss Dupont. \"Send in the next patient,\nplease. Oh, and Dr. Hoyt is taking the day off.\"",
+        "end_par_id": 109,
+        "end_suffix": "\n\n[P0110]",
+        "erac": null,
+        "gacd": {
+          "action": "Verbal explanation of Ego Alter and Rephysical use on Deneb; contrasting with Earth methods",
+          "conflict": "Hoyt's Earth-trained moral outrage vs. Kalmar's pragmatic frontier ethics",
+          "goal": "Dr. Kalmar: convince Dr. Hoyt to accept Deneb's ethical framework",
+          "outcome": "Unclear"
+        },
+        "reason": "GACD test: Goal (explain/justify procedure), Action (lecture and dialogue), Conflict (moral clash), Outcome (Unclear\u2014Hoyt is sedated but not convinced). Treated as dramatic_scene for the on-stage conflict and attempted persuasion, despite uncertain outcome.",
+        "segment_id": 7,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "Dr. Kalmar's prognosis was correct, only it didn't go far enough. His\nyoung assistant from Earth had come scooting out of his disquietingly\nlarge quarters and was jittering in the office when they entered.",
+        "start_par_id": 88,
+        "start_prefix": "",
+        "summary": "Dr. Hoyt reacts with outrage to Avis's transformation; Dr. Kalmar lectures him on Deneb's methods and justifies the procedure, aiming to shock him into compliance."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Mr. Fallon",
+            "Mrs. Fallon",
+            "Dr. Kalmar",
+            "Dr. Hoyt",
+            "Miss Dupont"
+          ],
+          "place": "Hospital office and treatment areas",
+          "time": "Continuation of hospital appointments (same day)"
+        },
+        "confidence": 0.75,
+        "end_char": null,
+        "end_exact": "Mr. Fallon,\ncontentedly working out math problems on a sheet of paper, left the\nchoice entirely to her.",
+        "end_par_id": 150,
+        "end_suffix": "\n\n[P0150]",
+        "erac": null,
+        "gacd": null,
+        "reason": "Narrative scene unified by place/time (hospital). Exposition of Deneb's matching system and the couple's history, plus dialogue and decision-making, but no clear on-stage conflict or outcome within this span; primarily informational.",
+        "segment_id": 8,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "But the young assistant was stunned into staying by the huge size of\nthe Social Control file that was carried by the next patient, Mr. Fallon,\nand his wife.",
+        "start_par_id": 110,
+        "start_prefix": "",
+        "summary": "The Fallon couple presents a case of repeated Rephysical changes driven by the wife's indecision. Dr. Kalmar and Miss Dupont guide her toward a choice while Dr. Hoyt observes, learning about Deneb's mate-assignment system."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Kalmar",
+            "Dr. Hoyt",
+            "Miss Dupont",
+            "various patients"
+          ],
+          "place": "Hospital",
+          "time": "Continuation and completion of hospital day"
+        },
+        "confidence": 0.8,
+        "end_char": null,
+        "end_exact": "They closed the door behind them, leaving the hospital empty of all but\nthe small staff.",
+        "end_par_id": 177,
+        "end_suffix": "\n\n[P0178]",
+        "erac": null,
+        "gacd": {
+          "action": "Treatment of multiple patients; implied manipulation to settle the Fallons' choice",
+          "conflict": "Dr. Hoyt's ongoing moral disapproval vs. the reality of Deneb's medical system",
+          "goal": "Dr. Kalmar: complete day's treatments and manage Dr. Hoyt's objections",
+          "outcome": "Success"
+        },
+        "reason": "GACD test: Goal (complete treatments, manage Hoyt's resistance), Action (treatments and guidance), Conflict (Hoyt's outrage, Kalmar's pragmatism), Outcome (Success\u2014day concludes, Hoyt leaves frustrated). Spans the end of the appointment day.",
+        "segment_id": 9,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "Meanwhile, Dr. Kalmar and Miss Dupont swiftly took care of a succession\nof other patients, raising the tolerance level of frustration in a\nwatchmaker, replating the acne-pitted skin of a sensitive youth,\nrestoring a finger lost in a machine-shop accident, and building up\ngood-natured aggression in an ore miner whose productivity had slumped.",
+        "start_par_id": 151,
+        "start_prefix": "",
+        "summary": "Dr. Kalmar and Miss Dupont complete treatment of the Fallons and other patients; Dr. Hoyt's frustration at the end of the day highlights the tension over Deneb's methods."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Hoyt",
+            "Dr. Kalmar",
+            "Miss Dupont"
+          ],
+          "place": "Hospital office/hallway",
+          "time": "End of hospital day"
+        },
+        "confidence": 0.81,
+        "end_char": null,
+        "end_exact": "So now\nthere was something else to worry about.",
+        "end_par_id": 211,
+        "end_suffix": "\n\n[P0212]",
+        "erac": {
+          "anticipation": "If Dr. Hoyt leaves, he may take Miss Dupont with him; loss of valuable staff",
+          "choice": "To seek Dr. Lowell's help (implied by context moving toward next segment)",
+          "emotion": "Dr. Kalmar's concern, frustration, and now anxiety about Miss Dupont's attachment",
+          "reason": "Realization that Miss Dupont's love for Dr. Hoyt could lead to her departure from Deneb"
+        },
+        "gacd": null,
+        "reason": "ERAC test: Emotion (anxiety, concern), Reason (Miss Dupont's confession), Anticipation (loss if Hoyt leaves), Choice (implicit move to involve authority). No on-stage conflict/outcome. Typical aftermath of dramatic scene.",
+        "segment_id": 10,
+        "segment_type": "dramatic_sequel",
+        "start_char": null,
+        "start_exact": "\"They're crazy!\" Dr. Hoyt exploded. \"He's not the one we should be\nchanging. That idiotic female needs a good Ego Alter!\"",
+        "start_par_id": 178,
+        "start_prefix": "",
+        "summary": "After the day's work, Dr. Hoyt vents his frustrations; Miss Dupont defends his character to Dr. Kalmar, then admits she loves Dr. Hoyt, creating a new concern for Dr. Kalmar."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Kalmar",
+            "Dr. Hoyt",
+            "Miss Dupont",
+            "Mrs. Kalmar"
+          ],
+          "place": "Hospital and Kalmar household",
+          "time": "Days/weeks of hospital routine after initial arrival"
+        },
+        "confidence": 0.76,
+        "end_char": null,
+        "end_exact": "He found himself nodding bitterly. Having Dr. Hoyt go back to Earth\nwouldn't be a fraction as bad as Miss Dupont leaving with him. So now\nthere was something else to worry about.",
+        "end_par_id": 211,
+        "end_suffix": "\n\n[P0212]",
+        "erac": null,
+        "gacd": null,
+        "reason": "Narrative montage of time passing, relationship developing, tensions accumulating. No clear GACD or focused ERAC moment. Treated as narrative_scene for its expository function and time/place continuity.",
+        "segment_id": 11,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "Routine at the hospital was anything but routine. Dr. Hoyt barely kept\nfrom yelping each time someone was treated, and his help was given so\nunwillingly that Dr. Kalmar, sweating under a double load and with Dr.\nHoyt to argue with at the same time, was all for putting him on the ship\nand asking Earth for another intern. But Miss Dupont talked him out of\nit.",
+        "start_par_id": 188,
+        "start_prefix": "[P0187]",
+        "summary": "Over time, Dr. Hoyt remains antagonistic; his relationship with Miss Dupont deepens; Dr. Kalmar notices and becomes troubled, then learns of Miss Dupont's love for Hoyt."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Kalmar",
+            "Dr. Hoyt",
+            "Mrs. Kalmar",
+            "Miss Dupont"
+          ],
+          "place": "Hospital",
+          "time": "Ongoing hospital routine (unspecified day)"
+        },
+        "confidence": 0.74,
+        "end_char": null,
+        "end_exact": "So now\nthere was something else to worry about.",
+        "end_par_id": 211,
+        "end_suffix": "\n\n[P0212]",
+        "erac": null,
+        "gacd": {
+          "action": "Direct conflict with Dr. Hoyt over treatment philosophy",
+          "conflict": "Personal choice vs. population balance; Hoyt's Earth ethics vs. Deneb's pragmatism",
+          "goal": "Dr. Kalmar: handle the disagreement and maintain hospital function",
+          "outcome": "Disaster"
+        },
+        "reason": "GACD test: Goal (resolve disagreement), Action (direct argument), Conflict (philosophical clash with Hoyt), Outcome (Disaster\u2014situation becomes unmanageable). Leads to decision to call Dr. Lowell. Overlaps slightly with segment 11 but focuses on the critical incident.",
+        "segment_id": 12,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "But it became intolerable when there was a young girl who wanted to be\na boy and Dr. Kalmar and Dr. Hoyt got into the worst battle yet.",
+        "start_par_id": 198,
+        "start_prefix": "",
+        "summary": "A critical disagreement between Dr. Kalmar and Dr. Hoyt over a transgender patient escalates tensions. Dr. Kalmar decides to involve Dr. Lowell to mediate."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Lowell",
+            "Dr. Kalmar",
+            "Dr. Hoyt",
+            "various patients"
+          ],
+          "place": "Hospital office and treatment areas",
+          "time": "Days after decision to call Dr. Lowell; hospital day"
+        },
+        "confidence": 0.78,
+        "end_char": null,
+        "end_exact": "Grumbling, the young man helped chart the optical nerves that had to be replaced and measure\nthe new curve of the retinas ordered by Social Control.",
+        "end_par_id": 238,
+        "end_suffix": "\n\n[P0238]",
+        "erac": null,
+        "gacd": {
+          "action": "Tactful introduction, mediation of patient cases, explanations of Deneb logic",
+          "conflict": "Hoyt's continued skepticism and resistance to non-traditional approaches",
+          "goal": "Dr. Lowell: convince Dr. Hoyt of Deneb's methods; maintain hospital harmony",
+          "outcome": "Unclear"
+        },
+        "reason": "GACD test: Goal (educate/persuade Hoyt), Action (mediation and explanation on-stage), Conflict (Hoyt's objections), Outcome (Unclear\u2014Hoyt is not yet convinced). Boundaries: Dr. Lowell's arrival to end of day work.",
+        "segment_id": 13,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "Dr. Lowell came bouncing out of the jetcab a few days later. \"The\nhospital better be spotless!\" he called out jovially, paying off the\nhackie. \"I'm in a mean mood. Liable to suspend everybody.\"",
+        "start_par_id": 213,
+        "start_prefix": "",
+        "summary": "Dr. Lowell arrives and is introduced to Dr. Hoyt. He diplomatically handles Hoyt's opposition, mediates a case about an elderly patient's eyesight, and subtly educates Hoyt about Deneb's medical logic."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Kalmar",
+            "Dr. Lowell",
+            "Mrs. Kalmar",
+            "Miss Dupont",
+            "Dr. Hoyt"
+          ],
+          "place": "Hospital office/Kalmar household",
+          "time": "Evening, end of hospital day"
+        },
+        "confidence": 0.83,
+        "end_char": null,
+        "end_exact": "Miss Dupont was elated at the invitation and Dr. Hoyt said he had\nnothing else to do anyway. On the videophone Mrs. Kalmar was dismayed\nfor a moment, until Dr. Lowell told her to put through an emergency\norder to Central Commissary and he'd verify it.",
+        "end_par_id": 262,
+        "end_suffix": "\n\n[P0263]",
+        "erac": {
+          "anticipation": "Dr. Lowell's cryptic promise that some people change their minds; dinner as a turning point",
+          "choice": "Kalmar agrees to host dinner and allow Dr. Lowell to work his wisdom",
+          "emotion": "Dr. Kalmar's exhaustion and despair",
+          "reason": "Realization that Hoyt will not change; recollection that Kalmar himself was once resistant"
+        },
+        "gacd": null,
+        "reason": "ERAC test: Emotion (exhaustion, despair), Reason (reflection on past), Anticipation (Lowell's hints), Choice (agreement to dinner plan). No on-stage conflict; recovery and planning tone. Follows dramatic_scene naturally.",
+        "segment_id": 14,
+        "segment_type": "dramatic_sequel",
+        "start_char": null,
+        "start_exact": "At the end of the day, Dr. Kalmar was emotionally exhausted. He said as\nhe and Dr. Lowell were washing up, \"The kid's hopeless. I thought you\ncould straighten him out--God knows I couldn't--but he'll never see why\nwe have to work the way we do.\"",
+        "start_par_id": 240,
+        "start_prefix": "",
+        "summary": "Dr. Kalmar and Dr. Lowell discuss Hoyt's stubbornness and Kalmar's own history of resistance. Dr. Lowell hints at a solution and invites all four to dinner at Kalmar's home."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Kalmar",
+            "Mrs. Kalmar",
+            "Dr. Lowell",
+            "Dr. Hoyt",
+            "Miss Dupont"
+          ],
+          "place": "Kalmar household",
+          "time": "Evening, preparation for dinner"
+        },
+        "confidence": 0.72,
+        "end_char": null,
+        "end_exact": "Watching him mix the ingredients with a chemist's care, Dr. Kalmar felt a glow of nostalgia. He recalled the celebration\nat Dr. Lowell's house, several months after he had come from Earth, when\nhe'd enjoyed himself so much that he'd passed out. It was one of the\npleasanter memories of his start on Deneb.",
+        "end_par_id": 272,
+        "end_suffix": "\n\n[P0273]",
+        "erac": null,
+        "gacd": null,
+        "reason": "Narrative scene: time/place unity (home, preparation time). Exposition and nostalgia without clear goal-conflict-outcome or emotion-reason-anticipation-choice structure.",
+        "segment_id": 15,
+        "segment_type": "narrative_scene",
+        "start_char": null,
+        "start_exact": "That was when Dr. Kalmar realized how serious the old man was. On a raw\nplanet where crises were everyday routine, a situation had to be\ncatastrophic before it could be called an emergency.",
+        "start_par_id": 263,
+        "start_prefix": "",
+        "summary": "Dr. Kalmar prepares for dinner; Dr. Lowell mixes his special drink while Kalmar recalls past celebrations and nostalgia for his own integration into Deneb society."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Lowell",
+            "Dr. Hoyt",
+            "Dr. Kalmar",
+            "Mrs. Kalmar",
+            "Miss Dupont"
+          ],
+          "place": "Kalmar household (dining and Ego Alter room)",
+          "time": "Dinner at Kalmar's home (evening)"
+        },
+        "confidence": 0.85,
+        "end_char": null,
+        "end_exact": "Only Dr. Kalmar retained his awed respect for Dr. Lowell. If\nthe old man said it was all right, it was, even if he couldn't see the\nreason.",
+        "end_par_id": 291,
+        "end_suffix": "\n\n[P0291]",
+        "erac": null,
+        "gacd": {
+          "action": "Drug Hoyt's drink; transport him to Ego Alter room; attempt procedure",
+          "conflict": "Mrs. Kalmar's and Miss Dupont's moral objections; Dr. Kalmar's internal conflict",
+          "goal": "Dr. Lowell: forcibly alter Dr. Hoyt's personality to keep him on Deneb",
+          "outcome": "Unclear"
+        },
+        "reason": "GACD test: Goal (alter Hoyt), Action (drugging and transport), Conflict (strong moral objections from others), Outcome (Unclear\u2014procedure not yet completed, Kalmar hesitates). The action meets resistance (ethical protest).",
+        "segment_id": 16,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "\"Can't mix them all in a single batch,\" Dr. Lowell explained, bringing\nthe drinks over one at a time as he finished preparing them. \"Mrs.\nKalmar ... Miss Dupont ... our gracious host, Dr. Kalmar ... and now Dr.\nHoyt and myself.\" He lifted his glass at Dr. Hoyt. \"Welcome to our\nlatest associate--product, like ourselves, of the great medical schools\nof Earth. It's a forlorn hope, but may he learn as much from us about\nour peculiar methods as we learn from him about the latest terrestrial\nadvances.\"",
+        "start_par_id": 273,
+        "start_prefix": "",
+        "summary": "Dr. Lowell drugs Dr. Hoyt's drink; Hoyt becomes paralyzed; Mrs. Kalmar and Miss Dupont react with shock and horror while Dr. Lowell calmly reveals his plan."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Lowell",
+            "Dr. Kalmar",
+            "Dr. Hoyt",
+            "Miss Dupont",
+            "Mrs. Kalmar"
+          ],
+          "place": "Hospital, Ego Alter room, waiting room",
+          "time": "Evening at hospital"
+        },
+        "confidence": 0.88,
+        "end_char": null,
+        "end_exact": "Finished, they left the three uroariously drunk in the waiting room and\nwent to wash up. Dr. Kalmar went along bewilderedly. The old man was as\nunconcerned as if he did this sort of thing daily.",
+        "end_par_id": 320,
+        "end_suffix": "\n\n[P0321]",
+        "erac": null,
+        "gacd": {
+          "action": "Operating controls, adjusting dials, drugging and manipulating all subjects",
+          "conflict": "Moral resistance from Mrs. Kalmar and Miss Dupont; Kalmar's internal ethics vs. Dr. Lowell's authority",
+          "goal": "Dr. Lowell and (reluctantly) Dr. Kalmar: complete the Ego Alter procedure and cover it up",
+          "outcome": "Success"
+        },
+        "reason": "GACD test: Goal (complete procedure and coverup), Action (operation on-stage), Conflict (continued moral objections, though muted by drugs), Outcome (Success\u2014procedure completed, witnesses handled). Boundaries: from Hoyt's drugged compliance to end of coverup operation.",
+        "segment_id": 17,
+        "segment_type": "dramatic_scene",
+        "start_char": null,
+        "start_exact": "\"Go ahead,\" urged Dr. Lowell.\n\n\"Dr. Hoyt!\"\n\n\"Yes, Dr. Kalmar?\"\n\n\"You will come with us!\"\n\n\"Yes, Dr. Kalmar.\"\n\nDr. Lowell took them back to the hospital.",
+        "start_par_id": 291,
+        "start_prefix": "",
+        "summary": "Dr. Lowell orchestrates the Ego Alter procedure on Dr. Hoyt, erasing memories and implanting favorable dispositions toward Deneb and Miss Dupont, then drugs Miss Dupont and Mrs. Kalmar to erase their memory of the crime."
+      },
+      {
+        "cohesion": {
+          "characters": [
+            "Dr. Kalmar",
+            "Dr. Lowell",
+            "Dr. Hoyt",
+            "Miss Dupont",
+            "Mrs. Kalmar"
+          ],
+          "place": "Hospital washroom and waiting room",
+          "time": "Aftermath of procedure (evening, hospital)"
+        },
+        "confidence": 0.86,
+        "end_char": null,
+        "end_exact": "\"It couldn't be okayer,\" he said.",
+        "end_par_id": 341,
+        "end_suffix": "",
+        "erac": {
+          "anticipation": "Kalmar foresees Hoyt's happiness on Deneb and his own relief",
+          "choice": "Kalmar accepts the procedure as justified; adopts Lowell's utilitarian ethics",
+          "emotion": "Dr. Kalmar's shock, then gradual acceptance and rationalization",
+          "reason": "Dr. Lowell's revelation that Kalmar himself was altered; logical argument about Deneb's needs"
+        },
+        "gacd": null,
+        "reason": "ERAC test: Emotion (shock turning to rationalization), Reason (parallel case of Kalmar's own alteration), Anticipation (better future), Choice (acceptance of ethics and utilitarian logic). No on-stage conflict in the segment; recovery and reconciliation tone.",
+        "segment_id": 18,
+        "segment_type": "dramatic_sequel",
+        "start_char": null,
+        "start_exact": "\"I was as arrogant and belligerent as this squirt was?\"\n\n\"Worse,\" Dr. Lowell said. \"He was willing to finish out his internship.\nYou weren't. Still worried about the ethics?\"",
+        "start_par_id": 321,
+        "start_prefix": "",
+        "summary": "Dr. Lowell justifies the ethical violation by drawing parallels to Kalmar's own transformation; Kalmar's moral concerns fade as he rationalizes the greater good. Dr. Hoyt emerges infatuated with Miss Dupont and Deneb."
+      }
+    ]
+  },
+  "story_id": "mass_quantities/no_charge_for_alterations__gold",
+  "usage": {
+    "input_tokens": 18534,
+    "output_tokens": 7740
+  },
+  "word_count": 8315
+}

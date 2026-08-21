@@ -40,9 +40,11 @@ and includes `parsed_output` for alignment failures. The first attempt used the
 worktree-local Anthropic key and failed with `401 authentication_error`; that
 auth-failed directory was discarded as non-evidence. The successful run used
 the newer key from the main Workspace LCATS `.secrets/` directory.
-A distilled durable summary, omitting full raw parsed segment payloads, is
-committed at
+A distilled durable summary is committed at
 `experiments/03_cross_segment_relation_pilot/results/segmentation_paragraph_misnumbering_diagnostics/post_wi_segment_0070_six_story_sample.json`.
+A sanitized exact replay fixture preserving the `parsed_output` needed by
+`classify_story()` is committed under
+`experiments/03_cross_segment_relation_pilot/results/segmentation_paragraph_misnumbering_diagnostics/replay_fixture/`.
 
 The diagnostic pass also reused the real `WI-SEGMENT-0069` classifications
 recorded in `segmentation-alignment-failure-categories.md` and recomputed
