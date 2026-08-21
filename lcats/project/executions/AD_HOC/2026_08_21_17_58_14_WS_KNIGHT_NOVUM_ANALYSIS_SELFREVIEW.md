@@ -2,10 +2,10 @@
 execution_id: 2026_08_21_17_58_14_WS_KNIGHT_NOVUM_ANALYSIS_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WS_KNIGHT_NOVUM_ANALYSIS_SELFREVIEW)[2026-08-21T17:58:05+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_21_07_38_27_WS_KNIGHT_NOVUM_ANALYSIS
 pr: https://github.com/xenotaur/LCATS/pull/332
-commit: a4f2afa8
+commit: df837500b8bf9fefc3b0e28bbe6644095a42d2e9
 agent: codex_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/332
 session_transcript: pending
