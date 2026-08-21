@@ -2,10 +2,10 @@
 execution_id: 2026_08_20_22_24_06_KNIGHT_NOVUM_ANALYSIS_SIDECAR
 prompt_id: PROMPT(AD_HOC:KNIGHT_NOVUM_ANALYSIS_SIDECAR)[2026-08-20T22:20:12+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/323
-commit: a737ad44edba3003b9d829e3a05fedd53be6929f
+commit: 9b8912c97355572b717864b692fe1bd650278b4d
 created_at: 2026-08-20T22:24:06+00:00
 agent: codex_app
 instruction_source: project/design/proposals/proposed/knight-novum-analysis-sidecar/00_proposal.md
