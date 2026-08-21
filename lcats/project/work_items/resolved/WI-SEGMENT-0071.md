@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Completed in PR #333 (commit 172a7238493acc0c16e43b71a9287ea6093b6198): diagnosed post-WI-SEGMENT-0070 paragraph-misnumbering alignment failures, preserved replayable evidence, and recommended deferring production fixes."
 blocked_reason: null
 blocked: false
 id: WI-SEGMENT-0071
 title: Diagnose paragraph misnumbering segmentation alignment failures
 type: investigation
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []

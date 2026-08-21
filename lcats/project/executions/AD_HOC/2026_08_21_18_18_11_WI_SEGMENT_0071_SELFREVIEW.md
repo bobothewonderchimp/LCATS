@@ -2,10 +2,10 @@
 execution_id: 2026_08_21_18_18_11_WI_SEGMENT_0071_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_SEGMENT_0071_SELFREVIEW)[2026-08-21T18:18:05+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_21_17_25_29_WI_SEGMENT_0071
 pr: https://github.com/xenotaur/LCATS/pull/333
-commit: 
+commit: 172a7238493acc0c16e43b71a9287ea6093b6198
 agent: codex_app
 instruction_source: self_review_pr:https://github.com/xenotaur/LCATS/pull/333
 session_transcript: pending
