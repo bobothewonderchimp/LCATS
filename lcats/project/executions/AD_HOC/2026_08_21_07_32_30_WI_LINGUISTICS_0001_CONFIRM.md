@@ -2,10 +2,10 @@
 execution_id: 2026_08_21_07_32_30_WI_LINGUISTICS_0001_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_LINGUISTICS_0001_CONFIRM)[2026-08-21T07:31:58+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_20_23_28_50_WI_LINGUISTICS_0001
 pr: https://github.com/xenotaur/LCATS/pull/325
-commit: ff7c98de
+commit: 96e227d7d3aaf74d34caf5022622f9a1b584a8d6
 created_at: 2026-08-21T07:32:30+00:00
 agent: codex_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/325

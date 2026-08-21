@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #325 (commit 96e227d7d3aaf74d34caf5022622f9a1b584a8d6)"
 blocked_reason: null
 blocked: false
 id: WI-LINGUISTICS-0001
 title: Build standalone linguistic-feature sidecar extraction
 type: deliverable
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
