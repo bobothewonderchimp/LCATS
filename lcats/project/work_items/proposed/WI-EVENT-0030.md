@@ -145,7 +145,7 @@ now has all 8 genres.
 originally depended on `WI-ASSESS-0051` ("Gap 2" — run the
 current-classifier full-corpus genre survey). The design doc doesn't name
 either work item directly, but its own Gap 3 sequencing
-(`event-role-world-genre-target-reconciliation.md:274-277`) says both
+(`event-role-world-genre-target-reconciliation.md:317`) says both
 follow-up items ("A", the corpus survey, and "B", this item's re-scope)
 depend on Gap 1 landing first, and that A should run before B "so B's
 per-genre sampling draws from an actual current genre census rather than
