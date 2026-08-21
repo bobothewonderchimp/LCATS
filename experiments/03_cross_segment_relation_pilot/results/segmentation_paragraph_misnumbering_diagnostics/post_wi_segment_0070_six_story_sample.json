@@ -1,0 +1,95 @@
+{
+  "counts": {
+    "anchor_absent_from_document": 2,
+    "included": 2,
+    "paragraph_misnumbering_large_margin": 1,
+    "paragraph_misnumbering_narrow_margin": 1
+  },
+  "generated_at": "2026-08-21",
+  "generated_for": "WI-SEGMENT-0071",
+  "model": "claude-haiku-4-5-20251001",
+  "notes": [
+    "Six explicitly-approved segmentation-only Anthropic calls.",
+    "First attempt with the worktree-local key failed with 401 auth and is excluded.",
+    "This distilled artifact omits full raw parsed segment payloads; local full records were written per story by check_segmentation_reliability.py."
+  ],
+  "records": [
+    {
+      "classification": "paragraph_misnumbering_narrow_margin",
+      "detail": "mass_quantities/love_among_the_robots__mcdowell seg=3 end_exact='He returned the book to his pocket, elevated his feet on another chair, closed his eyes.' n_par=302 claimed=[76,102] detail={'present': True, 'reason': 'found_outside_claimed_range', 'margin_chars': 2, 'real_pos': 15793, 'claimed_range': [10573, 15791]}",
+      "llm_call_made": true,
+      "outcome": "alignment_error:alignment failed: ValueError('alignment failed for segment_id=3: anchor text not found in story text')",
+      "parsed_output_captured": true,
+      "story_id": "mass_quantities/love_among_the_robots__mcdowell",
+      "usage": {
+        "input_tokens": 15431,
+        "output_tokens": 6707
+      },
+      "word_count": 6590
+    },
+    {
+      "classification": "anchor_absent_from_document",
+      "detail": "mass_quantities/no_charge_for_alterations__gold seg=17 end_exact='Finished, they left the three uroariously drunk in the waiting room and\\nwent to wash up. Dr. Kalmar went along bewilderedly. The old man was as\\nunconcerned as if he did this sort of thing daily.' n_par=341 claimed=[291,320] detail={'present': False, 'reason': 'absent_from_document'}",
+      "llm_call_made": true,
+      "outcome": "alignment_error:alignment failed: ValueError('alignment failed for segment_id=17: anchor text not found in story text')",
+      "parsed_output_captured": true,
+      "story_id": "mass_quantities/no_charge_for_alterations__gold",
+      "usage": {
+        "input_tokens": 18534,
+        "output_tokens": 7740
+      },
+      "word_count": 8315
+    },
+    {
+      "classification": "included",
+      "llm_call_made": true,
+      "outcome": "included",
+      "parsed_output_captured": true,
+      "story_id": "mass_quantities/peace_manoeuvres__davis",
+      "usage": {
+        "input_tokens": 14358,
+        "output_tokens": 6504
+      },
+      "word_count": 6454
+    },
+    {
+      "classification": "included",
+      "llm_call_made": true,
+      "outcome": "included",
+      "parsed_output_captured": true,
+      "story_id": "mass_quantities/the_last_days_of_l_a__smith",
+      "usage": {
+        "input_tokens": 14833,
+        "output_tokens": 6201
+      },
+      "word_count": 7418
+    },
+    {
+      "classification": "paragraph_misnumbering_large_margin",
+      "detail": "mass_quantities/the_spinster_1905__hichens seg=3 end_exact=\"There were lights in the inn and in the schoolmaster's house,\\nbut there were no people about. I got through without meeting a soul,\" n_par=162 claimed=[45,75] detail={'present': True, 'reason': 'found_outside_claimed_range', 'margin_chars': 2322, 'real_pos': 11170, 'claimed_range': [4283, 8848]}",
+      "llm_call_made": true,
+      "outcome": "alignment_error:alignment failed: ValueError('alignment failed for segment_id=3: anchor text not found in story text')",
+      "parsed_output_captured": true,
+      "story_id": "mass_quantities/the_spinster_1905__hichens",
+      "usage": {
+        "input_tokens": 10799,
+        "output_tokens": 3480
+      },
+      "word_count": 4308
+    },
+    {
+      "classification": "anchor_absent_from_document",
+      "detail": "mass_quantities/way_of_a_rebel__miller seg=2 start_exact='Mitch Laskell switched off the short wave set and muttered an oath. He\\nsqueezed his way up through the narrow conning tower and sits on the' n_par=110 claimed=[4,8] detail={'present': False, 'reason': 'absent_from_document'}",
+      "llm_call_made": true,
+      "outcome": "alignment_error:alignment failed: ValueError('alignment failed for segment_id=2: anchor text not found in story text')",
+      "parsed_output_captured": true,
+      "story_id": "mass_quantities/way_of_a_rebel__miller",
+      "usage": {
+        "input_tokens": 11055,
+        "output_tokens": 3231
+      },
+      "word_count": 4588
+    }
+  ],
+  "source_output_dir": "local scratch: segmentation_reliability_wi_segment_0071_workspace_key"
+}

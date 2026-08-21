@@ -173,6 +173,52 @@ class TestClassifyStory(unittest.TestCase):
             self.assertEqual(category, "story_file_unreadable")
             self.assertEqual(len(details), 1)
 
+    def test_paragraph_misnumbering_diagnostics_report_nearest_edge_drift(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            data_dir = pathlib.Path(tmp) / "corpora"
+            body = "One.\n\nTwo.\n\nThree anchor here.\n\nFour."
+            _write_story(data_dir, "coll", "story_five", body)
+            real_pos = body.index("Three anchor here")
+            row = classify_alignment_failures.diagnose_paragraph_misnumbering_case(
+                {
+                    "story_id": "coll/story_five",
+                    "category": "paragraph_misnumbering_narrow_margin",
+                    "start_par_id": 1,
+                    "end_par_id": 2,
+                    "real_pos": real_pos,
+                    "margin_chars": 2,
+                },
+                data_dir,
+            )
+            self.assertEqual(row["real_par_id"], 3)
+            self.assertEqual(row["nearest_edge_drift_pars"], 1)
+            self.assertTrue(row["boundary_off_by_one"])
+            self.assertTrue(row["boundary_near_miss"])
+
+    def test_paragraph_misnumbering_diagnostics_count_multi_line_paragraphs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            data_dir = pathlib.Path(tmp) / "corpora"
+            body = (
+                "Plain paragraph.\n\n"
+                "A line.\nB line.\nC line.\nD line.\n\n"
+                "Real anchor paragraph."
+            )
+            _write_story(data_dir, "coll", "story_six", body)
+            row = classify_alignment_failures.diagnose_paragraph_misnumbering_case(
+                {
+                    "story_id": "coll/story_six",
+                    "category": "paragraph_misnumbering_large_margin",
+                    "start_par_id": 1,
+                    "end_par_id": 1,
+                    "real_pos": body.index("Real anchor paragraph"),
+                    "margin_chars": 15,
+                },
+                data_dir,
+            )
+            self.assertEqual(row["multi_line_paragraphs"], 1)
+            self.assertFalse(row["boundary_off_by_one"])
+            self.assertTrue(row["boundary_near_miss"])
+
 
 if __name__ == "__main__":
     unittest.main()

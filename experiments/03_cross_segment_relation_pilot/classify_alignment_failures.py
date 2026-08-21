@@ -41,6 +41,7 @@ import json
 import pathlib
 import re
 import sys
+from typing import Any
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "lcats" / "src"))
 
@@ -51,6 +52,57 @@ from lcats.analysis import text_segmenter
 # reported as "narrow" rather than "large" -- an arbitrary but documented
 # threshold, not a claim about where a fix would need to draw the line.
 _NARROW_MARGIN_CHARS = 200
+
+_KNOWN_PARAGRAPH_MISNUMBERING_CASES = [
+    {
+        "story_id": "mass_quantities/love_among_the_robots__mcdowell",
+        "category": "paragraph_misnumbering_large_margin",
+        "start_par_id": 7,
+        "end_par_id": 51,
+        "real_pos": 7920,
+        "margin_chars": 1665,
+    },
+    {
+        "story_id": "mass_quantities/the_last_days_of_l_a__smith",
+        "category": "paragraph_misnumbering_large_margin",
+        "start_par_id": 121,
+        "end_par_id": 144,
+        "real_pos": 22930,
+        "margin_chars": 321,
+    },
+    {
+        "story_id": "mass_quantities/the_spinster_1905__hichens",
+        "category": "paragraph_misnumbering_large_margin",
+        "start_par_id": 44,
+        "end_par_id": 75,
+        "real_pos": 10713,
+        "margin_chars": 1865,
+    },
+    {
+        "story_id": "mass_quantities/way_of_a_rebel__miller",
+        "category": "paragraph_misnumbering_large_margin",
+        "start_par_id": 5,
+        "end_par_id": 8,
+        "real_pos": 8787,
+        "margin_chars": 5094,
+    },
+    {
+        "story_id": "mass_quantities/no_charge_for_alterations__gold",
+        "category": "paragraph_misnumbering_narrow_margin",
+        "start_par_id": 52,
+        "end_par_id": 87,
+        "real_pos": 8929,
+        "margin_chars": 124,
+    },
+    {
+        "story_id": "mass_quantities/peace_manoeuvres__davis",
+        "category": "paragraph_misnumbering_narrow_margin",
+        "start_par_id": 37,
+        "end_par_id": 86,
+        "real_pos": 14766,
+        "margin_chars": 2,
+    },
+]
 
 
 def parse_failing_segment_id(outcome: str) -> int | None:
@@ -76,6 +128,96 @@ def classify_anchor(text: str, anchor: str, lo: int, hi: int) -> dict:
         "real_pos": doc_span[0],
         "claimed_range": [lo, hi],
     }
+
+
+def _load_story_text(data_dir: pathlib.Path, story_id: str) -> str:
+    collection, slug = story_id.split("/", 1)
+    story_path = data_dir / collection / slug / "story.json"
+    return story_analysis.coerce_text(
+        json.loads(story_path.read_text("utf-8")).get("body", "")
+    )
+
+
+def _paragraph_id_for_pos(para_spans: list[tuple[int, int]], pos: int) -> int:
+    for idx, (start, end) in enumerate(para_spans, start=1):
+        if start <= pos <= end:
+            return idx
+    if pos < para_spans[0][0]:
+        return 1
+    return len(para_spans)
+
+
+def _nearest_edge_drift(start_par_id: int, end_par_id: int, real_par_id: int) -> int:
+    if real_par_id < start_par_id:
+        return real_par_id - start_par_id
+    if real_par_id > end_par_id:
+        return real_par_id - end_par_id
+    return 0
+
+
+def _multi_line_paragraphs(paragraphs: list[str]) -> int:
+    return sum(1 for paragraph in paragraphs if "\n" in paragraph)
+
+
+def diagnose_paragraph_misnumbering_case(
+    case: dict[str, Any], data_dir: pathlib.Path
+) -> dict[str, Any]:
+    """Compute paragraph-misnumbering diagnostics against real source text."""
+    body = _load_story_text(data_dir, case["story_id"])
+    _, index_meta = text_segmenter.paragraph_text_indexer(body)
+    text = index_meta.get("canonical_text") or body
+    para_spans = index_meta["para_spans"]
+    paragraphs, _ = text_segmenter.build_paragraph_index(
+        text, splitter=index_meta.get("splitter", "\n\n")
+    )
+    start_par_id = case["start_par_id"]
+    end_par_id = case["end_par_id"]
+    sp = max(1, min(start_par_id, len(para_spans))) - 1
+    ep = max(1, min(end_par_id, len(para_spans))) - 1
+    ep = max(ep, sp)
+    lo, hi = para_spans[sp][0], para_spans[ep][1]
+    real_pos = case["real_pos"]
+    real_par_id = _paragraph_id_for_pos(para_spans, real_pos)
+    drift = _nearest_edge_drift(start_par_id, end_par_id, real_par_id)
+    claimed_midpoint = (lo + hi) / 2
+    doc_midpoint = len(text) / 2
+    return {
+        "story_id": case["story_id"],
+        "category": case["category"],
+        "n_par": len(para_spans),
+        "text_chars": len(text),
+        "paragraphs_per_1000_chars": round(len(para_spans) * 1000 / len(text), 2),
+        "claimed_range": [start_par_id, end_par_id],
+        "claimed_offsets": [lo, hi],
+        "claimed_width_pars": end_par_id - start_par_id + 1,
+        "real_pos": real_pos,
+        "real_par_id": real_par_id,
+        "nearest_edge_drift_pars": drift,
+        "margin_chars": case["margin_chars"],
+        "claimed_boundary_gap_chars": (
+            lo - real_pos if real_pos < lo else real_pos - hi
+        ),
+        "boundary_off_by_one": abs(drift) == 1,
+        "boundary_near_miss": abs(drift) <= 2,
+        "empty_paragraphs_before_claim": sum(
+            1 for paragraph in paragraphs[:sp] if not paragraph.strip()
+        ),
+        "multi_line_paragraphs": _multi_line_paragraphs(paragraphs),
+        "claimed_midpoint_ratio": round(claimed_midpoint / len(text), 3),
+        "distance_from_document_midpoint_ratio": round(
+            abs(claimed_midpoint - doc_midpoint) / len(text), 3
+        ),
+    }
+
+
+def known_paragraph_misnumbering_diagnostics(
+    data_dir: pathlib.Path,
+) -> list[dict[str, Any]]:
+    """Return diagnostics for the six WI-SEGMENT-0069 misnumbering cases."""
+    return [
+        diagnose_paragraph_misnumbering_case(case, data_dir)
+        for case in _KNOWN_PARAGRAPH_MISNUMBERING_CASES
+    ]
 
 
 def classify_story(record: dict, data_dir: pathlib.Path) -> tuple[str, list[str]]:
@@ -187,34 +329,59 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--smoke-dir",
-        required=True,
+        required=False,
         help="check_segmentation_reliability.py --output dir",
     )
     parser.add_argument("--data-dir", default="corpora")
+    parser.add_argument(
+        "--known-paragraph-diagnostics",
+        action="store_true",
+        help=(
+            "Also print diagnostics for the six paragraph-misnumbering cases "
+            "reported by WI-SEGMENT-0069."
+        ),
+    )
     args = parser.parse_args()
 
-    smoke_dir = pathlib.Path(args.smoke_dir)
     data_dir = pathlib.Path(args.data_dir)
     categories: collections.Counter = collections.Counter()
     examples: dict[str, list[str]] = collections.defaultdict(list)
 
-    for result_path in sorted(smoke_dir.glob("*/*.json")):
-        record = json.loads(result_path.read_text("utf-8"))
-        if not record.get("outcome", "").startswith("alignment_error:"):
-            continue
-        category, details = classify_story(record, data_dir)
-        categories[category] += 1
-        examples[category].extend(details)
+    if args.smoke_dir:
+        smoke_dir = pathlib.Path(args.smoke_dir)
+        for result_path in sorted(smoke_dir.glob("*/*.json")):
+            record = json.loads(result_path.read_text("utf-8"))
+            if not record.get("outcome", "").startswith("alignment_error:"):
+                continue
+            category, details = classify_story(record, data_dir)
+            categories[category] += 1
+            examples[category].extend(details)
 
-    print("Per-story category counts:")
-    for category, n in categories.most_common():
-        print(f"  {n:>3}  {category}")
-    print()
-    for category, exs in examples.items():
-        print(f"--- {category} ({len(exs)} detail lines) ---")
-        for ex in exs[:5]:
-            print(f"  {ex}")
+        print("Per-story category counts:")
+        for category, n in categories.most_common():
+            print(f"  {n:>3}  {category}")
         print()
+        for category, exs in examples.items():
+            print(f"--- {category} ({len(exs)} detail lines) ---")
+            for ex in exs[:5]:
+                print(f"  {ex}")
+            print()
+    elif not args.known_paragraph_diagnostics:
+        parser.error("--smoke-dir is required unless --known-paragraph-diagnostics is set")
+    if args.known_paragraph_diagnostics:
+        print("Known WI-SEGMENT-0069 paragraph-misnumbering diagnostics:")
+        for row in known_paragraph_misnumbering_diagnostics(data_dir):
+            print(
+                "  {story_id} {category} n_par={n_par} "
+                "density={paragraphs_per_1000_chars}/kchar "
+                "claimed={claimed_range} real_par={real_par_id} "
+                "drift={nearest_edge_drift_pars} margin={margin_chars} "
+                "boundary_off_by_one={boundary_off_by_one} "
+                "boundary_near_miss={boundary_near_miss} "
+                "multi_line_paragraphs={multi_line_paragraphs}".format(
+                    **row
+                )
+            )
     return 0
 
 
