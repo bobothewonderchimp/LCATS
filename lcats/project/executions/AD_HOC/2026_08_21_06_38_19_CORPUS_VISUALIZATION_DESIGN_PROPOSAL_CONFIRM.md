@@ -2,14 +2,14 @@
 execution_id: 2026_08_21_06_38_19_CORPUS_VISUALIZATION_DESIGN_PROPOSAL_CONFIRM
 prompt_id: PROMPT(AD_HOC:CORPUS_VISUALIZATION_DESIGN_PROPOSAL_CONFIRM)[2026-08-21T06:23:30+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/312
-commit: 073b5053
+commit: e7c58719c225cbb8979094dd1d58e1ec574ce05b
 created_at: 2026-08-21T06:38:19+00:00
 agent: claude-sonnet-5
 instruction_source: https://github.com/xenotaur/LCATS/pull/312
-session_transcript: pending
+session_transcript: claude-app:bd65a2ed-883b-400d-b621-0268bc17e85a
 ---
 
 # Summary
