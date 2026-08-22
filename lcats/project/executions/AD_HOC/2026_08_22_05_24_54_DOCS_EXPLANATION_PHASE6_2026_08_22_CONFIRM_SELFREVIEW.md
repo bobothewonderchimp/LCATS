@@ -5,7 +5,8 @@ work_item: AD_HOC
 status: landed
 rerun_of: 2026_08_22_04_21_34_DOCS_EXPLANATION_PHASE6_2026_08_22
 pr: https://github.com/xenotaur/LCATS/pull/346
-commit: c5dd09212b72cf6aa7806eee5905d9e22011356e
+commit: c7e276d835a49a8b0f054cda2ee3a701965f22f5
+session_transcript: claude-app:098fd53e-8988-4185-b52d-227c0a91cb11
 created_at: 2026-08-22T05:24:54+00:00
 ---
 
