@@ -18,11 +18,14 @@ this implies at the first gated promotion.
 
 import dataclasses
 import json
+import os
 import pathlib
 import shutil
+import tempfile
 
 from lcats.analysis.corpus import cli
 from lcats.analysis.corpus import discovery
+from lcats.analysis.corpus import genre_sidecar
 from lcats.analysis.corpus import specials
 
 BLOCKING_CLASSIFICATION = "likely_repairable"
@@ -333,3 +336,190 @@ def promote_collections(
         promoted.append(name)
 
     return PromotionReport(promoted=tuple(promoted), blocked=tuple(blocked))
+
+
+@dataclasses.dataclass(frozen=True)
+class SidecarPromotionFinding:
+    """One tranche-manifest record rejected during sidecar promotion."""
+
+    lcats_id: str
+    error: str
+
+
+@dataclasses.dataclass(frozen=True)
+class SidecarTranchePromotionReport:
+    """Outcome of a sidecar-tranche promotion run."""
+
+    promoted: tuple[str, ...]
+    rejected: tuple[SidecarPromotionFinding, ...]
+
+    @property
+    def all_promoted(self) -> bool:
+        """Return True when every manifest record promoted cleanly."""
+        return not self.rejected
+
+
+def _atomic_write_text(path: pathlib.Path, text: str) -> None:
+    """Atomically publish a text file -- mirrors annotate.py's own
+    tempfile+os.replace pattern (review finding, PR #241) so an
+    interrupted write during tranche promotion can't leave a torn
+    genre.json behind."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(
+        dir=path.parent, prefix=f".{path.name}.", suffix=".tmp"
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as tmp_file:
+            tmp_file.write(text)
+        os.replace(tmp_name, path)
+    except BaseException:
+        if os.path.exists(tmp_name):
+            os.unlink(tmp_name)
+        raise
+
+
+def _lcats_id_escape_error(lcats_id: str, dest_root: pathlib.Path) -> str | None:
+    """Return an error message if ``lcats_id`` could place a write outside
+    ``dest_root``, else None. ``validate_sidecar()`` only requires a
+    non-empty string, so an absolute path or ``..``/``.`` component in an
+    otherwise schema-valid manifest record must be rejected here before it
+    is ever joined onto ``dest_root`` (review finding, PR #350)."""
+    candidate = pathlib.PurePosixPath(lcats_id)
+    if candidate.is_absolute() or not candidate.parts or ".." in candidate.parts:
+        return (
+            f"lcats_id {lcats_id!r} must be a non-empty relative path with "
+            "no '..' components"
+        )
+    resolved_dest_root = dest_root.resolve()
+    resolved_candidate = (dest_root / lcats_id).resolve()
+    try:
+        resolved_candidate.relative_to(resolved_dest_root)
+    except ValueError:
+        return f"lcats_id {lcats_id!r} resolves outside dest_root ({dest_root})"
+    return None
+
+
+def promote_sidecar_tranche(
+    manifest_path: pathlib.Path,
+    dest_root: pathlib.Path,
+    dry_run: bool = False,
+) -> SidecarTranchePromotionReport:
+    """Promote selected stories' genre.json sidecars from a JSONL manifest
+    into corpora/, without touching any other file in the destination
+    collection directory.
+
+    Unlike ``promote_collections``' whole-directory wholesale replacement,
+    this promotes exactly the ``genre.json`` sidecars named in the
+    manifest -- one ``genre-sidecar-v1`` record per line, each already
+    carrying its own ``lcats_id`` -- and nothing else. Every record is
+    validated via ``genre_sidecar.validate_sidecar()`` before being
+    written; an invalid record is rejected and reported, not silently
+    written. A legacy flat ``genre.json`` already present at a promotion
+    destination is refused explicitly (with a clear error), never
+    silently overwritten or silently left stale -- converting a legacy
+    sidecar in place is ``lcats annotate``'s job (``WI-GENRE-0076``), not
+    this function's.
+
+    Args:
+        manifest_path: Path to a JSONL file, one ``genre-sidecar-v1`` JSON
+            object per line (e.g. ``experiments/05_metadata_genre_prefilter``'s
+            ``validation_results.jsonl``).
+        dest_root: Root directory to promote into (typically ``corpora/``).
+        dry_run: When True, validate and report but write nothing.
+
+    Returns:
+        A SidecarTranchePromotionReport listing promoted ``lcats_id``
+        values and rejected ``SidecarPromotionFinding`` entries.
+    """
+    promoted: list[str] = []
+    rejected: list[SidecarPromotionFinding] = []
+
+    with manifest_path.open("r", encoding="utf-8") as manifest_file:
+        for line_number, raw_line in enumerate(manifest_file, start=1):
+            line = raw_line.strip()
+            if not line:
+                continue
+
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError as exc:
+                rejected.append(
+                    SidecarPromotionFinding(
+                        lcats_id=f"<line {line_number}>",
+                        error=f"could not parse manifest line as JSON: {exc}",
+                    )
+                )
+                continue
+
+            lcats_id = record.get("lcats_id") if isinstance(record, dict) else None
+            if not isinstance(lcats_id, str) or not lcats_id:
+                rejected.append(
+                    SidecarPromotionFinding(
+                        lcats_id=f"<line {line_number}>",
+                        error="record has no non-empty top-level lcats_id",
+                    )
+                )
+                continue
+
+            escape_error = _lcats_id_escape_error(lcats_id, dest_root)
+            if escape_error is not None:
+                rejected.append(
+                    SidecarPromotionFinding(lcats_id=lcats_id, error=escape_error)
+                )
+                continue
+
+            validation = genre_sidecar.validate_sidecar(record)
+            if not validation.valid:
+                rejected.append(
+                    SidecarPromotionFinding(
+                        lcats_id=lcats_id,
+                        error="; ".join(
+                            f"{finding.path}: {finding.message}"
+                            for finding in validation.findings
+                        ),
+                    )
+                )
+                continue
+
+            dest_dir = dest_root / lcats_id
+            if not (dest_dir / discovery.CANONICAL_STORY_FILENAME).is_file():
+                rejected.append(
+                    SidecarPromotionFinding(
+                        lcats_id=lcats_id,
+                        error=(
+                            f"refusing to promote: no {discovery.CANONICAL_STORY_FILENAME} "
+                            f"at {dest_dir} -- lcats_id must name an existing story bucket, "
+                            "not create one"
+                        ),
+                    )
+                )
+                continue
+
+            dest_path = dest_dir / discovery.GENRE_SIDECAR_FILENAME
+            if dest_path.is_file():
+                try:
+                    existing = json.loads(dest_path.read_text(encoding="utf-8"))
+                except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+                    existing = None
+                if existing is not None and genre_sidecar.is_legacy_flat_sidecar(
+                    existing
+                ):
+                    rejected.append(
+                        SidecarPromotionFinding(
+                            lcats_id=lcats_id,
+                            error=(
+                                f"refusing to promote: {dest_path} already holds "
+                                "a legacy flat genre.json; convert it via lcats "
+                                "annotate before promoting a v1 sidecar here"
+                            ),
+                        )
+                    )
+                    continue
+
+            if not dry_run:
+                _atomic_write_text(dest_path, json.dumps(record, indent=2))
+            promoted.append(lcats_id)
+
+    return SidecarTranchePromotionReport(
+        promoted=tuple(promoted), rejected=tuple(rejected)
+    )
