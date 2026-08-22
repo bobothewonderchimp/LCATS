@@ -2,14 +2,14 @@
 execution_id: 2026_08_22_04_54_46_VISUALIZE_SUBSTRATE_GENRES_READINESS_REVIEW
 prompt_id: PROMPT(AD_HOC:VISUALIZE_SUBSTRATE_GENRES_READINESS_REVIEW)[2026-08-22T04:51:06+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/347
-commit: ba43ffed
+commit: 00cbbb8ef7b0ae506d5f6230cbedb769f3d25cc5
 created_at: 2026-08-22T04:54:46+00:00
 agent: claude-sonnet-5
 instruction_source: https://github.com/xenotaur/LCATS/pull/347
-session_transcript: pending
+session_transcript: claude-app:bd65a2ed-883b-400d-b621-0268bc17e85a
 ---
 
 # Summary
