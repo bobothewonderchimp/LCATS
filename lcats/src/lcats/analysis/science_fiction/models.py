@@ -525,6 +525,7 @@ class ScienceFictionSidecarEnvelope:
     def validate(self) -> ValidationResult:
         findings = list(self.validation.findings)
         findings.extend(self._validate_evidence_sets().findings)
+        findings.extend(self._validate_analyses().findings)
         findings.extend(self._validate_evidence_references().findings)
         findings.extend(self.validate_current_pointers().findings)
         return ValidationResult.from_findings(tuple(findings))
@@ -539,6 +540,32 @@ class ScienceFictionSidecarEnvelope:
                         "error",
                         "story_hash_mismatch",
                         "evidence set story hash does not match sidecar",
+                    )
+                )
+        return ValidationResult.from_findings(tuple(findings))
+
+    def _validate_analyses(self) -> ValidationResult:
+        findings: list[ValidationFinding] = []
+        evidence_set_ids = set(self.evidence_set_ids)
+        for path, label, analysis in _iter_analyses(
+            self.knight_analyses, self.suvin_novum_analyses
+        ):
+            if analysis.story_hash != self.story_hash:
+                findings.append(
+                    ValidationFinding(
+                        f"{path}.story_hash",
+                        "error",
+                        "story_hash_mismatch",
+                        f"{label} analysis story hash does not match sidecar",
+                    )
+                )
+            if analysis.evidence_set_id not in evidence_set_ids:
+                findings.append(
+                    ValidationFinding(
+                        f"{path}.evidence_set_id",
+                        "error",
+                        "missing_reference",
+                        f"{label} analysis evidence set does not exist",
                     )
                 )
         return ValidationResult.from_findings(tuple(findings))
@@ -720,6 +747,22 @@ def _validate_current_analysis(
                 f"current {label} analysis must use the current evidence set",
             )
         )
+
+
+def _iter_analyses(
+    knight_analyses: tuple[KnightAnalysis, ...],
+    suvin_novum_analyses: tuple[SuvinNovumAnalysis, ...],
+) -> tuple[tuple[str, str, KnightAnalysis | SuvinNovumAnalysis], ...]:
+    analyses: list[tuple[str, str, KnightAnalysis | SuvinNovumAnalysis]] = []
+    analyses.extend(
+        (f"$.analyses.knight[{index}]", "Knight", analysis)
+        for index, analysis in enumerate(knight_analyses)
+    )
+    analyses.extend(
+        (f"$.analyses.suvin_novum[{index}]", "Suvin novum", analysis)
+        for index, analysis in enumerate(suvin_novum_analyses)
+    )
+    return tuple(analyses)
 
 
 def _iter_evidence_references(

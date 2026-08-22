@@ -326,6 +326,40 @@ class ScienceFictionModelsTest(unittest.TestCase):
             "missing_reference", {finding.kind for finding in result.findings}
         )
 
+    def test_sidecar_validation_checks_non_current_analysis_integrity(self):
+        criteria = tuple(
+            _criterion(criterion_id, "absent")
+            for criterion_id in models.KNIGHT_CRITERION_IDS
+        )
+        stale_story_analysis = models.KnightAnalysis(
+            analysis_id="stale-story",
+            story_hash="different-story-hash",
+            evidence_set_id="evidence-set-1",
+            criteria=criteria,
+            provenance=_provenance(models.KNIGHT_RUBRIC_VERSION),
+        )
+        missing_evidence_set_analysis = models.KnightAnalysis(
+            analysis_id="missing-evidence-set",
+            story_hash="story-hash",
+            evidence_set_id="missing-evidence-set",
+            criteria=criteria,
+            provenance=_provenance(models.KNIGHT_RUBRIC_VERSION),
+        )
+        envelope = models.ScienceFictionSidecarEnvelope(
+            lcats_id="collection/story",
+            story_path="collection/story/story.json",
+            story_hash="story-hash",
+            evidence_sets=(_evidence_set(),),
+            knight_analyses=(stale_story_analysis, missing_evidence_set_analysis),
+        )
+
+        validation = envelope.to_dict()["validation"]
+        finding_kinds = {finding["kind"] for finding in validation["findings"]}
+
+        self.assertFalse(validation["valid"])
+        self.assertIn("story_hash_mismatch", finding_kinds)
+        self.assertIn("missing_reference", finding_kinds)
+
     def test_current_pointer_validation_rejects_duplicate_analysis_ids(self):
         criteria = tuple(
             _criterion(criterion_id, "absent")
