@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #356 (commit 0a39ea83e993dc928ef70c2778622038e11c1b14)"
 blocked_reason: null
 blocked: false
 id: WI-LINGUISTICS-0003
 title: Add output-root support to lcats linguistics sidecar writing
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []

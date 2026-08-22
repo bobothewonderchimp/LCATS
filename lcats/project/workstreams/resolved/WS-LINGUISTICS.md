@@ -2,8 +2,8 @@
 id: WS-LINGUISTICS
 kind: planning_node
 title: Linguistic Feature Sidecars and Worldcon Sample Runs
-status: proposed
-stage: planned
+status: resolved
+stage: closed
 origin: follow_up
 summary: Coordinate standalone LCATS linguistic-feature sidecar infrastructure, experiment-local Worldcon sample runs, and later output-location improvements.
 related_focus:
