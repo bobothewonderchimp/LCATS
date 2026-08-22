@@ -34,11 +34,11 @@ forbidden_actions:
   - force_push
   - delete_branch
 acceptance:
-  - A stratified sample of 5-10 stories per genre (adventure capped at its real corpus availability of 6 stories - see Scope) is run through the Event-Role-World pipeline with the story-level cross-segment relation pass (WI-EVENT-0029) enabled, using all 8 VALID_GENRES lcats assess --genre now classifies (science fiction, fantasy, horror, western, romance, mystery, humor, adventure), drawn from WI-GENRE-0004's already-Opus-validated genre-balanced 146-story set (experiments/05_metadata_genre_prefilter/results/full_scan/validation_results.jsonl) rather than reclassified independently
+  - A stratified sample of 5-10 stories per genre (adventure capped at its real corpus availability of 6 stories - see Scope) is run through the Event-Role-World pipeline with the story-level cross-segment relation pass (WI-EVENT-0029) enabled, using all 8 VALID_GENRES lcats assess --genre now classifies (science fiction, fantasy, horror, western, romance, mystery, humor, adventure), drawn from WI-GENRE-0004's already-Opus-validated genre-balanced 146-story set (experiments/05_metadata_genre_prefilter/results/full_scan/validation_results.jsonl) - selecting stories whose model_detect.detected_genre exactly equals the metadata rule's primary target_candidates[0], not merely present anywhere in the candidate list - rather than reclassified independently
   - Per-genre cross-segment-only relation density is reported as a metric computed directly from each story's cross_segment_relations and weakly_inferred_cross_segment_relations lists (count per 1000 words), kept separate from - not folded into - the existing total relations_per_1000_words baseline.summarize_annotations already reports, since that total mixes cross-segment and same-segment counts and cannot by itself confirm or contradict a cross-segment-specific claim
   - The relation types counted toward the headline cross-segment density figure are stated explicitly (all relation_type values are counted, matching how the existing total relations_per_1000_words already counts every type without filtering)
   - Findings state plainly whether the larger sample confirms, weakens, or contradicts WI-EVENT-0028's finding that science fiction/horror shows materially more long-range cross-segment causal chains than the other strata
-  - Each genre's finding is reported alongside WI-GENRE-0004's measured metadata-rule/model-detect agreement rate for that genre (100% fantasy/horror, 95% science fiction, 90% mystery, 83% adventure, 80% humor, 75% western, 70% romance), so a reader can weigh a low-agreement stratum's density finding against its real labeling uncertainty rather than treating all 8 strata as equally confident
+  - Each genre's finding is reported alongside the exact metadata-rule/model-detect agreement rate for that genre (detected_genre == target_candidates[0], computed directly from WI-GENRE-0004's committed validation_results.jsonl: 100% fantasy/horror, 90% science fiction/mystery, 83% adventure, 80% humor, 70% romance, 40% western - not WI-GENRE-0004's own looser agrees_with_metadata_rules aggregate, which counts a detected genre appearing anywhere in the candidate list and materially overstates western's reliability (75% loose vs. 40% exact)), so a reader can weigh a low-agreement stratum's density finding against its real labeling uncertainty rather than treating all 8 strata as equally confident
   - Stories whose run produced any segment- or story-level extraction_errors are excluded from the aggregated density figures (not silently counted as zero/partial) and are reported separately as excluded/failed runs, with a count and reason
   - Results and methodology are recorded under experiments/03_cross_segment_relation_pilot/, per the experiments/README.md numbering convention
   - lrh validate reports 0 errors
@@ -115,23 +115,37 @@ to size the effect precisely across genres.
   independently — that set already carries both a metadata-rule label and
   a real, Opus-validated `model_detect` label per story, so this pilot can
   reuse verified genre assessments instead of re-running classification.
-  **Prefer stories where the two labels agree**, to minimize genre-label
-  uncertainty in this pilot's own strata; if a genre's agreeing-label pool
-  is smaller than the 5-10 target (a real possibility for the
-  lower-agreement genres below), fill the remainder from
-  disagreement-labeled stories and flag which stories those are in the
-  results, rather than silently treating every selected story as
-  equally confident.
+  **Require an exact match — `model_detect.detected_genre ==
+  gutenberg_metadata_rules.target_candidates[0]` (the primary/selection
+  genre) — not `agrees_with_metadata_rules`.** That flag is a looser
+  multi-label signal (true whenever `detected_genre` appears *anywhere* in
+  `target_candidates`, including a secondary candidate) and materially
+  overstates reliability for genres with real cross-genre overlap: of
+  western's 15 "agreeing" stories, 7 are actually model-detected as a
+  *different* genre entirely (6 as adventure, 1 as romance — mostly
+  Jack London stories tagged both `western` and `adventure` by the
+  metadata rules) — only 8/20 truly match the western stratum. Using the
+  loose flag would silently place adventure/romance-detected stories into
+  the western density sample and invalidate the cross-genre comparison. If
+  a genre's exact-match pool is smaller than the 5-10 target (a real
+  possibility for the lower-agreement genres below, especially western),
+  fill the remainder from non-exact-match stories and flag which stories
+  those are in the results, rather than silently treating every selected
+  story as equally confident.
 - **Real per-genre corpus counts and validation-agreement rates, measured
   by `WI-GENRE-0004` (2026-08-21) — use these, not the "roughly 20-40
   stories" placeholder this section previously used before real numbers
-  existed:**
+  existed. Agreement here is the exact match defined above
+  (`detected_genre == target_candidates[0]`), computed directly from the
+  committed `validation_results.jsonl` — not WI-GENRE-0004's own
+  `agrees_with_metadata_rules` aggregate, which is looser and, for
+  western, meaningfully overstates reliability (75% loose vs. 40% exact):**
 
-  | genre | primary-genre stories in full 1,868-story corpus | metadata-rule/model-detect agreement (WI-GENRE-0004's 146-story validated sample) |
+  | genre | primary-genre stories in full 1,868-story corpus | exact metadata-rule/model-detect agreement |
   |---|---|---|
-  | science fiction | 1,308 | 95% (19/20) |
+  | science fiction | 1,308 | 90% (18/20) |
   | fantasy | 120 | 100% (20/20) |
-  | western | 46 | 75% (15/20) |
+  | western | 46 | **40% (8/20)** |
   | horror | 43 | 100% (20/20) |
   | mystery | 34 | 90% (18/20) |
   | romance | 24 | 70% (14/20) |
@@ -244,9 +258,10 @@ was still pending.
    equivalently named script) that selects the stratified sample by
    reading `WI-GENRE-0004`'s already-validated
    `experiments/05_metadata_genre_prefilter/results/full_scan/validation_results.jsonl`
-   (all 8 `VALID_GENRES` as strata, preferring metadata-rule/model-detect
-   agreement stories per Scope, adventure capped at its real 6-story
-   pool), runs the Event-Role-World pipeline over each selected story,
+   (all 8 `VALID_GENRES` as strata, requiring the exact-match selection
+   defined in Scope — `detected_genre == target_candidates[0]`, not the
+   looser `agrees_with_metadata_rules` flag — adventure capped at its real
+   6-story pool), runs the Event-Role-World pipeline over each selected story,
    detects and excludes any story with segment- or story-level
    `extraction_errors` from the aggregate, and writes per-story and
    per-genre summary results — computing the cross-segment-only density
@@ -257,14 +272,15 @@ was still pending.
    the raw run output (JSONL/CSV, per the existing `export.py` table
    conventions) needed to reproduce the reported figures, including which
    stories were excluded and why, and which selected stories came from
-   the agreement vs. disagreement pool per genre.
+   the exact-match vs. non-exact-match pool per genre.
 3. Create `experiments/03_cross_segment_relation_pilot/README.md`
    documenting the sample selection methodology (all 8 genre strata,
-   sourced from `WI-GENRE-0004`'s validated set, adventure's real 6-story
-   cap), the metric definitions (cross-segment-only density vs. the
-   existing folded total, reported side by side), the per-genre density
-   findings alongside each genre's `WI-GENRE-0004` agreement rate, and the
-   comparison against WI-EVENT-0028's smaller sample.
+   sourced from `WI-GENRE-0004`'s validated set, the exact-match
+   requirement, adventure's real 6-story cap), the metric definitions
+   (cross-segment-only density vs. the existing folded total, reported
+   side by side), the per-genre density findings alongside each genre's
+   exact-match agreement rate, and the comparison against WI-EVENT-0028's
+   smaller sample.
 4. No changes to `lcats/lcats/analysis/event_role_world/` — this item
    consumes the existing pipeline, it does not modify it.
 
@@ -300,21 +316,30 @@ was still pending.
 - **Adventure's small sample is a real corpus limit, not a methodology
   choice.** Only 6 stories in the entire 1,868-story corpus carry
   adventure as their primary metadata-rule genre (`WI-GENRE-0004`'s own
-  full-corpus scan). Any cross-segment density finding for the adventure
-  stratum rests on n=6 and should be reported with that caveat explicitly
-  — do not present it with the same confidence as the other 7 genres'
-  10x-larger strata.
-- **Genre-label reliability varies by genre, per `WI-GENRE-0004`'s real
-  measurement, not a uniform assumption.** Metadata-rule/model-detect
-  agreement ranges from 100% (fantasy, horror) down to 70% (romance), 75%
-  (western), and 80% (humor) — meaning as many as roughly 1 in 4 selected
-  romance stories, or 1 in 4 western stories, may carry a genre label the
-  two signals disagree on. A "materially more/fewer cross-segment relations" finding
-  in a low-agreement genre may partly reflect genre-labeling noise rather
-  than a pure genre effect; report each genre's finding alongside its
-  measured agreement rate (per the acceptance criteria) so a reader can
-  weigh this correctly, and do not treat a low-agreement genre's result as
-  equally solid as science fiction's or horror's.
+  full-corpus scan). The other 7 strata target only 5-10 stories each, not
+  the 10x figure an earlier draft of this note claimed — adventure's n=6
+  is comparably sized to, or only modestly smaller than, most of the other
+  strata, not an order of magnitude smaller. Report the adventure
+  stratum's findings with an explicit small-*n* caveat regardless, since 6
+  is still the smallest stratum and near the low end of the target range.
+- **Genre-label reliability varies sharply by genre — western is the real
+  outlier, not romance.** Using the exact match this item's selection now
+  requires (`detected_genre == target_candidates[0]`, not
+  `WI-GENRE-0004`'s own looser `agrees_with_metadata_rules` aggregate),
+  agreement ranges from 100% (fantasy, horror) down to a striking **40%
+  for western** (8/20 — 7 of the other 15 "loosely agreeing" stories are
+  actually model-detected as a different genre, mostly Jack London
+  stories the metadata rules tag both `western` and `adventure`), 70%
+  (romance), and 80% (humor/science fiction/mystery at 90% each). Roughly
+  3 in 5 selected western stories may carry a genre label the model's
+  independent read disagrees with — far worse than this item's earlier
+  75%-loose-agreement estimate suggested. A "materially more/fewer
+  cross-segment relations" finding in a low-agreement genre — especially
+  western — may partly reflect genre-labeling noise rather than a pure
+  genre effect; report each genre's finding alongside its exact-match
+  agreement rate (per the acceptance criteria) so a reader can weigh this
+  correctly, and do not treat western's result as anywhere near as solid
+  as fantasy's or horror's.
 - Genre strata now cover all 8 genres `lcats assess --genre` supports
   (science fiction, fantasy, horror, western, romance, mystery, humor,
   adventure) — WI-EVENT-0028's original mystery/general-fiction comparison
