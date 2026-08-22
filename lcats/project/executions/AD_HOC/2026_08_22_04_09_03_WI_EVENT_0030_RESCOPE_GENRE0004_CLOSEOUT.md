@@ -2,7 +2,7 @@
 execution_id: 2026_08_22_04_09_03_WI_EVENT_0030_RESCOPE_GENRE0004_CLOSEOUT
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0030_RESCOPE_GENRE0004_CLOSEOUT)[2026-08-22T04:08:56+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/340
 commit: 0b92579d
