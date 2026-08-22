@@ -65,7 +65,9 @@ class RubricDefinition:
 
     @property
     def source_ready(self) -> bool:
-        return all(slot.resolved for slot in self.text_slots)
+        return self.source_status != SOURCE_STATUS_PENDING and all(
+            slot.resolved for slot in self.text_slots
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {

@@ -1,7 +1,9 @@
 """Tests for science-fiction sidecar contract records."""
 
 import unittest
+from types import MappingProxyType
 
+from lcats.analysis.science_fiction import evidence
 from lcats.analysis.science_fiction import models
 from lcats.analysis.science_fiction.rubric import definitions
 
@@ -10,6 +12,36 @@ def _reference(evidence_id: str = "ev-1") -> models.EvidenceReference:
     return models.EvidenceReference(
         evidence_set_id="evidence-set-1",
         evidence_id=evidence_id,
+    )
+
+
+def _evidence_record(evidence_id: str = "ev-1") -> evidence.EvidenceRecord:
+    return evidence.EvidenceRecord(
+        evidence_id=evidence_id,
+        evidence_type="storyworld_change",
+        quote="A changed condition.",
+        anchor=evidence.EvidenceAnchor(
+            paragraph_ids=("p0001",),
+            start_char=0,
+            end_char=20,
+        ),
+        paraphrase="A changed condition is introduced.",
+        confidence=0.9,
+        provenance=(evidence.EvidenceProvenance(source="fixture"),),
+    )
+
+
+def _evidence_set(
+    evidence_set_id: str = "evidence-set-1",
+    story_hash: str = "story-hash",
+    evidence_ids: tuple[str, ...] = ("ev-1",),
+) -> evidence.EvidenceSet:
+    return evidence.EvidenceSet(
+        evidence_set_id=evidence_set_id,
+        story_hash=story_hash,
+        records=tuple(_evidence_record(evidence_id) for evidence_id in evidence_ids),
+        quarantined=(),
+        conflicts=(),
     )
 
 
@@ -176,8 +208,8 @@ class ScienceFictionModelsTest(unittest.TestCase):
         envelope = models.ScienceFictionSidecarEnvelope(
             lcats_id="collection/story",
             story_path="collection/story/story.json",
-            story_sha256="story-hash",
-            evidence_set_ids=("evidence-set-1",),
+            story_hash="story-hash",
+            evidence_sets=(_evidence_set(),),
             current=models.CurrentPointers(
                 evidence_set_id="missing",
                 knight_analysis_id="also-missing",
@@ -212,8 +244,8 @@ class ScienceFictionModelsTest(unittest.TestCase):
         envelope = models.ScienceFictionSidecarEnvelope(
             lcats_id="collection/story",
             story_path="collection/story/story.json",
-            story_sha256="story-hash",
-            evidence_set_ids=("evidence-set-1",),
+            story_hash="story-hash",
+            evidence_sets=(_evidence_set(),),
             knight_analyses=(knight_analysis,),
             current=models.CurrentPointers(
                 evidence_set_id="evidence-set-1",
@@ -229,6 +261,126 @@ class ScienceFictionModelsTest(unittest.TestCase):
         self.assertIn("failed_current_record", finding_kinds)
         self.assertIn("story_hash_mismatch", finding_kinds)
         self.assertIn("evidence_set_mismatch", finding_kinds)
+
+    def test_sidecar_serializes_evidence_sets_and_story_hash(self):
+        envelope = models.ScienceFictionSidecarEnvelope(
+            lcats_id="collection/story",
+            story_path="collection/story/story.json",
+            story_hash="story-hash",
+            evidence_sets=(_evidence_set(evidence_ids=("ev-1", "ev-2")),),
+        )
+
+        data = envelope.to_dict()
+
+        self.assertEqual("story-hash", data["story_hash"])
+        self.assertNotIn("story_sha256", data)
+        self.assertNotIn("evidence_set_ids", data)
+        self.assertEqual("evidence-set-1", data["evidence_sets"][0]["evidence_set_id"])
+        self.assertEqual(2, len(data["evidence_sets"][0]["records"]))
+
+    def test_sidecar_serialization_recomputes_stale_validation(self):
+        envelope = models.ScienceFictionSidecarEnvelope(
+            lcats_id="collection/story",
+            story_path="collection/story/story.json",
+            story_hash="story-hash",
+            current=models.CurrentPointers(evidence_set_id="missing"),
+        )
+
+        validation = envelope.to_dict()["validation"]
+
+        self.assertFalse(validation["valid"])
+        self.assertEqual("missing_reference", validation["findings"][0]["kind"])
+
+    def test_sidecar_validation_rejects_dangling_evidence_reference(self):
+        criteria = tuple(
+            _criterion(criterion_id, "absent")
+            for criterion_id in models.KNIGHT_CRITERION_IDS
+        )
+        criteria = (
+            models.KnightCriterion(
+                criterion_id=models.KNIGHT_CRITERION_IDS[0],
+                status="present",
+                materiality="central",
+                supporting_evidence=(_reference("missing-evidence"),),
+            ),
+        ) + criteria[1:]
+        analysis = models.KnightAnalysis(
+            analysis_id="knight-1",
+            story_hash="story-hash",
+            evidence_set_id="evidence-set-1",
+            criteria=criteria,
+            provenance=_provenance(models.KNIGHT_RUBRIC_VERSION),
+        )
+        envelope = models.ScienceFictionSidecarEnvelope(
+            lcats_id="collection/story",
+            story_path="collection/story/story.json",
+            story_hash="story-hash",
+            evidence_sets=(_evidence_set(evidence_ids=("ev-1",)),),
+            knight_analyses=(analysis,),
+        )
+
+        result = envelope.validate()
+
+        self.assertFalse(result.valid)
+        self.assertIn(
+            "missing_reference", {finding.kind for finding in result.findings}
+        )
+
+    def test_current_pointer_validation_rejects_duplicate_analysis_ids(self):
+        criteria = tuple(
+            _criterion(criterion_id, "absent")
+            for criterion_id in models.KNIGHT_CRITERION_IDS
+        )
+        analysis_a = models.KnightAnalysis(
+            analysis_id="knight-current",
+            story_hash="story-hash",
+            evidence_set_id="evidence-set-1",
+            criteria=criteria,
+            provenance=_provenance(models.KNIGHT_RUBRIC_VERSION),
+        )
+        analysis_b = models.KnightAnalysis(
+            analysis_id="knight-current",
+            story_hash="story-hash",
+            evidence_set_id="evidence-set-1",
+            criteria=criteria,
+            provenance=_provenance(models.KNIGHT_RUBRIC_VERSION),
+        )
+        envelope = models.ScienceFictionSidecarEnvelope(
+            lcats_id="collection/story",
+            story_path="collection/story/story.json",
+            story_hash="story-hash",
+            evidence_sets=(_evidence_set(),),
+            knight_analyses=(analysis_a, analysis_b),
+            current=models.CurrentPointers(
+                evidence_set_id="evidence-set-1",
+                knight_analysis_id="knight-current",
+            ),
+        )
+
+        result = envelope.validate_current_pointers()
+
+        self.assertFalse(result.valid)
+        self.assertIn(
+            "duplicate_reference", {finding.kind for finding in result.findings}
+        )
+
+    def test_provenance_mappings_are_immutable_after_construction(self):
+        parameters = {"temperature": 0}
+        token_usage = {"prompt": 10}
+        provenance = models.ProvenanceRecord(
+            run_id="run",
+            rubric_version=models.KNIGHT_RUBRIC_VERSION,
+            generation_parameters=parameters,
+            token_usage=token_usage,
+        )
+        parameters["temperature"] = 1
+        token_usage["prompt"] = 20
+
+        self.assertIsInstance(provenance.generation_parameters, MappingProxyType)
+        self.assertEqual(0, provenance.generation_parameters["temperature"])
+        self.assertEqual(10, provenance.token_usage["prompt"])
+        with self.assertRaises(TypeError):
+            provenance.token_usage["prompt"] = 30
 
     def test_partial_success_keeps_stage_failure_separate(self):
         failure = models.FailureRecord(
@@ -264,6 +416,24 @@ class ScienceFictionModelsTest(unittest.TestCase):
                 label="Criterion 1",
                 governing_text="Unapproved wording",
             )
+
+    def test_source_ready_requires_rubric_source_status_to_be_resolved(self):
+        rubric = definitions.RubricDefinition(
+            rubric_id="rubric",
+            source_status=definitions.SOURCE_STATUS_PENDING,
+            text_slots=(
+                definitions.RubricTextSlot(
+                    slot_id="slot",
+                    label="Slot",
+                    source_status="resolved",
+                    governing_text="Approved text.",
+                    citation="Approved source, p. 1.",
+                ),
+            ),
+            source_note="Source note.",
+        )
+
+        self.assertFalse(rubric.source_ready)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,10 @@ sources are supplied.
 from __future__ import annotations
 
 import dataclasses
+from types import MappingProxyType
 from typing import Any
+
+from lcats.analysis.science_fiction import evidence
 
 SCIENCE_FICTION_SIDECAR_VERSION = "science-fiction-sidecar-v1"
 KNIGHT_RUBRIC_VERSION = "knight-seven-v1"
@@ -132,8 +135,12 @@ class ProvenanceRecord:
     prompt_hash: str | None = None
     schema_hash: str | None = None
     chunk_config_hash: str | None = None
-    generation_parameters: dict[str, Any] = dataclasses.field(default_factory=dict)
-    token_usage: dict[str, int] = dataclasses.field(default_factory=dict)
+    generation_parameters: MappingProxyType[str, Any] | dict[str, Any] = (
+        dataclasses.field(default_factory=dict)
+    )
+    token_usage: MappingProxyType[str, int] | dict[str, int] = dataclasses.field(
+        default_factory=dict
+    )
     estimated_cost_usd: float | None = None
     generated_at: str | None = None
     parent_evidence_set_id: str | None = None
@@ -143,7 +150,13 @@ class ProvenanceRecord:
         _require_non_empty_string(self.rubric_version, "rubric_version")
         if self.estimated_cost_usd is not None and self.estimated_cost_usd < 0:
             raise ValueError("estimated_cost_usd must be non-negative")
-        for key, value in self.token_usage.items():
+        generation_parameters = dict(self.generation_parameters)
+        token_usage = dict(self.token_usage)
+        object.__setattr__(
+            self, "generation_parameters", MappingProxyType(generation_parameters)
+        )
+        object.__setattr__(self, "token_usage", MappingProxyType(token_usage))
+        for key, value in token_usage.items():
             _require_non_empty_string(key, "token_usage key")
             if not isinstance(value, int) or value < 0:
                 raise ValueError("token_usage values must be non-negative integers")
@@ -484,8 +497,8 @@ class ScienceFictionSidecarEnvelope:
 
     lcats_id: str
     story_path: str
-    story_sha256: str
-    evidence_set_ids: tuple[str, ...] = ()
+    story_hash: str
+    evidence_sets: tuple[evidence.EvidenceSet, ...] = ()
     knight_analyses: tuple[KnightAnalysis, ...] = ()
     suvin_novum_analyses: tuple[SuvinNovumAnalysis, ...] = ()
     current: CurrentPointers = dataclasses.field(default_factory=CurrentPointers)
@@ -500,8 +513,67 @@ class ScienceFictionSidecarEnvelope:
             raise ValueError("unsupported science-fiction sidecar schema version")
         _require_non_empty_string(self.lcats_id, "lcats_id")
         _require_non_empty_string(self.story_path, "story_path")
-        _require_non_empty_string(self.story_sha256, "story_sha256")
+        _require_non_empty_string(self.story_hash, "story_hash")
         _require_unique_strings(self.evidence_set_ids, "evidence_set_ids")
+
+    @property
+    def evidence_set_ids(self) -> tuple[str, ...]:
+        return tuple(
+            evidence_set.evidence_set_id for evidence_set in self.evidence_sets
+        )
+
+    def validate(self) -> ValidationResult:
+        findings = list(self.validation.findings)
+        findings.extend(self._validate_evidence_sets().findings)
+        findings.extend(self._validate_evidence_references().findings)
+        findings.extend(self.validate_current_pointers().findings)
+        return ValidationResult.from_findings(tuple(findings))
+
+    def _validate_evidence_sets(self) -> ValidationResult:
+        findings: list[ValidationFinding] = []
+        for index, evidence_set in enumerate(self.evidence_sets):
+            if evidence_set.story_hash != self.story_hash:
+                findings.append(
+                    ValidationFinding(
+                        f"$.evidence_sets[{index}].story_hash",
+                        "error",
+                        "story_hash_mismatch",
+                        "evidence set story hash does not match sidecar",
+                    )
+                )
+        return ValidationResult.from_findings(tuple(findings))
+
+    def _validate_evidence_references(self) -> ValidationResult:
+        findings: list[ValidationFinding] = []
+        evidence_ids_by_set = {
+            evidence_set.evidence_set_id: {
+                record.evidence_id for record in evidence_set.records
+            }
+            for evidence_set in self.evidence_sets
+        }
+        for path, reference in _iter_evidence_references(
+            self.knight_analyses, self.suvin_novum_analyses
+        ):
+            evidence_ids = evidence_ids_by_set.get(reference.evidence_set_id)
+            if evidence_ids is None:
+                findings.append(
+                    ValidationFinding(
+                        path,
+                        "error",
+                        "missing_reference",
+                        "evidence reference set does not exist",
+                    )
+                )
+            elif reference.evidence_id not in evidence_ids:
+                findings.append(
+                    ValidationFinding(
+                        path,
+                        "error",
+                        "missing_reference",
+                        "evidence reference record does not exist",
+                    )
+                )
+        return ValidationResult.from_findings(tuple(findings))
 
     def validate_current_pointers(self) -> ValidationResult:
         findings: list[ValidationFinding] = []
@@ -523,7 +595,7 @@ class ScienceFictionSidecarEnvelope:
             analyses=self.knight_analyses,
             path="$.current.knight_analysis_id",
             label="Knight",
-            story_hash=self.story_sha256,
+            story_hash=self.story_hash,
             evidence_set_ids=evidence_set_ids,
             current_evidence_set_id=self.current.evidence_set_id,
             findings=findings,
@@ -533,7 +605,7 @@ class ScienceFictionSidecarEnvelope:
             analyses=self.suvin_novum_analyses,
             path="$.current.suvin_novum_analysis_id",
             label="Suvin novum",
-            story_hash=self.story_sha256,
+            story_hash=self.story_hash,
             evidence_set_ids=evidence_set_ids,
             current_evidence_set_id=self.current.evidence_set_id,
             findings=findings,
@@ -545,8 +617,10 @@ class ScienceFictionSidecarEnvelope:
             "schema_version": self.schema_version,
             "lcats_id": self.lcats_id,
             "story_path": self.story_path,
-            "story_sha256": self.story_sha256,
-            "evidence_set_ids": list(self.evidence_set_ids),
+            "story_hash": self.story_hash,
+            "evidence_sets": [
+                evidence_set.to_dict() for evidence_set in self.evidence_sets
+            ],
             "analyses": {
                 "knight": [analysis.to_dict() for analysis in self.knight_analyses],
                 "suvin_novum": [
@@ -554,7 +628,7 @@ class ScienceFictionSidecarEnvelope:
                 ],
             },
             "current": self.current.to_dict(),
-            "validation": self.validation.to_dict(),
+            "validation": self.validate().to_dict(),
             "partial_success": (
                 None if self.partial_success is None else self.partial_success.to_dict()
             ),
@@ -584,6 +658,16 @@ def _validate_current_analysis(
                 "error",
                 "missing_reference",
                 f"current {label} analysis does not exist",
+            )
+        )
+        return
+    if len(matching) > 1:
+        findings.append(
+            ValidationFinding(
+                path,
+                "error",
+                "duplicate_reference",
+                f"current {label} analysis id is not unique",
             )
         )
         return
@@ -636,6 +720,60 @@ def _validate_current_analysis(
                 f"current {label} analysis must use the current evidence set",
             )
         )
+
+
+def _iter_evidence_references(
+    knight_analyses: tuple[KnightAnalysis, ...],
+    suvin_novum_analyses: tuple[SuvinNovumAnalysis, ...],
+) -> tuple[tuple[str, EvidenceReference], ...]:
+    references: list[tuple[str, EvidenceReference]] = []
+    for analysis_index, analysis in enumerate(knight_analyses):
+        for criterion_index, criterion in enumerate(analysis.criteria):
+            base = f"$.analyses.knight[{analysis_index}].criteria[{criterion_index}]"
+            references.extend(
+                (f"{base}.supporting_evidence[{index}]", reference)
+                for index, reference in enumerate(criterion.supporting_evidence)
+            )
+            references.extend(
+                (f"{base}.counterevidence[{index}]", reference)
+                for index, reference in enumerate(criterion.counterevidence)
+            )
+    for analysis_index, analysis in enumerate(suvin_novum_analyses):
+        for candidate_index, candidate in enumerate(analysis.candidates):
+            base = (
+                f"$.analyses.suvin_novum[{analysis_index}]"
+                f".candidates[{candidate_index}]"
+            )
+            references.extend(
+                (f"{base}.evidence[{index}]", reference)
+                for index, reference in enumerate(candidate.evidence)
+            )
+            for dimension_name in (
+                "novelty",
+                "cognitive_validation",
+                "narrative_hegemony",
+            ):
+                dimension = getattr(candidate, dimension_name)
+                dimension_base = f"{base}.{dimension_name}"
+                references.extend(
+                    (f"{dimension_base}.supporting_evidence[{index}]", reference)
+                    for index, reference in enumerate(dimension.supporting_evidence)
+                )
+                references.extend(
+                    (f"{dimension_base}.counterevidence[{index}]", reference)
+                    for index, reference in enumerate(dimension.counterevidence)
+                )
+            estrangement = candidate.estrangement
+            for field_name in (
+                "reader_facing_evidence",
+                "storyworld_consequence_evidence",
+                "character_reaction_evidence",
+            ):
+                references.extend(
+                    (f"{base}.estrangement.{field_name}[{index}]", reference)
+                    for index, reference in enumerate(getattr(estrangement, field_name))
+                )
+    return tuple(references)
 
 
 def _require_non_empty_string(value: str, field_name: str) -> None:
