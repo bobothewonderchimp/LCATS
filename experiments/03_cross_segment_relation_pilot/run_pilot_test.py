@@ -1162,7 +1162,7 @@ class TestTargetedStoryResolution(unittest.TestCase):
 
     def test_parse_story_list_rejects_unknown_genre(self):
         list_path = self.data_dir / "manifest.txt"
-        list_path.write_text("test_collection/story_a:mystery\n", encoding="utf-8")
+        list_path.write_text("test_collection/story_a:noir\n", encoding="utf-8")
 
         with self.assertRaises(ValueError):
             run_pilot._parse_story_list(list_path, self.data_dir, self.fixtures_dir)

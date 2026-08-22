@@ -65,17 +65,17 @@ Optional flags:
                             Not used with --story-list, whose manifest
                             carries genre per entry.
 
-Genre strata are pinned to the original four genres this pilot (WI-EVENT-0030)
-was scoped against (science fiction, horror, western, romance) via the
-module-level GENRES constant below, deliberately independent of
-lcats.analysis.corpus.assess.VALID_GENRES, which has since grown to 8 genres
-(WI-ASSESS-0031). Re-scoping this pilot to the full genre set is its own
-separate follow-up (Gap 3 in
-project/design/event-role-world-genre-target-reconciliation.md), not
-something a VALID_GENRES change should do implicitly. Genre is detected
-per-candidate story via assess_story() in detect mode (an LLM call), not
-read from any pre-existing label, since the corpus carries no genre metadata
-today.
+Genre strata cover all 8 lcats.analysis.corpus.assess.VALID_GENRES (science
+fiction, horror, humor, western, romance, mystery, fantasy, adventure) via
+the module-level GENRES constant below, which now aliases VALID_GENRES
+directly. This was Gap 3 in
+project/design/event-role-world-genre-target-reconciliation.md, resolved by
+WI-EVENT-0030's re-scope (2026-08-22) once WI-GENRE-0004 produced real
+per-genre corpus/agreement data to size it against - see WI-EVENT-0030.md's
+Scope section for the exact-match selection requirement and per-genre
+corpus counts. Genre is detected per-candidate story via assess_story() in
+detect mode (an LLM call), not read from any pre-existing label, since the
+corpus carries no genre metadata today.
 
 Requires:
     - lcats installed (run scripts/develop if not)
@@ -88,8 +88,9 @@ call per candidate story scanned), scene/sequel segmentation (one call per
 sampled story), and the full Event-Role-World pipeline (4 calls per
 segment - entities, events, relations, discourse; the optional stage-8
 hypothesis pass is disabled since this pilot doesn't use hypothesis data -
-plus one story-level cross-segment-relation call per story). Across 4
-genres x 5-10 stories each, this is a real cost and latency expenditure -
+plus one story-level cross-segment-relation call per story). Across 8
+genres x 5-10 stories each (adventure capped at 6), this is a real cost
+and latency expenditure -
 see the Risk Notes in WI-EVENT-0030 and the README in this directory
 before running against the full target sample size. --model and the
 --backend-specific default are propagated to every call, including the
@@ -155,10 +156,12 @@ from lcats.analysis.event_role_world import surface_feature_extractor as erw_sur
 from lcats.utils import checkpoint
 from lcats.utils.secrets import load_secrets
 
-GENRES = ("science fiction", "horror", "western", "romance")
-# Deliberately NOT corpus_assess.VALID_GENRES (now 8 genres as of
-# WI-ASSESS-0031) - this pilot is still scoped to WI-EVENT-0030's original
-# four strata; see the module docstring above.
+GENRES = corpus_assess.VALID_GENRES
+# WI-EVENT-0030's re-scope (2026-08-22, using WI-GENRE-0004's real per-genre
+# corpus/agreement data) extends this pilot to all 8 VALID_GENRES - see the
+# module docstring above and WI-EVENT-0030.md's Scope section. Was
+# previously pinned to a hardcoded 4-genre tuple, deliberately independent
+# of VALID_GENRES, while the re-scope was still pending real numbers.
 
 # argparse.const for --story-list given with no FILE argument - distinct
 # from `None` (flag not given at all), which argparse can't distinguish

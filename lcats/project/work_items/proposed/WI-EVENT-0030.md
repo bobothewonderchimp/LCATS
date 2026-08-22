@@ -19,6 +19,8 @@ related_design:
   - project/design/proposals/adopted/lcats-event-role-world-extractor/00_proposal.md
   - project/design/event-role-world-cross-segment-relations-evaluation.md
   - project/work_items/resolved/WI-GENRE-0004.md
+  - project/design/segmentation-alignment-failure-categories.md
+  - project/work_items/resolved/WI-SEGMENT-0072.md
 depends_on:
   - WI-EVENT-0029
   - WI-ASSESS-0031
@@ -386,6 +388,39 @@ was still pending.
 - If the larger sample contradicts WI-EVENT-0028's smaller-sample finding,
   that is a valid, complete, and important result — report it plainly
   rather than treating it as a failed pilot.
+- **Real cost-gate sample (2026-08-22, 8 stories, `claude-haiku-4-5-20251001`,
+  `experiments/03_cross_segment_relation_pilot/run_pilot.py` extended to 8
+  genres for this test) — success rate and root cause, not just cost.**
+  3 western + 3 adventure (the two lowest-exact-match-agreement genres) +
+  2 fantasy (control) were run through the real Event-Role-World pipeline.
+  **3/8 (37.5%) succeeded**; real cost **$0.97** (86 LLM-backed calls,
+  247,423 input / 193,589 output tokens) — **~$0.12/story-attempted,
+  ~$0.32/story-successful**. Corroborates the ~35% success rate already on
+  record from the existing partial pilot run
+  (`experiments/03_cross_segment_relation_pilot/results/pilot_stories.jsonl`,
+  6/17 succeeded).
+  - **All 5 exclusions were `segmentation failed: alignment failed:
+    ValueError('alignment failed for segment_id=N: anchor text not found
+    in story text')`** — not the `parsing_error` failure mode this item
+    previously attributed the exclusion risk to (that mode is
+    `WI-EVENT-0033`'s still-open, unrelated bug). This is the "near-miss
+    anchor" bucket `project/design/segmentation-alignment-failure-categories.md`
+    documents.
+  - **This is not a pending bug fix — it is a deliberately accepted,
+    permanent-for-now exclusion source.** `WI-SEGMENT-0072` (resolved, PR
+    #343) evaluated fuzzy-matching recovery for exactly this near-miss
+    bucket and explicitly recommended **defer**: a high recovery rate
+    isn't worth the false-positive risk of silently moving segment
+    boundaries to the wrong text. Production alignment behavior was left
+    unchanged. `WI-EVENT-0033` landing would address the *other* failure
+    mode but would not move this one.
+  - **Practical consequence for sample-size feasibility:** applying a
+    ~60-65% exclusion rate to the exact-match pools in the Scope table
+    above, western (8 exact-match) and adventure (5-6) are very unlikely
+    to reach the 5-10 target even after exhausting their entire pool
+    (expected successes ≈3 and ≈2 respectively) — this is now a
+    corroborated, real-data-based risk, not a hypothetical one from desk
+    research. See closeout note / follow-up discussion for options.
 
 ## Related Workstream and Designs
 
@@ -393,3 +428,7 @@ was still pending.
 - Design: `project/design/event-role-world-cross-segment-relations-evaluation.md`
 - Work item: `project/work_items/resolved/WI-GENRE-0004.md` — real per-genre
   corpus counts and validation-agreement rates this item's re-scope uses
+- Design: `project/design/segmentation-alignment-failure-categories.md` —
+  the near-miss anchor failure category hit by this item's cost-gate sample
+- Work item: `project/work_items/resolved/WI-SEGMENT-0072.md` — evaluated
+  and deferred fuzzy-matching recovery for that same failure category
