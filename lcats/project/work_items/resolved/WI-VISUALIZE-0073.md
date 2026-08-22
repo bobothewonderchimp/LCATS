@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: Implemented and merged in PR #351 (commit 3d841c1c)
 blocked_reason: null
 blocked: false
 id: WI-VISUALIZE-0073
 title: Reusable lcats visualize CLI substrate and genres command
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []

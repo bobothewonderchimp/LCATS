@@ -2,14 +2,14 @@
 execution_id: 2026_08_22_05_54_18_VISUALIZE_SUBSTRATE_GENRES
 prompt_id: PROMPT(WI-VISUALIZE-0073:VISUALIZE_SUBSTRATE_GENRES)[2026-08-22T05:27:16+00:00]
 work_item: WI-VISUALIZE-0073
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/351
-commit: e84c3b10
+commit: 3d841c1c0a6da81a2d7465c9e1b90d190ea62bd0
 created_at: 2026-08-22T05:54:18+00:00
 agent: claude-sonnet-5
 instruction_source: WI-VISUALIZE-0073
-session_transcript: pending
+session_transcript: claude-app:bd65a2ed-883b-400d-b621-0268bc17e85a
 ---
 
 # Summary
