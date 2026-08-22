@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: Evaluated safe near-miss fuzzy matching and merged the defer recommendation in PR #343 (commit a13ced15).
 blocked_reason: null
 blocked: false
 id: WI-SEGMENT-0072
 title: Evaluate safe fuzzy matching for near-miss segmentation anchors
 type: evaluation
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
