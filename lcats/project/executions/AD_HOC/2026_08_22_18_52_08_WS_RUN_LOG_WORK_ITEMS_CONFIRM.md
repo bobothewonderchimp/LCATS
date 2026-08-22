@@ -2,10 +2,10 @@
 execution_id: 2026_08_22_18_52_08_WS_RUN_LOG_WORK_ITEMS_CONFIRM
 prompt_id: PROMPT(AD_HOC:WS_RUN_LOG_WORK_ITEMS_CONFIRM)[2026-08-22T18:24:29+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/352
-commit: a0806f5ef149966ddd3cdda9f67007ed9234b783
+commit: 644fe26562cd977b3998fa612ef89374a86b11ab
 created_at: 2026-08-22T18:52:08+00:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/352
