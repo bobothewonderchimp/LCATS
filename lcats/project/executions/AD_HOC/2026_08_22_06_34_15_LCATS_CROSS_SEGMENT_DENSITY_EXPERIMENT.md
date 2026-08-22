@@ -2,10 +2,10 @@
 execution_id: 2026_08_22_06_34_15_LCATS_CROSS_SEGMENT_DENSITY_EXPERIMENT
 prompt_id: PROMPT(AD_HOC:LCATS_CROSS_SEGMENT_DENSITY_EXPERIMENT)[2026-08-22T06:33:58+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/355
-commit:
+commit: 9444b235b38eda7c3e3c8335f9791aca074cfdec
 created_at: 2026-08-22T06:34:15+00:00
 agent: codex_app
 instruction_source: user request to capture the staged cross-segment density experiment design, workstream, and work items in one PR
