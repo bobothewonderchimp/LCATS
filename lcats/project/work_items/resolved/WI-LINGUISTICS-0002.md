@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #353 at fd050d710e83330cc2eec7d0724d1dd17af158b7."
 blocked_reason: null
 blocked: false
 id: WI-LINGUISTICS-0002
 title: Run linguistics over the WI-GENRE-0004 sample in experiment-local copied buckets
 type: evaluation
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
