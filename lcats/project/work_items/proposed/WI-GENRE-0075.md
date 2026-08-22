@@ -19,6 +19,7 @@ related_design:
   - project/work_items/resolved/WI-GENRE-0004.md
   - lcats/src/lcats/analysis/corpus/genre_sidecar.py
   - lcats/src/lcats/analysis/corpus/promote.py
+  - lcats/src/lcats/analysis/corpus/promote_cli.py
 depends_on: []
 blocked_by: []
 blocked: false
@@ -40,6 +41,7 @@ acceptance:
   - "A legacy flat genre.json (per genre_sidecar.is_legacy_flat_sidecar()) at the promotion destination is handled explicitly (converted or refused with a clear error), not silently overwritten or silently left stale"
   - "The existing wholesale-collection promote_collections() path is unchanged for every caller that does not opt into the new tranche mode"
   - "A dry-run mode exists for the new tranche-promotion path, consistent with promote_collections()'s existing dry_run parameter"
+  - "The lcats promote CLI (promote_cli.py) can actually select and invoke the new tranche mode - not just the underlying library function - since promote_cli.run() currently always calls the wholesale promote_collections() path unconditionally"
   - "scripts/test passes with no new failures"
   - "lrh validate reports 0 errors"
 required_evidence:
@@ -48,6 +50,7 @@ required_evidence:
   - manual_review
 artifacts_expected:
   - lcats/src/lcats/analysis/corpus/promote.py
+  - lcats/src/lcats/analysis/corpus/promote_cli.py
   - lcats/tests/analysis_tests/promote_test.py
 ---
 
@@ -82,9 +85,15 @@ Step 5 promotion step that depends on it.
 
 ### Duplication search
 - In-repo: No existing tranche/partial-collection promotion path exists in
-  `promote.py` - confirmed via `grep -n "^def " lcats/src/lcats/analysis/corpus/promote.py`,
-  which shows only `survey_collection`/`promote_collections`/`_copy_collection`,
-  all wholesale-collection-shaped.
+  `promote.py` - confirmed via `grep -n "^def \|^class " lcats/src/lcats/analysis/corpus/promote.py`,
+  which shows `destination_name`, `_validate_sidecars`, `survey_collection`,
+  `_validate_distinct_roots`, `_copy_collection`, and `promote_collections`
+  (plus the `BlockingFinding`/`MalformedSidecarFinding`/`CollectionSurveyResult`/
+  `PromotionReport` dataclasses) - every one of them shaped around
+  whole-collection survey/copy, none offering a per-story or per-sidecar
+  promotion path (review finding, PR #348 - an earlier draft of this
+  entry named only three of the six functions, incorrectly implying they
+  were the file's entire contents).
 - Sibling repos: None identified.
 - External libraries: None - this is native LCATS corpus-promotion logic.
 - Recommendation: Proceed.
@@ -114,6 +123,10 @@ Step 5 promotion step that depends on it.
   `promote_collections(..., dry_run: bool = False)` parameter shape.
 - Leave the existing wholesale `promote_collections()` path and its
   callers completely unchanged.
+- Wire the new mode into the `lcats promote` CLI itself
+  (`promote_cli.py`), not just the underlying library function - the
+  workstream's exit criterion is about what `lcats promote` can do, and
+  `promote_cli.run()` currently only ever calls the wholesale path.
 
 ## Required Changes
 
@@ -126,12 +139,21 @@ Step 5 promotion step that depends on it.
    `WI-GENRE-0004` already produces) and promotes only those stories'
    `genre.json` files into the corresponding `corpora/` story directories,
    validating each via `genre_sidecar.validate_sidecar()` first.
-2. **`lcats/tests/analysis_tests/promote_test.py`**: add tests covering:
+2. **`lcats/src/lcats/analysis/corpus/promote_cli.py`**: `run()` currently
+   calls `promote.promote_collections()` unconditionally - add a way to
+   select the new tranche mode from the CLI (e.g. a `--tranche-manifest`
+   flag alongside the existing `collections`/`--source`/`--dest`/
+   `--dry-run` arguments), so `lcats promote` can actually invoke the new
+   mode end-to-end, not just the library function in isolation. Existing
+   invocations with no such flag must be unaffected.
+3. **`lcats/tests/analysis_tests/promote_test.py`**: add tests covering:
    a clean tranche promotion of a subset of stories; refusal of an invalid
    sidecar (does not write, reports the validation failure); legacy-flat
-   sidecar handling at the destination; dry-run mode makes no writes; and
-   confirmation that `promote_collections()`'s existing wholesale behavior
-   and its own tests are unaffected.
+   sidecar handling at the destination; dry-run mode makes no writes; the
+   new CLI flag actually reaches the new tranche-mode function (not just
+   the library function called directly); and confirmation that
+   `promote_collections()`'s existing wholesale behavior, its CLI
+   invocation, and their own tests are all unaffected.
 
 ## Non-Goals
 

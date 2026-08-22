@@ -37,11 +37,11 @@ forbidden_actions:
 acceptance:
   - "lcats annotate, when a valid genre-sidecar-v1 genre.json already exists for a story, appends a new assessment to its assessments[] list rather than overwriting the file"
   - "lcats annotate, when a legacy flat genre.json exists for a story (per genre_sidecar.is_legacy_flat_sidecar()), converts it to the append-only genre-sidecar-v1 shape first, preserving its existing evidence, then appends"
-  - "lcats annotate's existing create-fresh behavior is unchanged when no genre.json exists yet for a story"
+  - "lcats annotate, when no genre.json exists yet for a story, writes a valid genre-sidecar-v1 record from the start (wrapping the assessment in the append-only ledger shape) rather than the legacy AssessmentResult.to_dict() flat shape _annotate_genre currently produces - the command's existing invocation/inputs are unchanged, but its output shape is not required to stay byte-identical, since the legacy shape genre_sidecar.is_legacy_flat_sidecar()/validate_sidecar() would itself reject"
   - "Every write goes through genre_sidecar.validate_sidecar() before being committed to disk; a sidecar that would fail validation is refused, not written"
   - "The append path preserves annotate.py's existing checkpoint-safe/atomic write conventions (_atomic_write_text/_write_json), not a new less-safe write path"
   - "Both model-sourced and human-sourced assessment records can be appended through the new code path, even if only the model path is exercised in this item's own real validation"
-  - "annotate.py's existing behavior for scenes.json and README.md writes is unchanged"
+  - "_write_readme()'s genre.json section is updated to read genre-sidecar-v1's nested assessments[].result fields (not just the legacy top-level detected_genre/detected_genre_confidence/verdict keys _write_readme currently reads), so the README summary does not silently go blank/default once a story's genre.json is v1-shaped; scenes.json rendering is unaffected"
   - "scripts/test passes with no new failures"
   - "lrh validate reports 0 errors"
 required_evidence:
@@ -107,9 +107,16 @@ prior evidence.
   `assessments[]`, not overwritten.
 - Handle the legacy-flat-sidecar case: convert to the v1 shape first
   (preserving existing evidence), then append.
-- Preserve unchanged behavior when no `genre.json` exists yet.
+- When no `genre.json` exists yet, write a valid `genre-sidecar-v1` record
+  from the start (see Required Change 1 - the current fresh-write path
+  produces the legacy flat shape, which is itself incompatible with
+  validating every write, so "unchanged" applies to the command's
+  invocation/inputs, not its literal output shape).
 - Reuse `genre_sidecar.validate_sidecar()` before every write.
 - Preserve `annotate.py`'s existing atomic-write conventions.
+- Update `_write_readme()`'s genre-rendering section to read v1's nested
+  `assessments[].result` fields so the README doesn't silently blank out
+  once a story's `genre.json` becomes v1-shaped.
 
 ## Required Changes
 
@@ -119,18 +126,35 @@ prior evidence.
    to detect an existing `genre.json`, branch on
    `genre_sidecar.validate_sidecar()` (valid v1 → append) vs.
    `genre_sidecar.is_legacy_flat_sidecar()` (legacy → convert, then append)
-   vs. neither (create fresh, unchanged from today). Both model-labeled
-   and human-labeled assessment records must be constructible through
-   whatever new function(s) this adds - check `genre_sidecar.py`'s
-   `_is_model_assessment_label()`/`_validate_model_run_identity()` for
-   what distinguishes them.
-2. **`lcats/tests/analysis_tests/annotate_test.py`**: add tests covering:
+   vs. neither (no existing file → **write a fresh, valid `genre-sidecar-v1`
+   record wrapping the assessment**, not today's bare `result.to_dict()`
+   legacy shape - that shape is exactly what `is_legacy_flat_sidecar()`
+   detects and `validate_sidecar()` rejects, so requiring the literal
+   payload to stay unchanged would directly conflict with this item's own
+   "every write is validated" acceptance criterion; review finding, PR
+   #348). Both model-labeled and human-labeled assessment records must be
+   constructible through whatever new function(s) this adds - check
+   `genre_sidecar.py`'s `_is_model_assessment_label()`/
+   `_validate_model_run_identity()` for what distinguishes them.
+2. **`lcats/src/lcats/analysis/corpus/annotate.py`** (`_write_readme()`):
+   the genre-rendering section currently reads only the legacy top-level
+   `detected_genre`/`detected_genre_confidence`/`verdict` keys - once
+   `genre.json` can be `genre-sidecar-v1`-shaped, that data lives nested
+   under `assessments[].result` instead, so an unmodified `_write_readme()`
+   would render empty/default values after annotation (review finding, PR
+   #348). Update it to read the current/most-recent assessment's `result`
+   fields regardless of which shape is on disk. `scenes.json` rendering is
+   unaffected.
+3. **`lcats/tests/analysis_tests/annotate_test.py`**: add tests covering:
    append to an existing valid v1 sidecar; convert-then-append for a
-   legacy flat sidecar; unchanged create-fresh behavior; refusal of a
-   write that would fail `validate_sidecar()`; atomic-write behavior
-   preserved (no partial/corrupt file on a simulated failure); and
-   confirmation `scenes.json`/`README.md` writes are unaffected. Where
-   useful, replay real records from
+   legacy flat sidecar; a genuinely-fresh write produces a valid v1 record
+   (not the legacy shape); refusal of a write that would fail
+   `validate_sidecar()`; atomic-write behavior preserved (no partial/
+   corrupt file on a simulated failure); `_write_readme()` renders
+   correctly for both a v1 sidecar and (for backward compatibility, until
+   every existing sidecar is converted) a legacy one; and confirmation
+   `scenes.json` writes are unaffected. Where useful, replay real records
+   from
    `experiments/05_metadata_genre_prefilter/results/full_scan/validation_results.jsonl`
    as fixtures rather than only synthetic examples.
 

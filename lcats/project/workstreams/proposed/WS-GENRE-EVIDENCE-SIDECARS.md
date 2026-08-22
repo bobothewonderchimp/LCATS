@@ -67,7 +67,7 @@ Relevant prior work includes the current genre census experiment, existing `lcat
 1. Create cache preflight and `experiments/05_metadata_genre_prefilter` scaffold. **Done — `WI-GENRE-0001`.**
 2. Produce the 40-story metadata-evidence pilot across heterogeneous collections. **Done — `WI-GENRE-0002`.**
 3. Define and validate `genre-sidecar-v1`. **Done — `WI-GENRE-0003`.**
-4. Add legacy flat-sidecar conversion and validation coverage. **Done — `WI-GENRE-0003`/`genre_sidecar.is_legacy_flat_sidecar()`.**
+4. Add legacy flat-sidecar conversion and validation coverage. **Detection only done — `WI-GENRE-0003`'s `genre_sidecar.is_legacy_flat_sidecar()` detects the legacy shape but performs no conversion (an explicit Non-Goal of that item); actual conversion is scoped to `WI-GENRE-0076`, which owns the only production write path that needs it (review finding, PR #348).**
 5. Add sidecar-tranche promotion support. **Scoped — `WI-GENRE-0075`.**
 6. Promote and check in the 40-story pilot sidecars. **Superseded by the larger 146-story genre-balanced sample below; folded into `WI-GENRE-0077`, which depends on `WI-GENRE-0075`.**
 7. Expand metadata evidence to the 100-200 story sample. **Scan/selection/validation done — `WI-GENRE-0004` (146 stories, 87.0% metadata-rule/model agreement); actual promotion into `corpora/` remains — `WI-GENRE-0077`.**
@@ -87,11 +87,6 @@ Relevant prior work includes the current genre census experiment, existing `lcat
 
 ## Open Questions
 
-- What exact work item IDs should be minted for each implementation slice?
-  Steps 1-4 and 7 (scan/selection/validation half) are resolved
-  (`WI-GENRE-0001`-`0004`); steps 5, 6/7 (promotion half), and 8 are now
-  scoped as `WI-GENRE-0075`, `WI-GENRE-0077`, and `WI-GENRE-0076`
-  respectively; steps 9-11 remain unscoped.
 - What exact LCATS story ID string should become canonical in sidecars?
 - What should the CLI surface look like for sidecar-tranche promotion and append-mode annotation?
 - Should whole-corpus Gutenberg metadata labels be committed if the metadata path proves high-quality and very fast?
