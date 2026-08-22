@@ -16,7 +16,7 @@ related_workstreams:
 related_design:
   - project/design/proposals/proposed/genre-evidence-sidecars/00_proposal.md
   - project/work_items/resolved/WI-GENRE-0004.md
-  - project/work_items/proposed/WI-GENRE-0075.md
+  - project/work_items/resolved/WI-GENRE-0075.md
   - lcats/src/lcats/analysis/corpus/genre_sidecar.py
 depends_on:
   - WI-GENRE-0075

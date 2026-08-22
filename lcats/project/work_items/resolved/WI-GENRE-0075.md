@@ -2,7 +2,7 @@
 id: WI-GENRE-0075
 title: Add a sidecar-tranche promotion mode to lcats promote
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
@@ -24,7 +24,7 @@ depends_on: []
 blocked_by: []
 blocked: false
 blocked_reason: null
-resolution: null
+resolution: "Implemented and merged in PR #350 (squash commit b9b8af51d26f334cd3bfd88b45a0c84bfdab7c17). promote_sidecar_tranche() promotes genre-sidecar-v1 records from a JSONL manifest into corpora/ without touching other files, validates every record, refuses (does not convert) a legacy flat sidecar at the destination, and requires an existing story.json bucket. Wired into lcats promote via --tranche-manifest. Review found and fixed 2 real issues (lcats_id path-escape, orphan-bucket-on-typo) before merge; see project/executions/WI-GENRE-0075/ for the full record chain."
 expected_actions:
   - edit_file
   - run_tests
