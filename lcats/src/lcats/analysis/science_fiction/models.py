@@ -9,6 +9,7 @@ sources are supplied.
 from __future__ import annotations
 
 import dataclasses
+from collections.abc import Mapping, Sequence
 from types import MappingProxyType
 from typing import Any
 
@@ -150,11 +151,9 @@ class ProvenanceRecord:
         _require_non_empty_string(self.rubric_version, "rubric_version")
         if self.estimated_cost_usd is not None and self.estimated_cost_usd < 0:
             raise ValueError("estimated_cost_usd must be non-negative")
-        generation_parameters = dict(self.generation_parameters)
+        generation_parameters = _freeze_mapping(self.generation_parameters)
         token_usage = dict(self.token_usage)
-        object.__setattr__(
-            self, "generation_parameters", MappingProxyType(generation_parameters)
-        )
+        object.__setattr__(self, "generation_parameters", generation_parameters)
         object.__setattr__(self, "token_usage", MappingProxyType(token_usage))
         for key, value in token_usage.items():
             _require_non_empty_string(key, "token_usage key")
@@ -171,7 +170,7 @@ class ProvenanceRecord:
             "prompt_hash": self.prompt_hash,
             "schema_hash": self.schema_hash,
             "chunk_config_hash": self.chunk_config_hash,
-            "generation_parameters": dict(self.generation_parameters),
+            "generation_parameters": _thaw_value(self.generation_parameters),
             "token_usage": dict(self.token_usage),
             "estimated_cost_usd": self.estimated_cost_usd,
             "generated_at": self.generated_at,
@@ -578,9 +577,18 @@ class ScienceFictionSidecarEnvelope:
             }
             for evidence_set in self.evidence_sets
         }
-        for path, reference in _iter_evidence_references(
+        for path, analysis_evidence_set_id, reference in _iter_evidence_references(
             self.knight_analyses, self.suvin_novum_analyses
         ):
+            if reference.evidence_set_id != analysis_evidence_set_id:
+                findings.append(
+                    ValidationFinding(
+                        path,
+                        "error",
+                        "evidence_set_mismatch",
+                        "evidence reference must use the analysis evidence set",
+                    )
+                )
             evidence_ids = evidence_ids_by_set.get(reference.evidence_set_id)
             if evidence_ids is None:
                 findings.append(
@@ -768,17 +776,25 @@ def _iter_analyses(
 def _iter_evidence_references(
     knight_analyses: tuple[KnightAnalysis, ...],
     suvin_novum_analyses: tuple[SuvinNovumAnalysis, ...],
-) -> tuple[tuple[str, EvidenceReference], ...]:
-    references: list[tuple[str, EvidenceReference]] = []
+) -> tuple[tuple[str, str, EvidenceReference], ...]:
+    references: list[tuple[str, str, EvidenceReference]] = []
     for analysis_index, analysis in enumerate(knight_analyses):
         for criterion_index, criterion in enumerate(analysis.criteria):
             base = f"$.analyses.knight[{analysis_index}].criteria[{criterion_index}]"
             references.extend(
-                (f"{base}.supporting_evidence[{index}]", reference)
+                (
+                    f"{base}.supporting_evidence[{index}]",
+                    analysis.evidence_set_id,
+                    reference,
+                )
                 for index, reference in enumerate(criterion.supporting_evidence)
             )
             references.extend(
-                (f"{base}.counterevidence[{index}]", reference)
+                (
+                    f"{base}.counterevidence[{index}]",
+                    analysis.evidence_set_id,
+                    reference,
+                )
                 for index, reference in enumerate(criterion.counterevidence)
             )
     for analysis_index, analysis in enumerate(suvin_novum_analyses):
@@ -788,7 +804,7 @@ def _iter_evidence_references(
                 f".candidates[{candidate_index}]"
             )
             references.extend(
-                (f"{base}.evidence[{index}]", reference)
+                (f"{base}.evidence[{index}]", analysis.evidence_set_id, reference)
                 for index, reference in enumerate(candidate.evidence)
             )
             for dimension_name in (
@@ -799,11 +815,19 @@ def _iter_evidence_references(
                 dimension = getattr(candidate, dimension_name)
                 dimension_base = f"{base}.{dimension_name}"
                 references.extend(
-                    (f"{dimension_base}.supporting_evidence[{index}]", reference)
+                    (
+                        f"{dimension_base}.supporting_evidence[{index}]",
+                        analysis.evidence_set_id,
+                        reference,
+                    )
                     for index, reference in enumerate(dimension.supporting_evidence)
                 )
                 references.extend(
-                    (f"{dimension_base}.counterevidence[{index}]", reference)
+                    (
+                        f"{dimension_base}.counterevidence[{index}]",
+                        analysis.evidence_set_id,
+                        reference,
+                    )
                     for index, reference in enumerate(dimension.counterevidence)
                 )
             estrangement = candidate.estrangement
@@ -813,10 +837,36 @@ def _iter_evidence_references(
                 "character_reaction_evidence",
             ):
                 references.extend(
-                    (f"{base}.estrangement.{field_name}[{index}]", reference)
+                    (
+                        f"{base}.estrangement.{field_name}[{index}]",
+                        analysis.evidence_set_id,
+                        reference,
+                    )
                     for index, reference in enumerate(getattr(estrangement, field_name))
                 )
     return tuple(references)
+
+
+def _freeze_mapping(value: Mapping[str, Any]) -> MappingProxyType[str, Any]:
+    return MappingProxyType({key: _freeze_value(item) for key, item in value.items()})
+
+
+def _freeze_value(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return _freeze_mapping(value)
+    if isinstance(value, str | bytes):
+        return value
+    if isinstance(value, Sequence):
+        return tuple(_freeze_value(item) for item in value)
+    return value
+
+
+def _thaw_value(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return {key: _thaw_value(item) for key, item in value.items()}
+    if isinstance(value, tuple):
+        return [_thaw_value(item) for item in value]
+    return value
 
 
 def _require_non_empty_string(value: str, field_name: str) -> None:

@@ -360,6 +360,47 @@ class ScienceFictionModelsTest(unittest.TestCase):
         self.assertIn("story_hash_mismatch", finding_kinds)
         self.assertIn("missing_reference", finding_kinds)
 
+    def test_sidecar_validation_rejects_cross_set_evidence_references(self):
+        criteria = (
+            models.KnightCriterion(
+                criterion_id=models.KNIGHT_CRITERION_IDS[0],
+                status="present",
+                materiality="central",
+                supporting_evidence=(
+                    models.EvidenceReference(
+                        evidence_set_id="evidence-set-2",
+                        evidence_id="ev-2",
+                    ),
+                ),
+            ),
+        ) + tuple(
+            _criterion(criterion_id, "absent")
+            for criterion_id in models.KNIGHT_CRITERION_IDS[1:]
+        )
+        analysis = models.KnightAnalysis(
+            analysis_id="knight-1",
+            story_hash="story-hash",
+            evidence_set_id="evidence-set-1",
+            criteria=criteria,
+            provenance=_provenance(models.KNIGHT_RUBRIC_VERSION),
+        )
+        envelope = models.ScienceFictionSidecarEnvelope(
+            lcats_id="collection/story",
+            story_path="collection/story/story.json",
+            story_hash="story-hash",
+            evidence_sets=(
+                _evidence_set(evidence_set_id="evidence-set-1"),
+                _evidence_set(evidence_set_id="evidence-set-2", evidence_ids=("ev-2",)),
+            ),
+            knight_analyses=(analysis,),
+        )
+
+        validation = envelope.to_dict()["validation"]
+        finding_kinds = {finding["kind"] for finding in validation["findings"]}
+
+        self.assertFalse(validation["valid"])
+        self.assertIn("evidence_set_mismatch", finding_kinds)
+
     def test_current_pointer_validation_rejects_duplicate_analysis_ids(self):
         criteria = tuple(
             _criterion(criterion_id, "absent")
@@ -399,7 +440,11 @@ class ScienceFictionModelsTest(unittest.TestCase):
         )
 
     def test_provenance_mappings_are_immutable_after_construction(self):
-        parameters = {"temperature": 0}
+        parameters = {
+            "temperature": 0,
+            "nested": {"top_p": 0.9},
+            "stop_sequences": ["END"],
+        }
         token_usage = {"prompt": 10}
         provenance = models.ProvenanceRecord(
             run_id="run",
@@ -408,13 +453,27 @@ class ScienceFictionModelsTest(unittest.TestCase):
             token_usage=token_usage,
         )
         parameters["temperature"] = 1
+        parameters["nested"]["top_p"] = 0.1
+        parameters["stop_sequences"].append("MORE")
         token_usage["prompt"] = 20
 
         self.assertIsInstance(provenance.generation_parameters, MappingProxyType)
         self.assertEqual(0, provenance.generation_parameters["temperature"])
+        self.assertEqual(0.9, provenance.generation_parameters["nested"]["top_p"])
+        self.assertEqual(("END",), provenance.generation_parameters["stop_sequences"])
         self.assertEqual(10, provenance.token_usage["prompt"])
         with self.assertRaises(TypeError):
+            provenance.generation_parameters["nested"]["top_p"] = 0.2
+        with self.assertRaises(TypeError):
             provenance.token_usage["prompt"] = 30
+        self.assertEqual(
+            {
+                "temperature": 0,
+                "nested": {"top_p": 0.9},
+                "stop_sequences": ["END"],
+            },
+            provenance.to_dict()["generation_parameters"],
+        )
 
     def test_partial_success_keeps_stage_failure_separate(self):
         failure = models.FailureRecord(
