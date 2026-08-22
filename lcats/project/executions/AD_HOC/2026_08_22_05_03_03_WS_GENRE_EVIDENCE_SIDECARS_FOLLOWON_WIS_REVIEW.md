@@ -2,10 +2,10 @@
 execution_id: 2026_08_22_05_03_03_WS_GENRE_EVIDENCE_SIDECARS_FOLLOWON_WIS_REVIEW
 prompt_id: PROMPT(AD_HOC:WS_GENRE_EVIDENCE_SIDECARS_FOLLOWON_WIS_REVIEW)[2026-08-22T05:02:23+00:00]
 work_item: AD_HOC
-status: in_progress
-rerun_of: 
+status: landed
+rerun_of: 2026_08_22_05_12_46_WS_GENRE_EVIDENCE_SIDECARS_FOLLOWON_WIS_CLOSEOUT
 pr: https://github.com/xenotaur/LCATS/pull/348
-commit: 9d46397b5e0b714b45dcbdf498fbf9eaea277932
+commit: 849e00c3e9c17a19fcbc8173db0f3c189ab8463a
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/348
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
