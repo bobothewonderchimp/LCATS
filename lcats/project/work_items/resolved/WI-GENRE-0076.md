@@ -2,7 +2,7 @@
 id: WI-GENRE-0076
 title: Teach lcats annotate append-mode genre-sidecar writes
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
@@ -25,7 +25,7 @@ depends_on: []
 blocked_by: []
 blocked: false
 blocked_reason: null
-resolution: null
+resolution: "Implemented and merged in PR #357 (squash commit 4cafecf14304631686e7b4d1be4f92964f057f17). merge_genre_sidecar() appends to a valid genre-sidecar-v1 record, converts-then-appends a legacy flat sidecar, or wraps a fresh v1 record when nothing valid exists; every write is validated via genre_sidecar.validate_sidecar() and refused (not overwritten) if invalid. _write_readme() reads the current/most-recent assessment's nested result fields. Review found and fixed 3 real bugs (ledger-deletion-on-failure, checkpoint-hit-skips-legacy-migration, promote.py wholesale-gate incompatibility -- the last required amending this WI's own forbidden_actions with explicit human authorization) plus 2 more found pre-push by this item's own diff-mode self-review; see project/executions/WI-GENRE-0076/ for the full record chain."
 expected_actions:
   - edit_file
   - run_tests
