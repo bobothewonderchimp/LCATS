@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #376 (commit 0fb3d86105037262c9bffb3cebdd3e72ef5b71da)."
 blocked_reason: null
 blocked: false
 id: WI-LINGUISTICS-0004
 title: Run full-corpus linguistics experiment with copied bucket snapshot
 type: evaluation
-status: proposed
+status: resolved
 priority: high
 owner: unassigned
 contributors: []
