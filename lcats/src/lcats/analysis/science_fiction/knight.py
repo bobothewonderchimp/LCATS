@@ -129,9 +129,11 @@ def plan_follow_up(
 
     if max_requests < 0:
         raise ValueError("max_requests must be non-negative")
-    requests: list[KnightFollowUpRequest] = []
-    for decision in _order_decisions(decisions):
+    ordered_decisions = _order_decisions(decisions)
+    for decision in ordered_decisions:
         _require_decision_status(decision.status)
+    requests: list[KnightFollowUpRequest] = []
+    for decision in ordered_decisions:
         if len(requests) >= max_requests:
             break
         if decision.status in {"ambiguous", "not_assessable"}:

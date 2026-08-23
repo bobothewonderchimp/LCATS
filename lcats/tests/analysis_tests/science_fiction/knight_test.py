@@ -151,6 +151,24 @@ class KnightAdjudicationTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "decision state"):
             knight.plan_follow_up(decisions)
 
+    def test_follow_up_cap_does_not_suppress_later_status_validation(self):
+        decisions = tuple(
+            knight.CriterionAdjudication(
+                criterion_id=criterion_id,
+                status=(
+                    "ambiguous"
+                    if criterion_id == "criterion_1"
+                    else "uncertain" if criterion_id == "criterion_2" else "absent"
+                ),
+            )
+            for criterion_id in models.KNIGHT_CRITERION_IDS
+        )
+
+        with self.assertRaisesRegex(ValueError, "decision state"):
+            knight.plan_follow_up(decisions, max_requests=1)
+        with self.assertRaisesRegex(ValueError, "decision state"):
+            knight.plan_follow_up(decisions, max_requests=0)
+
     def test_knight_failure_does_not_force_suvin_failure(self):
         failure = models.FailureRecord(
             stage="knight",

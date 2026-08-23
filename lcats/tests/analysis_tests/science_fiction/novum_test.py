@@ -201,6 +201,22 @@ class NovumAdjudicationTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "decision state"):
             novum.plan_follow_up(candidates)
 
+    def test_follow_up_cap_does_not_suppress_later_status_validation(self):
+        candidates = (
+            novum.CandidateAdjudication(
+                candidate_id="novum-1",
+                description="A capped candidate with a later typo.",
+                novelty=novum.DimensionAdjudication(status="ambiguous"),
+                cognitive_validation=novum.DimensionAdjudication(status="uncertain"),
+                narrative_hegemony=novum.DimensionAdjudication(status="absent"),
+            ),
+        )
+
+        with self.assertRaisesRegex(ValueError, "decision state"):
+            novum.plan_follow_up(candidates, max_requests=1)
+        with self.assertRaisesRegex(ValueError, "decision state"):
+            novum.plan_follow_up(candidates, max_requests=0)
+
     def test_suvin_failure_does_not_force_knight_failure(self):
         failure = models.FailureRecord(
             stage="suvin_novum",

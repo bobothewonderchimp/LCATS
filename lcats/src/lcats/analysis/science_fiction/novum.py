@@ -211,13 +211,16 @@ def plan_follow_up(
 
     if max_requests < 0:
         raise ValueError("max_requests must be non-negative")
+    for candidate in candidates:
+        for dimension_name in NOVUM_DIMENSION_NAMES:
+            dimension = getattr(candidate, dimension_name)
+            _require_decision_status(dimension.status)
     requests: list[NovumFollowUpRequest] = []
     for candidate in candidates:
         for dimension_name in NOVUM_DIMENSION_NAMES:
             if len(requests) >= max_requests:
                 return tuple(requests)
             dimension = getattr(candidate, dimension_name)
-            _require_decision_status(dimension.status)
             if dimension.status in {"ambiguous", "not_assessable"}:
                 requests.append(
                     NovumFollowUpRequest(
