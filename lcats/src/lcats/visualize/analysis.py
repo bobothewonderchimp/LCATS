@@ -1,9 +1,12 @@
 """Pure analysis functions over genre/word-frequency data, independent of rendering."""
 
 import numpy as np
+from sklearn.decomposition import NMF
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from lcats.analysis import story_analysis
+
+DEFAULT_N_TOPICS = 8
 
 
 def sorted_counts(counts: dict) -> list[tuple[str, int]]:
@@ -86,3 +89,86 @@ def tfidf_top_terms(corpus_texts: list, group_indices: list, top_k: int = 20) ->
         key=lambda term_score: (-term_score[1], term_score[0]),
     )[:top_k]
     return dict(ranked)
+
+
+DEFAULT_NMF_MAX_ITER = 400
+DEFAULT_NMF_INIT = "nndsvda"
+NMF_INIT_CHOICES = ("nndsvd", "nndsvda", "nndsvdar", "random")
+
+
+def topic_model(
+    corpus_texts: list,
+    n_topics: int = DEFAULT_N_TOPICS,
+    top_k: int = 10,
+    seed: int = 42,
+    max_iter: int = DEFAULT_NMF_MAX_ITER,
+    init: str = DEFAULT_NMF_INIT,
+) -> dict:
+    """Fit a classical NMF topic-model baseline and return top terms per topic.
+
+    A classical baseline, not a final technique choice: embedding-based
+    topic models (e.g. BERTopic) are explicitly deferred per
+    ``PROP-LCATS-CORPUS-TEXT-VISUALIZATION`` until a concrete paper need
+    and evaluation criteria exist.
+
+    Uses the same ``TfidfVectorizer`` + ``story_analysis.get_keywords``
+    tokenizer as ``tfidf_top_terms`` for input features, then decomposes
+    via scikit-learn's ``NMF``. ``init`` selects the initialization
+    strategy (``nndsvda`` by default) and is an explicit, documented
+    parameter -- not hardcoded. ``random_state=seed`` genuinely affects
+    every ``init`` choice here, including ``nndsvd*``: scikit-learn's
+    NNDSVD-family initializers compute their starting point via a
+    *randomized* SVD seeded by ``random_state``, so changing ``seed`` can
+    change the initial factorization and the resulting topics even under
+    ``nndsvda`` -- confirmed empirically (two runs of this function with
+    different seeds on the same corpus produced different topic-term
+    assignments). Earlier revisions of this docstring incorrectly
+    described ``nndsvda`` as having "no randomness in initialization";
+    that was wrong and has been corrected here.
+
+    Returns ``{"topic_0": {term: weight, ...}, "topic_1": {...}, ...}``,
+    one entry per fitted topic in index order, each inner mapping ranked
+    by weight descending with a deterministic ``(-weight, term)``
+    tie-break and limited to ``top_k`` terms. Returns ``{}`` for an empty
+    corpus, an empty tokenized vocabulary, or when no topic can be fit
+    (fewer documents or terms than requested topics after clamping).
+    """
+    if not corpus_texts:
+        return {}
+    vectorizer = TfidfVectorizer(
+        tokenizer=story_analysis.get_keywords,
+        preprocessor=lambda text: text,
+        token_pattern=None,
+    )
+    try:
+        matrix = vectorizer.fit_transform(corpus_texts)
+    except ValueError as exc:
+        if "empty vocabulary" in str(exc):
+            return {}
+        raise
+    terms = vectorizer.get_feature_names_out()
+
+    n_topics_actual = min(n_topics, matrix.shape[0], matrix.shape[1])
+    if n_topics_actual < 1:
+        return {}
+
+    model = NMF(
+        n_components=n_topics_actual,
+        init=init,
+        random_state=seed,
+        max_iter=max_iter,
+    )
+    model.fit(matrix)
+
+    topics = {}
+    for topic_idx, component in enumerate(model.components_):
+        ranked = sorted(
+            (
+                (terms[i], float(component[i]))
+                for i in range(len(terms))
+                if component[i] > 0
+            ),
+            key=lambda term_weight: (-term_weight[1], term_weight[0]),
+        )[:top_k]
+        topics[f"topic_{topic_idx}"] = dict(ranked)
+    return topics
