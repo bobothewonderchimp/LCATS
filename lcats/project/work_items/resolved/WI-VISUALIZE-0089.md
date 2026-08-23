@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #378 (commit b72c3ebd)."
 blocked_reason: null
 blocked: false
 id: WI-VISUALIZE-0089
 title: Usage documentation and examples for lcats visualize
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
