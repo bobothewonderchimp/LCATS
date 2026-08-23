@@ -119,12 +119,15 @@ documents the intended execution order and must stay in sync with that list.
    whether fuzzy matching can safely recover near-miss anchors without
    reintroducing the silent wrong-match behavior documented by
    `WI-SEGMENT-0059`. This is an evaluation gate, not an implementation.
-5. **`WI-PILOT-0082`: Bounded retry-with-backoff for transient API errors** -
-   Add opt-in retry logic for server-overload/rate-limit failures
-   (`_classify_api_error`'s existing `can_retry` categories), distinct from
-   `WI-PILOT-0067`'s blocking failure mode (segmentation alignment, a
-   deterministic issue retry doesn't help) and not gated on it. Verified
-   entirely with mocked backends, no real spend.
+5. **`WI-PILOT-0082`: Bounded retry-with-backoff for transient API errors**
+   (resolved via PR #368) - Added opt-in retry logic for
+   server-overload/rate-limit failures (`_classify_api_error`'s existing
+   `can_retry` categories), distinct from `WI-PILOT-0067`'s blocking
+   failure mode (segmentation alignment, a deterministic issue retry
+   doesn't help) and not gated on it. Verified entirely with mocked
+   backends, no real spend. Wiring the new parameters into
+   `run_pilot.py`'s CLI remains a separate, unfiled follow-on per this
+   item's own Non-Goals.
 6. **Prompt caching adoption** - If the stability gate and segmentation
    reliability follow-ups still support proceeding, expose
    explicit pilot-level prompt caching for Anthropic fixture/pilot runs,

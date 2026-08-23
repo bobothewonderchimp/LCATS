@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged via PR #368 (commit 05203f45). JSONPromptExtractor gained opt-in max_retries/retry_backoff_seconds constructor parameters (default 0/1.0, byte-for-byte unchanged for every existing caller) and a _complete_with_retry() wrapper reusing _normalize_api_error's existing can_retry classification, with exponential backoff. All acceptance criteria verified: TestCompleteWithRetry covers default-unchanged, in-budget recovery, exponential backoff sequence (asserted via mock_sleep call args), exhaustion falling through to the existing api_error shape, and non-retryable errors never retrying - all mocked, no real LLM spend. A follow-up review round (PR #368) added negative-value validation for both constructor parameters and a fast path for max_retries<=0 avoiding double error-normalization. scripts/test passes (2011 tests, including 94/94 in llm_extractor_test.py); lrh validate reports 0 errors attributable to this item (one pre-existing, unrelated YAML error in WI-VISUALIZE-0086.md predates this PR). Per this item's own Non-Goals, wiring max_retries/retry_backoff_seconds into run_pilot.py's CLI or extractor construction remains a separate, unfiled follow-on."
 blocked_reason: null
 blocked: false
 id: WI-PILOT-0082
 title: Add bounded retry-with-backoff for transient LLM API errors
 type: operation
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []

@@ -2,10 +2,10 @@
 execution_id: 2026_08_23_16_17_31_WI_PILOT_0082_RETRY_BACKOFF_REVIEW
 prompt_id: PROMPT(AD_HOC:WI_PILOT_0082_RETRY_BACKOFF_REVIEW)[2026-08-23T16:17:24+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/368
-commit: aff15b37
+commit: 05203f45
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/368
 session_transcript: claude-app:e8e46d5d-35d3-4ccc-9cba-137bd31bf3a5
