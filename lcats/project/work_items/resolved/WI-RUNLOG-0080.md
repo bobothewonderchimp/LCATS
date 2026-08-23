@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #371 (commit acfd7d56)."
 blocked_reason: null
 blocked: false
 id: WI-RUNLOG-0080
 title: Add run-log support to run_pilot.py
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
