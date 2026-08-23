@@ -76,6 +76,7 @@ def build_analysis(
 ) -> models.KnightAnalysis:
     """Build an independent Knight analysis from seven criterion decisions."""
 
+    _require_story_hash(story_hash, evidence_set)
     criteria = tuple(
         decision.to_criterion(evidence_set) for decision in _order_decisions(decisions)
     )
@@ -177,3 +178,8 @@ def _require_evidence_ids(
 def _require_decision_status(status: str) -> None:
     if status not in models.DECISION_STATES:
         raise ValueError("status must be a decision state")
+
+
+def _require_story_hash(story_hash: str, evidence_set: evidence.EvidenceSet) -> None:
+    if story_hash != evidence_set.story_hash:
+        raise ValueError("story_hash must match evidence_set.story_hash")
