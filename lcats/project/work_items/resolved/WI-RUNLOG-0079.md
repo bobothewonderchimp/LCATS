@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #365 (commit e396b189)."
 blocked_reason: null
 blocked: false
 id: WI-RUNLOG-0079
 title: Migrate run_prefilter.py onto lcats.utils.run_log
 type: operation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
