@@ -163,6 +163,7 @@ def build_analysis(
 ) -> models.SuvinNovumAnalysis:
     """Build an independent Suvin analysis from candidate decisions."""
 
+    _require_story_hash(story_hash, evidence_set)
     candidate_records = tuple(
         candidate.to_candidate(evidence_set) for candidate in candidates
     )
@@ -257,3 +258,8 @@ def _require_evidence_ids(
 def _require_decision_status(status: str) -> None:
     if status not in models.DECISION_STATES:
         raise ValueError("status must be a decision state")
+
+
+def _require_story_hash(story_hash: str, evidence_set: evidence.EvidenceSet) -> None:
+    if story_hash != evidence_set.story_hash:
+        raise ValueError("story_hash must match evidence_set.story_hash")

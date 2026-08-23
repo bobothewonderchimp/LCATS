@@ -115,6 +115,28 @@ class KnightAdjudicationTest(unittest.TestCase):
                 provenance=_provenance(models.KNIGHT_RUBRIC_VERSION),
             )
 
+    def test_rejects_mismatched_evidence_set_story_hash(self):
+        decisions = tuple(
+            knight.CriterionAdjudication(
+                criterion_id=criterion_id,
+                status="present" if criterion_id == "criterion_1" else "absent",
+                materiality="central" if criterion_id == "criterion_1" else None,
+                supporting_evidence_ids=(
+                    ("criterion_1",) if criterion_id == "criterion_1" else ()
+                ),
+            )
+            for criterion_id in models.KNIGHT_CRITERION_IDS
+        )
+
+        with self.assertRaisesRegex(ValueError, "story_hash"):
+            knight.build_analysis(
+                analysis_id="knight-1",
+                story_hash="other-story-hash",
+                evidence_set=_evidence_set(),
+                decisions=decisions,
+                provenance=_provenance(models.KNIGHT_RUBRIC_VERSION),
+            )
+
     def test_plans_bounded_follow_up_for_ambiguous_criteria(self):
         decisions = tuple(
             knight.CriterionAdjudication(

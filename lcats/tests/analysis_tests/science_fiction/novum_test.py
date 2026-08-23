@@ -168,6 +168,33 @@ class NovumAdjudicationTest(unittest.TestCase):
                 ),
             )
 
+    def test_rejects_mismatched_evidence_set_story_hash(self):
+        with self.assertRaisesRegex(ValueError, "story_hash"):
+            novum.build_analysis(
+                analysis_id="suvin-1",
+                story_hash="other-story-hash",
+                evidence_set=_evidence_set(),
+                candidates=(
+                    novum.CandidateAdjudication(
+                        candidate_id="novum-1",
+                        description="A cognitively validated storyworld change.",
+                        novelty=novum.DimensionAdjudication(
+                            status="present",
+                            supporting_evidence_ids=("novelty",),
+                        ),
+                        cognitive_validation=novum.DimensionAdjudication(
+                            status="present",
+                            supporting_evidence_ids=("cognition",),
+                        ),
+                        narrative_hegemony=novum.DimensionAdjudication(
+                            status="present",
+                            supporting_evidence_ids=("hegemony",),
+                        ),
+                    ),
+                ),
+                provenance=_provenance(models.SUVIN_RUBRIC_VERSION),
+            )
+
     def test_plans_bounded_follow_up_for_ambiguous_dimensions(self):
         candidates = (
             novum.CandidateAdjudication(
