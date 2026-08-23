@@ -38,6 +38,7 @@ forbidden_actions:
   - modify_event_role_world_extractor
   - implement_new_architecture
   - run_real_llm_calls_without_explicit_approval
+  - execute_full_run_before_wi_event_0079_and_0080_gate
   - force_push
   - delete_branch
 acceptance:
@@ -421,6 +422,98 @@ was still pending.
     (expected successes ≈3 and ≈2 respectively) — this is now a
     corroborated, real-data-based risk, not a hypothetical one from desk
     research. See closeout note / follow-up discussion for options.
+- **Process note: this real-evidence work (2026-08-22/23) happened outside
+  `WS-PILOT-CROSS-SEGMENT-DENSITY`'s staged gate sequence
+  (`WI-EVENT-0078` preregistration → `WI-EVENT-0079` readiness gate →
+  `WI-EVENT-0080` small feasibility pilot), which was independently being
+  designed concurrently and landed on `main` (PR #355) partway through this
+  same session.** That workstream exists specifically because "direct
+  attempts to run `run_pilot.py` already led to expensive bug discovery and
+  follow-on checkpointing/cost-sustainability work"
+  (`WI-EVENT-0078.md`'s own Problem/Context) - a close description of what
+  happened here too. This note records what was actually done, for
+  reconciliation into that staged plan rather than silently duplicating or
+  bypassing it:
+  - Every real run was preceded by an explicit, in-session cost/scope
+    presentation and approval (model, story count, estimated cost) before
+    any paid call, and a running daily-spend total was tracked against an
+    explicit user-set cap ($20/day, preference for far less) - consistent
+    with `WI-EVENT-0079`'s and `WI-EVENT-0080`'s own approval-gating intent,
+    even though it wasn't routed through their specific artifacts.
+  - One real fix was made in response to a negative real result: raising
+    `_ERW_MAX_TOKENS` from 16384 to 32768 (`run_pilot.py:184`) after a real
+    `event_anchor` extraction call hit the old ceiling. This is an
+    infrastructure/config ceiling change, not prompt tuning or a threshold
+    redefinition, and was independently re-verified on the exact same
+    story that had failed before the fix - but it is still the general
+    "found a problem via a real paid run, fixed it, re-ran to confirm"
+    pattern `WI-EVENT-0079`'s Non-Goals ("does not implement... new
+    segmentation fixes") and `WI-EVENT-0080`'s `forbidden_actions`
+    (`tune_prompts_after_negative_gate_result`) exist to gate rather than
+    leave informal.
+  - Total real spend across this session's testing: ~$13.12 (see individual
+    run figures above and below), against explicit per-run approval each
+    time.
+  - **Not yet reconciled:** whether this evidence should be treated as
+    satisfying (in whole or part) `WI-EVENT-0079`'s readiness-gate
+    acceptance criteria or `WI-EVENT-0080`'s feasibility-pilot acceptance
+    criteria, be re-run formally through those items' own artifact
+    contracts, or stand as informal input those items separately confirm -
+    left as an open question for whoever picks up `WI-EVENT-0078` next,
+    not decided here.
+- **Follow-up real test (2026-08-22/23): stronger segmentation model +
+  raised `max_tokens` ceiling, same 8-story set as above.** After raising
+  `_ERW_MAX_TOKENS` to 32768 and overriding `--model-segment
+  claude-opus-4-8` (rest of the pipeline stayed on
+  `claude-haiku-4-5-20251001`), re-ran all 8 stories (across two real
+  calls interrupted once by an exhausted account credit balance - a real
+  billing block, not a code issue - and completed after a top-up):
+  - **Zero `max_tokens` truncation failures across all 8 stories**,
+    including a direct before/after re-test of the exact story
+    (`mass_quantities/long_odds__haggard`) that had hit the truncation
+    error before the fix - it succeeded cleanly afterward. The fix is
+    confirmed, not just plausible.
+  - Even so, the headline success rate was still **3/8 (37.5%)** - the
+    same as the unfixed baseline, but for a different reason: 3/8 failed
+    on the already-known alignment/near-miss category (unchanged, as
+    expected), and **2/8 failed on transient infrastructure errors**
+    (`overloaded_error` from Anthropic, and a network read timeout) rather
+    than a real data or model problem - both hit genres (fantasy) that had
+    been 100% reliable in every earlier test.
+  - **`run_pilot.py` has no retry logic for transient errors today** - one
+    overload or timeout permanently excludes a story from the sample, the
+    same as a real alignment or truncation failure. Had those two
+    transient failures been retried, this run would likely have reached
+    5/8 (62.5%). Unlike the alignment category (deliberately accepted,
+    `WI-SEGMENT-0072`) or the old truncation bug (needed a real ceiling
+    fix), this looks like a standard, low-risk gap: a bounded
+    retry-with-backoff wrapper around transient API errors, distinct from
+    `WI-EVENT-0079`'s excluded `implement_batch_api_adoption` scope and not
+    a change to segmentation/extractor logic - worth a feasibility look
+    before committing it to any of this workstream's gate items.
+  - Real cost for this follow-up test: $5.58 (first partial run, aborted
+    on exhausted credit) + $4.25 (continued partial run, also hit the
+    credit wall) + $2.32 (final remaining 4 stories, after account top-up)
+    = **$12.15** for the full 8-story confirmation, on top of $0.97 for the
+    original all-Haiku baseline test above.
+- **This item is gated, not ready to execute at scale, pending
+  `WI-EVENT-0079`/`WI-EVENT-0080`'s own formal readiness/feasibility
+  determination (2026-08-23).** `blocked: true` cannot be set here per
+  `lrh validate`'s `WORK_ITEM_BLOCKED_STATUS_INVALID` rule (only valid
+  with `status: active`; this item is `status: proposed`), so the gate is
+  expressed here and via `forbidden_actions`'
+  `execute_full_run_before_wi_event_0079_and_0080_gate` instead. Do not
+  run this item's near-final 40-75-story sample until
+  `WI-EVENT-0079`'s readiness report and `WI-EVENT-0080`'s feasibility
+  pilot have each produced their own recommendation
+  (`proceed_to_small_feasibility`/`fix_named_blocker`/`stop` for 0079;
+  `proceed_to_wi_event_0030`/`fix_named_blocker`/
+  `revise_preregistration_before_results`/`stop` for 0080) - this item's
+  own real evidence above (validated `max_tokens` fix, confirmed
+  transient-error gap, corroborated ~35-38% success rate) is offered as
+  input to that formal process, not a substitute for it. See the
+  "Process note" entry above for what was and wasn't done through the
+  formal gate sequence.
 
 ## Related Workstream and Designs
 

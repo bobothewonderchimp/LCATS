@@ -177,11 +177,18 @@ _STORY_LIST_DEFAULT_SENTINEL = object()
 # truncating mid-tool-call now raises TruncatedResponseError (see
 # lcats.llm.backend) instead of returning malformed JSON - so a request that
 # used to fail data-integrity checks downstream now fails loudly and
-# immediately unless given real headroom. 16384 is well under
-# claude-opus-4-8's 128k output ceiling and costs nothing extra for calls
-# that finish early (Anthropic bills actual output tokens generated, not
-# this ceiling).
-_ERW_MAX_TOKENS = 16384
+# immediately unless given real headroom. Raised 16384 -> 32768 after a real
+# cost-gate run (WI-EVENT-0030, 2026-08-22) hit
+# "truncated at the max_tokens limit (16384)" on a real event_anchor
+# extraction call. This constant is applied uniformly across all five
+# extractors regardless of which model runs each stage (see
+# _build_erw_extractors below), so it must stay under the *lowest* per-token
+# output ceiling in play, not just claude-opus-4-8's 128k - claude-haiku-4-5
+# caps at 64k output tokens, so 32768 leaves a full 2x margin under that
+# floor rather than the previous headroom under Opus's much higher ceiling
+# alone. Costs nothing extra for calls that finish early (Anthropic bills
+# actual output tokens generated, not this ceiling).
+_ERW_MAX_TOKENS = 32768
 
 # Substrings of an API error message that mean "stop the whole run", not
 # "skip this one story": bad/expired credentials or an exhausted account
