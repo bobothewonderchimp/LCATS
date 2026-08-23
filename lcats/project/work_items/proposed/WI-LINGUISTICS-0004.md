@@ -48,9 +48,9 @@ acceptance:
   - A new experiments/07_linguistics_corpora/ directory discovers every current corpora/**/story.json deterministically and records the inspected corpus commit
   - The experiment copies all discovered source story buckets into results/copied_buckets/ and runs lcats linguistics against those copied story.json files
   - The full run writes compact linguistics.json sidecars beside copied story.json files, with no linguistics sidecars written under corpora/
-  - The experiment writes story-list.txt, linguistics_run_summary.json, and experiment_report.json with counts, elapsed time, backend/model provenance, failures, and corpus-write safety checks
-  - Tests exercise fixture discovery, copied-bucket snapshotting, sidecar placement, resume/overwrite behavior, failure reporting, and no-corpus-write checks without requiring spaCy, network access, paid APIs, or the full corpus
-  - scripts/format --check --diff, scripts/lint, scripts/test, the experiment test, and lrh validate pass
+  - The experiment writes story-list.txt, snapshot_manifest.json, linguistics_run_summary.json, and experiment_report.json with counts, elapsed time, backend/model provenance, failures, and corpus-write safety checks
+  - Tests exercise fixture discovery, copied-bucket snapshotting, pre-analysis snapshot provenance, resume provenance validation, sidecar placement, resume/overwrite behavior, failure reporting, and no-corpus-write checks without requiring spaCy, network access, paid APIs, or the full corpus
+  - python experiment tests from the repository root, package scripts from lcats/, and lrh validate pass
 required_evidence:
   - test_output
   - lrh_validate
@@ -131,6 +131,9 @@ the main corpus.
 - Preserve normal bucket layout by writing `linguistics.json` beside copied
   `story.json` files.
 - Write deterministic story-list, run-summary, and experiment-report artifacts.
+- Write source snapshot provenance and inventory before analysis begins, so an
+  interrupted or resumed run cannot falsely attribute copied buckets to a later
+  checkout.
 - Include elapsed-time and corpus-size measurements sufficient to evaluate
   full-corpus linguistics performance.
 - Add deterministic fixture tests with the fake NLP backend.
@@ -147,6 +150,9 @@ the main corpus.
    - optionally limit to `--smoke-count N`;
    - copy each full story bucket into `results/copied_buckets/`;
    - write `results/story-list.txt` pointing at copied `story.json` files;
+   - write `results/snapshot_manifest.json` before running linguistics,
+     including the source commit SHA, source story inventory, copied story
+     paths, and source/copied `story.json` hashes;
    - run `lcats.analysis.linguistics.runner` or the established CLI behavior
      against the copied stories without `--output-root`;
    - write `results/linguistics_run_summary.json`;
@@ -156,8 +162,11 @@ the main corpus.
 3. Support safe execution modes:
    - default behavior refuses to mix with a pre-existing copied snapshot unless
      explicitly resuming or overwriting;
-   - `--resume` or equivalent uses existing copied buckets and the linguistics
-     runner's `--existing skip` semantics to continue an interrupted run;
+   - `--resume` or equivalent preserves the existing snapshot manifest,
+     validates copied-bucket inventory and hashes against that manifest, and
+     uses the linguistics runner's `--existing skip` semantics to continue an
+     interrupted run without deriving source provenance from the resumed
+     checkout;
    - `--overwrite` prunes stale copied buckets/results and rebuilds from the
      current corpus snapshot.
 4. Run a small spaCy smoke pass before the full run to verify local model
@@ -188,19 +197,26 @@ the main corpus.
   deterministic tests, and checked-in result artifacts.
 - The experiment discovers all current corpus stories and records both the
   source story count and inspected commit SHA.
+- The experiment writes snapshot provenance and story inventory before analysis
+  begins, and `--resume` preserves and validates that provenance rather than
+  replacing it with the resumed checkout's commit SHA.
 - `results/copied_buckets/<collection>/<story>/story.json` preserves the input
   bucket snapshot, and `linguistics.json` is written beside each copied story.
-- `results/story-list.txt`, `results/linguistics_run_summary.json`, and
-  `results/experiment_report.json` are deterministic and machine-readable.
+- `results/story-list.txt`, `results/snapshot_manifest.json`,
+  `results/linguistics_run_summary.json`, and `results/experiment_report.json`
+  are deterministic and machine-readable.
 - The full run reports clean completion, copied story count, sidecar count,
   elapsed wall time, backend/model provenance, and any failures.
 - The report confirms no generated linguistics sidecars were written under
   `corpora/`.
 - Fixture tests cover copy, resume, overwrite, failure, and no-corpus-write
-  behavior without requiring real spaCy or network access.
+  behavior, including resume refusal on snapshot provenance or hash mismatch,
+  without requiring real spaCy or network access.
 - Required validation commands pass.
 
 ## Validation
+
+Run experiment commands from the repository root:
 
 - `python experiments/07_linguistics_corpora/run_linguistics_corpora_test.py`
 - `python experiments/07_linguistics_corpora/run_linguistics_corpora.py --backend fake --smoke-count 2 --overwrite`
@@ -208,10 +224,13 @@ the main corpus.
 - `python experiments/07_linguistics_corpora/run_linguistics_corpora.py --backend spacy --overwrite`
 - `find corpora -path '*linguistics.json' -o -path '*linguistics.tokens.json' | wc -l`
 - `find experiments/07_linguistics_corpora/results/copied_buckets -name linguistics.json | wc -l`
-- `scripts/format --check --diff`
-- `scripts/lint`
-- `scripts/test`
-- `lrh validate`
+
+Run package checks from `lcats/` using the project Python environment:
+
+- `(cd lcats && scripts/format --check --diff)`
+- `(cd lcats && scripts/lint)`
+- `(cd lcats && scripts/test)`
+- `(cd lcats && lrh validate)`
 
 ## Dependencies / Order
 
@@ -234,7 +253,8 @@ context because it documents when output-root redirection is preferable.
   more depending on local spaCy/model performance; the script should record
   elapsed time and remain resumable.
 - Mixing a new source snapshot with old sidecars would undermine the experiment,
-  so resume/overwrite semantics must be explicit and tested.
+  so snapshot provenance must be written before analysis and resume/overwrite
+  semantics must be explicit and tested.
 - Copying the full corpus currently duplicates roughly 58 MB of story-bucket
   data, which is acceptable for an experiment snapshot but should be called out
   in the report.
