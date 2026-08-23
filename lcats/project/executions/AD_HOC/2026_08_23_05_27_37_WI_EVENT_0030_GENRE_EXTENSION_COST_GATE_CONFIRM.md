@@ -2,10 +2,10 @@
 execution_id: 2026_08_23_05_27_37_WI_EVENT_0030_GENRE_EXTENSION_COST_GATE_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0030_GENRE_EXTENSION_COST_GATE_CONFIRM)[2026-08-23T05:25:18+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/367
-commit: 3db140a2
+commit: 5119e02c
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/367
 session_transcript: claude-app:e8e46d5d-35d3-4ccc-9cba-137bd31bf3a5
