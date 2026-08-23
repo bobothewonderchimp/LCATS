@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #375 (commit 2bcc40fc)."
 blocked_reason: null
 blocked: false
 id: WI-VISUALIZE-0088
 title: Dogfood lcats visualize against the Worldcon 2026 paper's real figures
 type: operation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
