@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #363 (commit 65f83868)."
 blocked_reason: null
 blocked: false
 id: WI-VISUALIZE-0085
 title: Word-frequency visualization: lcats visualize words
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []

@@ -2,14 +2,14 @@
 execution_id: 2026_08_22_23_41_02_WORDS_COMMAND_CONFIRM
 prompt_id: PROMPT(AD_HOC:WORDS_COMMAND_CONFIRM)[2026-08-22T23:40:53+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_22_23_34_26_WORDS_COMMAND
 pr: https://github.com/xenotaur/LCATS/pull/363
-commit: d504ca39
+commit: 65f83868
 created_at: 2026-08-22T23:41:02+00:00
 agent: claude-sonnet-5
 instruction_source: https://github.com/xenotaur/LCATS/pull/363
-session_transcript: pending
+session_transcript: claude-app:bd65a2ed-883b-400d-b621-0268bc17e85a
 ---
 
 # Summary

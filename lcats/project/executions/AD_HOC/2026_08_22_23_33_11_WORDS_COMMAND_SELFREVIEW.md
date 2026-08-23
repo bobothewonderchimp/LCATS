@@ -2,14 +2,14 @@
 execution_id: 2026_08_22_23_33_11_WORDS_COMMAND_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WORDS_COMMAND_SELFREVIEW)[2026-08-22T23:33:01+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
-pr: 
-commit: 34e88c3f
+pr: https://github.com/xenotaur/LCATS/pull/363
+commit: 65f83868
 created_at: 2026-08-22T23:33:11+00:00
 agent: claude-sonnet-5
 instruction_source: WI-VISUALIZE-0085
-session_transcript: pending
+session_transcript: claude-app:bd65a2ed-883b-400d-b621-0268bc17e85a
 ---
 
 # Summary
