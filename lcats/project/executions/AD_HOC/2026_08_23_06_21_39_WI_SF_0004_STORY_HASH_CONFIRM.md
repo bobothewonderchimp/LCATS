@@ -2,10 +2,10 @@
 execution_id: 2026_08_23_06_21_39_WI_SF_0004_STORY_HASH_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_SF_0004_STORY_HASH_CONFIRM)[2026-08-23T06:21:14+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/374
-commit: 74594b6ac8ea2d01f568564df3515afdd8786dba
+commit: 7323bdc05eb7ad65c2aa1aea538c42c81ae943e0
 agent: codex_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/374
 session_transcript: codex-app:01a02338-d9c7-7313-8ed5-fb9c1643bef1
