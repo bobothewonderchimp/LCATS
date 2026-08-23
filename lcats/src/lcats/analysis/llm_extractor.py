@@ -1,6 +1,7 @@
 """Generic JSON-focused LLM extractor."""
 
 import json
+import time
 import warnings
 
 from typing import Any, Callable, Dict, List, Optional, Tuple
@@ -53,6 +54,21 @@ class JSONPromptExtractor:
         and `extracted_output` — `output_key`/text-JSON parsing are not
         used. Callers still get alignment/validation hooks applied to the
         tool result if `result_aligner`/`result_validator` are provided.
+    max_retries : int
+        Number of additional attempts for a `backend.complete()` call that
+        raises an exception `_classify_api_error` marks `can_retry: True`
+        (transient server overload, rate limits — not auth, quota,
+        context-length, or truncated-output errors, which are never
+        retried regardless of this setting). Default 0 preserves prior
+        behavior exactly: no retries, first exception propagates as
+        before. Does not retry a call that returns successfully but with
+        an empty response/tool_result (`empty_response`/
+        `empty_tool_result` — also marked `can_retry: True` today but
+        that's a different code path, not an exception; out of scope
+        here).
+    retry_backoff_seconds : float
+        Base delay before the first retry; doubles each subsequent
+        attempt (exponential backoff). Ignored when `max_retries` is 0.
     """
 
     def __init__(
@@ -75,6 +91,8 @@ class JSONPromptExtractor:
             Callable[[Dict[str, Any], str, Any], Dict[str, Any]]
         ] = None,
         tool_schema: Optional[Dict[str, Any]] = None,
+        max_retries: int = 0,
+        retry_backoff_seconds: float = 1.0,
     ):
         if client is not _UNSET:
             if backend is not _UNSET:
@@ -113,6 +131,14 @@ class JSONPromptExtractor:
         self.result_aligner = result_aligner
         self.result_validator = result_validator
         self.tool_schema = tool_schema
+        if max_retries < 0:
+            raise ValueError(f"max_retries must be >= 0, got {max_retries!r}")
+        if retry_backoff_seconds < 0:
+            raise ValueError(
+                f"retry_backoff_seconds must be >= 0, got {retry_backoff_seconds!r}"
+            )
+        self.max_retries = max_retries
+        self.retry_backoff_seconds = retry_backoff_seconds
 
         # Debug/inspection hooks
         self.last_messages: Optional[List[Dict[str, str]]] = None
@@ -329,6 +355,39 @@ class JSONPromptExtractor:
         }
         return self._classify_api_error(payload)
 
+    # ---------- retry ----------
+
+    def _complete_with_retry(self, **kwargs: Any) -> "llm_backend.BackendResponse":
+        """Call `self.backend.complete(**kwargs)`, retrying transient errors.
+
+        Reuses `_normalize_api_error`'s existing classification rather than
+        duplicating retryability logic - a call only retries when the raised
+        exception classifies `can_retry: True` (server overload, rate
+        limits). Auth, quota, context-length, and truncated-output errors
+        propagate on the first attempt regardless of `max_retries`, exactly
+        as before this method existed.
+
+        With the default `max_retries=0`, this is exactly one attempt with
+        no delay - identical to calling `self.backend.complete(**kwargs)`
+        directly (no classification overhead either: the fast path below
+        skips `_normalize_api_error` entirely and lets the exception
+        propagate as-is, so `extract()`'s own `except` block is still the
+        only place that normalizes it).
+        """
+        if self.max_retries <= 0:
+            return self.backend.complete(**kwargs)
+
+        attempt = 0
+        while True:
+            try:
+                return self.backend.complete(**kwargs)
+            except Exception as exc:
+                classified = self._normalize_api_error(exc)
+                if not classified.get("can_retry") or attempt >= self.max_retries:
+                    raise
+                attempt += 1
+                time.sleep(self.retry_backoff_seconds * (2 ** (attempt - 1)))
+
     # ---------- API ----------
 
     def __call__(
@@ -365,7 +424,7 @@ class JSONPromptExtractor:
         raw_output = ""
 
         try:
-            backend_response = self.backend.complete(
+            backend_response = self._complete_with_retry(
                 system=self.system_prompt,
                 messages=[{"role": "user", "content": user_content}],
                 model=model,
