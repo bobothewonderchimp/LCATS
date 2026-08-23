@@ -322,6 +322,71 @@ class TestPerStageModelOverrides(unittest.TestCase):
         )
 
 
+class TestMaxTokensForModel(unittest.TestCase):
+    """PR #367 review finding (P1): _ERW_MAX_TOKENS was previously applied
+    uniformly regardless of backend/model, which would make every
+    --backend openai (gpt-4o) call fail before extraction - gpt-4o's real
+    hard maximum is 16384 completion tokens (confirmed by a real API
+    rejection quoted in
+    lcats/experimental/model_comparison/wi_llm_0059/run_frontier_paired.py),
+    below _ERW_MAX_TOKENS's 32768 preference."""
+
+    def test_gpt4o_capped_at_its_real_ceiling(self):
+        self.assertEqual(run_pilot._max_tokens_for_model("gpt-4o"), 16384)
+
+    def test_claude_haiku_uses_preferred_ceiling_not_its_higher_real_cap(self):
+        # claude-haiku-4-5 caps at 64k, well above _ERW_MAX_TOKENS's 32768
+        # preference - the preference wins since it's the lower of the two.
+        self.assertEqual(
+            run_pilot._max_tokens_for_model("claude-haiku-4-5-20251001"), 32768
+        )
+
+    def test_claude_opus_uses_preferred_ceiling_not_its_higher_real_cap(self):
+        self.assertEqual(run_pilot._max_tokens_for_model("claude-opus-4-8"), 32768)
+
+    def test_unrecognized_model_falls_back_to_conservative_default(self):
+        self.assertEqual(
+            run_pilot._max_tokens_for_model("some-future-model-nobody-added-yet"),
+            16384,
+        )
+
+    def test_build_erw_extractors_applies_per_stage_ceiling(self):
+        from lcats.llm import fake_backend
+
+        fake = fake_backend.FakeBackend()
+        stage_models = run_pilot.StageModels.from_global(
+            "claude-opus-4-8", entity="gpt-4o"
+        )
+        extractors = run_pilot._build_erw_extractors(
+            fake, "claude-opus-4-8", stage_models
+        )
+
+        self.assertEqual(extractors["entity"].max_tokens, 16384)  # gpt-4o's real cap
+        self.assertEqual(extractors["event"].max_tokens, 32768)  # opus, unaffected
+
+
+class TestStratifiedScanGenresScope(unittest.TestCase):
+    """PR #367 review findings (P1 + P2): the default (no --story/
+    --story-list) stratified-scan mode is not yet updated to
+    WI-EVENT-0030's validated-manifest methodology or adventure's real
+    6-story corpus-wide cap, so it stays scoped to the original 4 genres
+    via _STRATIFIED_SCAN_GENRES - distinct from the full 8-genre GENRES
+    used by --story/--story-list targeted mode's --genre choices."""
+
+    def test_stratified_scan_genres_is_the_original_four(self):
+        self.assertEqual(
+            run_pilot._STRATIFIED_SCAN_GENRES,
+            ("science fiction", "horror", "western", "romance"),
+        )
+
+    def test_stratified_scan_genres_excludes_adventure(self):
+        self.assertNotIn("adventure", run_pilot._STRATIFIED_SCAN_GENRES)
+
+    def test_genres_still_includes_all_eight_for_targeted_mode(self):
+        self.assertEqual(len(run_pilot.GENRES), 8)
+        self.assertIn("adventure", run_pilot.GENRES)
+
+
 class TestSegmentStoryStillReturnsBareList(unittest.TestCase):
     """WI-EVENT-0033: make_segment_extractor now uses the tool= path
     internally, but scene_analysis._segment_result_aligner unwraps the
@@ -1162,7 +1227,7 @@ class TestTargetedStoryResolution(unittest.TestCase):
 
     def test_parse_story_list_rejects_unknown_genre(self):
         list_path = self.data_dir / "manifest.txt"
-        list_path.write_text("test_collection/story_a:mystery\n", encoding="utf-8")
+        list_path.write_text("test_collection/story_a:noir\n", encoding="utf-8")
 
         with self.assertRaises(ValueError):
             run_pilot._parse_story_list(list_path, self.data_dir, self.fixtures_dir)
