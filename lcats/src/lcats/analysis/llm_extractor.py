@@ -131,6 +131,12 @@ class JSONPromptExtractor:
         self.result_aligner = result_aligner
         self.result_validator = result_validator
         self.tool_schema = tool_schema
+        if max_retries < 0:
+            raise ValueError(f"max_retries must be >= 0, got {max_retries!r}")
+        if retry_backoff_seconds < 0:
+            raise ValueError(
+                f"retry_backoff_seconds must be >= 0, got {retry_backoff_seconds!r}"
+            )
         self.max_retries = max_retries
         self.retry_backoff_seconds = retry_backoff_seconds
 
@@ -363,8 +369,14 @@ class JSONPromptExtractor:
 
         With the default `max_retries=0`, this is exactly one attempt with
         no delay - identical to calling `self.backend.complete(**kwargs)`
-        directly.
+        directly (no classification overhead either: the fast path below
+        skips `_normalize_api_error` entirely and lets the exception
+        propagate as-is, so `extract()`'s own `except` block is still the
+        only place that normalizes it).
         """
+        if self.max_retries <= 0:
+            return self.backend.complete(**kwargs)
+
         attempt = 0
         while True:
             try:

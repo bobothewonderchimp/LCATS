@@ -62,11 +62,20 @@ class _RetryThenSucceedBackend:
         self._calls = 0
         self._fake = fake_backend.FakeBackend(**fake_backend_kwargs)
 
-    def complete(self, **kwargs):
+    def complete(
+        self, *, system, messages, model, temperature=0.2, max_tokens=4096, tool=None
+    ):
         self._calls += 1
         if self._calls <= self._fail_count:
             raise self._exc
-        return self._fake.complete(**kwargs)
+        return self._fake.complete(
+            system=system,
+            messages=messages,
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            tool=tool,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -1087,6 +1096,37 @@ class TestCompleteWithRetry(unittest.TestCase):
         result = ext.extract("story")
         self.assertEqual(result["extraction_error"], "api_error")
         self.assertFalse(result["api_error"]["can_retry"])
+        mock_sleep.assert_not_called()
+
+    def test_negative_max_retries_rejected(self):
+        """max_retries < 0 fails fast at construction rather than silently
+        behaving like max_retries=0 (attempt=0 >= -1 is always True, so
+        retries would never fire, which is a confusing way to disable
+        retries)."""
+        with self.assertRaises(ValueError):
+            _make_extractor(backend=fake_backend.FakeBackend(), max_retries=-1)
+
+    def test_negative_retry_backoff_seconds_rejected(self):
+        """retry_backoff_seconds < 0 fails fast at construction rather than
+        raising ValueError from time.sleep() deep inside a retry attempt."""
+        with self.assertRaises(ValueError):
+            _make_extractor(
+                backend=fake_backend.FakeBackend(), retry_backoff_seconds=-1.0
+            )
+
+    @patch("time.sleep")
+    def test_max_retries_zero_skips_normalization_fast_path(self, mock_sleep):
+        """With max_retries=0, _complete_with_retry() never calls
+        _normalize_api_error() itself - the exception propagates straight
+        through to extract()'s own except block, which is the only place
+        that normalizes it (previously it was normalized twice: once to
+        check can_retry, once by extract())."""
+        ext = _make_extractor(backend=_RaisingBackend(self._overloaded_exc()))
+        with patch.object(
+            ext, "_normalize_api_error", wraps=ext._normalize_api_error
+        ) as mock_normalize:
+            ext.extract("story")
+        mock_normalize.assert_called_once()
         mock_sleep.assert_not_called()
 
 
