@@ -2,10 +2,10 @@
 execution_id: 2026_08_23_05_44_59_LCATS_PROMOTE_MODE_REDESIGN_CONFIRM
 prompt_id: PROMPT(AD_HOC:LCATS_PROMOTE_MODE_REDESIGN_CONFIRM)[2026-08-23T05:44:41+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_23_05_21_06_LCATS_PROMOTE_MODE_REDESIGN
 pr: https://github.com/xenotaur/LCATS/pull/369
-commit: aa443e6b2d8771b6278ac1eea0942297a73c3113
+commit: 654fbe4dec882996e7419700394c44d8be83cfd7
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/369
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
