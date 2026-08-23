@@ -2,10 +2,10 @@
 id: WS-LINGUISTICS
 kind: planning_node
 title: Linguistic Feature Sidecars and Worldcon Sample Runs
-status: resolved
-stage: closed
+status: proposed
+stage: planned
 origin: follow_up
-summary: Coordinate standalone LCATS linguistic-feature sidecar infrastructure, experiment-local Worldcon sample runs, and later output-location improvements.
+summary: Coordinate standalone LCATS linguistic-feature sidecar infrastructure, experiment-local sample/full-corpus runs, and output-location improvements.
 related_focus:
   - FOCUS-WORLDCON-2026
 related_roadmap:
@@ -17,10 +17,12 @@ work_items:
   - WI-LINGUISTICS-0001
   - WI-LINGUISTICS-0002
   - WI-LINGUISTICS-0003
+  - WI-LINGUISTICS-0004
 exit_criteria:
   - WI-LINGUISTICS-0001 remains resolved and linked to this workstream
   - The WI-GENRE-0004 146-story sample has an experiment-local copied-bucket linguistics run with checked-in summary/report artifacts
   - lcats linguistics has a reviewed output-redirection design or implementation path captured separately from the sample-run experiment
+  - The full current corpus has an experiment-local copied-bucket linguistics run with checked-in sidecars, summary, and performance report artifacts
   - Documentation clearly distinguishes experiment-local linguistic sidecars from any later corpus-promotion workflow
   - All work items resolved and lrh validate reports 0 errors
 ---
@@ -31,16 +33,19 @@ exit_criteria:
 
 This workstream coordinates the standalone linguistic-feature sidecar path for
 LCATS. It retroactively groups the resolved infrastructure work from
-`WI-LINGUISTICS-0001` with the next two deliberately deferred follow-ups:
-running the now-available `WI-GENRE-0004` genre-balanced sample in an
-experiment-local copied-bucket mirror, and separately improving output
-location support for future runs.
+`WI-LINGUISTICS-0001` with the next follow-ups: running the now-available
+`WI-GENRE-0004` genre-balanced sample in an experiment-local copied-bucket
+mirror, separately improving output location support for future runs, and
+running a final full-corpus copied-bucket linguistics experiment to capture
+corpus-wide features and timing.
 
-The workstream exists now because the generic `lcats linguistics` command has
-landed, the 146-story genre-balanced sample has landed, and the documentation
-from PR #336 explicitly names both the sample run and a later manifest/output
-adapter as deferred work. Capturing the stream keeps the experiment run,
-shared-runner improvement, and any later corpus-promotion decision separate.
+The workstream originally closed after the generic `lcats linguistics` command,
+the 146-story genre-balanced sample run, and output-root support all landed.
+It is reopened for one final bounded experiment: preserve a full-corpus copied
+bucket snapshot and run local linguistics over that snapshot before later
+corpus changes make the current state harder to reproduce. Capturing the stream
+keeps the experiment runs, shared-runner improvement, and any later
+corpus-promotion decision separate.
 
 ## Scope
 
@@ -52,6 +57,9 @@ shared-runner improvement, and any later corpus-promotion decision separate.
 - Capture output-root or output-redirection support as a separate shared
   infrastructure work item rather than silently expanding the sample-run
   experiment.
+- Run `lcats linguistics` over the full current corpus using an
+  experiment-local copied-bucket mirror so downstream tools can consume normal
+  bucket-shaped story/sidecar pairs without writing sidecars into `corpora/`.
 - Keep documentation and experiment reports clear about local sidecars,
   deterministic provenance, and the boundary between experiment-local outputs
   and any later corpus-promotion workflow.
@@ -99,6 +107,10 @@ shared-runner improvement, and any later corpus-promotion decision separate.
 - **WI-LINGUISTICS-0003** - Add output-root support to `lcats linguistics`
   sidecar writing. This owns the shared runner/CLI improvement separately from
   the sample-run experiment.
+- **WI-LINGUISTICS-0004** - Run the full current corpus through
+  `lcats linguistics` in experiment-local copied buckets. This owns the final
+  full-corpus snapshot/performance run and must not run the local genre model
+  census or promote sidecars into `corpora/`.
 
 ## Exit Criteria
 
@@ -110,6 +122,10 @@ shared-runner improvement, and any later corpus-promotion decision separate.
 - The output-redirection question is resolved through a separate reviewed work
   item, either by implementing explicit output-root support or recording a
   design decision not to add it.
+- The full-corpus linguistics run exists as an experiment-local copied-bucket
+  output with normal bucket structure, checked-in compact sidecars, a story
+  list, run summary, performance report, and no generated linguistic sidecars
+  written into `corpora/`.
 - Documentation clearly explains when to use copied-bucket experiment mirrors,
   when to use any output-root feature, and why corpus promotion remains a
   separate later gate.
@@ -131,6 +147,6 @@ shared-runner improvement, and any later corpus-promotion decision separate.
 - Whether `WI-LINGUISTICS-0003` should implement output-root support directly
   or first produce a narrower design note depends on the exact collision and
   provenance semantics found during implementation.
-- Whether long-story performance measurement should become a fourth work item
-  remains deferred until the 146-story sample run produces real local timing
-  data.
+- Whether the full-corpus experiment results should later feed visualizations
+  or corpus-promotion workflows remains out of scope for this reopened final
+  work item.
