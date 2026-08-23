@@ -2,7 +2,7 @@
 
 import json
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call, patch
 
 from parameterized import parameterized
 
@@ -50,6 +50,23 @@ class _RaisingBackend:
         self, *, system, messages, model, temperature=0.2, max_tokens=4096, tool=None
     ):
         raise self._exc
+
+
+class _RetryThenSucceedBackend:
+    """Stub backend that raises `exc` from complete() `fail_count` times,
+    then delegates to a real FakeBackend for the eventual successful call."""
+
+    def __init__(self, exc, fail_count, **fake_backend_kwargs):
+        self._exc = exc
+        self._fail_count = fail_count
+        self._calls = 0
+        self._fake = fake_backend.FakeBackend(**fake_backend_kwargs)
+
+    def complete(self, **kwargs):
+        self._calls += 1
+        if self._calls <= self._fail_count:
+            raise self._exc
+        return self._fake.complete(**kwargs)
 
 
 # ---------------------------------------------------------------------------
@@ -979,6 +996,98 @@ class TestResultSerializable(unittest.TestCase):
         result_copy = {k: v for k, v in result.items() if k != "response"}
         serialized = json.dumps(result_copy)
         self.assertIsInstance(serialized, str)
+
+
+# ---------------------------------------------------------------------------
+# Tests: retry-with-backoff
+# ---------------------------------------------------------------------------
+
+
+class TestCompleteWithRetry(unittest.TestCase):
+    """Tests for _complete_with_retry() / extract()'s retry behavior.
+
+    Real overload/timeout errors observed live during a WI-EVENT-0030
+    cost-gate run (2026-08-22/23) permanently excluded stories that would
+    likely have succeeded on a second attempt - these tests verify the
+    fix without spending on real API calls, per this project's own
+    established practice of testing the actual named mechanism (retry
+    control flow) rather than a real-money proxy.
+    """
+
+    def _overloaded_exc(self):
+        # `_normalize_api_error`'s best-effort default path reads
+        # str(exc) as the message and string-matches "overloaded" -
+        # matches the real Anthropic `overloaded_error` shape observed
+        # live, without needing the actual SDK exception class.
+        return RuntimeError("Overloaded")
+
+    def _non_retryable_exc(self):
+        # Auth errors are never retried regardless of max_retries.
+        return RuntimeError("Invalid API key: authentication failed")
+
+    @patch("time.sleep")
+    def test_default_max_retries_zero_preserves_prior_behavior(self, mock_sleep):
+        """max_retries=0 (the default) makes exactly one attempt, no delay -
+        identical to calling backend.complete() directly, as before this
+        method existed."""
+        ext = _make_extractor(backend=_RaisingBackend(self._overloaded_exc()))
+        result = ext.extract("story")
+        self.assertEqual(result["extraction_error"], "api_error")
+        mock_sleep.assert_not_called()
+
+    @patch("time.sleep")
+    def test_retries_recover_from_transient_error(self, mock_sleep):
+        """A retryable error that fails twice then succeeds is fully
+        recovered when max_retries >= 2 - the exact story-rescuing case
+        this fix targets."""
+        backend = _RetryThenSucceedBackend(
+            self._overloaded_exc(),
+            fail_count=2,
+            response_text='{"segments": []}',
+        )
+        ext = _make_extractor(backend=backend, max_retries=2)
+        result = ext.extract("story")
+        self.assertIsNone(result["api_error"])
+        self.assertEqual(result["extraction_error"], None)
+        self.assertEqual(mock_sleep.call_count, 2)
+
+    @patch("time.sleep")
+    def test_retries_use_exponential_backoff(self, mock_sleep):
+        """Backoff delay doubles each attempt: base, 2x base, 4x base..."""
+        backend = _RetryThenSucceedBackend(
+            self._overloaded_exc(),
+            fail_count=3,
+            response_text='{"segments": []}',
+        )
+        ext = _make_extractor(backend=backend, max_retries=3, retry_backoff_seconds=1.0)
+        ext.extract("story")
+        mock_sleep.assert_has_calls([call(1.0), call(2.0), call(4.0)])
+
+    @patch("time.sleep")
+    def test_retries_exhausted_falls_through_to_existing_error_path(self, mock_sleep):
+        """When every attempt fails, the final exception flows into the
+        same api_error result shape as an un-retried failure - retry
+        exhaustion is not a new/different failure mode for callers."""
+        ext = _make_extractor(
+            backend=_RaisingBackend(self._overloaded_exc()), max_retries=2
+        )
+        result = ext.extract("story")
+        self.assertEqual(result["extraction_error"], "api_error")
+        self.assertTrue(result["api_error"]["can_retry"])
+        self.assertEqual(mock_sleep.call_count, 2)
+
+    @patch("time.sleep")
+    def test_non_retryable_error_never_retries(self, mock_sleep):
+        """An error _classify_api_error marks can_retry=False (e.g. auth)
+        propagates on the first attempt even with max_retries set - never
+        wastes attempts on an error retrying can't fix."""
+        ext = _make_extractor(
+            backend=_RaisingBackend(self._non_retryable_exc()), max_retries=5
+        )
+        result = ext.extract("story")
+        self.assertEqual(result["extraction_error"], "api_error")
+        self.assertFalse(result["api_error"]["can_retry"])
+        mock_sleep.assert_not_called()
 
 
 if __name__ == "__main__":
