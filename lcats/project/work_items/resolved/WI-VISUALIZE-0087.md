@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #372 (commit 7234dcc0)."
 blocked_reason: null
 blocked: false
 id: WI-VISUALIZE-0087
 title: Topic-model baseline visualization: lcats visualize topics
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
