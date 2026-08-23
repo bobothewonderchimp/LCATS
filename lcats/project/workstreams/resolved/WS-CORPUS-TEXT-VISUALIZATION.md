@@ -2,8 +2,8 @@
 id: WS-CORPUS-TEXT-VISUALIZATION
 kind: planning_node
 title: Corpus and Document Text Visualization for LCATS
-status: proposed
-stage: planned
+status: resolved
+stage: closed
 origin: design_review
 summary: Deliver PROP-LCATS-CORPUS-TEXT-VISUALIZATION through a reusable `lcats visualize` CLI family (genres, words, tfidf, topics) built on the existing Story/Corpora representation and lcats.analysis.graph_plotters renderer, producing reproducible publication-ready figures for the Worldcon 2026 paper.
 related_focus:

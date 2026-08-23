@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #380 (commit 1be7cce8)."
 blocked_reason: null
 blocked: false
 id: WI-VISUALIZE-0090
 title: "TF-IDF distinguishing-terms contrast metric: lcats visualize tfidf --contrast"
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []

@@ -2,14 +2,14 @@
 execution_id: 2026_08_23_17_40_29_WI_VISUALIZE_0090_CONTRAST_REVIEW
 prompt_id: PROMPT(AD_HOC:WI_VISUALIZE_0090_CONTRAST_REVIEW)[2026-08-23T17:40:23+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/380
-commit: 
+commit: 1be7cce88bece2dfafaa41be3af38443ea79ad69
 created_at: 2026-08-23T17:40:29+00:00
 agent: claude-sonnet-5
 instruction_source: https://github.com/xenotaur/LCATS/pull/380
-session_transcript: pending
+session_transcript: claude-app:bd65a2ed-883b-400d-b621-0268bc17e85a
 ---
 
 # Summary
