@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #359 (commit ff532c15)."
 blocked_reason: null
 blocked: false
 id: WI-RUNLOG-0078
 title: Implement shared lcats.utils.run_log module
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
