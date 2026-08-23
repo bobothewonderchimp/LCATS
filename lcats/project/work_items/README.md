@@ -25,7 +25,6 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `proposed/WI-RELEASE-0037.md` — Resolve gutenbergpy VCS-pin PyPI-publish blocker
 - `proposed/WI-RELEASE-0039.md` — Pre-launch verification of the gutenbergpy dependency resolution before real PyPI publish
 - `proposed/WI-LLM-0055.md` — Capture full entity lists and diff them across benchmark candidates
-- `proposed/WI-LLM-0066.md` — Wire run_census.py to a local OpenAI-compatible backend and evaluate gpt-oss:20b at genre-census scale
 - `proposed/WI-GENRE-0001.md` — Create metadata genre prefilter scaffold
 - `proposed/WI-GENRE-0004.md` — Full-corpus metadata scan, genre-balanced 100-200 story selection, and bounded Opus validation
 
@@ -34,6 +33,7 @@ YAML frontmatter is authoritative for metadata, and directory buckets are kept a
 - `abandoned/WI-ANNOTATE-0053.md` — superseded by `WI-STATS-0049`, which landed the identical `lcats stats` selector fix independently
 
 ## Resolved Items
+- `resolved/WI-LLM-0066.md` — Wire run_census.py to a local OpenAI-compatible backend and evaluate gpt-oss:20b at genre-census scale
 - `resolved/WI-VISUALIZE-0073.md` — Reusable lcats visualize CLI substrate and genres command
 - `resolved/WI-LLM-0065.md` — Make gpt-oss:20b entity extraction production-grounded behind a candidate-scoped adapter; consider-only pending precision/recall evaluation, with no default routing change
 - `resolved/WI-LLM-0064.md` — Establish a best-of-breed config for ollama_gpt_oss_20b and fix harness diagnostic gaps
