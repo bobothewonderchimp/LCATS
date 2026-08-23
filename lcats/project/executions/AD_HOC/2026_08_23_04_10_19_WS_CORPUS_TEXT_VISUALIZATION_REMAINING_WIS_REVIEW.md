@@ -2,14 +2,14 @@
 execution_id: 2026_08_23_04_10_19_WS_CORPUS_TEXT_VISUALIZATION_REMAINING_WIS_REVIEW
 prompt_id: PROMPT(AD_HOC:WS_CORPUS_TEXT_VISUALIZATION_REMAINING_WIS_REVIEW)[2026-08-23T04:09:34+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_23_01_28_26_WS_CORPUS_TEXT_VISUALIZATION_REMAINING_WIS
 pr: https://github.com/xenotaur/LCATS/pull/364
-commit: e67df7fc
+commit: b6216874
 created_at: 2026-08-23T04:10:19+00:00
 agent: claude-sonnet-5
 instruction_source: https://github.com/xenotaur/LCATS/pull/364
-session_transcript: pending
+session_transcript: claude-app:bd65a2ed-883b-400d-b621-0268bc17e85a
 ---
 
 # Summary
