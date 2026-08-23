@@ -71,12 +71,14 @@ DEFAULT_SAMPLE_STORY = (
 # default (4096) turned out too low even for claude-opus-4-8 on a real
 # ~600-word segment - confirmed live, it truncated
 # (TruncatedResponseError) with entities/mentions/quotes still mid-
-# generation - which is exactly why run_pilot.py raises it to 16384 in
-# the first place (its own comment: "JSONPromptExtractor's own default
-# (4096) is far below what a content-dense segment can need"). But
-# 16384 (run_pilot.py's _ERW_MAX_TOKENS, tuned for whole-story-sized
-# input) let one local-model run ramble for ~29 minutes before finally
-# emitting a tool call on the old, oversized whole-story input this
+# generation - which is exactly why run_pilot.py raises it in the first
+# place (its own comment: "JSONPromptExtractor's own default (4096) is
+# far below what a content-dense segment can need"; the value itself was
+# 16384 at the time this comment was written, since raised to 32768,
+# PR #367). But run_pilot.py's own _ERW_MAX_TOKENS (tuned for
+# whole-story-sized input, not this harness's shorter segments) let one
+# local-model run ramble for ~29 minutes before finally emitting a tool
+# call on the old, oversized whole-story input this
 # harness used to send. 8192 is a segment-appropriate middle ground,
 # confirmed sufficient for both candidates on the real sample segment.
 DEFAULT_MAX_TOKENS = 8192

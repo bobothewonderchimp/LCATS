@@ -441,8 +441,10 @@ was still pending.
     with `WI-EVENT-0079`'s and `WI-EVENT-0080`'s own approval-gating intent,
     even though it wasn't routed through their specific artifacts.
   - One real fix was made in response to a negative real result: raising
-    `_ERW_MAX_TOKENS` from 16384 to 32768 (`run_pilot.py:184`) after a real
-    `event_anchor` extraction call hit the old ceiling. This is an
+    the `_ERW_MAX_TOKENS` module constant in
+    `experiments/03_cross_segment_relation_pilot/run_pilot.py` from 16384
+    to 32768 after a real `event_anchor` extraction call hit the old
+    ceiling. This is an
     infrastructure/config ceiling change, not prompt tuning or a threshold
     redefinition, and was independently re-verified on the exact same
     story that had failed before the fix - but it is still the general

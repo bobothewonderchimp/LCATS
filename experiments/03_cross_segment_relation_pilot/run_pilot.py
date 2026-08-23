@@ -68,14 +68,27 @@ Optional flags:
 Genre strata cover all 8 lcats.analysis.corpus.assess.VALID_GENRES (science
 fiction, horror, humor, western, romance, mystery, fantasy, adventure) via
 the module-level GENRES constant below, which now aliases VALID_GENRES
-directly. This was Gap 3 in
-project/design/event-role-world-genre-target-reconciliation.md, resolved by
-WI-EVENT-0030's re-scope (2026-08-22) once WI-GENRE-0004 produced real
-per-genre corpus/agreement data to size it against - see WI-EVENT-0030.md's
-Scope section for the exact-match selection requirement and per-genre
-corpus counts. Genre is detected per-candidate story via assess_story() in
-detect mode (an LLM call), not read from any pre-existing label, since the
-corpus carries no genre metadata today.
+directly - but only for --story/--story-list targeted mode (--genre
+choices, manifest validation, and the final per-genre summary). This was
+Gap 3 in project/design/event-role-world-genre-target-reconciliation.md,
+resolved by WI-EVENT-0030's re-scope (2026-08-22) once WI-GENRE-0004
+produced real per-genre corpus/agreement data to size it against - see
+WI-EVENT-0030.md's Scope section for the exact-match selection requirement
+and per-genre corpus counts. In targeted mode, the caller (a manifest built
+from WI-GENRE-0004's validated
+experiments/05_metadata_genre_prefilter/results/full_scan/validation_results.jsonl,
+per that Scope section) is responsible for the exact-match selection and
+adventure's 6-story cap - this script does not enforce either for
+caller-supplied story lists.
+
+The DEFAULT (no --story/--story-list) stratified-scan mode remains scoped
+to the original 4 genres via the separate _STRATIFIED_SCAN_GENRES constant
+- it still classifies each candidate independently via a fresh
+assess_story() detect-mode call (an LLM call, not read from any
+pre-existing label, since the corpus carries no genre metadata today) and
+has no per-genre cap, so it has not been extended to WI-EVENT-0030's
+validated-manifest methodology or adventure's real corpus-wide scarcity
+(review finding, PR #367) - a separate, later follow-up.
 
 Requires:
     - lcats installed (run scripts/develop if not)
@@ -162,6 +175,27 @@ GENRES = corpus_assess.VALID_GENRES
 # module docstring above and WI-EVENT-0030.md's Scope section. Was
 # previously pinned to a hardcoded 4-genre tuple, deliberately independent
 # of VALID_GENRES, while the re-scope was still pending real numbers.
+# Used for --genre argparse choices, --story-list manifest validation, and
+# summarize_by_genre()'s output aggregation - all genre-agnostic surfaces
+# that work correctly for any of the 8 genres regardless of how a story's
+# genre label was determined.
+
+_STRATIFIED_SCAN_GENRES = ("science fiction", "horror", "western", "romance")
+# build_stratified_sample()'s default (no --story/--story-list) scan mode
+# is NOT the same code path this re-scope validated: it still classifies
+# each candidate independently via a fresh assess_story() detect-mode call
+# (build_stratified_sample()'s own docstring), not by reading
+# WI-GENRE-0004's already-validated
+# experiments/05_metadata_genre_prefilter/results/full_scan/validation_results.jsonl
+# exact-match manifest as WI-EVENT-0030.md's Scope now requires - and it
+# has no per-genre sample-size cap, so a run targeting the new adventure
+# stratum (only 6 stories exist in the entire corpus, WI-GENRE-0004.md's
+# own Risk Notes) would demand --sample-size stories from every genre
+# alike and exit incomplete (review finding, PR #367). Deliberately kept
+# at the original 4 genres until build_stratified_sample() is extended to
+# read the validated manifest and cap adventure explicitly - a real,
+# separately-scoped follow-up, not implemented here alongside the 8-genre
+# --story-list support this PR's own real testing exercised and verified.
 
 # argparse.const for --story-list given with no FILE argument - distinct
 # from `None` (flag not given at all), which argparse can't distinguish
@@ -180,15 +214,47 @@ _STORY_LIST_DEFAULT_SENTINEL = object()
 # immediately unless given real headroom. Raised 16384 -> 32768 after a real
 # cost-gate run (WI-EVENT-0030, 2026-08-22) hit
 # "truncated at the max_tokens limit (16384)" on a real event_anchor
-# extraction call. This constant is applied uniformly across all five
-# extractors regardless of which model runs each stage (see
-# _build_erw_extractors below), so it must stay under the *lowest* per-token
-# output ceiling in play, not just claude-opus-4-8's 128k - claude-haiku-4-5
-# caps at 64k output tokens, so 32768 leaves a full 2x margin under that
-# floor rather than the previous headroom under Opus's much higher ceiling
-# alone. Costs nothing extra for calls that finish early (Anthropic bills
-# actual output tokens generated, not this ceiling).
+# extraction call. This is a *preferred* ceiling, not a value every model
+# actually accepts - see _max_tokens_for_model() below, which caps it per
+# model against each provider's own real completion-token limit before
+# applying it. Costs nothing extra for calls that finish early (Anthropic
+# and OpenAI both bill actual output tokens generated, not this ceiling).
 _ERW_MAX_TOKENS = 32768
+
+# Real, evidence-based per-model output-token ceilings, keyed by prefix
+# (matched via startswith, same convention as the pricing dicts in
+# experiments/04_genre_census/run_census.py and
+# experiments/05_metadata_genre_prefilter/run_prefilter.py). Requesting
+# above a model's real ceiling doesn't get silently clamped - OpenAI
+# rejects the request outright before any generation happens ("max_tokens
+# is too large: 24576. This model supports at most 16384 completion
+# tokens", a real API rejection quoted in
+# lcats/experimental/model_comparison/wi_llm_0059/run_frontier_paired.py:51-55
+# - gpt-4o's own hard maximum, not a value this pilot chose and could
+# raise further; review finding, PR #367, this constant was previously
+# applied uniformly regardless of backend/model, which would make every
+# --backend openai call fail before extraction). claude-haiku-4-5 caps at
+# 64k output tokens, claude-opus-4-8 at 128k - both comfortably above
+# _ERW_MAX_TOKENS's own 32768 preference, so only gpt-4o's lower real
+# ceiling actually binds today.
+_MAX_TOKENS_CEILING_BY_MODEL_PREFIX = {
+    "gpt-4o": 16384,
+    "claude-haiku-4-5": 65536,
+    "claude-opus-4": 131072,
+}
+_DEFAULT_MAX_TOKENS_CEILING = 16384  # conservative fallback for an unrecognized model
+
+
+def _max_tokens_for_model(model_name: str) -> int:
+    """Return the max_tokens value to request for `model_name`: this
+    pilot's own preferred ceiling (_ERW_MAX_TOKENS), capped down to that
+    model's real completion-token limit if lower - never above what the
+    model can actually accept, regardless of _ERW_MAX_TOKENS's own value.
+    """
+    for prefix, ceiling in _MAX_TOKENS_CEILING_BY_MODEL_PREFIX.items():
+        if model_name.startswith(prefix):
+            return min(_ERW_MAX_TOKENS, ceiling)
+    return min(_ERW_MAX_TOKENS, _DEFAULT_MAX_TOKENS_CEILING)
 
 # Substrings of an API error message that mean "stop the whole run", not
 # "skip this one story": bad/expired credentials or an exhausted account
@@ -479,14 +545,17 @@ def build_stratified_sample(
     seed: int,
     dry_run: bool,
 ) -> Tuple[Dict[str, List[pathlib.Path]], int]:
-    """Select up to `sample_size` stories per genre in GENRES.
+    """Select up to `sample_size` stories per genre in
+    _STRATIFIED_SCAN_GENRES (deliberately not the full 8-genre GENRES -
+    see that constant's own comment: this scan mode isn't yet updated to
+    WI-EVENT-0030's validated-manifest methodology or adventure's cap).
 
     Returns (genre -> list of file paths, candidates_scanned). Scans
     candidates in shuffled order, classifying each with a real detect-mode
     assess_story() call (skipped in --dry-run, where the first
-    len(GENRES) * sample_size candidates are round-robin assigned instead,
-    with zero API calls), stopping once every genre has sample_size stories
-    or max_candidates is exhausted.
+    len(_STRATIFIED_SCAN_GENRES) * sample_size candidates are round-robin
+    assigned instead, with zero API calls), stopping once every genre has
+    sample_size stories or max_candidates is exhausted.
 
     Each real classification is checkpointed under roots.working_root
     (stage "genre_detect", item_id per _story_identity), so a resumed run
@@ -494,20 +563,22 @@ def build_stratified_sample(
     and serves already-classified candidates from their checkpoint instead
     of re-issuing the LLM call.
     """
-    sample: Dict[str, List[pathlib.Path]] = {g: [] for g in GENRES}
+    sample: Dict[str, List[pathlib.Path]] = {g: [] for g in _STRATIFIED_SCAN_GENRES}
     candidates = _iter_candidate_files(data_dir, seed)
 
     if dry_run:
-        needed = sample_size * len(GENRES)
+        needed = sample_size * len(_STRATIFIED_SCAN_GENRES)
         for i, path in enumerate(candidates[:needed]):
-            sample[GENRES[i % len(GENRES)]].append(path)
+            sample[_STRATIFIED_SCAN_GENRES[i % len(_STRATIFIED_SCAN_GENRES)]].append(
+                path
+            )
         return sample, min(needed, len(candidates))
 
     scanned = 0
     for path in candidates:
         if scanned >= max_candidates:
             break
-        if all(len(sample[g]) >= sample_size for g in GENRES):
+        if all(len(sample[g]) >= sample_size for g in _STRATIFIED_SCAN_GENRES):
             break
         scanned += 1
         item_id = _story_identity(path)
@@ -556,7 +627,8 @@ def build_stratified_sample(
                 # fatal error here would otherwise never reach the except above
                 # - it would just silently fail to classify every remaining
                 # candidate (detected_genre defaults to "other", which isn't in
-                # GENRES, so nothing prints and nothing is added to any bucket).
+                # _STRATIFIED_SCAN_GENRES, so nothing prints and nothing is
+                # added to any bucket).
                 _check_fatal(result.error, context=f"genre-detect {path.name}")
                 print(
                     f"  [genre-detect] {path.name}: failed ({result.error}), skipping",
@@ -781,20 +853,24 @@ def _build_erw_extractors(
 ) -> Dict[str, Any]:
     """Build the Event-Role-World extractors, with model overrides replacing each
     factory's own hardcoded default_model (e.g. "gpt-4o") and max_tokens
-    raised to _ERW_MAX_TOKENS (each factory's own default of 4096 is too
-    low for content-dense segments and risks TruncatedResponseError - see
-    lcats.llm.backend). Each extractor's tool_schema is already strict at
-    the source (WI-EVENT-0032) - this function used to additionally apply
-    a runtime strict-schema override for --backend anthropic only, now
-    removed as redundant.
+    raised via _max_tokens_for_model() (each factory's own default of 4096
+    is too low for content-dense segments and risks TruncatedResponseError
+    - see lcats.llm.backend). Each stage's ceiling is computed from its own
+    resolved model (not a single value applied uniformly regardless of
+    model - review finding, PR #367), so a per-stage --model-* override
+    (e.g. --model-segment claude-opus-4-8 with the rest on gpt-4o) gets
+    each stage's own correct real ceiling. Each extractor's tool_schema is
+    already strict at the source (WI-EVENT-0032) - this function used to
+    additionally apply a runtime strict-schema override for --backend
+    anthropic only, now removed as redundant.
 
     processor.process_segments() now accepts a model= override too
     (WI-EVENT-0032), but not a per-extractor max_tokens override, which
-    this pilot also needs (see the comment above _ERW_MAX_TOKENS).
-    Building the extractors here and driving processor.process_segment()
-    (singular - it accepts pre-built extractor instances) per segment
-    ourselves keeps both overrides available, without waiting on
-    process_segments() to grow a max_tokens parameter of its own.
+    this pilot also needs (see the comment above _ERW_MAX_TOKENS). Building
+    the extractors here and driving processor.process_segment() (singular -
+    it accepts pre-built extractor instances) per segment ourselves keeps
+    both overrides available, without waiting on process_segments() to grow
+    a max_tokens parameter of its own.
     """
     models = stage_models or StageModels.from_global(model)
     entity = erw_entity.make_entity_extractor(backend)
@@ -810,7 +886,7 @@ def _build_erw_extractors(
         (story_relation, models.cross_segment_relation),
     ):
         extractor.default_model = extractor_model
-        extractor.max_tokens = _ERW_MAX_TOKENS
+        extractor.max_tokens = _max_tokens_for_model(extractor_model)
     return {
         "entity": entity,
         "event": event,
@@ -1792,7 +1868,9 @@ def main() -> int:
             return 3
         print(f"Scanned {scanned} candidates.")
 
-        incomplete_genres = [g for g in GENRES if len(sample[g]) < args.sample_size]
+        incomplete_genres = [
+            g for g in _STRATIFIED_SCAN_GENRES if len(sample[g]) < args.sample_size
+        ]
         if incomplete_genres and not args.dry_run:
             print(
                 f"warning: could not fill every stratum before exhausting "
@@ -1804,7 +1882,9 @@ def main() -> int:
                 file=sys.stderr,
             )
         story_genre_pairs = [
-            (genre, path) for genre in GENRES for path in sample[genre]
+            (genre, path)
+            for genre in _STRATIFIED_SCAN_GENRES
+            for path in sample[genre]
         ]
 
     # Built ONCE and reused across every story - constructing these per
