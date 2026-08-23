@@ -2,10 +2,10 @@
 execution_id: 2026_08_23_05_10_02_FIX_WS_GENRE_EVIDENCE_SIDECARS_STALE_PATH_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:FIX_WS_GENRE_EVIDENCE_SIDECARS_STALE_PATH_SELFREVIEW)[2026-08-23T05:09:53+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/345
-commit: 18f130e308e30bc1ca6718917566d051a1a757df
+commit: c1b31fdb24240644ca888c261ab60825406cd340
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/345
 session_transcript: claude-app:b0d48070-0faf-4a35-942d-a29ec96d603a

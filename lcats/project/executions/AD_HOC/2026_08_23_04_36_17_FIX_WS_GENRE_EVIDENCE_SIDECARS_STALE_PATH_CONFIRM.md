@@ -2,10 +2,10 @@
 execution_id: 2026_08_23_04_36_17_FIX_WS_GENRE_EVIDENCE_SIDECARS_STALE_PATH_CONFIRM
 prompt_id: PROMPT(AD_HOC:FIX_WS_GENRE_EVIDENCE_SIDECARS_STALE_PATH_CONFIRM)[2026-08-23T04:09:32+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/345
-commit: d6df9d6fd62da2710287cc2740bfec66ebfa0561
+commit: c1b31fdb24240644ca888c261ab60825406cd340
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/345
 session_transcript: claude-app:b0d48070-0faf-4a35-942d-a29ec96d603a
