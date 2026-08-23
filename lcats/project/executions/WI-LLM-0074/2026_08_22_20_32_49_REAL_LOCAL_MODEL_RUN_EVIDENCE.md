@@ -2,10 +2,10 @@
 execution_id: 2026_08_22_20_32_49_REAL_LOCAL_MODEL_RUN_EVIDENCE
 prompt_id: PROMPT(WI-LLM-0074:REAL_LOCAL_MODEL_RUN_EVIDENCE)[2026-08-22T20:32:41+00:00]
 work_item: WI-LLM-0074
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/361
-commit: 27d88a37a651e54b06de0737a2ae3628ef1296b5
+commit: c94cf9de893d02d3e6d3d0baae056e41f00c34cd
 agent: claude_app
 instruction_source: WI-LLM-0074
 session_transcript: claude-app:b0d48070-0faf-4a35-942d-a29ec96d603a

@@ -2,10 +2,10 @@
 execution_id: 2026_08_23_00_58_27_WI_LLM_0074_REAL_RUN_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_LLM_0074_REAL_RUN_CONFIRM)[2026-08-22T23:26:55+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_22_20_32_49_REAL_LOCAL_MODEL_RUN_EVIDENCE
 pr: https://github.com/xenotaur/LCATS/pull/361
-commit: cae8ece27c69fee1afd5bbab5cce5a9f11d5f7a8
+commit: c94cf9de893d02d3e6d3d0baae056e41f00c34cd
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/361
 session_transcript: claude-app:b0d48070-0faf-4a35-942d-a29ec96d603a
