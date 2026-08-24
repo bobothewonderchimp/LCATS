@@ -2,10 +2,10 @@
 execution_id: 2026_08_24_00_15_54_WS_COMPARATIVE_LEXICAL_VISUALIZATION
 prompt_id: PROMPT(AD_HOC:WS_COMPARATIVE_LEXICAL_VISUALIZATION)[2026-08-24T00:00:36+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
 pr: https://github.com/xenotaur/LCATS/pull/383
-commit:
+commit: e6dd694ecc37eab625e469e804643bdcacfbaa96
 agent: codex_app
 instruction_source: project/workstreams/proposed/WS-COMPARATIVE-LEXICAL-VISUALIZATION.md
 session_transcript: pending
