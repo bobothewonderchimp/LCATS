@@ -68,6 +68,7 @@ class RunSummary:
     model_name: str
     existing: str
     include_token_detail: bool
+    token_detail_version: str
     output_root: Optional[pathlib.Path] = None
 
     @property
@@ -84,6 +85,7 @@ class RunSummary:
             "model_name": self.model_name,
             "existing": self.existing,
             "include_token_detail": self.include_token_detail,
+            "token_detail_version": self.token_detail_version,
             "counts": counts,
             "results": [result.to_dict() for result in self.results],
         }
@@ -243,6 +245,7 @@ def run(
         model_name=options.model_name,
         existing=existing,
         include_token_detail=options.include_token_detail,
+        token_detail_version=options.token_detail_version,
         output_root=pathlib.Path(output_root) if output_root is not None else None,
     )
 
@@ -299,6 +302,7 @@ def run_story(
                 detail_path=detail_path,
                 expected_fingerprint=current_fingerprint,
                 expected_detail_fingerprint=expected_detail_fingerprint,
+                source_body=body,
                 existing=existing,
             )
             if existing_result is not None:
@@ -338,6 +342,7 @@ def _existing_result(
     detail_path: Optional[pathlib.Path],
     expected_fingerprint: dict[str, Any],
     expected_detail_fingerprint: dict[str, Any],
+    source_body: str,
     existing: str,
 ) -> Optional[StoryRunResult]:
     try:
@@ -368,6 +373,8 @@ def _existing_result(
             sidecar_path=sidecar_path,
             detail_path=detail_path,
             expected_fingerprint=expected_detail_fingerprint,
+            source_body=source_body,
+            compact_sidecar=current,
         )
         if detail_result is not None:
             return detail_result
@@ -416,6 +423,7 @@ def with_prepended_results(
         model_name=summary.model_name,
         existing=summary.existing,
         include_token_detail=summary.include_token_detail,
+        token_detail_version=summary.token_detail_version,
         output_root=summary.output_root,
     )
 
@@ -479,6 +487,8 @@ def _validate_existing_detail(
     sidecar_path: pathlib.Path,
     detail_path: Optional[pathlib.Path],
     expected_fingerprint: dict[str, Any],
+    source_body: str,
+    compact_sidecar: dict[str, Any],
 ) -> Optional[StoryRunResult]:
     if detail_path is None:
         return None
@@ -503,7 +513,9 @@ def _validate_existing_detail(
                 f"{error}"
             ),
         )
-    validation = sidecar.validate_token_detail(detail)
+    validation = sidecar.validate_token_detail(
+        detail, source_body=source_body, compact_sidecar=compact_sidecar
+    )
     if not validation.valid:
         kinds = ", ".join(finding.kind for finding in validation.findings)
         return StoryRunResult(

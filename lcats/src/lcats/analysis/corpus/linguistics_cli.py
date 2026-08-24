@@ -48,6 +48,18 @@ def build_parser(add_help: bool = True) -> argparse.ArgumentParser:
         help="Also write linguistics.tokens.json with normalized token records.",
     )
     parser.add_argument(
+        "--token-detail-version",
+        choices=[
+            sidecar.TOKEN_DETAIL_VERSION_V1,
+            sidecar.TOKEN_DETAIL_VERSION_V2,
+        ],
+        default=sidecar.TOKEN_DETAIL_VERSION_V1,
+        help=(
+            "Token-detail schema to write when --include-token-detail is set "
+            "(default: v1)."
+        ),
+    )
+    parser.add_argument(
         "--existing",
         choices=[
             runner.EXISTING_SKIP,
@@ -98,6 +110,7 @@ def run(argv=None, parsed_args=None) -> int:
             backend_name=args.backend,
             model_name=model_name,
             include_token_detail=args.include_token_detail,
+            token_detail_version=args.token_detail_version,
         )
         backend = (
             None if args.dry_run else runner.make_backend(args.backend, model_name)
