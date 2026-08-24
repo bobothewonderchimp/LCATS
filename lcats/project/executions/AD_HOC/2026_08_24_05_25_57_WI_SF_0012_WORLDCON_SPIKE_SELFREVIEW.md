@@ -2,13 +2,13 @@
 execution_id: 2026_08_24_05_25_57_WI_SF_0012_WORLDCON_SPIKE_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_SF_0012_WORLDCON_SPIKE_SELFREVIEW)[2026-08-24T05:25:50+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 agent: codex_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/384
 session_transcript: pending
 rerun_of: 2026_08_24_04_31_14_WI_SF_0012
 pr: https://github.com/xenotaur/LCATS/pull/384
-commit:
+commit: ddaf1437219143903bb27e738b615c457eaf4c59
 created_at: 2026-08-24T05:25:57+00:00
 ---
 
