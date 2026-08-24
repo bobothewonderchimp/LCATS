@@ -2,10 +2,10 @@
 execution_id: 2026_08_24_08_30_39_WI_VISUALIZE_0091_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_VISUALIZE_0091_SELFREVIEW)[2026-08-24T08:30:34+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
-pr: 
-commit: 
+pr: https://github.com/xenotaur/LCATS/pull/388
+commit: 4efe8ac30c3a0432f5d87164b29b30008a4338e2
 created_at: 2026-08-24T08:30:39+00:00
 agent: codex_app
 instruction_source: "lrh-self-review diff-mode for WI-VISUALIZE-0091 before PR creation"

@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented comparative lexical analysis and selection contract in PR #388 (commit 4efe8ac30c3a0432f5d87164b29b30008a4338e2)"
 blocked_reason: null
 blocked: false
 id: WI-VISUALIZE-0091
 title: Define the comparative lexical analysis and selection contract
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
