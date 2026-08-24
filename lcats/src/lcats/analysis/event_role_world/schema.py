@@ -458,7 +458,14 @@ class SurfaceFeatures:
     sentence_records: List[Any] = dataclasses.field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
-        return dataclasses.asdict(self)
+        return {
+            "word_count": self.word_count,
+            "sentence_count": self.sentence_count,
+            "avg_sentence_length": self.avg_sentence_length,
+            "avg_word_length": self.avg_word_length,
+            "tokens": self.tokens,
+            "backend_name": self.backend_name,
+        }
 
 
 @dataclasses.dataclass

@@ -149,8 +149,8 @@ Sentence records:
 | Field | Type | Description |
 |---|---|---|
 | `sentence_index` | integer | One-based sentence index in source order. |
-| `start_char` | integer | Zero-based start offset into the story body. |
-| `end_char` | integer | Exclusive end offset into the story body. |
+| `start_char` | integer or null | Zero-based start offset into the story body, or null when the sentence cannot be source-aligned. |
+| `end_char` | integer or null | Exclusive end offset into the story body, or null when the sentence cannot be source-aligned. |
 | `tokens` | array | Token records in sentence-local order. |
 
 Token records:
@@ -159,9 +159,9 @@ Token records:
 |---|---|---|
 | `token_index` | integer | One-based token index within the containing sentence. |
 | `global_token_index` | integer | One-based token index across the whole story. |
-| `start_char` | integer | Zero-based start offset into the story body. |
-| `end_char` | integer | Exclusive end offset into the story body. |
-| `text` | string | Exact source text covered by the token span. |
+| `start_char` | integer or null | Zero-based start offset into the story body, or null when the token cannot be source-aligned. |
+| `end_char` | integer or null | Exclusive end offset into the story body, or null when the token cannot be source-aligned. |
+| `text` | string | Exact source text covered by the token span when offsets are available. |
 | `lemma` | string | Dictionary form, or empty string when unavailable. |
 | `upos` | string | Universal part-of-speech tag. |
 | `xpos` | string | Fine-grained or treebank-specific POS tag, if available. |
@@ -171,10 +171,10 @@ Token records:
 
 Validation accepts both v1 and v2 detail artifacts. For v2 it enforces source
 identity, monotonic sentence/token/global indices, unique global token indices,
-in-bounds source-matching token spans when source text is supplied, recognized
-UPOS values, sentence-local dependency heads, exactly one root in each non-empty
-sentence, and reconciliation with the compact sidecar's `metrics.token_count`
-when the compact sidecar is supplied.
+integer-or-null offset pairs, in-bounds source-matching token spans when source
+text and offsets are supplied, recognized UPOS values, sentence-local dependency
+heads, exactly one root in each non-empty sentence, and reconciliation with the
+compact sidecar's `metrics.token_count` when the compact sidecar is supplied.
 
 ## Run Summary
 

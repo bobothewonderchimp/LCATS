@@ -3,9 +3,9 @@ execution_id: 2026_08_24_21_24_32_WI_LINGUISTICS_0005_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_LINGUISTICS_0005_SELFREVIEW)[2026-08-24T21:24:27+00:00]
 work_item: AD_HOC
 status: in_progress
-rerun_of: 
-pr: 
-commit: 
+rerun_of:
+pr:
+commit:
 agent: codex_app
 instruction_source: "lrh-self-review diff-mode for WI-LINGUISTICS-0005"
 session_transcript: pending
