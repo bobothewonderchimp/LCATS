@@ -5,7 +5,7 @@ work_item: AD_HOC
 status: landed
 agent: codex_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/384
-session_transcript: pending
+session_transcript: codex-app:01a02338-d9c7-7313-8ed5-fb9c1643bef1
 rerun_of: 2026_08_24_04_31_14_WI_SF_0012
 pr: https://github.com/xenotaur/LCATS/pull/384
 commit: ddaf1437219143903bb27e738b615c457eaf4c59
@@ -33,4 +33,3 @@ PR-mode substitute self-review for PR #384 at head `733b0a2ef25f6a8099729ca2a134
 # Follow-up
 
 - Commit and push the whitespace fix plus this self-review record, then rerun CI and REVIEW-LANDED checks against the new PR head.
-- Update `session_transcript: pending` when a durable Codex app task pointer is available.

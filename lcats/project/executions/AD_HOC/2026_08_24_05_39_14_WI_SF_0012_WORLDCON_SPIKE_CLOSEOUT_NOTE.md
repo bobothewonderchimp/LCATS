@@ -5,7 +5,7 @@ work_item: AD_HOC
 status: landed
 agent: codex_app
 instruction_source: lrh-land https://github.com/xenotaur/LCATS/pull/384
-session_transcript: pending
+session_transcript: codex-app:01a02338-d9c7-7313-8ed5-fb9c1643bef1
 rerun_of: 2026_08_24_04_31_14_WI_SF_0012
 pr: https://github.com/xenotaur/LCATS/pull/384
 commit: ddaf1437219143903bb27e738b615c457eaf4c59
@@ -33,4 +33,3 @@ All four prior execution records for this PR landed with commit `ddaf1437`: prim
 # Follow-up
 
 - `WI-SF-0012` remains proposed. This PR created and registered the planning artifact; executing the spike remains a separate readiness/execution step.
-- Update `session_transcript: pending` values when durable Codex app task pointers are available.
