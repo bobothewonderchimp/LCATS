@@ -49,8 +49,8 @@ def extract_surface_features(
         avg_word_length=avg_word_length,
         tokens=[tok.to_dict() for tok in all_tokens],
         backend_name=backend_name,
+        sentence_records=sentences,
     )
-    features.sentence_records = sentences
     return features
 
 

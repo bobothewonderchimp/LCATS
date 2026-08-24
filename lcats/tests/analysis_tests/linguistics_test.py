@@ -176,6 +176,58 @@ class LinguisticsAnalysisTest(unittest.TestCase):
             ],
         )
 
+    def test_v2_token_detail_reports_unaligned_offsets_as_unavailable(self):
+        body = "du"
+        backend = nlp_backend.FakeNLPBackend(
+            sentences=[
+                nlp_backend.SentenceRecord(
+                    tokens=[
+                        nlp_backend.TokenRecord(
+                            text="de",
+                            lemma="de",
+                            upos="ADP",
+                            xpos="ADP",
+                            feats="",
+                            head_index=0,
+                            deprel="root",
+                        ),
+                        nlp_backend.TokenRecord(
+                            text="le",
+                            lemma="le",
+                            upos="DET",
+                            xpos="DET",
+                            feats="",
+                            head_index=1,
+                            deprel="det",
+                        ),
+                    ]
+                )
+            ]
+        )
+        options = sidecar.LinguisticsOptions(
+            backend_name="fake",
+            include_token_detail=True,
+            token_detail_version=sidecar.TOKEN_DETAIL_VERSION_V2,
+        )
+
+        compact, detail = sidecar.build_sidecar(
+            story_data=_story_data(body),
+            story_path=pathlib.Path("corpus/story/story.json"),
+            backend=backend,
+            options=options,
+        )
+        result = sidecar.validate_token_detail(
+            detail, source_body=body, compact_sidecar=compact
+        )
+
+        self.assertTrue(result.valid)
+        self.assertIsNone(detail["sentences"][0]["tokens"][0]["start_char"])
+        self.assertIsNone(detail["sentences"][0]["tokens"][0]["end_char"])
+        self.assertEqual(
+            "unavailable",
+            detail["provenance"]["capabilities"]["token_offsets"],
+        )
+
     def test_v1_token_detail_shape_remains_default(self):
         options = sidecar.LinguisticsOptions(
             backend_name="fake", include_token_detail=True
@@ -306,7 +358,7 @@ class LinguisticsSidecarValidationTest(unittest.TestCase):
                         _offset_token(body, "hummed", "VERB", 3, 20),
                         _offset_token(body, ".", "PUNCT", 3, 20),
                     ],
-                    start_char=21,
+                    start_char=20,
                     end_char=len(body),
                 ),
             ]
@@ -360,6 +412,95 @@ class LinguisticsSidecarValidationTest(unittest.TestCase):
         self.assertIn("invalid_head_index", kinds)
         self.assertIn("invalid_upos", kinds)
         self.assertIn("compact_token_count_mismatch", kinds)
+
+    def test_v2_validation_rejects_sentence_span_that_excludes_tokens(self):
+        body = "The old machine hummed."
+        options = sidecar.LinguisticsOptions(
+            backend_name="fake",
+            include_token_detail=True,
+            token_detail_version=sidecar.TOKEN_DETAIL_VERSION_V2,
+        )
+        compact, detail = sidecar.build_sidecar(
+            story_data=_story_data(body),
+            story_path=pathlib.Path("collection/story/story.json"),
+            backend=_v2_backend(body),
+            options=options,
+        )
+        detail["sentences"][0]["start_char"] = 3
+        detail["sentences"][0]["end_char"] = 4
+
+        result = sidecar.validate_token_detail(
+            detail, source_body=body, compact_sidecar=compact
+        )
+        kinds = {finding.kind for finding in result.findings}
+
+        self.assertFalse(result.valid)
+        self.assertIn("token_span_outside_sentence_span", kinds)
+
+    def test_v2_validation_rejects_out_of_order_sentence_spans(self):
+        body = "One. Two."
+        one = _offset_token(body, "One", "NUM", 0, 0)
+        first_period = _offset_token(body, ".", "PUNCT", 1, one.end_char or 0)
+        two = _offset_token(body, "Two", "NUM", 0, first_period.end_char or 0)
+        second_period = _offset_token(body, ".", "PUNCT", 1, two.end_char or 0)
+        backend = nlp_backend.FakeNLPBackend(
+            sentences=[
+                nlp_backend.SentenceRecord(
+                    tokens=[one, first_period], start_char=0, end_char=4
+                ),
+                nlp_backend.SentenceRecord(
+                    tokens=[two, second_period], start_char=5, end_char=9
+                ),
+            ]
+        )
+        options = sidecar.LinguisticsOptions(
+            backend_name="fake",
+            include_token_detail=True,
+            token_detail_version=sidecar.TOKEN_DETAIL_VERSION_V2,
+        )
+        compact, detail = sidecar.build_sidecar(
+            story_data=_story_data(body),
+            story_path=pathlib.Path("collection/story/story.json"),
+            backend=backend,
+            options=options,
+        )
+        detail["sentences"][1]["start_char"] = 3
+
+        result = sidecar.validate_token_detail(
+            detail, source_body=body, compact_sidecar=compact
+        )
+        kinds = {finding.kind for finding in result.findings}
+
+        self.assertFalse(result.valid)
+        self.assertIn("non_monotonic_sentence_span", kinds)
+
+    def test_v2_validation_reports_empty_required_strings_precisely(self):
+        body = "The old machine hummed."
+        options = sidecar.LinguisticsOptions(
+            backend_name="fake",
+            include_token_detail=True,
+            token_detail_version=sidecar.TOKEN_DETAIL_VERSION_V2,
+        )
+        compact, detail = sidecar.build_sidecar(
+            story_data=_story_data(body),
+            story_path=pathlib.Path("collection/story/story.json"),
+            backend=_v2_backend(body),
+            options=options,
+        )
+        detail["sentences"][0]["tokens"][0]["text"] = ""
+
+        result = sidecar.validate_token_detail(
+            detail, source_body=body, compact_sidecar=compact
+        )
+        messages_by_kind = {
+            finding.kind: finding.message for finding in result.findings
+        }
+
+        self.assertFalse(result.valid)
+        self.assertEqual(
+            "expected non-empty string",
+            messages_by_kind["empty_string"],
+        )
 
     def test_invalid_token_detail_version_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "token_detail_version"):

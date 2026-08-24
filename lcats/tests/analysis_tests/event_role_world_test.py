@@ -302,6 +302,7 @@ class TestExtractSurfaceFeatures(unittest.TestCase):
         self.assertEqual(features.avg_sentence_length, 2.5)
         self.assertEqual(features.backend_name, "fake")
         self.assertEqual(len(features.tokens), 5)
+        self.assertEqual(sentences, features.sentence_records)
 
     def test_empty_text_produces_zeroed_features(self):
         backend = nlp_backend.FakeNLPBackend()

@@ -354,6 +354,7 @@ def validate_token_detail_v2(
 
     seen_global_indices: set[int] = set()
     last_global_index = 0
+    last_sentence_end: Optional[int] = None
     token_count = 0
     expected_global_index = 1
     for expected_sentence_index, sentence in enumerate(sentences, start=1):
@@ -374,9 +375,30 @@ def validate_token_detail_v2(
             source_body,
             findings,
         )
+        sentence_start = sentence.get("start_char")
+        sentence_end = sentence.get("end_char")
+        if (
+            isinstance(sentence_start, int)
+            and last_sentence_end is not None
+            and sentence_start < last_sentence_end
+        ):
+            findings.append(
+                _finding(
+                    f"{sentence_path}.start_char",
+                    "non_monotonic_sentence_span",
+                    "sentence spans must be in source order",
+                )
+            )
+        if isinstance(sentence_end, int):
+            last_sentence_end = sentence_end
         tokens = sentence.get("tokens")
         if not isinstance(tokens, list):
             continue
+        _validate_sentence_contains_tokens(
+            sentence,
+            sentence_path,
+            findings,
+        )
         token_count += len(tokens)
         for expected_token_index, token in enumerate(tokens, start=1):
             token_path = f"{sentence_path}.tokens[{expected_token_index - 1}]"
@@ -518,10 +540,12 @@ def _build_v2_detail(
                 token_start, token_end = _find_token_span(
                     body, getattr(token, "text", ""), cursor
                 )
-            cursor = token_end
-            if not isinstance(sentence_start, int):
+            if isinstance(token_end, int):
+                cursor = token_end
+            if not isinstance(sentence_start, int) and isinstance(token_start, int):
                 sentence_start = token_start
-            sentence_end = token_end
+            if isinstance(token_end, int):
+                sentence_end = token_end
             token_rows.append(
                 {
                     "token_index": token_index,
@@ -541,8 +565,10 @@ def _build_v2_detail(
         sentence_rows.append(
             {
                 "sentence_index": sentence_index,
-                "start_char": sentence_start if isinstance(sentence_start, int) else 0,
-                "end_char": sentence_end if isinstance(sentence_end, int) else 0,
+                "start_char": (
+                    sentence_start if isinstance(sentence_start, int) else None
+                ),
+                "end_char": sentence_end if isinstance(sentence_end, int) else None,
                 "tokens": token_rows,
             }
         )
@@ -573,10 +599,14 @@ def _build_v2_detail(
     }
 
 
-def _find_token_span(body: str, text: str, cursor: int) -> tuple[int, int]:
+def _find_token_span(
+    body: str, text: str, cursor: int
+) -> tuple[Optional[int], Optional[int]]:
+    if not text:
+        return None, None
     start = body.find(text, cursor)
     if start < 0:
-        start = cursor
+        return None, None
     return start, start + len(text)
 
 
@@ -704,8 +734,8 @@ def _validate_sentence_record(
     findings: list[ValidationFinding],
 ) -> None:
     _require_int(sentence, "sentence_index", f"{path}.sentence_index", findings)
-    _require_int(sentence, "start_char", f"{path}.start_char", findings)
-    _require_int(sentence, "end_char", f"{path}.end_char", findings)
+    _require_optional_int(sentence, "start_char", f"{path}.start_char", findings)
+    _require_optional_int(sentence, "end_char", f"{path}.end_char", findings)
     if sentence.get("sentence_index") != expected_sentence_index:
         findings.append(
             _finding(
@@ -757,8 +787,10 @@ def _validate_token_record(
     source_body: Optional[str],
     findings: list[ValidationFinding],
 ) -> Optional[int]:
-    for key in ("token_index", "global_token_index", "start_char", "end_char"):
+    for key in ("token_index", "global_token_index"):
         _require_int(token, key, f"{path}.{key}", findings)
+    for key in ("start_char", "end_char"):
+        _require_optional_int(token, key, f"{path}.{key}", findings)
     _require_string_field(token, "text", f"{path}.text", findings, allow_empty=False)
     _require_string_field(token, "lemma", f"{path}.lemma", findings, allow_empty=True)
     _require_string_field(token, "upos", f"{path}.upos", findings, allow_empty=False)
@@ -814,6 +846,35 @@ def _validate_token_record(
     return global_index if isinstance(global_index, int) else None
 
 
+def _validate_sentence_contains_tokens(
+    sentence: dict[str, Any],
+    path: str,
+    findings: list[ValidationFinding],
+) -> None:
+    sentence_start = sentence.get("start_char")
+    sentence_end = sentence.get("end_char")
+    if not isinstance(sentence_start, int) or not isinstance(sentence_end, int):
+        return
+    tokens = sentence.get("tokens")
+    if not isinstance(tokens, list):
+        return
+    for token_index, token in enumerate(tokens):
+        if not isinstance(token, dict):
+            continue
+        token_start = token.get("start_char")
+        token_end = token.get("end_char")
+        if not isinstance(token_start, int) or not isinstance(token_end, int):
+            continue
+        if token_start < sentence_start or token_end > sentence_end:
+            findings.append(
+                _finding(
+                    f"{path}.tokens[{token_index}].start_char",
+                    "token_span_outside_sentence_span",
+                    "token span must be contained by its sentence span",
+                )
+            )
+
+
 def _validate_span(
     record: dict[str, Any],
     path: str,
@@ -825,6 +886,17 @@ def _validate_span(
 ) -> None:
     start = record.get("start_char")
     end = record.get("end_char")
+    if start is None and end is None:
+        return
+    if start is None or end is None:
+        findings.append(
+            _finding(
+                f"{path}.start_char",
+                "invalid_span",
+                "start_char and end_char must both be integers or both be null",
+            )
+        )
+        return
     if not isinstance(start, int) or not isinstance(end, int):
         return
     if start < 0 or end < start or (start == end and not allow_empty):
@@ -1010,12 +1082,20 @@ def _require_string_field(
     if key not in data:
         findings.append(_missing(path))
         return
-    if not isinstance(data[key], str) or (not allow_empty and not data[key]):
+    if not isinstance(data[key], str):
         findings.append(
             _finding(
                 path,
                 "wrong_type",
                 f"expected string, got {type(data[key]).__name__}",
+            )
+        )
+    elif not allow_empty and not data[key]:
+        findings.append(
+            _finding(
+                path,
+                "empty_string",
+                "expected non-empty string",
             )
         )
 
@@ -1042,6 +1122,21 @@ def _require_int(
         findings.append(
             _finding(
                 path, "wrong_type", f"expected int, got {type(data[key]).__name__}"
+            )
+        )
+
+
+def _require_optional_int(
+    data: dict[str, Any], key: str, path: str, findings: list[ValidationFinding]
+) -> None:
+    if key not in data:
+        findings.append(_missing(path))
+    elif data[key] is not None and not isinstance(data[key], int):
+        findings.append(
+            _finding(
+                path,
+                "wrong_type",
+                f"expected int or null, got {type(data[key]).__name__}",
             )
         )
 
