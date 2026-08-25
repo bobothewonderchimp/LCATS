@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented deterministic linguistics-lexicon-v1 artifacts in PR #392 (commit fb0916910df9b0881f31603f96f07ac51e544be0)."
 blocked_reason: null
 blocked: false
 id: WI-LINGUISTICS-0006
 title: Materialize deterministic lexical artifacts from rich tokens
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
