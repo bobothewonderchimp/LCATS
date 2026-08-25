@@ -60,6 +60,14 @@ def build_parser(add_help: bool = True) -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--include-lexicon",
+        action="store_true",
+        help=(
+            "Also write linguistics.lexicon.json derived from token-detail-v2. "
+            "Requires --include-token-detail --token-detail-version v2."
+        ),
+    )
+    parser.add_argument(
         "--existing",
         choices=[
             runner.EXISTING_SKIP,
@@ -94,6 +102,16 @@ def run(argv=None, parsed_args=None) -> int:
     """Run lcats linguistics and return a process status code."""
     parser = build_parser()
     args = parsed_args if parsed_args is not None else parser.parse_args(argv)
+    if args.include_lexicon and (
+        not args.include_token_detail
+        or args.token_detail_version != sidecar.TOKEN_DETAIL_VERSION_V2
+    ):
+        print(
+            "error: --include-lexicon requires --include-token-detail "
+            "--token-detail-version v2",
+            file=sys.stderr,
+        )
+        return 2
     try:
         resolved = runner.resolve_story_inputs(
             args.inputs, story_list_files=args.story_list
@@ -126,6 +144,7 @@ def run(argv=None, parsed_args=None) -> int:
             existing=args.existing,
             dry_run=args.dry_run,
             output_root=args.output_root,
+            include_lexicon=args.include_lexicon,
         )
         summary = runner.with_prepended_results(
             summary, runner.missing_input_results(resolved.missing_paths)
