@@ -2,13 +2,13 @@
 execution_id: 2026_08_24_22_48_14_WI_LINGUISTICS_0005_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_LINGUISTICS_0005_SELFREVIEW)[2026-08-24T22:48:07+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_24_21_25_48_WI_LINGUISTICS_0005
 pr: https://github.com/xenotaur/LCATS/pull/391
-commit: 049b3013
+commit: 7ec8080b600861b9f82984306697fc2ed8e32411
 agent: codex_app
 instruction_source: skill:lrh-self-review --pr https://github.com/xenotaur/LCATS/pull/391
-session_transcript: pending
+session_transcript: codex-app:01a032cd-cef2-73c0-9714-b61b36ae4513
 created_at: 2026-08-24T22:48:14+00:00
 ---
 

@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #391 (commit 7ec8080b600861b9f82984306697fc2ed8e32411)"
 blocked_reason: null
 blocked: false
 id: WI-LINGUISTICS-0005
 title: Add a validated rich token-detail v2 schema
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []

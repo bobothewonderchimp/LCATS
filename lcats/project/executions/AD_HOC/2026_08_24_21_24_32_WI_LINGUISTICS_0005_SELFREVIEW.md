@@ -2,13 +2,13 @@
 execution_id: 2026_08_24_21_24_32_WI_LINGUISTICS_0005_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_LINGUISTICS_0005_SELFREVIEW)[2026-08-24T21:24:27+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of:
-pr:
-commit:
+pr: https://github.com/xenotaur/LCATS/pull/391
+commit: 7ec8080b600861b9f82984306697fc2ed8e32411
 agent: codex_app
 instruction_source: "lrh-self-review diff-mode for WI-LINGUISTICS-0005"
-session_transcript: pending
+session_transcript: codex-app:01a032cd-cef2-73c0-9714-b61b36ae4513
 created_at: 2026-08-24T21:24:32+00:00
 ---
 
