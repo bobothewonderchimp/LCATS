@@ -16,8 +16,8 @@ related_roadmap: []
 related_workstreams:
   - WS-EVENT-STRUCTURED-OUTPUT-RELIABILITY
 related_design:
-  - project/audits/2026-07-27-erw-pipeline-structured-output-reliability-audit.md
-  - project/work_items/proposed/WI-EVENT-0033.md
+  - lcats/project/audits/2026-07-27-erw-pipeline-structured-output-reliability-audit.md
+  - lcats/project/work_items/proposed/WI-EVENT-0033.md
 depends_on:
   - WI-EVENT-0033
 blocked_by: []
@@ -28,16 +28,17 @@ expected_actions:
   - create_pr
 forbidden_actions:
   - modify_scene_analysis_extractor
+  - modify_check_segmentation_reliability_measurement_logic
   - implement_new_architecture
   - run_real_llm_calls_without_explicit_approval
   - force_push
   - delete_branch
 acceptance:
-  - "Before any real API spend, the executor presents the selected model (claude-haiku-4-5-20251001, matching the original measurement), sample size/genre spread, expected call-count/cost estimate, and output location, and receives explicit in-session human approval"
-  - "A fresh stratified sample of similar size to the original 17-story measurement (WI-EVENT-0033's cited 11/17, 65% parsing_error rate) is built and run through make_segment_extractor alone (not the full ERW pipeline) - the original sample's exact story IDs were never committed to the repo, so this is explicitly the 'equivalent smoke sample' path WI-EVENT-0033's own acceptance criteria already anticipated, not a deviation from it"
-  - "The sample explicitly includes the western genre, which had zero included stories in the original measurement"
-  - "The new parsing_error exclusion rate is computed directly from real extract() results (not estimated or assumed) and reported alongside the original 65% (11/17) for direct comparison"
-  - "Raw per-story results (story_id, extraction_error, parsed_output presence) and a summary are saved as committed data under lcats/experimental/segmentation_schema_verification/ (small sample - single-call-per-story data, not experiments/-scale) so the measurement is independently checkable, not just narrated"
+  - "Before any real API spend, the executor presents the exact 17-story cohort (resolved from experiments/03_cross_segment_relation_pilot/results/pilot_stories.jsonl's committed story_id/genre list to their current corpora/ paths), the model (claude-haiku-4-5-20251001, matching the original baseline run), and the expected call-count/cost estimate, and receives explicit in-session human approval"
+  - "The exact original 17-story cohort is re-run through experiments/03_cross_segment_relation_pilot/check_segmentation_reliability.py (already built and reviewed for this exact purpose, PR #189) via its --story-list flag - not a fresh or substitute sample, since the original cohort's story IDs are in fact committed and resolvable"
+  - "The comparison metric is the any-cause segmentation exclusion rate (api_error / extraction_error / alignment_error / no_segments, as check_segmentation_reliability.py's classify() already reports), never a bare parsing_error count - on the tool_schema code path, JSONPromptExtractor.extract() sets parsing_error=None unconditionally (llm_extractor.py's tool_schema branch), so a parsing_error-only comparison would report a 0% rate by construction regardless of whether the fix actually helped"
+  - "The new any-cause exclusion rate is computed directly from real check_segmentation_reliability.py output (not estimated or assumed) and reported alongside the original 65% (11/17) baseline, broken down by cause and by genre, with an explicit western callout (both western stories were excluded in the original baseline)"
+  - "Raw per-story output (as already written by check_segmentation_reliability.py, one JSON file per story) and a summary are saved as committed data under experiments/03_cross_segment_relation_pilot/results/segmentation_reliability/, alongside the existing pilot_stories.jsonl/pilot_summary.json this experiment already commits data under, so the measurement is independently checkable, not just narrated"
   - "WI-EVENT-0033.md is updated with the real measured result in its Risk Notes/resolution - if the exclusion rate dropped meaningfully, WI-EVENT-0033 is moved to resolved/ with a resolution citing the before/after; if not, the finding is reported plainly and WI-EVENT-0033 stays proposed with the gap documented, per this project's practice of not forcing a pass"
   - "scripts/test passes with no new failures"
   - "lrh validate reports 0 errors"
@@ -46,8 +47,8 @@ required_evidence:
   - lrh_validate
   - manual_review
 artifacts_expected:
-  - lcats/experimental/segmentation_schema_verification/
-  - project/work_items/proposed/WI-EVENT-0033.md
+  - experiments/03_cross_segment_relation_pilot/results/segmentation_reliability/
+  - lcats/project/work_items/proposed/WI-EVENT-0033.md
 ---
 
 # Work Item: WI-EVENT-0096
@@ -57,17 +58,21 @@ artifacts_expected:
 Close `WI-EVENT-0033`'s one outstanding acceptance criterion: a live
 re-run against real API calls to measure whether its schema-hardening fix
 (`SEGMENT_TOOL_SCHEMA` via `tool_schema=`, PR #188, merged 2026-07-29)
-actually reduced the 65% (11/17) `parsing_error` segmentation-exclusion
-rate observed before the fix, with the `western` genre stratum
-particularly affected (zero included stories). That criterion was
+actually reduced the segmentation-exclusion rate observed before the fix
+(65%, 11/17, all `parsing_error`), with the `western` genre stratum
+particularly affected (both its stories excluded). That criterion was
 explicitly left unverified at PR #188's merge time for lack of API
 credentials in that environment, not skipped by oversight - the PR's own
-description names it as the one remaining gap.
+description names it as the one remaining gap. A purpose-built measurement
+script for exactly this comparison already exists
+(`experiments/03_cross_segment_relation_pilot/check_segmentation_reliability.py`,
+PR #189) but has never been run for real; this item runs it against the
+real, committed original cohort and reports the result.
 
 ## Problem / Context
 
 The 2026-07-27 ERW pipeline audit
-(`project/audits/2026-07-27-erw-pipeline-structured-output-reliability-audit.md:238-245`)
+(`lcats/project/audits/2026-07-27-erw-pipeline-structured-output-reliability-audit.md:238-245`)
 found `scene_analysis.py`'s Stage 1 segmentation extractor
 (`make_segment_extractor`) was the pipeline's actual, currently-blocking
 reliability problem: with `claude-haiku-4-5-20251001` in a real user run,
@@ -78,40 +83,59 @@ included stories as a result. `WI-EVENT-0033` retrofitted this extractor
 to use a `tool_schema=` structured-output call instead of unconstrained
 `json_object` mode, per `lcats.llm.tool_schema.strict_tool_schema()`. That
 work merged via PR #188 (commit `9cb37549`), but its own final commit
-message states plainly: "Not verified in this environment... the
-acceptance criterion requiring a live re-run against the sampled story
-set that saw the 65% exclusion rate, to report the new rate... needs
-whoever has credentials to run it for real before this item is considered
-fully closed." `WI-EVENT-0033.md` itself was deliberately left
+message states plainly the live re-run criterion was not verified in that
+environment. `WI-EVENT-0033.md` itself was deliberately left
 `status: proposed` for exactly this reason, not moved to `resolved/`.
 
-The original 17-story sample's exact story IDs were never committed to
-the repo - no `pilot_stories.jsonl` or equivalent artifact survives from
-that run (confirmed via `find`/`grep` across `experiments/` and
-`project/audits/`, no story-ID list found). `WI-EVENT-0033.md`'s own
-acceptance criteria already anticipated this ("verified by re-running the
-same sampled story set (**or an equivalent smoke sample**)"), so this
-item builds a fresh equivalent sample rather than blocking on an
-unrecoverable original.
+**Correction from this item's own review round (PR #396, both findings
+confirmed real before fixing):**
+
+1. The original 17-story cohort **is** committed:
+   `experiments/03_cross_segment_relation_pilot/results/pilot_stories.jsonl`
+   holds exactly 17 rows with the cited 11 `segmentation failed:
+   parsing_error` exclusions and the 5 science-fiction / 5 horror / 2
+   western / 5 romance composition - a byte-for-byte match to the audit's
+   own figures. An earlier draft of this item claimed the cohort was
+   unrecoverable, based on an insufficiently broad search; this was wrong,
+   confirmed by directly reading that file's 17 rows. The exact cohort is
+   used here, not a substitute sample.
+2. `experiments/03_cross_segment_relation_pilot/check_segmentation_reliability.py`
+   already exists, was already reviewed and tested (PR #189, six review
+   comments all fixed), and was purpose-built for this exact measurement -
+   its own docstring names `WI-EVENT-0033`'s acceptance criterion directly.
+   It has never actually been run against real data (no API credentials
+   were available in that session). Its `classify()` function and module
+   docstring (`:55-67`) already document, and this item's own review round
+   independently confirmed by reading `llm_extractor.py`'s tool_schema
+   branch directly, that comparing raw `parsing_error` counts post-fix is
+   invalid: `JSONPromptExtractor.extract()` sets `parsing_error = None`
+   unconditionally on the `tool_schema` path (there is no JSON-text parse
+   step to fail), so a `parsing_error`-only comparison reports 0% by
+   construction regardless of the fix's real effect. The any-cause
+   exclusion rate `classify()` already computes is the valid comparison.
 
 ### Duplication search
 
-- In-repo: No other work item performs this measurement.
-  `WI-EVENT-0033.md` names this exact gap in its own acceptance criteria
-  but has not executed it - this item is that criterion's execution
-  vehicle, filed separately (see Demand search) rather than by reopening
-  `WI-EVENT-0033` directly.
+- In-repo: `check_segmentation_reliability.py` (PR #189) already exists
+  for exactly this measurement - not a duplicate to avoid, but the
+  mechanism this item exists to actually execute. This item's scope is
+  running that existing, already-reviewed tool against the real committed
+  cohort and reporting the result, not building new measurement tooling.
 - Sibling repos: None identified.
 - External libraries: None identified.
-- Recommendation: Proceed.
+- Recommendation: Proceed, using the existing tool as-is.
 
 ### Demand search
 
 - Work items: `WI-EVENT-0033.md`'s own acceptance criteria and PR #188's
-  merge commit message both name this exact deliverable as outstanding.
-  Filed as a separate, `depends_on`-linked evaluation item (rather than
-  reopening `WI-EVENT-0033` directly) so the measurement has its own
-  traceable execution record, bounded real-API cost gate, and PR -
+  merge commit message both name this exact deliverable as outstanding;
+  `SEGMENTATION_RELIABILITY_CHECK_BACKFILL.md`'s own Follow-up section
+  states plainly: "Someone with real API credentials needs to run
+  `check_segmentation_reliability.py` and report the resulting exclusion
+  rate... to actually close WI-EVENT-0033's remaining acceptance
+  criterion." Filed as a separate, `depends_on`-linked evaluation item
+  (rather than reopening `WI-EVENT-0033` directly) so the measurement has
+  its own traceable execution record, bounded real-API cost gate, and PR -
   following this session's established pattern for `WI-EVENT-0030`'s own
   cost-gate sub-runs (`WI-EVENT-0078`/`0079`/`0080`).
 - Proposals: None identified beyond the governing ERW extractor proposal,
@@ -121,65 +145,78 @@ unrecoverable original.
 
 ## Scope
 
-- Build a fresh stratified sample of similar size to the original
-  17-story measurement, spanning all 8 `VALID_GENRES`, explicitly
-  including `western` (the stratum with zero included stories
-  originally).
-- Run `make_segment_extractor` alone (Stage 1 segmentation only, not the
-  full Event-Role-World pipeline) against that sample using
-  `claude-haiku-4-5-20251001`, matching the original measurement's model
-  so the comparison is apples-to-apples.
+- Resolve the 17 `story_id`/genre pairs in
+  `experiments/03_cross_segment_relation_pilot/results/pilot_stories.jsonl`
+  to their current `corpora/<collection>/<slug>` paths (the jsonl's own
+  `path` field is stale, pointing at a retired `lcats/data/...` layout;
+  the current canonical location is under `corpora/`) and write them to a
+  `--story-list` input file for `check_segmentation_reliability.py`.
 - Follow this project's established two-step real-cost-gate discipline:
-  present the selected sample, model, and expected cost/call-count
-  estimate; wait for explicit in-session approval; then run.
-- Compute the new `parsing_error` exclusion rate directly from real
-  `extract()` results and report it alongside the original 65% (11/17).
-- Save raw per-story results and a summary as committed data under
-  `lcats/experimental/segmentation_schema_verification/` - this sample is
-  small (one extraction call per story, not a full pipeline run), so
-  `lcats/experimental/` is the right scale, not the top-level
-  `experiments/` directory reserved for larger pilot-scale work.
+  present the resolved 17-story cohort, the model
+  (`claude-haiku-4-5-20251001`, matching the baseline), and the expected
+  cost/call-count estimate (~17 calls, one per story); wait for explicit
+  in-session approval; then run.
+- Run `check_segmentation_reliability.py --story-list <file> --model
+  claude-haiku-4-5-20251001 --output
+  experiments/03_cross_segment_relation_pilot/results/segmentation_reliability/`.
+- Report the resulting any-cause exclusion rate (not a bare
+  `parsing_error` count) alongside the original 65% (11/17), broken down
+  by cause and by genre, with an explicit `western` callout.
+- Commit the script's raw per-story output plus a summary under
+  `experiments/03_cross_segment_relation_pilot/results/segmentation_reliability/`
+  - colocated with this experiment's existing committed data
+  (`pilot_stories.jsonl`, `pilot_summary.json`), not a new
+  `lcats/experimental/` location, since this is a direct, same-experiment
+  follow-on measurement rather than a separate small trial.
 - Update `WI-EVENT-0033.md` with the real measured outcome, and resolve
   it if the result supports that.
 
 ## Required Changes
 
-1. Build the stratified sample (reusing `WI-GENRE-0004`'s validated
-   genre-balanced manifest, `experiments/05_metadata_genre_prefilter/results/full_scan/validation_results.jsonl`,
-   the same source `WI-EVENT-0030` already draws from) and present it,
-   the model, and the expected cost/call-count estimate to the user for
+1. Write a small resolution step (script or manual, whichever is
+   simpler) that reads `pilot_stories.jsonl`'s 17 `story_id`/`genre`
+   pairs, locates each story's current `corpora/<collection>/<slug>`
+   directory, and writes a `--story-list` text file
+   `check_segmentation_reliability.py` can consume directly (one path per
+   line, per its documented format).
+2. Present the resolved cohort, model, and cost estimate to the user for
    explicit approval before any spend.
-2. After approval, run `make_segment_extractor` against the approved
-   sample and capture each story's `extraction_error` /
-   `parsed_output`/`extracted_output` presence.
-3. Write raw results (one record per story: story ID, genre,
-   `extraction_error`, whether `parsed_output` was populated) and a
-   summary (old vs. new exclusion rate, per-genre breakdown, explicit
-   `western` callout) to `lcats/experimental/segmentation_schema_verification/`.
-4. Update `WI-EVENT-0033.md`: populate its Risk Notes with the real
+3. After approval, run
+   `check_segmentation_reliability.py --story-list <file> --model
+   claude-haiku-4-5-20251001 --output
+   experiments/03_cross_segment_relation_pilot/results/segmentation_reliability/`
+   unmodified - no changes to the script's own measurement logic are in
+   scope (see `forbidden_actions`).
+4. Write a summary (old vs. new any-cause exclusion rate, per-genre
+   breakdown, explicit `western` callout) alongside the script's raw
+   per-story output, both committed under
+   `experiments/03_cross_segment_relation_pilot/results/segmentation_reliability/`.
+5. Update `WI-EVENT-0033.md`: populate its Risk Notes with the real
    measured before/after, and either move it to `resolved/` with a
    `resolution:` field citing the measurement, or leave it `proposed`
    with the gap stated plainly if the improvement is smaller than
    expected.
-5. Add or update test coverage only if this item's own new tooling (e.g.
-   a small sample-runner script, if one is written) needs it - no changes
-   to `scene_analysis.py`/`story_analysis.py` are in scope (already
-   merged via PR #188).
+6. No changes to `scene_analysis.py`/`story_analysis.py`/
+   `check_segmentation_reliability.py` are in scope - all already merged
+   and reviewed. Add test coverage only if the small story-list
+   resolution step from item 1 is substantial enough to warrant it.
 
 ## Non-Goals
 
 - Does not modify `scene_analysis.py`'s or `story_analysis.py`'s schemas
   or extractors - `WI-EVENT-0033`'s schema-hardening code is already
   merged (PR #188); this item measures its real-world effect only.
+- Does not modify `check_segmentation_reliability.py`'s own measurement
+  logic (`classify()`, exclusion-rate computation) - already built and
+  reviewed (PR #189) for exactly this purpose.
 - Does not re-run `make_semantics_extractor` or
   `make_doc_classification_extractor` - both were unmeasured in the
   original 2026-07-27 audit too (no live failure rate to compare
   against), and `WI-EVENT-0033.md`'s own Risk Notes already flag this as
   a separate, unmeasured risk, not something this item resolves.
-- Does not attempt to recover or reconstruct the original 17-story
-  sample's exact story IDs - confirmed unrecoverable; an equivalent fresh
-  sample is used instead, per `WI-EVENT-0033.md`'s own acceptance
-  criteria wording.
+- Does not substitute a fresh or different cohort for the original
+  17-story baseline - the real cohort is committed and resolvable, so no
+  substitution is needed or used.
 - Does not spend any real API budget without an explicit, presented,
   approved cost estimate first.
 
@@ -196,16 +233,24 @@ unrecoverable original.
 
 ## Risk Notes
 
-- **Sample non-equivalence risk:** a freshly built stratified sample is
-  not literally the same stories as the original run, so a residual
-  difference in results could reflect sample variance rather than the
-  schema fix's real effect. Mitigated by keeping the sample size and
-  genre spread comparable, and by reporting the result honestly rather
-  than treating a small sample as decisive either way.
+- **Story-ID-to-path resolution is a small but real step.** The
+  committed `pilot_stories.jsonl`'s own `path` field points at a retired
+  `lcats/data/...` layout that no longer exists in this repo; each
+  story's current `corpora/` location must be located by its
+  `story_id`/collection instead. This is mechanical (directory lookup by
+  slug), not a design risk, but worth doing carefully so the `--story-list`
+  file names the same 17 stories, not a near-miss set.
+- **Metric correctness is the central risk this item's own review round
+  already caught once.** An earlier draft of this item would have
+  compared bare `parsing_error` counts, which is 0% by construction on
+  the `tool_schema` path regardless of the fix's real effect - exactly
+  the false-positive `check_segmentation_reliability.py`'s own docstring
+  warns about. The any-cause exclusion rate is the only valid comparison;
+  any future edit to this item's acceptance criteria should preserve that.
 - **Directionally negative result is a valid outcome.** If the measured
-  exclusion rate does not improve meaningfully, that is reported plainly
-  in `WI-EVENT-0033.md` rather than forced into a "resolved" state -
-  matching this project's own established practice (e.g.
+  any-cause exclusion rate does not improve meaningfully, that is reported
+  plainly in `WI-EVENT-0033.md` rather than forced into a "resolved"
+  state - matching this project's own established practice (e.g.
   `WI-EVENT-0080.md`'s acceptance criteria, `WI-PILOT-0082.md`'s Risk
   Notes).
 - **Real API spend requires the same bounded-approval discipline** this
@@ -214,7 +259,12 @@ unrecoverable original.
 
 ## Related Workstream and Designs
 
-- Workstream: `project/workstreams/proposed/WS-EVENT-STRUCTURED-OUTPUT-RELIABILITY.md`
-- Work item: `project/work_items/proposed/WI-EVENT-0033.md` - the item
-  whose outstanding acceptance criterion this item executes
-- Audit: `project/audits/2026-07-27-erw-pipeline-structured-output-reliability-audit.md`
+- Workstream: `lcats/project/workstreams/proposed/WS-EVENT-STRUCTURED-OUTPUT-RELIABILITY.md`
+- Work item: `lcats/project/work_items/proposed/WI-EVENT-0033.md` - the
+  item whose outstanding acceptance criterion this item executes
+- Audit: `lcats/project/audits/2026-07-27-erw-pipeline-structured-output-reliability-audit.md`
+- Tool: `experiments/03_cross_segment_relation_pilot/check_segmentation_reliability.py`
+  (PR #189) - the already-built, already-reviewed measurement script this
+  item runs
+- Data: `experiments/03_cross_segment_relation_pilot/results/pilot_stories.jsonl`
+  - the real, committed original 17-story baseline cohort
