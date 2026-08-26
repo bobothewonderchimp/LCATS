@@ -18,8 +18,7 @@ related_workstreams:
 related_design:
   - lcats/project/audits/2026-07-27-erw-pipeline-structured-output-reliability-audit.md
   - lcats/project/work_items/proposed/WI-EVENT-0033.md
-depends_on:
-  - WI-EVENT-0033
+depends_on: []
 blocked_by: []
 expected_actions:
   - create_file
@@ -87,6 +86,15 @@ message states plainly the live re-run criterion was not verified in that
 environment. `WI-EVENT-0033.md` itself was deliberately left
 `status: proposed` for exactly this reason, not moved to `resolved/`.
 
+**No `depends_on` on `WI-EVENT-0033`, deliberately.** This item's real
+prerequisite - PR #188's schema-hardening fix actually merged - is already
+satisfied; `depends_on` in this schema means "that WI's own `status` must
+be `resolved`," which is a status this item exists to help produce, not
+one it can wait on without deadlocking `/lrh-execute`'s own dependency
+enforcement. The relationship is expressed instead via `related_design`/
+`related_workstreams` and the Related Workstream and Designs section
+below.
+
 **Correction from this item's own review round (PR #396, both findings
 confirmed real before fixing):**
 
@@ -133,7 +141,7 @@ confirmed real before fixing):**
   states plainly: "Someone with real API credentials needs to run
   `check_segmentation_reliability.py` and report the resulting exclusion
   rate... to actually close WI-EVENT-0033's remaining acceptance
-  criterion." Filed as a separate, `depends_on`-linked evaluation item
+  criterion." Filed as a separate, `related_design`-linked evaluation item
   (rather than reopening `WI-EVENT-0033` directly) so the measurement has
   its own traceable execution record, bounded real-API cost gate, and PR -
   following this session's established pattern for `WI-EVENT-0030`'s own
