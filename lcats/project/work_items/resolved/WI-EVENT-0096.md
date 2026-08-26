@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Executed via PR #398. Ran the exact original 17-story baseline cohort through check_segmentation_reliability.py with claude-haiku-4-5-20251001: 17 real API calls, $0.59 actual cost. Result: parsing_error structurally eliminated (11/17 -> 0/17); any-cause exclusion rate barely moved (65% -> 59%) because a different, pre-existing failure mode (near-miss anchor alignment, WI-SEGMENT-0069/0072) is now dominant. Full data and write-up: experiments/03_cross_segment_relation_pilot/results/segmentation_reliability/SUMMARY.md. WI-EVENT-0033.md updated with the real result and intentionally left proposed per its own stated practice of not forcing a pass on a smaller-than-expected improvement."
 blocked_reason: null
 blocked: false
 id: WI-EVENT-0096
 title: Measure live segmentation exclusion-rate improvement from WI-EVENT-0033's schema hardening
 type: evaluation
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
