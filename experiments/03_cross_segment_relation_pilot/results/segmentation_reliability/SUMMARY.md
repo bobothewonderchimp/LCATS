@@ -19,13 +19,18 @@ substitute sample.
 | Exclusion rate (any cause) | 11/17 (65%) | **10/17 (59%)** |
 | Exclusion cause | 11/11 `parsing_error` (100%) | 0/10 `parsing_error` (0%); 10/10 `alignment_error` (100%) |
 
-**The schema-hardening fix worked exactly as designed for its target
-failure mode**: `parsing_error` - the JSON-parse failures the
-`tool_schema=` retrofit exists to eliminate - dropped from 11/17 to
-**zero**. Every model response now parses as valid, schema-conformant
-JSON.
+**The `parsing_error` failure mode is structurally eliminated**: dropped
+from 11/17 to **zero**, by switching to the `tool_schema=` path, which
+removes the free-text JSON-parse step that mode used to fail at. This
+0/17 is not itself measured evidence of improved reliability, though -
+`JSONPromptExtractor.extract()` sets `parsing_error = None`
+unconditionally on the `tool_schema` path, so a 0/17 count is guaranteed
+by the code path regardless of whether segmentation actually got more
+reliable (review finding, PR #398, confirmed real - the paragraph
+originally here overclaimed 0/17 as confirmation of success). The only
+real, measured evidence is the any-cause exclusion-rate comparison below.
 
-**But overall segmentation reliability barely moved (65% -> 59%,
+**Overall segmentation reliability barely moved (65% -> 59%,
 a 6-point improvement), because a different, pre-existing failure mode
 was already present underneath and is now fully exposed.** All 10
 new-run exclusions are `alignment_error: "anchor text not found in story
@@ -43,32 +48,38 @@ naive comparison would have shown a false 0%-improvement-impossible or
 100%-improvement result depending on which side of the tautology was
 read).
 
-## One real regression, reported plainly
+## One observed inclusion flip, not yet established as a regression
 
 `wintry_peacock_from_the_new_decameron_volume_iii__lawrence` (romance)
 was **included** in the original baseline and is **excluded** in this
-run (`alignment_error`, segment_id=9). This is not noise to explain away:
-a story that previously made it through the pipeline no longer does,
-under the "improved" code. Per-genre detail:
+run (`alignment_error`, segment_id=9). `make_segment_extractor` samples
+at `temperature=0.2`, and this compares one pre-fix call against one
+post-fix call with no repeated trials or same-version control - the flip
+could reflect ordinary model-output variance rather than a real effect of
+the code change (review finding, PR #398). Reported as an observed flip,
+not asserted as a regression, pending further evidence. Per-genre detail:
 
 | Genre | Baseline included | This run included | Note |
 |---|---|---|---|
 | science fiction | 1/5 | 1/5 | unchanged |
 | horror | 1/5 | 2/5 | improved |
 | western | 0/2 | 1/2 | improved - no longer zero |
-| romance | 4/5 | 3/5 | **regressed** - `wintry_peacock...` flipped from included to excluded |
+| romance | 4/5 | 3/5 | `wintry_peacock...` flipped from included to excluded (see above) |
 
 ## Conclusion
 
-`WI-EVENT-0033`'s schema-hardening fix is confirmed to have eliminated
-its named failure mode (`parsing_error`) completely, verified with real
-data. It did not meaningfully improve the pipeline's overall segmentation
-exclusion rate, because a different, already-known, already-deferred
-failure mode (near-miss anchor alignment) was the larger and previously
-partially-masked contributor. Per this project's practice of not forcing
-a pass on a smaller-than-expected improvement, `WI-EVENT-0033` is not
-being resolved by this measurement alone - see its own Risk Notes for the
-updated real evidence and the resulting recommendation.
+`WI-EVENT-0033`'s schema-hardening fix structurally eliminates its named
+failure mode (`parsing_error`) by removing the free-text JSON-parse step
+that mode failed at - confirmed by code path, not by the 0/17 count
+alone, which is guaranteed regardless of real reliability. The measured,
+real evidence is the any-cause exclusion rate, which did not improve
+meaningfully (65% -> 59%), because a different, already-known,
+already-deferred failure mode (near-miss anchor alignment) was the
+larger and previously partially-masked contributor. Per this project's
+practice of not forcing a pass on a smaller-than-expected improvement,
+`WI-EVENT-0033` is not being resolved by this measurement alone - see its
+own Risk Notes for the updated real evidence and the resulting
+recommendation.
 
 ## Raw data
 

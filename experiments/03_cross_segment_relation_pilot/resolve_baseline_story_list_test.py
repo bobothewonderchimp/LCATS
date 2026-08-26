@@ -55,8 +55,39 @@ class TestResolveStoryIds(unittest.TestCase):
             pilot_stories = tmp_path / "pilot_stories.jsonl"
             pilot_stories.write_text(json.dumps({"story_id": "missing_story"}) + "\n")
 
-            with self.assertRaises(ValueError):
+            with self.assertRaises(ValueError) as ctx:
                 resolve_baseline_story_list.resolve_story_ids(pilot_stories, corpora)
+            self.assertIn(":1:", str(ctx.exception))
+            self.assertIn("missing_story", str(ctx.exception))
+
+    def test_raises_on_malformed_json_line_with_line_number(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = pathlib.Path(tmp)
+            corpora = tmp_path / "corpora"
+            (corpora / "collection_a" / "story_one").mkdir(parents=True)
+
+            pilot_stories = tmp_path / "pilot_stories.jsonl"
+            pilot_stories.write_text(
+                json.dumps({"story_id": "story_one"}) + "\n" + "{not valid json\n"
+            )
+
+            with self.assertRaises(ValueError) as ctx:
+                resolve_baseline_story_list.resolve_story_ids(pilot_stories, corpora)
+            self.assertIn(":2:", str(ctx.exception))
+
+    def test_raises_on_row_missing_story_id_with_line_number(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = pathlib.Path(tmp)
+            corpora = tmp_path / "corpora"
+            corpora.mkdir()
+
+            pilot_stories = tmp_path / "pilot_stories.jsonl"
+            pilot_stories.write_text(json.dumps({"genre": "horror"}) + "\n")
+
+            with self.assertRaises(ValueError) as ctx:
+                resolve_baseline_story_list.resolve_story_ids(pilot_stories, corpora)
+            self.assertIn(":1:", str(ctx.exception))
+            self.assertIn("story_id", str(ctx.exception))
 
     def test_raises_on_ambiguous_multiple_matches(self):
         with tempfile.TemporaryDirectory() as tmp:

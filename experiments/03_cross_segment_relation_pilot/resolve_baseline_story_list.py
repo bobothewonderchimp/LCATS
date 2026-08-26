@@ -38,22 +38,38 @@ def resolve_story_ids(
     pilot_stories_path: pathlib.Path, corpora_dir: pathlib.Path
 ) -> list[pathlib.Path]:
     """Return each pilot_stories.jsonl row's story_id resolved to its
-    current corpora/<collection>/<slug> directory, in file order."""
-    rows = [
-        json.loads(line)
-        for line in pilot_stories_path.read_text("utf-8").splitlines()
-        if line.strip()
-    ]
+    current corpora/<collection>/<slug> directory, in file order.
+
+    Streams the JSONL line-by-line rather than loading it all at once - a
+    malformed or story_id-less line raises a ValueError naming the exact
+    line number and content, not an unhelpful bare KeyError/JSONDecodeError,
+    matching this resolver's "fail loudly" design (review finding, PR #398).
+    """
     resolved = []
-    for row in rows:
-        story_id = row["story_id"]
-        matches = sorted(corpora_dir.glob(f"*/{story_id}"))
-        if len(matches) != 1:
-            raise ValueError(
-                f"story_id {story_id!r} resolved to {len(matches)} directories "
-                f"under {corpora_dir} (expected exactly 1): {matches}"
-            )
-        resolved.append(matches[0])
+    with pilot_stories_path.open("r", encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise ValueError(
+                    f"{pilot_stories_path}:{line_number}: invalid JSON ({exc})"
+                ) from exc
+            if "story_id" not in row:
+                raise ValueError(
+                    f"{pilot_stories_path}:{line_number}: row is missing 'story_id': {row!r}"
+                )
+            story_id = row["story_id"]
+            matches = sorted(corpora_dir.glob(f"*/{story_id}"))
+            if len(matches) != 1:
+                raise ValueError(
+                    f"{pilot_stories_path}:{line_number}: story_id {story_id!r} "
+                    f"resolved to {len(matches)} directories under {corpora_dir} "
+                    f"(expected exactly 1): {matches}"
+                )
+            resolved.append(matches[0])
     return resolved
 
 
