@@ -2,10 +2,10 @@
 execution_id: 2026_08_26_04_03_30_WI_EVENT_0096_DEPENDS_ON_FIX
 prompt_id: PROMPT(AD_HOC:WI_EVENT_0096_DEPENDS_ON_FIX)[2026-08-26T04:03:23+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/397
-commit: a712555e
+commit: 545d31cc
 agent: claude_app
 instruction_source: lcats/project/work_items/proposed/WI-EVENT-0096.md
 session_transcript: claude-app:e8e46d5d-35d3-4ccc-9cba-137bd31bf3a5
