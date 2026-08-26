@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: Implemented mirrored and reference-overlay comparative charts and merged in PR #393 (commit 6101f9e61f27e20121a8ceeb9e2c351063b7045e).
 blocked_reason: null
 blocked: false
 id: WI-VISUALIZE-0092
 title: Add mirrored and reference-overlay comparative charts
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
