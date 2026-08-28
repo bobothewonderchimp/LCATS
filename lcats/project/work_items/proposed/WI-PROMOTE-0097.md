@@ -42,7 +42,7 @@ acceptance:
   - "A new, shared sidecar-validator registry module exists in analysis/corpus/, mapping registered sidecar filenames to validator callables, registering all 4 currently-produced sidecar kinds (genre.json, scenes.json, linguistics.json, linguistics.tokens.json); promote.py imports only this registry, never genre_sidecar.py or linguistics/sidecar.py directly"
   - "insert and upsert both refuse by default when the named --sidecar kind has no registered validator; --allow-unvalidated is the only override, and it is available uniformly to both modes"
   - "--sidecar flag is shared identically by insert and upsert, selecting which registered kind an invocation targets; a value with no extension assumes .json before the registry lookup, a value with an extension is matched exactly with no inference; the registry refuses to register two kinds sharing a basename under different extensions"
-  - "docs/reference/corpus-promotion.md, docs/reference/cli-commands.md, and docs/reference/prepare-corpora-release.md are updated to reflect the new mandatory-mode command syntax, replacing every documented bare/flag-based invocation"
+  - "lcats/docs/reference/corpus-promotion.md, lcats/docs/reference/cli-commands.md, and lcats/docs/reference/prepare-corpora-release.md are updated to reflect the new mandatory-mode command syntax, replacing every documented bare/flag-based invocation"
   - "scripts/test passes with no new failures"
   - "lrh validate reports 0 errors"
 required_evidence:
@@ -54,9 +54,9 @@ artifacts_expected:
   - lcats/src/lcats/analysis/corpus/promote_cli.py
   - lcats/src/lcats/cli.py
   - lcats/tests/analysis_tests/promote_test.py
-  - docs/reference/corpus-promotion.md
-  - docs/reference/cli-commands.md
-  - docs/reference/prepare-corpora-release.md
+  - lcats/docs/reference/corpus-promotion.md
+  - lcats/docs/reference/cli-commands.md
+  - lcats/docs/reference/prepare-corpora-release.md
 ---
 
 # Work Item: WI-PROMOTE-0097
@@ -158,9 +158,10 @@ sourcing (Stage 3) both depend on.
    `--sidecar` bare-name/extension normalization rule and its
    basename-collision guard, and confirmation `replace`'s own existing
    test coverage is unaffected.
-5. **`docs/reference/corpus-promotion.md`**, **`docs/reference/cli-
-   commands.md`**, **`docs/reference/prepare-corpora-release.md`**:
-   update every documented invocation to the new mandatory-mode syntax.
+5. **`lcats/docs/reference/corpus-promotion.md`**, **`lcats/docs/
+   reference/cli-commands.md`**, **`lcats/docs/reference/prepare-
+   corpora-release.md`**: update every documented invocation to the new
+   mandatory-mode syntax.
 
 ## Non-Goals
 
