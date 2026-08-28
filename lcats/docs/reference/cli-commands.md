@@ -178,13 +178,18 @@ command is non-destructive — it never modifies the input files.
 
 ## `promote`
 
+An explicit mode is mandatory: `insert`, `upsert`, or `replace`. A bare
+`lcats promote` with no mode refuses rather than defaulting to any behavior.
+
 ```
-lcats promote [--source SOURCE] [--dest DEST] [--dry-run] [collections ...]
+lcats promote replace [--source SOURCE] [--dest DEST] [--dry-run] [collections ...]
+lcats promote insert --sidecar KIND --tranche-manifest PATH [--dest DEST] [--allow-unvalidated] [--dry-run]
+lcats promote upsert --sidecar KIND --tranche-manifest PATH [--dest DEST] [--allow-unvalidated] [--dry-run]
 ```
 
-Promote `data/` collections into `corpora/`. A collection with any mojibake
-finding is skipped and reported rather than promoted; clean collections
-wholesale-replace their `corpora/` counterpart.
+`replace` promotes `data/` collections into `corpora/` wholesale. A
+collection with any mojibake finding is skipped and reported rather than
+promoted; clean collections wholesale-replace their `corpora/` counterpart.
 
 | Argument / Flag | Description |
 |---|---|
@@ -193,8 +198,23 @@ wholesale-replace their `corpora/` counterpart.
 | `--dest DEST` | Root directory to promote clean collections into (default: `../corpora`). |
 | `--dry-run` | Survey and report without copying any files. |
 
+`insert`/`upsert` promote sidecars named in a JSONL manifest of `{"lcats_id":
+..., "payload": {...}}` envelopes into existing story buckets, without
+touching any other file in the destination. `insert` is create-only
+(refuses if the destination already exists); `upsert` is create-or-overwrite
+(whole-file only, never merges content).
+
+| Argument / Flag | Description |
+|---|---|
+| `--sidecar KIND` | Registered sidecar kind to promote (e.g. `genre`, `scenes`, `linguistics`, `linguistics.tokens.json`). No `.` assumes `.json`; a value containing `.` is matched exactly. |
+| `--tranche-manifest PATH` | JSONL manifest of `{"lcats_id": ..., "payload": {...}}` envelopes. |
+| `--dest DEST` | Root directory to promote into (default: `../corpora`). |
+| `--allow-unvalidated` | Allow a `--sidecar` kind with no registered validator. Never bypasses a registered validator's own rejection. |
+| `--dry-run` | Validate and report without writing any files. |
+
 See [`corpus-promotion.md`](corpus-promotion.md) for the full command
-explanation, collection-name mapping, and exit-code semantics.
+explanation, collection-name mapping, manifest envelope shape, and
+exit-code semantics.
 
 ## `annotate`
 

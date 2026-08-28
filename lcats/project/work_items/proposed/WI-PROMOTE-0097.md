@@ -42,7 +42,7 @@ acceptance:
   - "replace mode: today's existing wholesale rmtree+copytree mechanism (promote_collections/_copy_collection), unchanged, reachable only via the explicit replace mode name - no scope change to its own behavior in this item"
   - "A new, shared sidecar-validator registry module exists in analysis/corpus/, mapping registered sidecar filenames to validator callables, registering all 4 currently-produced sidecar kinds (genre.json, scenes.json, linguistics.json, linguistics.tokens.json); promote.py imports only this registry, never genre_sidecar.py or linguistics/sidecar.py directly"
   - "insert and upsert both refuse by default when the named --sidecar kind has no registered validator; --allow-unvalidated overrides this specific case (no registered validator) only - it does not bypass a registered validator's own rejection of malformed content, which insert/upsert always refuse unconditionally, with no override available in this item (resolves the adopted proposal's own Open Question on this point)"
-  - "insert/upsert manifest entries are self-identifying independent of their payload's own internal shape: each manifest line supplies a destination lcats_id in an envelope alongside the sidecar payload, rather than promote_sidecar_tranche()'s current behavior of reading lcats_id off the payload itself - this is required because scenes.json payloads (annotate.py's _annotate_scenes() output: segments/segment_count/model/input_tokens/output_tokens) carry no story-identity field at all, unlike genre-sidecar-v1 payloads"
+  - "insert/upsert manifest entries are self-identifying independent of their payload's own internal shape: each manifest line supplies a destination lcats_id in an envelope alongside the sidecar payload, rather than promote_sidecar_tranche()'s current behavior of reading lcats_id off the payload itself - this is required because scenes.json payloads (annotate.py's _annotate_scenes() output: segments/segment_count/model/input_tokens/output_tokens) carry no story-identity field at all, unlike genre-sidecar-v1 payloads - a manifest line with no envelope wrapper is still accepted as a bare legacy record when it carries its own non-empty top-level lcats_id (compatibility path, review finding PR #405), but an identity-bearing payload's own lcats_id must agree with the routing lcats_id or the write is rejected"
   - "--sidecar flag is shared identically by insert and upsert, selecting which registered kind an invocation targets; a value with no extension assumes .json before the registry lookup, a value with an extension is matched exactly with no inference; the registry refuses to register two kinds sharing a basename under different extensions"
   - "lcats/docs/reference/corpus-promotion.md, lcats/docs/reference/cli-commands.md, and lcats/docs/reference/prepare-corpora-release.md are updated to reflect the new mandatory-mode command syntax, replacing every documented bare/flag-based invocation"
   - "scripts/test passes with no new failures"
@@ -218,15 +218,31 @@ sourcing (Stage 3) both depend on.
   genre-shaped validation somewhere) — the new tests (Required Change 4)
   covering all 4 kinds, not just genre, are load-bearing for catching
   this.
-- The manifest envelope format change (Required Change 2, review finding
-  PR #401) may require migrating existing genre-sidecar-v1 manifests
-  (e.g. `WI-GENRE-0004`'s `validation_results.jsonl`, already consumed by
-  the still-open PR #362/`WI-GENRE-0077`) to the new envelope shape, or
-  a compatibility path (e.g. accepting a bare genre-sidecar-v1 record as
-  a special case, deriving the envelope's `lcats_id` from the payload's
-  own field only when the payload itself carries one) needs to be
-  designed. Surface this to reviewers explicitly if migration cost turns
-  out non-trivial — it was not fully worked out at WI-authoring time.
+- ~~The manifest envelope format change (Required Change 2, review
+  finding PR #401) may require migrating existing genre-sidecar-v1
+  manifests ... needs to be designed.~~ — **resolved by this item's own
+  implementation** (review finding, PR #405, `chatgpt-codex-connector`,
+  P1): a manifest line with no `"payload"` field is accepted when it
+  carries its own non-empty top-level `lcats_id` — the whole record is
+  then treated as the payload, using that same `lcats_id` for routing.
+  Existing genre-sidecar-v1 manifests (`WI-GENRE-0004`'s
+  `validation_results.jsonl`, produced by
+  `experiments/05_metadata_genre_prefilter/run_prefilter.py`, consumed by
+  the still-open PR #362/`WI-GENRE-0077`) need no migration.
+- Two further P1 findings on PR #405 (`chatgpt-codex-connector`), both
+  fixed: (1) an identity-bearing payload's own `lcats_id` must agree with
+  the envelope/routing `lcats_id`, or the write is rejected — otherwise a
+  valid payload for one story could be routed into a different story's
+  bucket; (2) an unregistered `--sidecar` value used with
+  `--allow-unvalidated` must be a single safe path component (no `..`/
+  `/`, not `story.json`) before being joined onto the destination bucket
+  — otherwise it could escape the bucket or overwrite the canonical
+  story file.
+- One P2 finding on PR #405 (`copilot-pull-request-reviewer`), fixed: a
+  write-path exception (e.g. a payload that fails `json.dumps`, or an
+  `OSError` from the atomic write) is now recorded as a per-line
+  rejection like any other validation failure, instead of aborting the
+  entire manifest run.
 
 ## Dependencies / Order
 

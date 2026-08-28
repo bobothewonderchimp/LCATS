@@ -2,17 +2,28 @@
 
 `corpora/` is a periodic release snapshot; `data/` is the live working corpus,
 cleared and regenerated after major changes (see `project/design/design.md`'s
-State and Persistence Boundary). Promotion copies collections from `data/`
-into `corpora/`, gated on a passing special-character survey, so stale
-encoding damage cannot silently re-enter the release snapshot the way the
-pre-2026-07 `corpora/` snapshot did (148 stories of stale mojibake, from a
-promotion that happened without a quality gate).
+State and Persistence Boundary). `replace` mode copies whole collections
+from `data/` into `corpora/`, gated on a passing special-character survey,
+so stale encoding damage cannot silently re-enter the release snapshot the
+way the pre-2026-07 `corpora/` snapshot did (148 stories of stale mojibake,
+from a promotion that happened without a quality gate). `insert`/`upsert`
+promote individual sidecars via a validated manifest instead — they are
+not survey-gated the way `replace` is.
 
 ## Command
 
+An explicit mode is mandatory (`WI-PROMOTE-0097`): `lcats promote` with no
+mode refuses rather than defaulting to any behavior. This closes the
+data-loss hazard between additive sidecar promotion and wholesale
+collection replacement — a mode name always says which one you're getting.
+
 ```bash
-lcats promote [collection ...] [--source data/] [--dest ../corpora] [--dry-run]
+lcats promote replace [collection ...] [--source data/] [--dest ../corpora] [--dry-run]
+lcats promote insert --sidecar <kind> --tranche-manifest <path.jsonl> [--dest ../corpora] [--allow-unvalidated] [--dry-run]
+lcats promote upsert --sidecar <kind> --tranche-manifest <path.jsonl> [--dest ../corpora] [--allow-unvalidated] [--dry-run]
 ```
+
+### `replace` — wholesale collection replacement
 
 - With no `collection` arguments, every subdirectory under `--source` is
   considered.
@@ -37,6 +48,30 @@ lcats promote [collection ...] [--source data/] [--dest ../corpora] [--dry-run]
 
 This tool builds and gates promotion; it does not decide *when* to promote —
 running it (for real, not `--dry-run`) is a release-time human action.
+
+### `insert`/`upsert` — additive sidecar promotion
+
+Both modes promote sidecars named in a JSONL manifest into existing story
+buckets under `--dest`, without touching any other file in the destination
+bucket or collection. `insert` is create-only (refuses, does not overwrite,
+if the destination sidecar already exists); `upsert` is create-or-overwrite
+(whole-file only — it never merges sidecar content).
+
+- `--sidecar <kind>` selects the registered sidecar kind to promote (e.g.
+  `genre`, `scenes`, `linguistics`, `linguistics.tokens.json`). A value with
+  no `.` assumes `.json`; a value containing `.` is matched exactly against
+  the registry, with no inference.
+- `--tranche-manifest <path.jsonl>` is a JSONL manifest, one **envelope**
+  object per line: `{"lcats_id": "<destination story id>", "payload":
+  {<sidecar content>}}`. The envelope's `lcats_id` is what routes the write
+  — never the payload's own fields, since some sidecar kinds (e.g.
+  `scenes.json`) carry no story-identity field of their own.
+- Every `--sidecar` kind is validated against a shared registry by default;
+  `--allow-unvalidated` permits promoting a kind with **no registered
+  validator** — it never bypasses a registered validator's own rejection of
+  malformed content.
+- Neither mode creates a destination story bucket — `lcats_id` must name a
+  bucket that already has a `story.json`.
 
 ## Collection-name mapping
 
@@ -67,7 +102,7 @@ real promotion under this scheme should include, as part of that same change:
 
 ```bash
 git rm -r corpora/ohenry corpora/wilde
-lcats promote  # populates ohenry-four_million, ohenry-whirligigs, wilde_happy_prince, ...
+lcats promote replace  # populates ohenry-four_million, ohenry-whirligigs, wilde_happy_prince, ...
 ```
 
 This is a one-time historical correction, not a recurring promotion step.

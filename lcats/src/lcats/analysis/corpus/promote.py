@@ -26,6 +26,7 @@ import tempfile
 from lcats.analysis.corpus import cli
 from lcats.analysis.corpus import discovery
 from lcats.analysis.corpus import genre_sidecar
+from lcats.analysis.corpus import sidecar_validators
 from lcats.analysis.corpus import specials
 
 BLOCKING_CLASSIFICATION = "likely_repairable"
@@ -365,7 +366,7 @@ def promote_collections(
 
 @dataclasses.dataclass(frozen=True)
 class SidecarPromotionFinding:
-    """One tranche-manifest record rejected during sidecar promotion."""
+    """One manifest envelope rejected during sidecar promotion."""
 
     lcats_id: str
     error: str
@@ -373,7 +374,7 @@ class SidecarPromotionFinding:
 
 @dataclasses.dataclass(frozen=True)
 class SidecarTranchePromotionReport:
-    """Outcome of a sidecar-tranche promotion run."""
+    """Outcome of an insert/upsert sidecar-manifest promotion run."""
 
     promoted: tuple[str, ...]
     rejected: tuple[SidecarPromotionFinding, ...]
@@ -424,38 +425,108 @@ def _lcats_id_escape_error(lcats_id: str, dest_root: pathlib.Path) -> str | None
     return None
 
 
-def promote_sidecar_tranche(
+def _sidecar_filename_is_safe(sidecar_filename: str) -> bool:
+    """Return True if ``sidecar_filename`` is safe to join onto a
+    destination story bucket directory.
+
+    Every currently-registered filename is already a single, hardcoded
+    path component with no separators, so this only matters for the
+    ``--allow-unvalidated`` path: an arbitrary, un-registered
+    ``--sidecar`` value could otherwise be an absolute path, contain
+    ``..``/``/`` components (escaping the story bucket), or name the
+    canonical ``story.json`` itself (letting ``upsert --allow-unvalidated``
+    silently overwrite the story rather than a sidecar) -- review finding,
+    PR #405."""
+    if not sidecar_filename or sidecar_filename in (".", ".."):
+        return False
+    if "/" in sidecar_filename or "\\" in sidecar_filename:
+        return False
+    if pathlib.PurePosixPath(sidecar_filename).name != sidecar_filename:
+        return False
+    if sidecar_filename == discovery.CANONICAL_STORY_FILENAME:
+        return False
+    return True
+
+
+def _promote_sidecar_manifest(
     manifest_path: pathlib.Path,
     dest_root: pathlib.Path,
-    dry_run: bool = False,
+    sidecar_filename: str,
+    *,
+    overwrite: bool,
+    allow_unvalidated: bool,
+    dry_run: bool,
 ) -> SidecarTranchePromotionReport:
-    """Promote selected stories' genre.json sidecars from a JSONL manifest
-    into corpora/, without touching any other file in the destination
-    collection directory.
+    """Shared engine for ``insert``/``upsert``: promote sidecars named in a
+    JSONL manifest of envelopes into corpora/, without touching any other
+    file in the destination collection directory.
 
-    Unlike ``promote_collections``' whole-directory wholesale replacement,
-    this promotes exactly the ``genre.json`` sidecars named in the
-    manifest -- one ``genre-sidecar-v1`` record per line, each already
-    carrying its own ``lcats_id`` -- and nothing else. Every record is
-    validated via ``genre_sidecar.validate_sidecar()`` before being
-    written; an invalid record is rejected and reported, not silently
-    written. A legacy flat ``genre.json`` already present at a promotion
-    destination is refused explicitly (with a clear error), never
-    silently overwritten or silently left stale -- converting a legacy
-    sidecar in place is ``lcats annotate``'s job (``WI-GENRE-0076``), not
-    this function's.
+    Each manifest line is normally an envelope, ``{"lcats_id": "<destination
+    story id>", "payload": {<sidecar content>}}`` -- not a bare sidecar
+    record -- so that destination routing works uniformly across every
+    registered sidecar kind, including ones whose payload carries no
+    identity field of its own (e.g. ``scenes.json``; review finding, PR
+    #401, ``WI-PROMOTE-0097``).
+
+    **Bare-record compatibility path** (review finding, PR #405): a
+    manifest line with no ``"payload"`` field is also accepted when it
+    carries its own non-empty top-level ``lcats_id`` -- the whole record is
+    then treated as the payload, and that same ``lcats_id`` is used for
+    routing. This keeps existing genre-sidecar-v1 manifests (e.g.
+    ``WI-GENRE-0004``'s ``validation_results.jsonl``, produced by
+    ``experiments/05_metadata_genre_prefilter/run_prefilter.py`` and
+    consumed by ``WI-GENRE-0077``) promotable without a migration. A
+    payload with no identity field of its own (``scenes.json``) has no way
+    to use this path and must be enveloped.
+
+    ``payload`` is validated via ``sidecar_validators``' registry, then
+    written as-is. When ``payload`` is a dict carrying its own top-level
+    ``lcats_id``, that value must agree with the envelope/routing
+    ``lcats_id`` -- a mismatch is rejected, not silently written (review
+    finding, PR #405: an identity-bearing payload for one story could
+    otherwise be routed to a different story's bucket). A legacy flat
+    ``genre.json`` already present at a promotion destination is refused
+    explicitly (with a clear error), never silently overwritten --
+    converting a legacy sidecar in place is ``lcats annotate``'s job
+    (``WI-GENRE-0076``), not this function's.
 
     Args:
-        manifest_path: Path to a JSONL file, one ``genre-sidecar-v1`` JSON
-            object per line (e.g. ``experiments/05_metadata_genre_prefilter``'s
-            ``validation_results.jsonl``).
+        manifest_path: Path to a JSONL file of envelope (or bare-record
+            compatibility) objects.
         dest_root: Root directory to promote into (typically ``corpora/``).
+        sidecar_filename: The registered sidecar filename to write (already
+            resolved via ``sidecar_validators.resolve_sidecar_filename``).
+        overwrite: False for insert (create-only, refuses on conflict);
+            True for upsert (create-or-overwrite).
+        allow_unvalidated: When True, permits promoting a sidecar kind with
+            no registered validator. Never bypasses a registered
+            validator's own rejection of malformed content.
         dry_run: When True, validate and report but write nothing.
 
     Returns:
         A SidecarTranchePromotionReport listing promoted ``lcats_id``
         values and rejected ``SidecarPromotionFinding`` entries.
+
+    Raises:
+        ValueError: If ``sidecar_filename`` has no registered validator and
+            ``allow_unvalidated`` is False, or if ``sidecar_filename`` is
+            not a single safe path component.
     """
+    if not _sidecar_filename_is_safe(sidecar_filename):
+        raise ValueError(
+            f"unsafe sidecar filename {sidecar_filename!r}: must be a single "
+            "path component with no '..'/'/' and not the canonical story "
+            "filename"
+        )
+
+    validator = sidecar_validators.get_validator(sidecar_filename)
+    if validator is None and not allow_unvalidated:
+        raise ValueError(
+            f"no registered validator for sidecar kind {sidecar_filename!r}; "
+            "pass allow_unvalidated=True (--allow-unvalidated) to promote it "
+            "unvalidated"
+        )
+
     promoted: list[str] = []
     rejected: list[SidecarPromotionFinding] = []
 
@@ -466,7 +537,7 @@ def promote_sidecar_tranche(
                 continue
 
             try:
-                record = json.loads(line)
+                envelope = json.loads(line)
             except json.JSONDecodeError as exc:
                 rejected.append(
                     SidecarPromotionFinding(
@@ -476,15 +547,46 @@ def promote_sidecar_tranche(
                 )
                 continue
 
-            lcats_id = record.get("lcats_id") if isinstance(record, dict) else None
-            if not isinstance(lcats_id, str) or not lcats_id:
+            if not isinstance(envelope, dict):
                 rejected.append(
                     SidecarPromotionFinding(
                         lcats_id=f"<line {line_number}>",
-                        error="record has no non-empty top-level lcats_id",
+                        error=(
+                            "expected a JSON object envelope, got "
+                            f"{type(envelope).__name__}"
+                        ),
                     )
                 )
                 continue
+
+            if "payload" in envelope:
+                lcats_id = envelope.get("lcats_id")
+                if not isinstance(lcats_id, str) or not lcats_id:
+                    rejected.append(
+                        SidecarPromotionFinding(
+                            lcats_id=f"<line {line_number}>",
+                            error="envelope has no non-empty top-level lcats_id",
+                        )
+                    )
+                    continue
+                payload = envelope["payload"]
+            else:
+                # Bare-record compatibility path (review finding, PR #405)
+                # -- see _promote_sidecar_manifest's own docstring.
+                bare_lcats_id = envelope.get("lcats_id")
+                if not isinstance(bare_lcats_id, str) or not bare_lcats_id:
+                    rejected.append(
+                        SidecarPromotionFinding(
+                            lcats_id=f"<line {line_number}>",
+                            error=(
+                                "record has no 'payload' field and no "
+                                "non-empty top-level lcats_id"
+                            ),
+                        )
+                    )
+                    continue
+                lcats_id = bare_lcats_id
+                payload = envelope
 
             escape_error = _lcats_id_escape_error(lcats_id, dest_root)
             if escape_error is not None:
@@ -493,18 +595,33 @@ def promote_sidecar_tranche(
                 )
                 continue
 
-            validation = genre_sidecar.validate_sidecar(record)
-            if not validation.valid:
-                rejected.append(
-                    SidecarPromotionFinding(
-                        lcats_id=lcats_id,
-                        error="; ".join(
-                            f"{finding.path}: {finding.message}"
-                            for finding in validation.findings
-                        ),
+            if isinstance(payload, dict) and "lcats_id" in payload:
+                payload_lcats_id = payload.get("lcats_id")
+                if payload_lcats_id != lcats_id:
+                    rejected.append(
+                        SidecarPromotionFinding(
+                            lcats_id=lcats_id,
+                            error=(
+                                f"payload's own lcats_id {payload_lcats_id!r} "
+                                f"does not match routing lcats_id {lcats_id!r}"
+                            ),
+                        )
                     )
-                )
-                continue
+                    continue
+
+            if validator is not None:
+                validation = validator(payload)
+                if not validation.valid:
+                    rejected.append(
+                        SidecarPromotionFinding(
+                            lcats_id=lcats_id,
+                            error="; ".join(
+                                f"{finding.path}: {finding.message}"
+                                for finding in validation.findings
+                            ),
+                        )
+                    )
+                    continue
 
             dest_dir = dest_root / lcats_id
             if not (dest_dir / discovery.CANONICAL_STORY_FILENAME).is_file():
@@ -520,31 +637,99 @@ def promote_sidecar_tranche(
                 )
                 continue
 
-            dest_path = dest_dir / discovery.GENRE_SIDECAR_FILENAME
+            dest_path = dest_dir / sidecar_filename
             if dest_path.is_file():
-                try:
-                    existing = json.loads(dest_path.read_text(encoding="utf-8"))
-                except (OSError, UnicodeDecodeError, json.JSONDecodeError):
-                    existing = None
-                if existing is not None and genre_sidecar.is_legacy_flat_sidecar(
-                    existing
-                ):
+                if sidecar_filename == discovery.GENRE_SIDECAR_FILENAME:
+                    try:
+                        existing = json.loads(dest_path.read_text(encoding="utf-8"))
+                    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+                        existing = None
+                    if existing is not None and genre_sidecar.is_legacy_flat_sidecar(
+                        existing
+                    ):
+                        rejected.append(
+                            SidecarPromotionFinding(
+                                lcats_id=lcats_id,
+                                error=(
+                                    f"refusing to promote: {dest_path} already holds "
+                                    "a legacy flat genre.json; convert it via lcats "
+                                    "annotate before promoting a v1 sidecar here"
+                                ),
+                            )
+                        )
+                        continue
+                if not overwrite:
                     rejected.append(
                         SidecarPromotionFinding(
                             lcats_id=lcats_id,
                             error=(
-                                f"refusing to promote: {dest_path} already holds "
-                                "a legacy flat genre.json; convert it via lcats "
-                                "annotate before promoting a v1 sidecar here"
+                                f"refusing to promote: {dest_path} already exists "
+                                "(insert mode is create-only; use upsert to overwrite)"
                             ),
                         )
                     )
                     continue
 
             if not dry_run:
-                _atomic_write_text(dest_path, json.dumps(record, indent=2))
+                try:
+                    serialized = json.dumps(payload, indent=2)
+                    _atomic_write_text(dest_path, serialized)
+                except (TypeError, ValueError, OverflowError, OSError) as exc:
+                    rejected.append(
+                        SidecarPromotionFinding(
+                            lcats_id=lcats_id,
+                            error=f"failed to write sidecar: {exc}",
+                        )
+                    )
+                    continue
             promoted.append(lcats_id)
 
     return SidecarTranchePromotionReport(
         promoted=tuple(promoted), rejected=tuple(rejected)
+    )
+
+
+def promote_sidecar_insert(
+    manifest_path: pathlib.Path,
+    dest_root: pathlib.Path,
+    sidecar: str,
+    allow_unvalidated: bool = False,
+    dry_run: bool = False,
+) -> SidecarTranchePromotionReport:
+    """Create-only: write named sidecars from a JSONL manifest of envelopes
+    into existing story buckets, refusing (not overwriting) any that
+    already exist. Never touches any other file in the destination bucket
+    or collection. See ``_promote_sidecar_manifest`` for the shared engine
+    and manifest envelope shape."""
+    sidecar_filename = sidecar_validators.resolve_sidecar_filename(sidecar)
+    return _promote_sidecar_manifest(
+        manifest_path,
+        dest_root,
+        sidecar_filename,
+        overwrite=False,
+        allow_unvalidated=allow_unvalidated,
+        dry_run=dry_run,
+    )
+
+
+def promote_sidecar_upsert(
+    manifest_path: pathlib.Path,
+    dest_root: pathlib.Path,
+    sidecar: str,
+    allow_unvalidated: bool = False,
+    dry_run: bool = False,
+) -> SidecarTranchePromotionReport:
+    """Create-or-overwrite: write named sidecars from a JSONL manifest of
+    envelopes into existing story buckets, whole-file overwrite only (no
+    in-sidecar content merge). Never touches or deletes any other file in
+    the destination bucket or collection. See ``_promote_sidecar_manifest``
+    for the shared engine and manifest envelope shape."""
+    sidecar_filename = sidecar_validators.resolve_sidecar_filename(sidecar)
+    return _promote_sidecar_manifest(
+        manifest_path,
+        dest_root,
+        sidecar_filename,
+        overwrite=True,
+        allow_unvalidated=allow_unvalidated,
+        dry_run=dry_run,
     )

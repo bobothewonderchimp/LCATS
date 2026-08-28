@@ -9,6 +9,7 @@ import unittest.mock
 
 from lcats.analysis.corpus import promote
 from lcats.analysis.corpus import promote_cli
+from lcats.analysis.corpus import sidecar_validators
 
 
 def _write_story(collection_dir: pathlib.Path, name: str, body: str) -> None:
@@ -517,13 +518,20 @@ def _valid_sidecar_record(lcats_id: str, story_path: str) -> dict:
     }
 
 
+def _envelope(lcats_id: str, payload) -> dict:
+    return {"lcats_id": lcats_id, "payload": payload}
+
+
 def _write_manifest(manifest_path: pathlib.Path, records: list) -> None:
     lines = [json.dumps(record) for record in records]
     manifest_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-class PromoteSidecarTrancheTest(unittest.TestCase):
-    """Tests for the sidecar-tranche promotion mode (WI-GENRE-0075)."""
+class PromoteSidecarInsertUpsertTest(unittest.TestCase):
+    """Tests for the insert/upsert sidecar-manifest promotion modes
+    (WI-PROMOTE-0097; generalizes WI-GENRE-0075's promote_sidecar_tranche
+    into a manifest-identity-envelope shape, per PR #401's review
+    finding)."""
 
     def test_valid_records_are_promoted_without_touching_other_files(self):
         with (
@@ -532,8 +540,8 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
         ):
             dest_root = pathlib.Path(dest_tmp)
             manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
-            record = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
-            _write_manifest(manifest_path, [record])
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
 
             # A pre-existing, unrelated file in the destination story
             # bucket must survive promotion untouched.
@@ -543,7 +551,7 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
                 json.dumps({"name": "bell"}), encoding="utf-8"
             )
 
-            report = promote.promote_sidecar_tranche(manifest_path, dest_root)
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
 
             self.assertEqual(("anderson/bell",), report.promoted)
             self.assertEqual((), report.rejected)
@@ -551,14 +559,14 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
             written = json.loads(
                 (bucket_dir / "genre.json").read_text(encoding="utf-8")
             )
-            self.assertEqual(record, written)
+            self.assertEqual(payload, written)
             # story.json is untouched.
             self.assertEqual(
                 {"name": "bell"},
                 json.loads((bucket_dir / "story.json").read_text(encoding="utf-8")),
             )
 
-    def test_invalid_record_is_rejected_and_not_written(self):
+    def test_invalid_payload_is_rejected_and_not_written(self):
         with (
             tempfile.TemporaryDirectory() as manifest_tmp,
             tempfile.TemporaryDirectory() as dest_tmp,
@@ -566,14 +574,16 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
             dest_root = pathlib.Path(dest_tmp)
             manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
             # Missing "assessments" entirely -- validate_sidecar rejects.
-            invalid_record = {
+            invalid_payload = {
                 "schema_version": "genre-sidecar-v1",
                 "lcats_id": "anderson/bell",
                 "story_path": "anderson/bell/story.json",
             }
-            _write_manifest(manifest_path, [invalid_record])
+            _write_manifest(
+                manifest_path, [_envelope("anderson/bell", invalid_payload)]
+            )
 
-            report = promote.promote_sidecar_tranche(manifest_path, dest_root)
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
 
             self.assertEqual((), report.promoted)
             self.assertEqual(1, len(report.rejected))
@@ -587,8 +597,8 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
         ):
             dest_root = pathlib.Path(dest_tmp)
             manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
-            record = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
-            _write_manifest(manifest_path, [record])
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
 
             bucket_dir = dest_root / "anderson" / "bell"
             bucket_dir.mkdir(parents=True)
@@ -604,7 +614,10 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
                 json.dumps(legacy_sidecar), encoding="utf-8"
             )
 
-            report = promote.promote_sidecar_tranche(manifest_path, dest_root)
+            # Even upsert (create-or-overwrite) must refuse a legacy flat
+            # sidecar at the destination -- converting it in place is
+            # lcats annotate's job, not this function's.
+            report = promote.promote_sidecar_upsert(manifest_path, dest_root, "genre")
 
             self.assertEqual((), report.promoted)
             self.assertEqual(1, len(report.rejected))
@@ -615,6 +628,72 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
                 json.loads((bucket_dir / "genre.json").read_text(encoding="utf-8")),
             )
 
+    def test_insert_refuses_when_destination_already_exists(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
+
+            bucket_dir = dest_root / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+            existing = _valid_sidecar_record(
+                "anderson/bell", "anderson/bell/story.json"
+            )
+            (bucket_dir / "genre.json").write_text(
+                json.dumps(existing), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertIn("already exists", report.rejected[0].error)
+            self.assertEqual(
+                existing,
+                json.loads((bucket_dir / "genre.json").read_text(encoding="utf-8")),
+            )
+
+    def test_upsert_overwrites_an_existing_destination(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            new_payload = _valid_sidecar_record(
+                "anderson/bell", "anderson/bell/story.json"
+            )
+            _write_manifest(manifest_path, [_envelope("anderson/bell", new_payload)])
+
+            bucket_dir = dest_root / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+            old_payload = _valid_sidecar_record(
+                "anderson/bell", "anderson/bell/story.json"
+            )
+            old_payload["story_path"] = "stale"
+            (bucket_dir / "genre.json").write_text(
+                json.dumps(old_payload), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_upsert(manifest_path, dest_root, "genre")
+
+            self.assertEqual(("anderson/bell",), report.promoted)
+            self.assertEqual((), report.rejected)
+            self.assertEqual(
+                new_payload,
+                json.loads((bucket_dir / "genre.json").read_text(encoding="utf-8")),
+            )
+
     def test_dry_run_makes_no_writes(self):
         with (
             tempfile.TemporaryDirectory() as manifest_tmp,
@@ -622,8 +701,8 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
         ):
             dest_root = pathlib.Path(dest_tmp)
             manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
-            record = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
-            _write_manifest(manifest_path, [record])
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
 
             bucket_dir = dest_root / "anderson" / "bell"
             bucket_dir.mkdir(parents=True)
@@ -631,8 +710,8 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
                 json.dumps({"name": "bell"}), encoding="utf-8"
             )
 
-            report = promote.promote_sidecar_tranche(
-                manifest_path, dest_root, dry_run=True
+            report = promote.promote_sidecar_insert(
+                manifest_path, dest_root, "genre", dry_run=True
             )
 
             self.assertEqual(("anderson/bell",), report.promoted)
@@ -647,12 +726,15 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
             manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
             escaping_ids = ["/etc/passwd", "../outside", "anderson/../../outside", "."]
             records = [
-                _valid_sidecar_record(lcats_id, f"{lcats_id}/story.json")
+                _envelope(
+                    lcats_id,
+                    _valid_sidecar_record(lcats_id, f"{lcats_id}/story.json"),
+                )
                 for lcats_id in escaping_ids
             ]
             _write_manifest(manifest_path, records)
 
-            report = promote.promote_sidecar_tranche(manifest_path, dest_root)
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
 
             self.assertEqual((), report.promoted)
             self.assertEqual(len(escaping_ids), len(report.rejected))
@@ -669,12 +751,12 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
             dest_root = pathlib.Path(dest_tmp)
             manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
             # No story.json bucket exists at the destination for this id.
-            record = _valid_sidecar_record(
+            payload = _valid_sidecar_record(
                 "anderson/typo_d_id", "anderson/typo_d_id/story.json"
             )
-            _write_manifest(manifest_path, [record])
+            _write_manifest(manifest_path, [_envelope("anderson/typo_d_id", payload)])
 
-            report = promote.promote_sidecar_tranche(manifest_path, dest_root)
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
 
             self.assertEqual((), report.promoted)
             self.assertEqual(1, len(report.rejected))
@@ -689,11 +771,13 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
         ):
             dest_root = pathlib.Path(dest_tmp)
             manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
-            good_record = _valid_sidecar_record(
+            good_payload = _valid_sidecar_record(
                 "anderson/bell", "anderson/bell/story.json"
             )
             manifest_path.write_text(
-                "not valid json\n" + json.dumps(good_record) + "\n",
+                "not valid json\n"
+                + json.dumps(_envelope("anderson/bell", good_payload))
+                + "\n",
                 encoding="utf-8",
             )
             bucket_dir = dest_root / "anderson" / "bell"
@@ -702,11 +786,305 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
                 json.dumps({"name": "bell"}), encoding="utf-8"
             )
 
-            report = promote.promote_sidecar_tranche(manifest_path, dest_root)
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
 
             self.assertEqual(("anderson/bell",), report.promoted)
             self.assertEqual(1, len(report.rejected))
             self.assertIn("<line 1>", report.rejected[0].lcats_id)
+
+    def test_envelope_with_neither_payload_nor_own_lcats_id_is_rejected(self):
+        # No "payload" field, and no top-level lcats_id either -- so
+        # neither the envelope path nor the bare-record compatibility
+        # path (which requires the record's own lcats_id) can apply.
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            _write_manifest(manifest_path, [{"unrelated": "value"}])
+
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertIn("payload", report.rejected[0].error)
+
+    def test_scenes_payload_with_no_identity_field_is_promoted_via_envelope(self):
+        """The whole point of the manifest-identity envelope (review
+        finding, PR #401): scenes.json payloads (annotate.py's
+        _annotate_scenes() output) carry no story-identity field of their
+        own, unlike genre-sidecar-v1 payloads -- routing must come from
+        the envelope's lcats_id, never the payload's own fields."""
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            scenes_payload = {
+                "segments": [{"start": 0, "end": 10}],
+                "segment_count": 1,
+                "model": "gpt-4o",
+                "input_tokens": 100,
+                "output_tokens": 50,
+            }
+            _write_manifest(manifest_path, [_envelope("anderson/bell", scenes_payload)])
+
+            bucket_dir = dest_root / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "scenes")
+
+            self.assertEqual(("anderson/bell",), report.promoted)
+            self.assertEqual(
+                scenes_payload,
+                json.loads((bucket_dir / "scenes.json").read_text(encoding="utf-8")),
+            )
+
+    def test_unregistered_sidecar_kind_is_refused_by_default(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            _write_manifest(
+                manifest_path, [_envelope("anderson/bell", {"anything": True})]
+            )
+
+            with self.assertRaises(ValueError) as ctx:
+                promote.promote_sidecar_insert(
+                    manifest_path, dest_root, "wordcloud.png"
+                )
+            self.assertIn("no registered validator", str(ctx.exception))
+
+    def test_allow_unvalidated_permits_an_unregistered_sidecar_kind(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            payload = {"anything": True}
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
+
+            bucket_dir = dest_root / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_insert(
+                manifest_path,
+                dest_root,
+                "wordcloud.png",
+                allow_unvalidated=True,
+            )
+
+            self.assertEqual(("anderson/bell",), report.promoted)
+            self.assertEqual(
+                payload,
+                json.loads((bucket_dir / "wordcloud.png").read_text(encoding="utf-8")),
+            )
+
+    def test_allow_unvalidated_does_not_bypass_a_registered_validators_rejection(self):
+        """--allow-unvalidated only covers the no-registered-validator
+        case; a registered validator's own rejection of malformed content
+        is never bypassable (resolves the adopted proposal's Open
+        Question; WI-PROMOTE-0097 acceptance)."""
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            # "genre" IS registered, so allow_unvalidated must not matter
+            # here -- this invalid payload must still be rejected.
+            invalid_payload = {
+                "schema_version": "genre-sidecar-v1",
+                "lcats_id": "anderson/bell",
+                "story_path": "anderson/bell/story.json",
+            }
+            _write_manifest(
+                manifest_path, [_envelope("anderson/bell", invalid_payload)]
+            )
+
+            report = promote.promote_sidecar_insert(
+                manifest_path, dest_root, "genre", allow_unvalidated=True
+            )
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+
+    def test_unsafe_sidecar_filename_is_rejected_even_with_allow_unvalidated(self):
+        """P1 review finding, PR #405: --allow-unvalidated must not let an
+        arbitrary --sidecar value escape the story bucket (path traversal)
+        or overwrite the canonical story.json itself."""
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            _write_manifest(
+                manifest_path, [_envelope("anderson/bell", {"anything": True})]
+            )
+
+            unsafe_names = [
+                "../escape.json",
+                "/etc/passwd",
+                "sub/dir.json",
+                "story.json",
+                ".",
+                "..",
+            ]
+            for unsafe_name in unsafe_names:
+                with self.subTest(sidecar=unsafe_name):
+                    with self.assertRaises(ValueError) as ctx:
+                        promote.promote_sidecar_upsert(
+                            manifest_path,
+                            dest_root,
+                            unsafe_name,
+                            allow_unvalidated=True,
+                        )
+                    self.assertIn("unsafe sidecar filename", str(ctx.exception))
+
+    def test_payload_lcats_id_mismatch_with_envelope_is_rejected(self):
+        """P1 review finding, PR #405: an identity-bearing payload (e.g.
+        genre-sidecar-v1) whose own lcats_id disagrees with the envelope's
+        routing lcats_id must be rejected, not silently written into the
+        wrong story's bucket."""
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            # Payload self-identifies as "anderson/other", but the envelope
+            # routes it to "anderson/bell".
+            payload = _valid_sidecar_record(
+                "anderson/other", "anderson/other/story.json"
+            )
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
+
+            bucket_dir = dest_root / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertIn("does not match", report.rejected[0].error)
+            self.assertFalse((bucket_dir / "genre.json").exists())
+
+    def test_payload_lcats_id_agreeing_with_envelope_is_promoted(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
+
+            bucket_dir = dest_root / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
+
+            self.assertEqual(("anderson/bell",), report.promoted)
+
+    def test_write_failure_is_a_per_line_rejection_not_a_fatal_abort(self):
+        """P2 review finding, PR #405: a write-path exception (here, a
+        payload json.dumps can't serialize) must be recorded as a
+        per-line rejection like any other validation failure, not abort
+        the whole manifest run."""
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            good_payload = _valid_sidecar_record(
+                "anderson/bell", "anderson/bell/story.json"
+            )
+            _write_manifest(manifest_path, [_envelope("anderson/bell", good_payload)])
+
+            for name in ("anderson/bell",):
+                bucket_dir = dest_root / name
+                bucket_dir.mkdir(parents=True)
+                (bucket_dir / "story.json").write_text(
+                    json.dumps({"name": "bell"}), encoding="utf-8"
+                )
+
+            with unittest.mock.patch(
+                "lcats.analysis.corpus.promote._atomic_write_text",
+                side_effect=OSError("disk full"),
+            ):
+                report = promote.promote_sidecar_insert(
+                    manifest_path, dest_root, "genre"
+                )
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertIn("failed to write sidecar", report.rejected[0].error)
+
+    def test_bare_legacy_record_without_payload_wrapper_is_promoted(self):
+        """Compatibility path (P1 review finding, PR #405): existing
+        genre-sidecar-v1 manifests (e.g. WI-GENRE-0004's
+        validation_results.jsonl, produced by
+        experiments/05_metadata_genre_prefilter/run_prefilter.py and
+        consumed by WI-GENRE-0077) have no "payload" wrapper -- they must
+        stay promotable without a migration."""
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            bare_record = _valid_sidecar_record(
+                "anderson/bell", "anderson/bell/story.json"
+            )
+            _write_manifest(manifest_path, [bare_record])
+
+            bucket_dir = dest_root / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
+
+            self.assertEqual(("anderson/bell",), report.promoted)
+            self.assertEqual(
+                bare_record,
+                json.loads((bucket_dir / "genre.json").read_text(encoding="utf-8")),
+            )
+
+    def test_bare_record_with_no_identity_field_is_rejected(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            _write_manifest(manifest_path, [{"segments": []}])
+
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "scenes")
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertIn("no 'payload' field", report.rejected[0].error)
 
     def test_wholesale_promote_collections_is_unaffected(self):
         # Sanity check: adding the tranche path did not change
@@ -728,7 +1106,20 @@ class PromoteSidecarTrancheTest(unittest.TestCase):
 class PromoteCliTest(unittest.TestCase):
     """Tests for the promote CLI exit-code and reporting behavior."""
 
-    def test_exit_code_zero_when_all_collections_promote(self):
+    def test_bare_invocation_with_no_mode_refuses(self):
+        # WI-PROMOTE-0097 acceptance: an explicit mode is mandatory; a
+        # bare invocation must refuse rather than defaulting to any
+        # behavior.
+        error_output = io.StringIO()
+        with (
+            unittest.mock.patch("sys.stderr", error_output),
+            self.assertRaises(SystemExit) as ctx,
+        ):
+            promote_cli.run([])
+
+        self.assertNotEqual(0, ctx.exception.code)
+
+    def test_replace_mode_exit_code_zero_when_all_collections_promote(self):
         with (
             tempfile.TemporaryDirectory() as source_tmp,
             tempfile.TemporaryDirectory() as dest_tmp,
@@ -740,13 +1131,13 @@ class PromoteCliTest(unittest.TestCase):
             output = io.StringIO()
             with unittest.mock.patch("sys.stdout", output):
                 exit_code = promote_cli.run(
-                    ["--source", str(source_root), "--dest", str(dest_root)]
+                    ["replace", "--source", str(source_root), "--dest", str(dest_root)]
                 )
 
             self.assertEqual(0, exit_code)
             self.assertIn("promoted: clean", output.getvalue())
 
-    def test_exit_code_nonzero_when_a_collection_is_blocked(self):
+    def test_replace_mode_exit_code_nonzero_when_a_collection_is_blocked(self):
         with (
             tempfile.TemporaryDirectory() as source_tmp,
             tempfile.TemporaryDirectory() as dest_tmp,
@@ -762,13 +1153,15 @@ class PromoteCliTest(unittest.TestCase):
                 unittest.mock.patch("sys.stderr", error_output),
             ):
                 exit_code = promote_cli.run(
-                    ["--source", str(source_root), "--dest", str(dest_root)]
+                    ["replace", "--source", str(source_root), "--dest", str(dest_root)]
                 )
 
             self.assertEqual(1, exit_code)
             self.assertIn("blocked: damaged", error_output.getvalue())
 
-    def test_missing_source_directory_reports_clean_error_not_traceback(self):
+    def test_replace_mode_missing_source_directory_reports_clean_error_not_traceback(
+        self,
+    ):
         with tempfile.TemporaryDirectory() as dest_tmp:
             missing_source = pathlib.Path(dest_tmp) / "does_not_exist"
 
@@ -776,6 +1169,7 @@ class PromoteCliTest(unittest.TestCase):
             with unittest.mock.patch("sys.stderr", error_output):
                 exit_code = promote_cli.run(
                     [
+                        "replace",
                         "--source",
                         str(missing_source),
                         "--dest",
@@ -787,27 +1181,27 @@ class PromoteCliTest(unittest.TestCase):
             self.assertEqual(2, exit_code)
             self.assertIn("error:", error_output.getvalue())
 
-    def test_source_equals_dest_reports_clean_error_not_traceback(self):
+    def test_replace_mode_source_equals_dest_reports_clean_error_not_traceback(self):
         with tempfile.TemporaryDirectory() as tmp:
             error_output = io.StringIO()
             with unittest.mock.patch("sys.stderr", error_output):
-                exit_code = promote_cli.run(["--source", tmp, "--dest", tmp])
+                exit_code = promote_cli.run(["replace", "--source", tmp, "--dest", tmp])
 
             self.assertEqual(2, exit_code)
             self.assertIn("error:", error_output.getvalue())
             self.assertIn("same directory", error_output.getvalue())
 
-    def test_tranche_manifest_flag_reaches_the_tranche_promotion_function(self):
-        # The whole point of Required Change 2 (review finding, PR #348):
-        # the CLI must actually invoke promote_sidecar_tranche, not just
-        # the library function called directly in tests above.
+    def test_insert_mode_reaches_the_insert_promotion_function(self):
+        # The whole point of Required Change 1: the CLI must actually
+        # invoke promote_sidecar_insert, not just the library function
+        # called directly in tests above.
         with (
             tempfile.TemporaryDirectory() as manifest_tmp,
             tempfile.TemporaryDirectory() as dest_tmp,
         ):
             manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
-            record = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
-            _write_manifest(manifest_path, [record])
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
             bucket_dir = pathlib.Path(dest_tmp) / "anderson" / "bell"
             bucket_dir.mkdir(parents=True)
             (bucket_dir / "story.json").write_text(
@@ -818,8 +1212,11 @@ class PromoteCliTest(unittest.TestCase):
             with unittest.mock.patch("sys.stdout", output):
                 exit_code = promote_cli.run(
                     [
+                        "insert",
                         "--dest",
                         dest_tmp,
+                        "--sidecar",
+                        "genre",
                         "--tranche-manifest",
                         str(manifest_path),
                     ]
@@ -831,25 +1228,102 @@ class PromoteCliTest(unittest.TestCase):
                 (pathlib.Path(dest_tmp) / "anderson" / "bell" / "genre.json").is_file()
             )
 
-    def test_tranche_manifest_flag_reports_rejections_and_nonzero_exit(self):
+    def test_insert_mode_second_pass_on_same_destination_is_refused(self):
         with (
             tempfile.TemporaryDirectory() as manifest_tmp,
             tempfile.TemporaryDirectory() as dest_tmp,
         ):
             manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
-            invalid_record = {
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
+            bucket_dir = pathlib.Path(dest_tmp) / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+            insert_args = [
+                "insert",
+                "--dest",
+                dest_tmp,
+                "--sidecar",
+                "genre",
+                "--tranche-manifest",
+                str(manifest_path),
+            ]
+
+            with unittest.mock.patch("sys.stdout", io.StringIO()):
+                first_exit_code = promote_cli.run(insert_args)
+
+            error_output = io.StringIO()
+            with unittest.mock.patch("sys.stderr", error_output):
+                second_exit_code = promote_cli.run(insert_args)
+
+            self.assertEqual(0, first_exit_code)
+            self.assertEqual(1, second_exit_code)
+            self.assertIn("already exists", error_output.getvalue())
+
+    def test_upsert_mode_reaches_the_upsert_promotion_function(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
+            bucket_dir = pathlib.Path(dest_tmp) / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+            (bucket_dir / "genre.json").write_text(
+                json.dumps(payload | {"story_path": "stale"}), encoding="utf-8"
+            )
+
+            output = io.StringIO()
+            with unittest.mock.patch("sys.stdout", output):
+                exit_code = promote_cli.run(
+                    [
+                        "upsert",
+                        "--dest",
+                        dest_tmp,
+                        "--sidecar",
+                        "genre",
+                        "--tranche-manifest",
+                        str(manifest_path),
+                    ]
+                )
+
+            self.assertEqual(0, exit_code)
+            self.assertIn("promoted sidecar: anderson/bell", output.getvalue())
+            self.assertEqual(
+                payload,
+                json.loads((bucket_dir / "genre.json").read_text(encoding="utf-8")),
+            )
+
+    def test_sidecar_flag_reports_rejections_and_nonzero_exit(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            invalid_payload = {
                 "schema_version": "genre-sidecar-v1",
                 "lcats_id": "anderson/bell",
                 "story_path": "anderson/bell/story.json",
             }
-            _write_manifest(manifest_path, [invalid_record])
+            _write_manifest(
+                manifest_path, [_envelope("anderson/bell", invalid_payload)]
+            )
 
             error_output = io.StringIO()
             with unittest.mock.patch("sys.stderr", error_output):
                 exit_code = promote_cli.run(
                     [
+                        "insert",
                         "--dest",
                         dest_tmp,
+                        "--sidecar",
+                        "genre",
                         "--tranche-manifest",
                         str(manifest_path),
                     ]
@@ -858,14 +1332,14 @@ class PromoteCliTest(unittest.TestCase):
             self.assertEqual(1, exit_code)
             self.assertIn("rejected: anderson/bell", error_output.getvalue())
 
-    def test_tranche_manifest_dry_run_makes_no_writes_via_cli(self):
+    def test_sidecar_flag_dry_run_makes_no_writes_via_cli(self):
         with (
             tempfile.TemporaryDirectory() as manifest_tmp,
             tempfile.TemporaryDirectory() as dest_tmp,
         ):
             manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
-            record = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
-            _write_manifest(manifest_path, [record])
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
             bucket_dir = pathlib.Path(dest_tmp) / "anderson" / "bell"
             bucket_dir.mkdir(parents=True)
             (bucket_dir / "story.json").write_text(
@@ -876,8 +1350,11 @@ class PromoteCliTest(unittest.TestCase):
             with unittest.mock.patch("sys.stdout", output):
                 exit_code = promote_cli.run(
                     [
+                        "insert",
                         "--dest",
                         dest_tmp,
+                        "--sidecar",
+                        "genre",
                         "--tranche-manifest",
                         str(manifest_path),
                         "--dry-run",
@@ -888,9 +1365,70 @@ class PromoteCliTest(unittest.TestCase):
             self.assertIn("would promote sidecar: anderson/bell", output.getvalue())
             self.assertFalse((bucket_dir / "genre.json").exists())
 
-    def test_wholesale_cli_invocations_are_unaffected_by_the_new_flag(self):
-        # Sanity check: the existing wholesale CLI path and its exit codes
-        # are unchanged when --tranche-manifest is simply not passed.
+    def test_allow_unvalidated_flag_reaches_the_promotion_function(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            _write_manifest(
+                manifest_path, [_envelope("anderson/bell", {"anything": True})]
+            )
+            bucket_dir = pathlib.Path(dest_tmp) / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+
+            output = io.StringIO()
+            with unittest.mock.patch("sys.stdout", output):
+                exit_code = promote_cli.run(
+                    [
+                        "insert",
+                        "--dest",
+                        dest_tmp,
+                        "--sidecar",
+                        "wordcloud.png",
+                        "--tranche-manifest",
+                        str(manifest_path),
+                        "--allow-unvalidated",
+                    ]
+                )
+
+            self.assertEqual(0, exit_code)
+            self.assertIn("promoted sidecar: anderson/bell", output.getvalue())
+
+    def test_unvalidated_sidecar_without_the_flag_reports_clean_error(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            _write_manifest(
+                manifest_path, [_envelope("anderson/bell", {"anything": True})]
+            )
+
+            error_output = io.StringIO()
+            with unittest.mock.patch("sys.stderr", error_output):
+                exit_code = promote_cli.run(
+                    [
+                        "insert",
+                        "--dest",
+                        dest_tmp,
+                        "--sidecar",
+                        "wordcloud.png",
+                        "--tranche-manifest",
+                        str(manifest_path),
+                    ]
+                )
+
+            self.assertEqual(2, exit_code)
+            self.assertIn("no registered validator", error_output.getvalue())
+
+    def test_replace_mode_is_unaffected_by_insert_upsert_additions(self):
+        # Sanity check: the existing wholesale replace path and its exit
+        # codes are unchanged now that it is reached only via the
+        # explicit "replace" mode name.
         with (
             tempfile.TemporaryDirectory() as source_tmp,
             tempfile.TemporaryDirectory() as dest_tmp,
@@ -901,11 +1439,64 @@ class PromoteCliTest(unittest.TestCase):
             output = io.StringIO()
             with unittest.mock.patch("sys.stdout", output):
                 exit_code = promote_cli.run(
-                    ["--source", str(source_root), "--dest", dest_tmp]
+                    ["replace", "--source", str(source_root), "--dest", dest_tmp]
                 )
 
             self.assertEqual(0, exit_code)
             self.assertIn("promoted: clean", output.getvalue())
+
+
+class SidecarValidatorsRegistryTest(unittest.TestCase):
+    """Tests for the shared sidecar-validator registry (WI-PROMOTE-0097,
+    PROP-LCATS-PROMOTE-MODE-REDESIGN Decision 5)."""
+
+    def test_all_four_produced_kinds_are_registered(self):
+        registered = sidecar_validators.registered_filenames()
+        self.assertIn("genre.json", registered)
+        self.assertIn("scenes.json", registered)
+        self.assertIn("linguistics.json", registered)
+        self.assertIn("linguistics.tokens.json", registered)
+        self.assertEqual(4, len(registered))
+
+    def test_get_validator_returns_none_for_unregistered_filename(self):
+        self.assertIsNone(sidecar_validators.get_validator("wordcloud.png"))
+
+    def test_get_validator_dispatches_genre(self):
+        validator = sidecar_validators.get_validator("genre.json")
+        result = validator({"not": "a genre sidecar"})
+        self.assertFalse(result.valid)
+
+    def test_get_validator_dispatches_scenes(self):
+        validator = sidecar_validators.get_validator("scenes.json")
+        self.assertTrue(validator({"segments": []}).valid)
+        self.assertFalse(validator({"segments": None}).valid)
+        self.assertFalse(validator(["not", "a", "dict"]).valid)
+
+    def test_bare_name_assumes_json_extension(self):
+        self.assertEqual(
+            "genre.json", sidecar_validators.resolve_sidecar_filename("genre")
+        )
+
+    def test_name_with_extension_is_matched_exactly(self):
+        self.assertEqual(
+            "wordcloud.png",
+            sidecar_validators.resolve_sidecar_filename("wordcloud.png"),
+        )
+        # "linguistics.tokens" contains a dot -- treated as an exact name,
+        # not inferred as the compound linguistics.tokens.json filename.
+        self.assertEqual(
+            "linguistics.tokens",
+            sidecar_validators.resolve_sidecar_filename("linguistics.tokens"),
+        )
+
+    def test_basename_collision_is_rejected_at_registration_time(self):
+        colliding_registry = {
+            "linguistics.json": sidecar_validators._validate_linguistics,
+            "linguistics.png": sidecar_validators._validate_linguistics,
+        }
+        with self.assertRaises(ValueError) as ctx:
+            sidecar_validators._check_no_basename_collisions(colliding_registry)
+        self.assertIn("collision", str(ctx.exception))
 
 
 if __name__ == "__main__":
