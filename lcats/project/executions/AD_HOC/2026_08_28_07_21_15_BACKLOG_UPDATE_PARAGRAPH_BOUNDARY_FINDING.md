@@ -2,10 +2,10 @@
 execution_id: 2026_08_28_07_21_15_BACKLOG_UPDATE_PARAGRAPH_BOUNDARY_FINDING
 prompt_id: PROMPT(AD_HOC:BACKLOG_UPDATE_PARAGRAPH_BOUNDARY_FINDING)[2026-08-28T07:21:04+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/406
-commit: 51b5a72e
+commit: d20b6c72
 agent: claude_app
 instruction_source: "user request in-session (\"please file a backlog item for [WI-SEGMENT-0098's finding]... unless you think it deserves its own WI\")"
 session_transcript: claude-app:e8e46d5d-35d3-4ccc-9cba-137bd31bf3a5
