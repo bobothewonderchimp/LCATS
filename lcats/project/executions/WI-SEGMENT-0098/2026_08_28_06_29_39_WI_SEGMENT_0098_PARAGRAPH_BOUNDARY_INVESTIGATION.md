@@ -37,9 +37,8 @@ cases (`easy_money__sinclair`, `the_guardians__cox`,
 `the_medici_boots__swet`) - confirmed `text_segmenter`'s own paragraph
 numbering is correct and internally consistent in every case (using the
 exact function that built the model's own input). The pattern is a
-model-side attribution error at natural narrative-continuity boundaries
-(two short consecutive paragraphs continuing one beat, or a paragraph
-that ends mid-sentence), not a code-side indexing disagreement.
+model-side attribution error at natural narrative-continuity boundaries,
+not a code-side indexing disagreement.
 
 Wrote `lcats/project/design/segmentation-paragraph-boundary-truncation-investigation.md`
 with the full per-case table, 3 detailed boundary inspections, the
@@ -51,9 +50,27 @@ own `forbidden_actions`. Opened PR #403 (branch
 `xenotaur/spike/wi-segment-0098-paragraph-boundary-investigation`,
 commit `ed1b122e`).
 
+**Review-round correction (PR #403, three findings confirmed real
+before fixing):** a markdown formatting issue (a parenthetical split
+across two lines, the second starting with `-`, rendering as a list
+item); the per-case table's "overshoot" column reported match-*start*-
+minus-window-end for 5 of 6 rows instead of match-*end*-minus-window-end,
+understating the real character margin (corrected values are tens to
+hundreds of characters, not single digits - materially different for
+sizing any future widening fix); and the `the_guardians__cox` boundary
+excerpt was truncated by this investigation's own 250-character debug
+print, which I then wrongly described as the real text ending
+mid-sentence - the full paragraph 142 is in fact complete and
+self-contained. All three fixed by re-verifying directly against the
+real data, not by trusting the review comments alone.
+
 # Validation
 
 - `lrh validate` - 0 errors, 247 warnings (pre-existing baseline)
+- All 3 review findings independently re-verified against real data
+  before fixing (re-ran `_locate_anchor_span`'s actual computation for
+  the overshoot correction; re-read the full, untruncated paragraph 142
+  directly from the source for the second correction)
 
 # Follow-up
 

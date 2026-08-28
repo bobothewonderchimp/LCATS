@@ -46,18 +46,24 @@ function - no new matching logic was introduced for this investigation.
 
 ## Per-Case Findings
 
-| Case | Claimed end_par_id | Real paragraph | Overshoot (chars) |
+| Case | Claimed end_par_id | Real paragraph | Match-end overshoot (chars) |
 |---|---:|---:|---:|
-| `easy_money__sinclair` seg 3 | 117 | 118 | 2 |
+| `easy_money__sinclair` seg 3 | 117 | 118 | 286 |
 | `the_voice_in_the_fog__leverage` seg 3 | 34 | 35 | 80 |
-| `the_guardians__cox` seg 9 | 142 | 143 | 146 |
-| `the_medici_boots__swet` seg 10 | 125 | 127 | 4 |
-| `wintry_peacock_..._lawrence` seg 9 | 162 | 163 | 2 |
-| `romance_of_an_ugly_policeman` seg 3 | 53 | 54 | 8 |
+| `the_guardians__cox` seg 9 | 142 | 143 | 455 |
+| `the_medici_boots__swet` seg 10 | 125 | 127 | 360 |
+| `wintry_peacock_..._lawrence` seg 9 | 162 | 163 | 108 |
+| `romance_of_an_ugly_policeman` seg 3 | 53 | 54 | 58 |
 
-("Overshoot" = how far past the claimed window's end the real match's
-end offset falls - a few characters in most cases, since the model's
-own `end_exact` is usually short.)
+("Overshoot" = the real match's own end offset minus the claimed
+window's end (`hi`) - review finding, PR #403: an earlier draft of this
+table reported match-*start*-minus-`hi` instead for 5 of 6 rows, which
+materially understates the character margin a production widening would
+need to cover the full anchor, not just reach its start. Corrected by
+re-running `_locate_anchor_span` and computing `match_end - hi`
+directly. These larger values (tens to hundreds of characters, not a
+handful) matter for sizing any future window-widening fix - see
+Recommendation.)
 
 ### Direct inspection of the marked-up boundary text
 
@@ -95,21 +101,30 @@ continuous beat and picked the earlier paragraph number.
 [P0141] "You didn't believe me?" Mryna gasped.
 
 [P0142] "Of course not. If a plague carrier escaped from Rythar, we would have
-heard about it long before this... He's always contended that
+heard about it long before this. The trouble with you scientists is you
+don't grant the rest of us any common sense. And Jameson's the worst of
+the lot. He's always contended that the sociologists should determine
+our Rytharian policy, not the elected representatives of the people."
 
 [P0143] Mryna broke down and began to cry hysterically. The senator put his hand
 under her arm--none too gently. "Let's have no more dramatics, please...
 ```
 
-Paragraph 142 ends mid-sentence ("He's always contended that") and the
-real `end_exact` text is drawn from paragraph 143, a different
-speaker/narration beat entirely. This is a different flavor of the same
-underlying pattern: the model's quoted end text was drawn from content
-one paragraph later than its claimed `end_par_id`, again always in the
-forward direction.
+Correction (review finding, PR #403): an earlier draft of this excerpt
+was truncated by this investigation's own debug print (cut at 250
+characters) and wrongly described paragraph 142 as ending mid-sentence.
+The full paragraph 142 above is in fact complete and self-contained -
+a single character's uninterrupted dialogue turn that closes its own
+quotation cleanly. There is no mid-sentence break here; paragraph 143
+begins a genuinely separate narration beat (a different
+character/action). Unlike `easy_money__sinclair`'s case, this pair does
+not share an obvious narrative-continuity or truncation cue - the model
+still misattributed its `end_exact` text to paragraph 143 instead of the
+correct 142, but this case does not by itself explain *why*, beyond the
+same directional pattern (always forward, never backward) seen across
+all 6 cases.
 
-**`the_medici_boots__swet`, paragraphs 124-127** (claimed end: 125, real: 127
-- the one +2 outlier):
+**`the_medici_boots__swet`, paragraphs 124-127** (claimed end: 125, real: 127 - the one +2 outlier):
 
 ```
 [P0124] Before Eric could reply, dinner was announced...
