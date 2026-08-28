@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #400 (commit 8db9b10f)."
 blocked_reason: null
 blocked: false
 id: WI-RUNLOG-0081
 title: Add run-log support to run_census.py
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
