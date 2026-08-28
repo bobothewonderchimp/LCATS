@@ -2,11 +2,12 @@
 id: PROP-LCATS-PROMOTE-MODE-REDESIGN
 type: design_proposal
 title: lcats promote Mode Redesign — Mandatory Modes and Sidecar-Kind Safety Guards
-status: proposed
+status: adopted
 created_on: 2026-08-23
 updated_on: 2026-08-23
 implementation_status: not_started
-implemented_by: []
+implemented_by:
+  - WI-PROMOTE-0097
 supersedes: []
 superseded_by: null
 related_design:

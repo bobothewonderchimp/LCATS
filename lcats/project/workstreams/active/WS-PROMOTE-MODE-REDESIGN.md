@@ -2,16 +2,17 @@
 id: WS-PROMOTE-MODE-REDESIGN
 kind: planning_node
 title: lcats promote Mode Redesign
-status: proposed
-stage: designed
+status: active
+stage: planned
 origin: design_review
 summary: Deliver PROP-LCATS-PROMOTE-MODE-REDESIGN — mandatory insert/upsert/replace modes for lcats promote, a shared sidecar-validator registry, and a targeted safety guard preventing replace from silently destroying tranche-promoted sidecars.
 related_focus: []
 related_roadmap: []
 related_design:
-  - project/design/proposals/proposed/lcats-promote-mode-redesign/00_proposal.md
+  - project/design/proposals/adopted/lcats-promote-mode-redesign/00_proposal.md
   - project/design/proposals/proposed/genre-evidence-sidecars/00_proposal.md
-work_items: []
+work_items:
+  - WI-PROMOTE-0097
 exit_criteria:
   - lcats promote requires an explicit insert/upsert/replace mode; no silent default exists
   - insert and upsert both require a registered sidecar validator by default, with --allow-unvalidated as the only override
@@ -66,14 +67,16 @@ near-term by an imminent whole-corpus `linguistics.json` rollout.
 
 ## Proposed Work Items
 
-Not yet minted. Anticipated breakdown, in dependency order (see the
-proposal's own Implementation Plan):
+Anticipated breakdown, in dependency order (see the proposal's own
+Implementation Plan):
 
 1. Sidecar-validator registry + mandatory mode split + uniform validation
-   requirement + `--sidecar` flag.
-2. `replace`'s targeted orphaned-sidecar guard.
+   requirement + `--sidecar` flag. **Scoped — `WI-PROMOTE-0097`.**
+2. `replace`'s targeted orphaned-sidecar guard. Not yet minted — depends
+   on `WI-PROMOTE-0097`'s registry.
 3. `insert`/`upsert` live-directory-scan sourcing — flagged as a priority
    given the imminent linguistics-sidecar rollout this directly de-risks.
+   Not yet minted — depends on `WI-PROMOTE-0097`'s mode split.
 
 ## Non-Goals
 
@@ -81,7 +84,6 @@ proposal's own Implementation Plan):
   any sidecar kind.
 - Does not extend the validator interface to non-JSON sidecar kinds.
 - Does not touch `lcats annotate`'s own sidecar-writing behavior.
-- Does not create child work items in this PR.
 
 ## Open Questions
 
