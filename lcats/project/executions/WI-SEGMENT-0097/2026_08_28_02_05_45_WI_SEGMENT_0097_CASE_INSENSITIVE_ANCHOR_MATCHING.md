@@ -2,10 +2,10 @@
 execution_id: 2026_08_28_02_05_45_WI_SEGMENT_0097_CASE_INSENSITIVE_ANCHOR_MATCHING
 prompt_id: PROMPT(WI-SEGMENT-0097:WI_SEGMENT_0097_CASE_INSENSITIVE_ANCHOR_MATCHING)[2026-08-28T01:59:04+00:00]
 work_item: WI-SEGMENT-0097
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/402
-commit: c0c15ea9
+commit: d98e78e8
 agent: claude_app
 instruction_source: lcats/project/work_items/proposed/WI-SEGMENT-0097.md
 session_transcript: claude-app:e8e46d5d-35d3-4ccc-9cba-137bd31bf3a5

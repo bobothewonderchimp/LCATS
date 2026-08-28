@@ -131,8 +131,9 @@ documents the intended execution order and must stay in sync with that list.
    backends, no real spend. Wiring the new parameters into
    `run_pilot.py`'s CLI remains a separate, unfiled follow-on per this
    item's own Non-Goals.
-6. **`WI-SEGMENT-0097`: Case-insensitive segmentation anchor matching** -
-   Real evidence from `WI-EVENT-0096`'s 2026-08-26 measurement found 2 of
+6. **`WI-SEGMENT-0097`: Case-insensitive segmentation anchor matching**
+   (resolved via PR #402) - Real evidence from `WI-EVENT-0096`'s
+   2026-08-26 measurement found 2 of
    10 post-`WI-SEGMENT-0070` alignment failures are pure case-only
    near-misses. Extend `_locate_anchor_span`'s existing deterministic
    typography-normalization fallback with case-insensitivity - narrow

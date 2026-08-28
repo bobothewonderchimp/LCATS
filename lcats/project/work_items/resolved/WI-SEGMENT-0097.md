@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented via PR #402. Added re.IGNORECASE to _locate_anchor_span's existing whitespace/typography-tolerant fallback in text_segmenter.py (exact-match-first behavior and paragraph-window-only bounds unchanged). Both real case-only near-misses from WI-EVENT-0096 (the_haunter_of_the_dark, calling_the_empress__smith) verified to now resolve correctly. 5 new tests added (2 real regressions, 1 decoy confirming no wrong-location match, 1 exact-match-stays-case-sensitive guard, 1 combined case+whitespace case). scripts/test: 2181 tests, 1 pre-existing unrelated failure (NMF-seed flake, already noted in WI-EVENT-0096). lrh validate: 0 errors."
 blocked_reason: null
 blocked: false
 id: WI-SEGMENT-0097
 title: Add case-insensitive matching to segmentation anchor alignment fallback
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
