@@ -13,6 +13,7 @@ related_design:
   - project/design/proposals/proposed/genre-evidence-sidecars/00_proposal.md
 work_items:
   - WI-PROMOTE-0097
+  - WI-PROMOTE-0100
 exit_criteria:
   - lcats promote requires an explicit insert/upsert/replace mode; no silent default exists
   - insert and upsert both require a registered sidecar validator by default, with --allow-unvalidated as the only override
@@ -77,7 +78,7 @@ Implementation Plan):
    on `WI-PROMOTE-0097`'s registry.
 3. `insert`/`upsert` live-directory-scan sourcing — flagged as a priority
    given the imminent linguistics-sidecar rollout this directly de-risks.
-   Not yet minted — depends on `WI-PROMOTE-0097`'s mode split.
+   **Scoped — `WI-PROMOTE-0100`.**
 
 ## Non-Goals
 
