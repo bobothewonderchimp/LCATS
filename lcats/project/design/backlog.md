@@ -1075,3 +1075,33 @@ sample.
 (`project/work_items/resolved/WI-SEGMENT-0059.md`, prior art on why a
 full-document fallback is unsafe);
 `project/design/segmentation-alignment-failure-categories.md`.
+
+**2026-08-28 update - a second, cleaner sample from `WI-SEGMENT-0098`.**
+`WI-EVENT-0096`'s real post-`WI-EVENT-0033` measurement run (17-story
+cohort, `claude-haiku-4-5-20251001`, `tool_schema=` structured output)
+surfaced 6 more real cases of exactly this pattern, root-caused in
+`WI-SEGMENT-0098`
+(`project/design/segmentation-paragraph-boundary-truncation-investigation.md`,
+resolved via PR #403). Unlike this entry's original 6-case sample, the
+new sample is strikingly consistent: **all 6 undercount** `end_par_id`
+(the real text always lands in the paragraph immediately after the
+claimed range, never before, never overcounting), with small drift (1
+paragraph in 5/6 cases, 2 in the one outlier - which has a distinct,
+identified cause: an empty/zero-length paragraph between the claimed and
+real paragraph). `text_segmenter`'s own paragraph indexing was directly
+re-verified correct in every case. Whether this cleaner, one-directional
+signal reflects a genuinely more consistent underlying model behavior
+(e.g. tied to the `tool_schema=` retrofit changing how `end_par_id` gets
+produced) or is simply a smaller, more homogeneous sample than the
+original 6-of-21 case is not yet known - the two samples' directionality
+disagrees (this entry's original sample: 4 undercount, 2 overcount) in a
+way worth resolving before treating either as representative.
+`WI-SEGMENT-0098`'s own recommendation - a narrowly-scoped,
+end-boundary-only search-window widening, sized from a broader real
+sample before any production change - is consistent with, and adds real
+evidence toward, the "why not a fresh investigation-type WI yet" gate
+above; it does not yet clear that gate on its own (12 combined real
+cases across two samples, still short of a dedicated 100+-story sample
+with real statistical power). Also related: the full per-case breakdown
+lives in the dated execution record under
+`project/executions/WI-SEGMENT-0098/`.
