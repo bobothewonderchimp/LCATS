@@ -43,10 +43,19 @@ Opened PR #406 (branch
 `xenotaur/chore/backlog-update-paragraph-boundary-finding`, commit
 `51b5a72e`).
 
+**Review-round correction (PR #406, 1 finding confirmed real before
+fixing):** a real formatting issue - a very long inline-code path
+reference on its own line, inconsistent with the file's own wrapping
+convention. Fixed by shortening the reference to the directory (dropping
+the redundant full timestamped filename, since the dated entry text
+already locates it) rather than mid-splitting the backtick span, which
+would have inserted an unwanted space into the path text itself.
+
 # Validation
 
-- `lrh validate` - 0 errors, 280 warnings (pre-existing baseline;
-  `backlog.md` is explicitly not schema-validated, per its own header)
+- `lrh validate` - 0 errors (warning count varies run-to-run with
+  concurrent landings elsewhere in the repo; `backlog.md` is explicitly
+  not schema-validated, per its own header)
 
 # Follow-up
 

@@ -1080,7 +1080,8 @@ full-document fallback is unsafe);
 `WI-EVENT-0096`'s real post-`WI-EVENT-0033` measurement run (17-story
 cohort, `claude-haiku-4-5-20251001`, `tool_schema=` structured output)
 surfaced 6 more real cases of exactly this pattern, root-caused in
-`WI-SEGMENT-0098` (`project/design/segmentation-paragraph-boundary-truncation-investigation.md`,
+`WI-SEGMENT-0098`
+(`project/design/segmentation-paragraph-boundary-truncation-investigation.md`,
 resolved via PR #403). Unlike this entry's original 6-case sample, the
 new sample is strikingly consistent: **all 6 undercount** `end_par_id`
 (the real text always lands in the paragraph immediately after the
@@ -1101,5 +1102,6 @@ sample before any production change - is consistent with, and adds real
 evidence toward, the "why not a fresh investigation-type WI yet" gate
 above; it does not yet clear that gate on its own (12 combined real
 cases across two samples, still short of a dedicated 100+-story sample
-with real statistical power). Also related:
-`project/executions/WI-SEGMENT-0098/2026_08_28_06_29_39_WI_SEGMENT_0098_PARAGRAPH_BOUNDARY_INVESTIGATION.md`.
+with real statistical power). Also related: the full per-case breakdown
+lives in the dated execution record under
+`project/executions/WI-SEGMENT-0098/`.
