@@ -2,7 +2,7 @@
 id: WI-PROMOTE-0097
 title: Add mandatory insert/upsert/replace modes and sidecar-validator registry to lcats promote
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
@@ -22,7 +22,7 @@ depends_on: []
 blocked_by: []
 blocked: false
 blocked_reason: null
-resolution: null
+resolution: "Implemented and merged in PR #405 (merge commit 9665a2d44544941b476e47015bf7f178a3ed7289). lcats promote now requires an explicit insert/upsert/replace mode - no bare invocation, no silent default. Generalized promote_sidecar_tranche() into promote_sidecar_insert()/promote_sidecar_upsert(), sharing one engine, driven by a manifest-identity envelope ({lcats_id, payload}) so routing works uniformly across all 4 registered sidecar kinds. Added sidecar_validators.py, a shared registry (genre.json, scenes.json, linguistics.json, linguistics.tokens.json) with lazy-imported linguistics validators to avoid pulling in their heavier dependency chain. --allow-unvalidated covers only the no-registered-validator case. replace's own wholesale mechanism is unchanged. Review (Copilot + Codex) found and fixed 7 issues before merge, including 3 P1s: an unsafe --sidecar-filename path-escape/story.json-overwrite risk under --allow-unvalidated, a payload/envelope lcats_id identity-mismatch gap, and a real regression that would have broken WI-GENRE-0077's only existing manifest (resolved via a documented bare-record compatibility path). See project/executions/WI-PROMOTE-0097/ and project/executions/AD_HOC/*WI_PROMOTE_0097* for the full record chain."
 expected_actions:
   - edit_file
   - run_tests

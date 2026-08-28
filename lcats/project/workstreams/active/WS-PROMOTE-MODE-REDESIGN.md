@@ -71,7 +71,8 @@ Anticipated breakdown, in dependency order (see the proposal's own
 Implementation Plan):
 
 1. Sidecar-validator registry + mandatory mode split + uniform validation
-   requirement + `--sidecar` flag. **Scoped — `WI-PROMOTE-0097`.**
+   requirement + `--sidecar` flag. **Resolved — `WI-PROMOTE-0097`
+   (PR #405).**
 2. `replace`'s targeted orphaned-sidecar guard. Not yet minted — depends
    on `WI-PROMOTE-0097`'s registry.
 3. `insert`/`upsert` live-directory-scan sourcing — flagged as a priority
@@ -87,8 +88,11 @@ Implementation Plan):
 
 ## Open Questions
 
-- Exact registry module filename/location (deferred to the first work
-  item).
-- Whether `--allow-unvalidated` also bypasses a registered-but-failing
+- ~~Exact registry module filename/location (deferred to the first work
+  item).~~ — **resolved by `WI-PROMOTE-0097`**: `analysis/corpus/
+  sidecar_validators.py`.
+- ~~Whether `--allow-unvalidated` also bypasses a registered-but-failing
   validator, or only covers the unregistered-kind case (deferred to the
-  first work item).
+  first work item).~~ — **resolved by `WI-PROMOTE-0097`**: only the
+  unregistered-kind case; a registered validator's rejection is never
+  bypassable.
