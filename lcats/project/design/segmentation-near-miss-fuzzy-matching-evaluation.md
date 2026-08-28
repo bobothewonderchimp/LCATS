@@ -16,10 +16,12 @@ Related work:
 ## Summary
 
 A strict local fuzzy policy matched both committed near-miss positives available
-in the repository, but only one was an exact span recovery. The other accepted
-match overextended the expected source span by one newline. The same policy
-produced zero false positives on four hand-built decoy cases. That is useful
-evidence, but it is not enough to adopt fuzzy matching in production.
+in the repository at the time, but only one was an exact span recovery. The
+other accepted match overextended the expected source span by one newline. The
+same policy produced zero false positives on four hand-built decoy cases. That
+is useful evidence, but it is not enough to adopt fuzzy matching in
+production. (See the 2026-08-28 update below for the enlarged, still-growing
+corpus and its own results.)
 
 Recommendation: defer production fuzzy matching. Keep exact/normalized anchor
 grounding as the production behavior. Reconsider only after a broader,
@@ -183,8 +185,9 @@ before any real API calls.
 more genuine near-miss positives, both committed at
 `experiments/03_cross_segment_relation_pilot/results/segmentation_reliability/`.
 These were added to the tracked corpus (now 4 positive cases; the 4
-existing decoys were kept unchanged, per this evaluation's own Risk Notes
-against inventing decoys casually) and the evaluator was rerun unmodified.
+existing decoys were kept unchanged, per `WI-SEGMENT-0072`'s own Risk
+Notes against inventing decoys casually) and the evaluator was rerun
+unmodified.
 
 ### New positive cases
 
@@ -195,18 +198,26 @@ against inventing decoys casually) and the evaluator was rerun unmodified.
 
 **These are different risk classes, not both "spelling near-misses."**
 `gratefuly`/`gratefully` is a pure one-letter omission with the rest of
-the anchor byte-exact - the same category as the original two positives
-(`uroariously`/`uproariously`, `sits`/`sat`). `Martina`/`Martha` is
-different in kind: the model substituted a plausible-but-wrong character
-name, not a spelling slip. A future production policy recovering the
-first class recovers a segment the model correctly identified but quoted
-sloppily. Recovering the second class means silently accepting a segment
-whose anchor names the wrong character - a content error, not a
-formatting one. Whether a production matcher should even attempt to
-recover content substitutions, versus treating them as a distinct
-failure mode that should keep failing loudly, is a real open question
-this evaluation does not resolve - it is noted here rather than folded
-into the "near-miss" bucket without comment.
+the anchor byte-exact - the same category as `uroariously`/`uproariously`.
+`Martina`/`Martha` is different in kind: the model substituted a
+plausible-but-wrong character name, not a spelling slip. `sits`/`sat`
+belongs with the content-substitution class, not the spelling-omission
+class, despite its original case label ("verb substitution") — it swaps
+one word for a different word (present tense for past), the same kind of
+change as a wrong name, not a dropped letter. Grouping it with the pure
+spelling omissions understates how much of this corpus's "near-miss"
+label is actually content substitution: of the four positives, two
+(`sits`/`sat`, `Martina`/`Martha`) are word-level content changes and only
+two (`uroariously`/`uproariously`, `gratefuly`/`gratefully`) are
+letter-level spelling omissions. A future production policy recovering
+the spelling-omission class recovers a segment the model correctly
+identified but quoted sloppily. Recovering the content-substitution class
+means silently accepting a segment whose anchor names the wrong word or
+character - a content error, not a formatting one. Whether a production
+matcher should even attempt to recover content substitutions, versus
+treating them as a distinct failure mode that should keep failing loudly,
+is a real open question this evaluation does not resolve - it is noted
+here rather than folded into the "near-miss" bucket without comment.
 
 ### Enlarged-corpus results
 
