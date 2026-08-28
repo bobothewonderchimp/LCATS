@@ -21,6 +21,9 @@ work_items:
   - WI-SEGMENT-0071
   - WI-SEGMENT-0072
   - WI-PILOT-0082
+  - WI-SEGMENT-0097
+  - WI-SEGMENT-0098
+  - WI-SEGMENT-0099
 exit_criteria:
   - A first pilot API/output stability gate has run against a bounded, explicitly approved real Anthropic story set and reports completion, artifact well-formedness, semantic sense, quality thresholds, intended-purpose fit, actual spend, and explicit genre-detection coverage
   - Prompt-caching adoption, if still supported after the stability gate, is implemented only as an explicit pilot-level setting with cache telemetry and no global backend default change
@@ -128,25 +131,40 @@ documents the intended execution order and must stay in sync with that list.
    backends, no real spend. Wiring the new parameters into
    `run_pilot.py`'s CLI remains a separate, unfiled follow-on per this
    item's own Non-Goals.
-6. **Prompt caching adoption** - If the stability gate and segmentation
+6. **`WI-SEGMENT-0097`: Case-insensitive segmentation anchor matching** -
+   Real evidence from `WI-EVENT-0096`'s 2026-08-26 measurement found 2 of
+   10 post-`WI-SEGMENT-0070` alignment failures are pure case-only
+   near-misses. Extend `_locate_anchor_span`'s existing deterministic
+   typography-normalization fallback with case-insensitivity - narrow
+   and safe, not a reopening of `WI-SEGMENT-0072`'s deferred question.
+7. **`WI-SEGMENT-0098`: Investigate paragraph-range boundary truncation** -
+   The same evidence found 5 of 10 real alignment failures are anchors
+   that match the source exactly, just outside the model's claimed
+   paragraph range (one by only 2 characters) - currently the largest
+   real failure category. Root-cause before any fix.
+8. **`WI-SEGMENT-0099`: Extend near-miss fuzzy-matching evaluation** -
+   Adds 2 new real positive cases (a content substitution and a spelling
+   typo) to `WI-SEGMENT-0072`'s deferred evaluation corpus and reports
+   against its frozen adoption thresholds, without lowering them.
+9. **Prompt caching adoption** - If the stability gate and segmentation
    reliability follow-ups still support proceeding, expose
    explicit pilot-level prompt caching for Anthropic fixture/pilot runs,
    preserving `AnthropicBackend(enable_prompt_caching=False)` as the global
    default and retaining cache token telemetry.
-7. **Genre/segmentation model-tiering adoption** - If the stability gate and
-   segmentation reliability follow-ups still support proceeding, adopt
-   cheaper-tier model settings for genre detection and segmentation in the
-   pilot's recommended configuration while preserving schema, truncation,
-   sanitization, and semantic-quality telemetry.
-8. **Batch API opt-in design** - Design the durable batch ledger,
-   submit/poll/result-ingestion flow, and interaction with `checkpoint.py`.
-   This design-only work can proceed without real API spend.
-9. **Batch API opt-in implementation and validation** - If the stability gate
-   and segmentation reliability follow-ups still support proceeding,
-   implement opt-in Batch API mode, publish per-stage checkpoints only after
-   result ingestion, and run a bounded real batch validation before treating
-   batch mode as usable.
-10. **User-facing pilot run ergonomics** - Clarify CLI help, docs, output
+10. **Genre/segmentation model-tiering adoption** - If the stability gate and
+    segmentation reliability follow-ups still support proceeding, adopt
+    cheaper-tier model settings for genre detection and segmentation in the
+    pilot's recommended configuration while preserving schema, truncation,
+    sanitization, and semantic-quality telemetry.
+11. **Batch API opt-in design** - Design the durable batch ledger,
+    submit/poll/result-ingestion flow, and interaction with `checkpoint.py`.
+    This design-only work can proceed without real API spend.
+12. **Batch API opt-in implementation and validation** - If the stability gate
+    and segmentation reliability follow-ups still support proceeding,
+    implement opt-in Batch API mode, publish per-stage checkpoints only after
+    result ingestion, and run a bounded real batch validation before treating
+    batch mode as usable.
+13. **User-facing pilot run ergonomics** - Clarify CLI help, docs, output
     summaries, or wrappers so a researcher can choose a cheap validation run, a
     synchronous high-visibility pilot run, or an opt-in lower-cost batch run.
 
