@@ -2,10 +2,10 @@
 execution_id: 2026_08_28_06_29_39_WI_SEGMENT_0098_PARAGRAPH_BOUNDARY_INVESTIGATION
 prompt_id: PROMPT(WI-SEGMENT-0098:WI_SEGMENT_0098_PARAGRAPH_BOUNDARY_INVESTIGATION)[2026-08-28T06:21:34+00:00]
 work_item: WI-SEGMENT-0098
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/403
-commit: ed1b122e
+commit: eaaee2db
 agent: claude_app
 instruction_source: lcats/project/work_items/proposed/WI-SEGMENT-0098.md
 session_transcript: claude-app:e8e46d5d-35d3-4ccc-9cba-137bd31bf3a5

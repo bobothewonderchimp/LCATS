@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Investigated via PR #403. All 6 real cases root-caused: all show the true anchor text falling in a paragraph after the claimed end_par_id, never before (5/6 off by 1 paragraph, 1/6 by 2 with a distinct empty-paragraph cause). text_segmenter's own paragraph indexing verified correct in every inspected case - root cause is model-side attribution error at narrative-continuity boundaries, not a code-side bug. Full findings and recommendation (a narrowly-scoped end-boundary-only search-window widening, sizing deferred to a broader real sample) in lcats/project/design/segmentation-paragraph-boundary-truncation-investigation.md. Investigation only - no production alignment behavior changed."
 blocked_reason: null
 blocked: false
 id: WI-SEGMENT-0098
 title: Investigate paragraph-range boundary truncation in segmentation anchor alignment
 type: investigation
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []

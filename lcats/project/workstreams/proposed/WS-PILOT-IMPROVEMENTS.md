@@ -138,11 +138,15 @@ documents the intended execution order and must stay in sync with that list.
    near-misses. Extend `_locate_anchor_span`'s existing deterministic
    typography-normalization fallback with case-insensitivity - narrow
    and safe, not a reopening of `WI-SEGMENT-0072`'s deferred question.
-7. **`WI-SEGMENT-0098`: Investigate paragraph-range boundary truncation** -
-   The same evidence found 5 of 10 real alignment failures are anchors
-   that match the source exactly, just outside the model's claimed
-   paragraph range (one by only 2 characters) - currently the largest
-   real failure category. Root-cause before any fix.
+7. **`WI-SEGMENT-0098`: Investigate paragraph-range boundary truncation**
+   (resolved via PR #403) - Root-caused all 6 real alignment failures
+   whose anchors are recoverable just outside the model's claimed
+   paragraph range: all fall in the paragraph immediately after
+   `end_par_id`, never before - a model-side attribution error at
+   narrative-continuity boundaries, not a code-side indexing bug.
+   Recommends a narrowly-scoped end-boundary-only search-window
+   widening, sizing deferred to a broader real sample; not implemented
+   by this item.
 8. **`WI-SEGMENT-0099`: Extend near-miss fuzzy-matching evaluation** -
    Adds 2 new real positive cases (a content substitution and a spelling
    typo) to `WI-SEGMENT-0072`'s deferred evaluation corpus and reports
