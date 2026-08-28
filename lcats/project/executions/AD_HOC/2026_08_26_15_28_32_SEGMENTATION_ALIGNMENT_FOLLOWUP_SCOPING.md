@@ -2,10 +2,10 @@
 execution_id: 2026_08_26_15_28_32_SEGMENTATION_ALIGNMENT_FOLLOWUP_SCOPING
 prompt_id: PROMPT(AD_HOC:SEGMENTATION_ALIGNMENT_FOLLOWUP_SCOPING)[2026-08-26T15:24:47+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/399
-commit: 677b89e8
+commit: 3583a8a6
 agent: claude_app
 instruction_source: "user request in-session (\"Let's file three work items: case-insensitivity, paragraph-range-boundary, and edit-distance tolerance...\")"
 session_transcript: claude-app:e8e46d5d-35d3-4ccc-9cba-137bd31bf3a5
