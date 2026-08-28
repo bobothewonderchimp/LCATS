@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #407 (commit 03f04c7f)."
 blocked_reason: null
 blocked: false
 id: WI-RUNLOG-0083
 title: Add run-log support to lcats promote
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
