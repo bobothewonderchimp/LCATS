@@ -2,10 +2,10 @@
 execution_id: 2026_08_28_16_52_43_WI_SEGMENT_0099_NEAR_MISS_FUZZY_MATCHING_EVALUATION
 prompt_id: PROMPT(WI-SEGMENT-0099:WI_SEGMENT_0099_NEAR_MISS_FUZZY_MATCHING_EVALUATION)[2026-08-28T07:18:13+00:00]
 work_item: WI-SEGMENT-0099
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/409
-commit: 14222658
+commit: e45223df312ee6642394a568c755c182f035f14c
 agent: claude_app
 instruction_source: lcats/project/work_items/proposed/WI-SEGMENT-0099.md
 session_transcript: claude-app:e8e46d5d-35d3-4ccc-9cba-137bd31bf3a5

@@ -147,10 +147,12 @@ documents the intended execution order and must stay in sync with that list.
    Recommends a narrowly-scoped end-boundary-only search-window
    widening, sizing deferred to a broader real sample; not implemented
    by this item.
-8. **`WI-SEGMENT-0099`: Extend near-miss fuzzy-matching evaluation** -
-   Adds 2 new real positive cases (a content substitution and a spelling
-   typo) to `WI-SEGMENT-0072`'s deferred evaluation corpus and reports
-   against its frozen adoption thresholds, without lowering them.
+8. **`WI-SEGMENT-0099`: Extend near-miss fuzzy-matching evaluation**
+   (resolved via PR #409) - Adds 2 new real positive cases (a content
+   substitution and a spelling typo) to `WI-SEGMENT-0072`'s deferred
+   evaluation corpus and reports against its frozen adoption thresholds,
+   without lowering them - 75% exact recovery (up from 50%), 0 false
+   positives, still short on corpus size; recommendation remains defer.
 9. **Prompt caching adoption** - If the stability gate and segmentation
    reliability follow-ups still support proceeding, expose
    explicit pilot-level prompt caching for Anthropic fixture/pilot runs,

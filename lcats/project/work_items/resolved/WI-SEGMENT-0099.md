@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Added 2 real positives from WI-EVENT-0096 to WI-SEGMENT-0072's near-miss fuzzy-matching evaluation corpus (now 4 positives, 4 decoys unchanged); reran the unmodified strict_local_fuzzy evaluator: 75% exact recovery (up from 50%), 0/4 false positives. Explicitly distinguished the Martina/Martha case as a content/name substitution, a different risk class from the pure spelling-omission cases (uroariously/uproariously, gratefuly/gratefully); reclassified sits/sat as content-substitution too during PR review, correcting the original grouping. Compared against WI-SEGMENT-0072's frozen thresholds (>=10 positives, >=20 decoys, >=90% recovery, 0 false positives) without renegotiating them - still short on corpus size, recommendation remains defer. No production alignment behavior changed. PR #409."
 blocked_reason: null
 blocked: false
 id: WI-SEGMENT-0099
 title: Extend near-miss fuzzy-matching evaluation with real spelling and content near-misses
 type: evaluation
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []

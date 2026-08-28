@@ -2,10 +2,10 @@
 execution_id: 2026_08_28_17_02_28_WI_SEGMENT_0099_NEAR_MISS_FUZZY_MATCHING_EVALUATION_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_SEGMENT_0099_NEAR_MISS_FUZZY_MATCHING_EVALUATION_CONFIRM)[2026-08-28T17:02:07+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_28_16_52_43_WI_SEGMENT_0099_NEAR_MISS_FUZZY_MATCHING_EVALUATION
 pr: https://github.com/xenotaur/LCATS/pull/409
-commit: 7fb0e03e8aa106cd68dbf97e087b09788218fab4
+commit: e45223df312ee6642394a568c755c182f035f14c
 agent: claude_app
 instruction_source: "/lrh-land https://github.com/xenotaur/LCATS/pull/409 (inline review-response)"
 session_transcript: claude-app:e8e46d5d-35d3-4ccc-9cba-137bd31bf3a5
