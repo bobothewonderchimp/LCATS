@@ -341,9 +341,21 @@ the companion workstream is adopted.
 
 - Exact module filename and location for the Decision 5 registry within
   `analysis/corpus/` (a specific name was not fixed at design time).
-- Whether `--allow-unvalidated` skips validation only when no validator
+- ~~Whether `--allow-unvalidated` skips validation only when no validator
   is registered for the named kind, or also when a registered validator's
-  check would otherwise fail — needs pinning down at implementation time.
+  check would otherwise fail~~ — **resolved by `WI-PROMOTE-0097`** (review
+  finding, PR #401): the narrower reading. `--allow-unvalidated` covers
+  only the no-registered-validator case; a registered validator's own
+  rejection of malformed content is never bypassable in that item.
+- New, surfaced by `WI-PROMOTE-0097`'s own review (PR #401), not
+  anticipated at design time: `promote_sidecar_tranche()`'s existing
+  manifest format derives destination routing from the payload's own
+  `lcats_id` field, which works for `genre-sidecar-v1` payloads but not
+  `scenes.json` payloads (no story-identity field at all). Resolved in
+  that item via an envelope shape (`{"lcats_id": ..., "payload": ...}`)
+  separating routing from payload content — see that item's own Risk
+  Notes for the resulting migration question for existing genre-sidecar-
+  v1 manifests.
 - `clobber` and `whomp` were both seriously considered as alternate names
   for `replace` and found non-disqualifying but weaker than `replace`
   (informal register for `clobber`; zero prior technical precedent, both

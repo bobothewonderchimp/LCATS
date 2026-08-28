@@ -34,13 +34,15 @@ forbidden_actions:
   - implement_live_directory_scan_sourcing
   - change_promote_wholesale_replacement_default_behavior
   - extend_validator_interface_to_non_json_kinds
+  - allow_unvalidated_bypass_of_a_registered_validators_rejection
 acceptance:
   - "lcats promote requires an explicit insert/upsert/replace mode as a mandatory positional subcommand; a bare invocation with no mode (e.g. lcats promote <collection> with no mode named) refuses rather than defaulting to any behavior"
   - "insert mode: per-file, create-only - writes a named sidecar file into an existing story bucket only if it does not already exist there; refuses (does not overwrite) if it does"
   - "upsert mode: per-file, create-or-overwrite - writes a named sidecar file whether or not it already exists, never touches or deletes any other file in the destination bucket or collection, whole-file overwrite only (no in-sidecar content merge)"
   - "replace mode: today's existing wholesale rmtree+copytree mechanism (promote_collections/_copy_collection), unchanged, reachable only via the explicit replace mode name - no scope change to its own behavior in this item"
   - "A new, shared sidecar-validator registry module exists in analysis/corpus/, mapping registered sidecar filenames to validator callables, registering all 4 currently-produced sidecar kinds (genre.json, scenes.json, linguistics.json, linguistics.tokens.json); promote.py imports only this registry, never genre_sidecar.py or linguistics/sidecar.py directly"
-  - "insert and upsert both refuse by default when the named --sidecar kind has no registered validator; --allow-unvalidated is the only override, and it is available uniformly to both modes"
+  - "insert and upsert both refuse by default when the named --sidecar kind has no registered validator; --allow-unvalidated overrides this specific case (no registered validator) only - it does not bypass a registered validator's own rejection of malformed content, which insert/upsert always refuse unconditionally, with no override available in this item (resolves the adopted proposal's own Open Question on this point)"
+  - "insert/upsert manifest entries are self-identifying independent of their payload's own internal shape: each manifest line supplies a destination lcats_id in an envelope alongside the sidecar payload, rather than promote_sidecar_tranche()'s current behavior of reading lcats_id off the payload itself - this is required because scenes.json payloads (annotate.py's _annotate_scenes() output: segments/segment_count/model/input_tokens/output_tokens) carry no story-identity field at all, unlike genre-sidecar-v1 payloads"
   - "--sidecar flag is shared identically by insert and upsert, selecting which registered kind an invocation targets; a value with no extension assumes .json before the registry lookup, a value with an extension is matched exactly with no inference; the registry refuses to register two kinds sharing a basename under different extensions"
   - "lcats/docs/reference/corpus-promotion.md, lcats/docs/reference/cli-commands.md, and lcats/docs/reference/prepare-corpora-release.md are updated to reflect the new mandatory-mode command syntax, replacing every documented bare/flag-based invocation"
   - "scripts/test passes with no new failures"
@@ -124,13 +126,10 @@ sourcing (Stage 3) both depend on.
 1. **`lcats/src/lcats/analysis/corpus/promote_cli.py`**: restructure
    `build_parser()` to require an explicit mode subcommand (`insert`,
    `upsert`, `replace`), each with its own argument set — `insert`/
-   `upsert` take `--sidecar <name>[.ext]` and either `--tranche-manifest
-   <path>` or `--collection <name>` (destination scoping; exact
-   manifest-input shape is this item's own implementation detail, since
-   live-directory-scan sourcing is explicitly Stage 2/3, not this item —
-   see Non-Goals below), plus `--allow-unvalidated`; `replace` keeps
-   today's `collections`/`--source`/`--dest`/`--dry-run` arguments
-   unchanged. Update `run()`'s dispatch accordingly.
+   `upsert` take `--sidecar <name>[.ext]` and `--tranche-manifest <path>`,
+   plus `--allow-unvalidated`; `replace` keeps today's `collections`/
+   `--source`/`--dest`/`--dry-run` arguments unchanged. Update `run()`'s
+   dispatch accordingly.
 2. **`lcats/src/lcats/analysis/corpus/promote.py`**: add
    `promote_sidecar_insert()`/`promote_sidecar_upsert()` (or a single
    function parameterized by an insert/upsert distinction — implementer's
@@ -138,8 +137,27 @@ sourcing (Stage 3) both depend on.
    shape), each validating via the new registry (Required Change 3)
    before writing, generalizing `discovery.GENRE_SIDECAR_FILENAME` to
    whichever filename `--sidecar` resolves to instead of the current
-   hardcoded genre-only destination. `promote_collections()`/
-   `_copy_collection()` are unchanged in this item.
+   hardcoded genre-only destination. **Manifest envelope (review finding,
+   PR #401):** `promote_sidecar_tranche()` today derives its destination
+   `lcats_id` by reading it off the manifest record's own top-level
+   `lcats_id` field — that only works because `genre-sidecar-v1` payloads
+   happen to carry their own identity. `scenes.json` payloads
+   (`annotate.py`'s `_annotate_scenes()` output — `segments`/
+   `segment_count`/`model`/`input_tokens`/`output_tokens`) carry no
+   story-identity field at all, so this item's manifest format must
+   change to an envelope shape: each manifest line is `{"lcats_id":
+   "<destination story id>", "payload": {<sidecar content, validated by
+   the registry and written as-is>}}`. Destination routing reads
+   `lcats_id` from the envelope only, never from the payload's own
+   (possibly absent) fields — this keeps routing payload-shape-agnostic
+   for all 4 registered kinds without needing live-directory-scan
+   sourcing (explicitly out of scope, see Non-Goals). Existing genre-
+   sidecar-v1 manifests (e.g. `WI-GENRE-0004`'s
+   `validation_results.jsonl`, already consumed by `WI-GENRE-0077`) will
+   need to move to this envelope shape too, or a compatibility path
+   must be documented — flag this to reviewers if the migration cost
+   turns out non-trivial. `promote_collections()`/`_copy_collection()`
+   are unchanged in this item.
 3. **New registry module** in `analysis/corpus/`: a `dict[str,
    Callable[[Any], ValidationResult]]` (or equivalent), registering
    `genre.json` → `genre_sidecar.validate_sidecar`, `linguistics.json`/
@@ -200,6 +218,15 @@ sourcing (Stage 3) both depend on.
   genre-shaped validation somewhere) — the new tests (Required Change 4)
   covering all 4 kinds, not just genre, are load-bearing for catching
   this.
+- The manifest envelope format change (Required Change 2, review finding
+  PR #401) may require migrating existing genre-sidecar-v1 manifests
+  (e.g. `WI-GENRE-0004`'s `validation_results.jsonl`, already consumed by
+  the still-open PR #362/`WI-GENRE-0077`) to the new envelope shape, or
+  a compatibility path (e.g. accepting a bare genre-sidecar-v1 record as
+  a special case, deriving the envelope's `lcats_id` from the payload's
+  own field only when the payload itself carries one) needs to be
+  designed. Surface this to reviewers explicitly if migration cost turns
+  out non-trivial — it was not fully worked out at WI-authoring time.
 
 ## Dependencies / Order
 
