@@ -2,11 +2,13 @@
 
 `corpora/` is a periodic release snapshot; `data/` is the live working corpus,
 cleared and regenerated after major changes (see `project/design/design.md`'s
-State and Persistence Boundary). Promotion copies collections from `data/`
-into `corpora/`, gated on a passing special-character survey, so stale
-encoding damage cannot silently re-enter the release snapshot the way the
-pre-2026-07 `corpora/` snapshot did (148 stories of stale mojibake, from a
-promotion that happened without a quality gate).
+State and Persistence Boundary). `replace` mode copies whole collections
+from `data/` into `corpora/`, gated on a passing special-character survey,
+so stale encoding damage cannot silently re-enter the release snapshot the
+way the pre-2026-07 `corpora/` snapshot did (148 stories of stale mojibake,
+from a promotion that happened without a quality gate). `insert`/`upsert`
+promote individual sidecars via a validated manifest instead — they are
+not survey-gated the way `replace` is.
 
 ## Command
 

@@ -792,14 +792,17 @@ class PromoteSidecarInsertUpsertTest(unittest.TestCase):
             self.assertEqual(1, len(report.rejected))
             self.assertIn("<line 1>", report.rejected[0].lcats_id)
 
-    def test_envelope_missing_payload_is_rejected(self):
+    def test_envelope_with_neither_payload_nor_own_lcats_id_is_rejected(self):
+        # No "payload" field, and no top-level lcats_id either -- so
+        # neither the envelope path nor the bare-record compatibility
+        # path (which requires the record's own lcats_id) can apply.
         with (
             tempfile.TemporaryDirectory() as manifest_tmp,
             tempfile.TemporaryDirectory() as dest_tmp,
         ):
             dest_root = pathlib.Path(dest_tmp)
             manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
-            _write_manifest(manifest_path, [{"lcats_id": "anderson/bell"}])
+            _write_manifest(manifest_path, [{"unrelated": "value"}])
 
             report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
 
@@ -916,6 +919,172 @@ class PromoteSidecarInsertUpsertTest(unittest.TestCase):
 
             self.assertEqual((), report.promoted)
             self.assertEqual(1, len(report.rejected))
+
+    def test_unsafe_sidecar_filename_is_rejected_even_with_allow_unvalidated(self):
+        """P1 review finding, PR #405: --allow-unvalidated must not let an
+        arbitrary --sidecar value escape the story bucket (path traversal)
+        or overwrite the canonical story.json itself."""
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            _write_manifest(
+                manifest_path, [_envelope("anderson/bell", {"anything": True})]
+            )
+
+            unsafe_names = [
+                "../escape.json",
+                "/etc/passwd",
+                "sub/dir.json",
+                "story.json",
+                ".",
+                "..",
+            ]
+            for unsafe_name in unsafe_names:
+                with self.subTest(sidecar=unsafe_name):
+                    with self.assertRaises(ValueError) as ctx:
+                        promote.promote_sidecar_upsert(
+                            manifest_path,
+                            dest_root,
+                            unsafe_name,
+                            allow_unvalidated=True,
+                        )
+                    self.assertIn("unsafe sidecar filename", str(ctx.exception))
+
+    def test_payload_lcats_id_mismatch_with_envelope_is_rejected(self):
+        """P1 review finding, PR #405: an identity-bearing payload (e.g.
+        genre-sidecar-v1) whose own lcats_id disagrees with the envelope's
+        routing lcats_id must be rejected, not silently written into the
+        wrong story's bucket."""
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            # Payload self-identifies as "anderson/other", but the envelope
+            # routes it to "anderson/bell".
+            payload = _valid_sidecar_record(
+                "anderson/other", "anderson/other/story.json"
+            )
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
+
+            bucket_dir = dest_root / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertIn("does not match", report.rejected[0].error)
+            self.assertFalse((bucket_dir / "genre.json").exists())
+
+    def test_payload_lcats_id_agreeing_with_envelope_is_promoted(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            _write_manifest(manifest_path, [_envelope("anderson/bell", payload)])
+
+            bucket_dir = dest_root / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
+
+            self.assertEqual(("anderson/bell",), report.promoted)
+
+    def test_write_failure_is_a_per_line_rejection_not_a_fatal_abort(self):
+        """P2 review finding, PR #405: a write-path exception (here, a
+        payload json.dumps can't serialize) must be recorded as a
+        per-line rejection like any other validation failure, not abort
+        the whole manifest run."""
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            good_payload = _valid_sidecar_record(
+                "anderson/bell", "anderson/bell/story.json"
+            )
+            _write_manifest(manifest_path, [_envelope("anderson/bell", good_payload)])
+
+            for name in ("anderson/bell",):
+                bucket_dir = dest_root / name
+                bucket_dir.mkdir(parents=True)
+                (bucket_dir / "story.json").write_text(
+                    json.dumps({"name": "bell"}), encoding="utf-8"
+                )
+
+            with unittest.mock.patch(
+                "lcats.analysis.corpus.promote._atomic_write_text",
+                side_effect=OSError("disk full"),
+            ):
+                report = promote.promote_sidecar_insert(
+                    manifest_path, dest_root, "genre"
+                )
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertIn("failed to write sidecar", report.rejected[0].error)
+
+    def test_bare_legacy_record_without_payload_wrapper_is_promoted(self):
+        """Compatibility path (P1 review finding, PR #405): existing
+        genre-sidecar-v1 manifests (e.g. WI-GENRE-0004's
+        validation_results.jsonl, produced by
+        experiments/05_metadata_genre_prefilter/run_prefilter.py and
+        consumed by WI-GENRE-0077) have no "payload" wrapper -- they must
+        stay promotable without a migration."""
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            bare_record = _valid_sidecar_record(
+                "anderson/bell", "anderson/bell/story.json"
+            )
+            _write_manifest(manifest_path, [bare_record])
+
+            bucket_dir = dest_root / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "genre")
+
+            self.assertEqual(("anderson/bell",), report.promoted)
+            self.assertEqual(
+                bare_record,
+                json.loads((bucket_dir / "genre.json").read_text(encoding="utf-8")),
+            )
+
+    def test_bare_record_with_no_identity_field_is_rejected(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            _write_manifest(manifest_path, [{"segments": []}])
+
+            report = promote.promote_sidecar_insert(manifest_path, dest_root, "scenes")
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertIn("no 'payload' field", report.rejected[0].error)
 
     def test_wholesale_promote_collections_is_unaffected(self):
         # Sanity check: adding the tranche path did not change

@@ -23,7 +23,7 @@ changes, update both this module and its canonical definition together.
 
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import Any, Callable, Protocol, Sequence
 
 from lcats.analysis.corpus import discovery
 from lcats.analysis.corpus import genre_sidecar
@@ -34,7 +34,22 @@ from lcats.analysis.corpus import genre_sidecar
 LINGUISTICS_SIDECAR_FILENAME = "linguistics.json"
 LINGUISTICS_TOKEN_DETAIL_FILENAME = "linguistics.tokens.json"
 
-ValidatorFn = Callable[[Any], genre_sidecar.ValidationResult]
+
+class _ValidationResultLike(Protocol):
+    """Structural shape shared by ``genre_sidecar.ValidationResult`` and
+    ``analysis.linguistics.sidecar.ValidationResult`` -- two distinct
+    dataclasses (never unified into one type, to keep each validation
+    module independent) that both expose ``valid``/``findings``. A
+    validator callable may return either concrete class; this Protocol
+    describes what callers actually rely on, rather than incorrectly
+    claiming every validator returns ``genre_sidecar.ValidationResult``
+    specifically (review finding, PR #405)."""
+
+    valid: bool
+    findings: Sequence[Any]
+
+
+ValidatorFn = Callable[[Any], _ValidationResultLike]
 
 
 def _validate_genre(data: Any) -> genre_sidecar.ValidationResult:

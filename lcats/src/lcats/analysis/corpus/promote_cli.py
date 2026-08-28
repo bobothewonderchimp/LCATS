@@ -1,4 +1,7 @@
-"""CLI wrapper for survey-gated data/ -> corpora/ promotion."""
+"""CLI wrapper for promoting sidecars or collections from data/ into
+corpora/. Only ``replace`` mode is survey-gated (special-character
+mojibake survey); ``insert``/``upsert`` promote sidecars via a validated
+manifest, without running that survey."""
 
 import argparse
 import pathlib
@@ -194,7 +197,10 @@ def _run_replace_mode(args) -> int:
 
 
 def run(argv=None, parsed_args=None) -> int:
-    """Run survey-gated promotion. Returns 0 if the run promoted cleanly."""
+    """Run promotion for the selected mode. ``replace`` is survey-gated
+    (special-character mojibake survey); ``insert``/``upsert`` are not --
+    they validate the manifest instead. Returns 0 if the run promoted
+    cleanly."""
     parser = build_parser()
     args = parsed_args if parsed_args is not None else parser.parse_args(argv)
 
