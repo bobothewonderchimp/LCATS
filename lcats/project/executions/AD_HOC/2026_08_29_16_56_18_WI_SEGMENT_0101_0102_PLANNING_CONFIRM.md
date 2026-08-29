@@ -5,7 +5,7 @@ work_item: AD_HOC
 status: in_progress
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/415
-commit: 19874354
+commit: "19874354"
 agent: claude_app
 instruction_source: "/lrh-land https://github.com/xenotaur/LCATS/pull/415 (inline review-response)"
 session_transcript: pending
@@ -63,8 +63,15 @@ artifacts, not yet implemented.
 
 - `scripts/format --check --diff` - clean (LCATS conda env)
 - `scripts/lint` - clean
-- `lrh validate` - 0 errors, 291 warnings (unchanged from before this
-  round - no new warnings introduced)
+- `lrh validate` - 0 errors, 291 warnings after the 4 fixes (unchanged
+  from the 291-warning baseline immediately before this round); creating
+  and populating this record file itself then added 1 more (an
+  absolute-path `instruction_source` flag on this file, standard for
+  every execution record in this repo's history, not a new problem
+  introduced by the fixes) - 292 at the point this record was written
+  (self-review finding, PR #415: an earlier draft of this line
+  mischaracterized that self-referential +1 as "no new warnings
+  introduced")
 
 # Follow-up
 
