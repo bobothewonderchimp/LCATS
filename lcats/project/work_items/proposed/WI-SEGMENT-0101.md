@@ -34,7 +34,7 @@ forbidden_actions:
   - force_push
   - delete_branch
 acceptance:
-  - "A reworded prompt variant is drafted (as an experimental variant, not a change to SCENE_SEQUEL_SYSTEM_PROMPT/SCENE_SEQUEL_USER_PROMPT_TEMPLATE in lcats/src/lcats/analysis/scene_analysis.py) that instructs the model to derive end_par_id/start_par_id from the paragraph actually containing end_exact/start_exact, rather than independently judging it"
+  - "A reworded prompt variant is drafted (as an experimental variant, not a change to SCENE_SEQUEL_SYSTEM_PROMPT/SCENE_SEQUEL_USER_PROMPT_TEMPLATE in lcats/src/lcats/analysis/scene_analysis.py) that instructs the model to derive start_par_id from the paragraph containing start_exact's first character and end_par_id from the paragraph containing end_exact's last character - not merely 'the paragraph containing' the anchor, which is undefined when an anchor spans two paragraphs (a real case in the target cohort: the_voice_in_the_fog__leverage segment 3's end_exact spans paragraphs 34 and 35)"
   - "A real-API ablation cost estimate is presented to the user and explicitly approved before any spend"
   - "The ablation is run against a real cohort (the WI-EVENT-0033 17-story baseline cohort, or a documented comparable substitute) comparing the current production prompt's paragraph-boundary overshoot rate against the reworded variant's rate on the same or a freshly-run cohort"
   - "Results are reported honestly in a written report: whether the one-directional overshoot pattern from WI-SEGMENT-0098 shrinks, disappears, or persists under the reworded prompt, and whether the reworded prompt introduces any new failure mode (e.g. a changed alignment_error rate elsewhere, or degraded segment_type/GACD/ERAC classification quality)"
@@ -118,6 +118,20 @@ judgments (which paragraph does this scene "belong to," vs. what text
 literally ends it) drifting apart because nothing asked the model to
 reconcile them.
 
+**The reworded rule must handle anchors that themselves cross a
+paragraph boundary (review finding, PR #415).** "The paragraph containing
+`end_exact`" is not always well-defined: in the same target cohort,
+`the_voice_in_the_fog__leverage` segment 3's `end_exact` matches source
+span `(7225, 7391)`, which straddles two real paragraphs -
+paragraph 34 is `[7021, 7311)` and paragraph 35 is `[7313, 7391]`
+(verified directly against the real story text via
+`text_segmenter.paragraph_text_indexer`). A rule that just says "the
+paragraph containing the anchor" could still emit 34 here and reproduce
+exactly the failure this item is trying to fix. The reworded instruction
+must specify a precise rule for this case - e.g., `start_par_id` comes
+from `start_exact`'s first character, `end_par_id` from `end_exact`'s
+last character - not left implicit.
+
 ### Duplication search
 
 - In-repo: `WI-SEGMENT-0098` is the direct predecessor and already
@@ -145,10 +159,13 @@ reconcile them.
 ## Scope
 
 - Draft a reworded instruction for `end_par_id`/`start_par_id` that asks
-  the model to report the paragraph number containing the located
-  `end_exact`/`start_exact` text, rather than an independently-judged
-  paragraph number. Keep this as an experimental prompt variant for the
-  ablation; do not modify the production prompt as part of this item.
+  the model to report `start_par_id` as the paragraph containing
+  `start_exact`'s first character and `end_par_id` as the paragraph
+  containing `end_exact`'s last character - a precise rule that resolves
+  even when an anchor spans two paragraphs - rather than an
+  independently-judged paragraph number. Keep this as an experimental
+  prompt variant for the ablation; do not modify the production prompt as
+  part of this item.
 - Present a real-API cost estimate (model, expected token volume, cohort
   size) for the ablation and obtain explicit approval before spending.
 - Run the ablation: the same (or a documented comparable) real cohort
@@ -168,6 +185,9 @@ reconcile them.
    isolated prompt variant (e.g. a separate constant or parameter, not an
    in-place edit to `SCENE_SEQUEL_SYSTEM_PROMPT`), preserving every other
    instruction unchanged so the ablation isolates this one variable.
+   Explicitly specify the cross-paragraph case: `start_par_id` from
+   `start_exact`'s first character, `end_par_id` from `end_exact`'s last
+   character - not an ambiguous "the paragraph containing the anchor."
 2. Compute and present a cost estimate for running both the current and
    reworded prompts against the chosen real cohort; wait for explicit
    approval before any API spend.

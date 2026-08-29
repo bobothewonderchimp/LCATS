@@ -34,9 +34,9 @@ forbidden_actions:
   - force_push
   - delete_branch
 acceptance:
-  - "Every real segment across all currently-committed, successfully-aligned real segmentation outputs (experiments/03_cross_segment_relation_pilot/results/segmentation_reliability/, .../segmentation_paragraph_misnumbering_diagnostics/replay_fixture/, and any other committed real output discovered during this item's own inventory) is run through the unmodified strict_local_fuzzy policy from WI-SEGMENT-0072, bounded to each segment's own [start_par_id, end_par_id) window"
-  - "For each real segment, the policy's accepted match (if any) is compared against the already-recorded correct (start_char, end_char); any case where the fuzzy match differs from, or is more permissive than, the current exact/normalized result is reported explicitly, not silently absorbed"
-  - "A written report states the total real-segment count tested, the number where fuzzy matching agreed exactly with the current result, and any disagreements found, with a plain safe/unsafe verdict for this specific check"
+  - "Every real segment across all currently-committed, successfully-aligned real segmentation outputs (experiments/03_cross_segment_relation_pilot/results/segmentation_reliability/, .../segmentation_paragraph_misnumbering_diagnostics/replay_fixture/, and any other committed real output discovered during this item's own inventory) is first validated as a genuine ground-truth control (no overlap with an adjacent segment, no reused start/end anchor across segments) before being used as one - an outcome of included/no-alignment-error alone is not sufficient, since at least one committed included story (the_secret_of_kralitz__kuttner, segments 4 and 5, both [*, 13102) sharing the same end_exact) already demonstrates included does not imply non-overlapping or correct boundaries"
+  - "For each validated real segment, start_exact's accepted match and end_exact's accepted match are evaluated independently (via WI-SEGMENT-0072's accepted_match, which returns the span of one anchor substring, not the whole segment) and compared respectively against the segment's own recorded start_char and end_char; any case where either anchor's fuzzy match differs from, or is more permissive than, the current exact/normalized result is reported explicitly, not silently absorbed"
+  - "A written report states the total validated real-segment count tested, the number where fuzzy matching agreed exactly with the current result on both anchors, and any disagreements found, with a plain safe/unsafe verdict for this specific check"
   - "No production alignment behavior is changed; WI-SEGMENT-0072's frozen adoption thresholds are neither invoked nor altered by this item - this is a distinct, complementary safety check, not a step toward clearing that gate"
   - "lrh validate reports 0 errors"
 required_evidence:
@@ -78,6 +78,35 @@ accept near-misses ever caused it to prefer a *different*, merely-similar
 span over the currently-correct exact one on any of these, that would be
 a silent regression in exactly the kind of case `WI-SEGMENT-0059`
 established must never happen - and nothing currently checks for it.
+
+**`outcome: included` (no `alignment_error`) does not by itself certify a
+segment as a correct ground-truth control** (review finding, PR #415).
+`experiments/03_cross_segment_relation_pilot/results/segmentation_reliability/mass_quantities/the_secret_of_kralitz__kuttner.json`
+is marked `included`, yet its segments 4 and 5 overlap - `[11448, 13102)`
+and `[11836, 13102)`, sharing the identical `end_exact` text and end
+offset. `align_segment`'s own success criterion (a non-`None` span for
+each segment) does not check for cross-segment overlap or reused
+anchors, so a story can be `included` while still containing a
+boundary error the aligner didn't notice. Using such a segment as a
+"currently-correct" control would either bless an already-wrong boundary
+as ground truth, or wrongly flag a fuzzy-matching result that happens to
+disagree with it as a regression when the disagreement might actually be
+an improvement. This item's inventory step must validate each candidate
+control (no overlap with an adjacent segment, no anchor reused across
+segments) before treating it as ground truth - not accept `included` at
+face value.
+
+**Paragraph-window notation correction (review finding, PR #415):** this
+item's Scope/Required Changes originally described the search window as
+`[start_par_id, end_par_id)` (half-open, end-exclusive). LCATS code
+treats `end_par_id` as **inclusive**:
+`lcats.analysis.text_segmenter.align_segment` computes
+`hi = para_spans[end_par_id-1][1]` (the end offset of the paragraph
+numbered `end_par_id` itself, not the paragraph before it), and
+`evaluate_near_miss_fuzzy_matching._paragraph_range` uses the identical
+formula. This item's script must reuse that inclusive convention exactly
+- an end-exclusive implementation would introduce a one-paragraph
+off-by-one into the regression check itself.
 
 This data already exists, committed, with no fresh API spend required:
 
@@ -124,15 +153,28 @@ This data already exists, committed, with no fresh API spend required:
   contains successfully-aligned segments with real `start_char`/`end_char`
   values (not limited to the two locations named above - confirm via a
   repo-wide search, not an assumption).
-- For each such real segment, recompute the `strict_local_fuzzy` policy's
-  accepted match (reusing `evaluate_near_miss_fuzzy_matching.py`'s
-  existing `accepted_match`/`candidate_matches` functions unmodified)
-  against that segment's own `[start_par_id, end_par_id)` window.
-- Compare the policy's result against the already-recorded correct span
-  for every case; report exact agreement, any disagreement, and any case
-  where the fuzzy policy accepts a match the exact matcher would not have
-  found unaided (even if it happens to agree with the correct span) as a
-  distinct observation worth noting.
+- Validate each candidate control before using it as ground truth: reject
+  any segment that overlaps an adjacent segment in the same story, or
+  shares a `start_exact`/`end_exact` anchor with another segment - `outcome:
+  included` alone is insufficient (see Problem/Context: `the_secret_of_kralitz__kuttner`
+  segments 4/5).
+- For each validated real segment, recompute the `strict_local_fuzzy`
+  policy's accepted match **separately for `start_exact` and
+  `end_exact`** (reusing `evaluate_near_miss_fuzzy_matching.py`'s
+  existing `accepted_match`/`candidate_matches` functions unmodified,
+  each of which returns the span of one anchor substring, not the whole
+  segment), each bounded to that segment's own paragraph-range window
+  using the same **inclusive** `end_par_id` convention as
+  `text_segmenter.align_segment` (`hi = para_spans[end_par_id-1][1]`) and
+  `evaluate_near_miss_fuzzy_matching._paragraph_range` - not a
+  half-open/exclusive interval.
+- Compare the start-anchor match's `start` against the segment's recorded
+  `start_char`, and the end-anchor match's `end` against the segment's
+  recorded `end_char`, independently; report exact agreement, any
+  disagreement on either anchor, and any case where the fuzzy policy
+  accepts a match the exact matcher would not have found unaided (even if
+  it happens to agree with the correct offset) as a distinct observation
+  worth noting.
 - Report results in a new design doc with a plain safe/unsafe verdict for
   this specific check; do not fold this into `WI-SEGMENT-0072`'s
   frozen-threshold framework, since it answers a different question
@@ -146,21 +188,29 @@ This data already exists, committed, with no fresh API spend required:
    successfully-aligned segments (real `start_char`/`end_char` present,
    no `alignment_error`), across the full repo, not just the two
    locations already known.
-2. For each discovered real segment, call
-   `evaluate_near_miss_fuzzy_matching.accepted_match` (or equivalent,
-   reusing its existing policy/candidate-generation code unmodified)
-   against that segment's own paragraph-range window, and compare the
-   result to the segment's already-recorded `(start_char, end_char)`.
-3. Aggregate and report: total real segments tested, count where the
-   fuzzy policy's result matches the existing correct span exactly, count
-   of any disagreements (with full detail on each), and count of any
-   segments where the fuzzy policy accepted a broader/different candidate
-   set than the exact matcher needed.
-4. Write
+2. For each discovered segment, validate it as a genuine control before
+   use: check it does not overlap the preceding/following segment in the
+   same story, and does not share a `start_exact`/`end_exact` string with
+   another segment in the same story. Exclude and report (not silently
+   drop) any segment that fails this check.
+3. For each validated real segment, call
+   `evaluate_near_miss_fuzzy_matching.accepted_match` twice - once for
+   `start_exact`, once for `end_exact` - against that segment's own
+   paragraph-range window (using the inclusive `end_par_id` convention
+   above), and compare each result to the corresponding half of the
+   segment's already-recorded `(start_char, end_char)` independently.
+4. Aggregate and report: total segments discovered, count excluded as
+   invalid controls (with reason), total validated segments tested, count
+   where both anchors' fuzzy results matched the existing correct
+   offsets exactly, count of any disagreements (with full detail on
+   each), and count of any segments where the fuzzy policy accepted a
+   broader/different candidate set than the exact matcher needed.
+5. Write
    `lcats/project/design/segmentation-fuzzy-match-regression-safety-check.md`
-   with methodology, the full inventory of real data used, results, and a
-   plain safe/unsafe verdict.
-5. Add a regression test (or note why one is not warranted, if the
+   with methodology, the full inventory of real data used (including
+   excluded invalid controls and why), results, and a plain safe/unsafe
+   verdict.
+6. Add a regression test (or note why one is not warranted, if the
    analysis script itself is the durable check) so this safety property
    can be re-verified after any future change to `strict_local_fuzzy` or
    its evaluator.
