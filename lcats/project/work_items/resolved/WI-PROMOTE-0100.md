@@ -2,7 +2,7 @@
 id: WI-PROMOTE-0100
 title: Add live-directory-scan sourcing to lcats promote's insert/upsert modes
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
@@ -22,7 +22,7 @@ depends_on:
 blocked_by: []
 blocked: false
 blocked_reason: null
-resolution: null
+resolution: "Implemented and merged in PR #411 (merge commit fafcb3d4297fa79ed4c64786fb87c1f6b81e0eb7). lcats promote insert/upsert gained an optional live-directory-scan sourcing mode (--source), mutually exclusive with the existing --tranche-manifest mode. The scan reads <collection>/<story>/<sidecar-filename> for every story bucket under a given source root, deriving lcats_id from the bucket's own relative path and payload from the sidecar file's own content, skipping buckets without the named sidecar silently. Refactored promote.py's tranche-manifest engine into a shared _promote_sidecar_records() fed by two record sources, so scanned and manifest-sourced records go through identical validation/escape-check/identity-agreement/existing-destination-file logic. Review (Copilot + Codex) independently found and fixed 1 real P2 issue before merge: adding the new scan_source parameter unintentionally made the pre-existing allow_unvalidated/dry_run parameters keyword-only too, breaking positional-call backward compatibility; fixed by narrowing the keyword-only boundary to scan_source alone. See project/executions/WI-PROMOTE-0100/ and project/executions/AD_HOC/*WI_PROMOTE_0100_SCAN_SOURCING* for the full record chain."
 expected_actions:
   - edit_file
   - run_tests

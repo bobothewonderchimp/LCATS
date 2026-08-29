@@ -78,7 +78,7 @@ Implementation Plan):
    on `WI-PROMOTE-0097`'s registry.
 3. `insert`/`upsert` live-directory-scan sourcing — flagged as a priority
    given the imminent linguistics-sidecar rollout this directly de-risks.
-   **Scoped — `WI-PROMOTE-0100`.**
+   **Resolved — `WI-PROMOTE-0100` (PR #411).**
 
 ## Non-Goals
 

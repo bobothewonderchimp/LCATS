@@ -2,10 +2,10 @@
 execution_id: 2026_08_29_06_00_10_WI_PROMOTE_0100_SCAN_SOURCING_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_PROMOTE_0100_SCAN_SOURCING_CONFIRM)[2026-08-29T05:59:51+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_29_05_58_17_WI_PROMOTE_0100_SCAN_SOURCING_REVIEW
 pr: https://github.com/xenotaur/LCATS/pull/411
-commit: 95183e15d7ea3c0dfaa2f0632de79c8c5d0c8a94
+commit: fafcb3d4297fa79ed4c64786fb87c1f6b81e0eb7
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/411
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
