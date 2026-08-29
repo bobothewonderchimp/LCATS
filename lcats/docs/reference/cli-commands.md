@@ -183,8 +183,8 @@ An explicit mode is mandatory: `insert`, `upsert`, or `replace`. A bare
 
 ```
 lcats promote replace [--source SOURCE] [--dest DEST] [--dry-run] [collections ...]
-lcats promote insert --sidecar KIND --tranche-manifest PATH [--dest DEST] [--allow-unvalidated] [--dry-run]
-lcats promote upsert --sidecar KIND --tranche-manifest PATH [--dest DEST] [--allow-unvalidated] [--dry-run]
+lcats promote insert --sidecar KIND (--tranche-manifest PATH | --source DIR) [--dest DEST] [--allow-unvalidated] [--dry-run]
+lcats promote upsert --sidecar KIND (--tranche-manifest PATH | --source DIR) [--dest DEST] [--allow-unvalidated] [--dry-run]
 ```
 
 `replace` promotes `data/` collections into `corpora/` wholesale. A
@@ -198,16 +198,21 @@ promoted; clean collections wholesale-replace their `corpora/` counterpart.
 | `--dest DEST` | Root directory to promote clean collections into (default: `../corpora`). |
 | `--dry-run` | Survey and report without copying any files. |
 
-`insert`/`upsert` promote sidecars named in a JSONL manifest of `{"lcats_id":
-..., "payload": {...}}` envelopes into existing story buckets, without
+`insert`/`upsert` promote sidecars into existing story buckets, without
 touching any other file in the destination. `insert` is create-only
 (refuses if the destination already exists); `upsert` is create-or-overwrite
-(whole-file only, never merges content).
+(whole-file only, never merges content). Records come from exactly one of
+`--tranche-manifest` (a JSONL manifest of `{"lcats_id": ..., "payload":
+{...}}` envelopes) or `--source` (a live scan of
+`<dir>/<collection>/<story>/<sidecar-filename>` — every bucket that already
+has the named sidecar file is promoted; the bucket's own relative path is
+the routing `lcats_id`) — the two are mutually exclusive.
 
 | Argument / Flag | Description |
 |---|---|
 | `--sidecar KIND` | Registered sidecar kind to promote (e.g. `genre`, `scenes`, `linguistics`, `linguistics.tokens.json`). No `.` assumes `.json`; a value containing `.` is matched exactly. |
-| `--tranche-manifest PATH` | JSONL manifest of `{"lcats_id": ..., "payload": {...}}` envelopes. |
+| `--tranche-manifest PATH` | JSONL manifest of `{"lcats_id": ..., "payload": {...}}` envelopes. Mutually exclusive with `--source`. |
+| `--source DIR` | Root directory to scan for existing `<collection>/<story>/<sidecar-filename>` files instead of reading a manifest. Mutually exclusive with `--tranche-manifest`. |
 | `--dest DEST` | Root directory to promote into (default: `../corpora`). |
 | `--allow-unvalidated` | Allow a `--sidecar` kind with no registered validator. Never bypasses a registered validator's own rejection. |
 | `--dry-run` | Validate and report without writing any files. |

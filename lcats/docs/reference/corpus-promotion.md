@@ -19,8 +19,8 @@ collection replacement — a mode name always says which one you're getting.
 
 ```bash
 lcats promote replace [collection ...] [--source data/] [--dest ../corpora] [--dry-run]
-lcats promote insert --sidecar <kind> --tranche-manifest <path.jsonl> [--dest ../corpora] [--allow-unvalidated] [--dry-run]
-lcats promote upsert --sidecar <kind> --tranche-manifest <path.jsonl> [--dest ../corpora] [--allow-unvalidated] [--dry-run]
+lcats promote insert --sidecar <kind> (--tranche-manifest <path.jsonl> | --source <dir>) [--dest ../corpora] [--allow-unvalidated] [--dry-run]
+lcats promote upsert --sidecar <kind> (--tranche-manifest <path.jsonl> | --source <dir>) [--dest ../corpora] [--allow-unvalidated] [--dry-run]
 ```
 
 ### `replace` — wholesale collection replacement
@@ -61,11 +61,29 @@ if the destination sidecar already exists); `upsert` is create-or-overwrite
   `genre`, `scenes`, `linguistics`, `linguistics.tokens.json`). A value with
   no `.` assumes `.json`; a value containing `.` is matched exactly against
   the registry, with no inference.
-- `--tranche-manifest <path.jsonl>` is a JSONL manifest, one **envelope**
-  object per line: `{"lcats_id": "<destination story id>", "payload":
-  {<sidecar content>}}`. The envelope's `lcats_id` is what routes the write
-  — never the payload's own fields, since some sidecar kinds (e.g.
-  `scenes.json`) carry no story-identity field of their own.
+- Exactly one of two sourcing modes is required — `--tranche-manifest` and
+  `--source` are mutually exclusive:
+  - `--tranche-manifest <path.jsonl>` reads a JSONL manifest, one
+    **envelope** object per line: `{"lcats_id": "<destination story id>",
+    "payload": {<sidecar content>}}`. The envelope's `lcats_id` is what
+    routes the write — never the payload's own fields, since some sidecar
+    kinds (e.g. `scenes.json`) carry no story-identity field of their own.
+    A manifest line with no `"payload"` field is also accepted when it
+    carries its own non-empty top-level `lcats_id` (a bare legacy record,
+    e.g. an existing `genre-sidecar-v1` manifest) — the whole record is
+    then treated as the payload.
+  - `--source <dir>` scans `<dir>/<collection>/<story>/<sidecar-filename>`
+    directly — no manifest file needed. Every story bucket under `<dir>`
+    that already has the named `--sidecar` file is promoted; a bucket
+    without it is silently skipped, not reported. The bucket's own path
+    relative to `<dir>` (e.g. `anderson/bell`) is always the routing
+    `lcats_id` — a scanned sidecar's own identity field, if any, is
+    validated to agree with that routing `lcats_id` and rejected on
+    mismatch, the same as a manifest record would be.
+  Both modes feed the exact same validation, escape-check,
+  identity-agreement, and existing-destination-file logic — scanning is
+  purely an alternative way to source records, not a second promotion
+  engine.
 - Every `--sidecar` kind is validated against a shared registry by default;
   `--allow-unvalidated` permits promoting a kind with **no registered
   validator** — it never bypasses a registered validator's own rejection of

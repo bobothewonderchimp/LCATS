@@ -1301,6 +1301,322 @@ class PromoteSidecarInsertUpsertTest(unittest.TestCase):
             self.assertTrue(report.all_promoted)
 
 
+class PromoteSidecarScanSourcingTest(unittest.TestCase):
+    """Tests for insert/upsert's live-directory-scan sourcing mode
+    (WI-PROMOTE-0100, Decision 8 of PROP-LCATS-PROMOTE-MODE-REDESIGN),
+    alongside the pre-existing --tranche-manifest mode."""
+
+    def _write_source_sidecar(
+        self, source_root: pathlib.Path, lcats_id: str, sidecar_filename: str, payload
+    ) -> pathlib.Path:
+        bucket_dir = source_root / lcats_id
+        bucket_dir.mkdir(parents=True, exist_ok=True)
+        (bucket_dir / "story.json").write_text(
+            json.dumps({"name": lcats_id}), encoding="utf-8"
+        )
+        (bucket_dir / sidecar_filename).write_text(
+            json.dumps(payload), encoding="utf-8"
+        )
+        return bucket_dir
+
+    def _write_dest_story(self, dest_root: pathlib.Path, lcats_id: str) -> pathlib.Path:
+        bucket_dir = dest_root / lcats_id
+        bucket_dir.mkdir(parents=True, exist_ok=True)
+        (bucket_dir / "story.json").write_text(
+            json.dumps({"name": lcats_id}), encoding="utf-8"
+        )
+        return bucket_dir
+
+    def test_scan_discovers_and_promotes_every_bucket_with_the_sidecar(self):
+        with (
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+            payload_a = _valid_sidecar_record(
+                "anderson/bell", "anderson/bell/story.json"
+            )
+            payload_b = _valid_sidecar_record(
+                "chesterton/blue_cross", "chesterton/blue_cross/story.json"
+            )
+            self._write_source_sidecar(
+                source_root, "anderson/bell", "genre.json", payload_a
+            )
+            self._write_source_sidecar(
+                source_root, "chesterton/blue_cross", "genre.json", payload_b
+            )
+            self._write_dest_story(dest_root, "anderson/bell")
+            self._write_dest_story(dest_root, "chesterton/blue_cross")
+
+            report = promote.promote_sidecar_insert(
+                None, dest_root, "genre", scan_source=source_root
+            )
+
+            self.assertEqual(
+                {"anderson/bell", "chesterton/blue_cross"}, set(report.promoted)
+            )
+            self.assertEqual((), report.rejected)
+            self.assertEqual(
+                payload_a,
+                json.loads(
+                    (dest_root / "anderson" / "bell" / "genre.json").read_text(
+                        encoding="utf-8"
+                    )
+                ),
+            )
+
+    def test_scan_skips_buckets_without_the_sidecar_file(self):
+        with (
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+            # A bucket with only story.json, no genre.json -- must be
+            # silently skipped, neither promoted nor rejected.
+            bucket_dir = source_root / "anderson" / "no_sidecar"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "no_sidecar"}), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_insert(
+                None, dest_root, "genre", scan_source=source_root
+            )
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual((), report.rejected)
+
+    def test_scan_routing_uses_bucket_path_not_payloads_own_mismatched_id(self):
+        with (
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+            # The sidecar payload's own (unrelated) lcats_id must not
+            # matter -- scan routing always uses the bucket's own path.
+            wrong_payload = _valid_sidecar_record(
+                "some/other/id", "some/other/id/story.json"
+            )
+            self._write_source_sidecar(
+                source_root, "anderson/bell", "genre.json", wrong_payload
+            )
+            self._write_dest_story(dest_root, "anderson/bell")
+
+            report = promote.promote_sidecar_insert(
+                None, dest_root, "genre", scan_source=source_root
+            )
+
+            # A scanned payload's mismatched own lcats_id is rejected by
+            # the same identity-agreement check a manifest record would
+            # hit -- scan sourcing does not special-case this away.
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertEqual("anderson/bell", report.rejected[0].lcats_id)
+            self.assertIn("does not match", report.rejected[0].error)
+
+    def test_scan_missing_destination_story_is_rejected_not_created(self):
+        with (
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            self._write_source_sidecar(
+                source_root, "anderson/bell", "genre.json", payload
+            )
+            # No destination story.json bucket created.
+
+            report = promote.promote_sidecar_insert(
+                None, dest_root, "genre", scan_source=source_root
+            )
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertIn("story.json", report.rejected[0].error)
+            self.assertFalse((dest_root / "anderson" / "bell").exists())
+
+    def test_scan_invalid_payload_is_rejected_same_as_manifest_mode(self):
+        with (
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+            invalid_payload = {
+                "schema_version": "genre-sidecar-v1",
+                "lcats_id": "anderson/bell",
+                "story_path": "anderson/bell/story.json",
+            }
+            self._write_source_sidecar(
+                source_root, "anderson/bell", "genre.json", invalid_payload
+            )
+            self._write_dest_story(dest_root, "anderson/bell")
+
+            report = promote.promote_sidecar_insert(
+                None, dest_root, "genre", scan_source=source_root
+            )
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertEqual("anderson/bell", report.rejected[0].lcats_id)
+
+    def test_scan_malformed_sidecar_json_is_rejected_not_fatal(self):
+        with (
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+            good_payload = _valid_sidecar_record(
+                "anderson/bell", "anderson/bell/story.json"
+            )
+            self._write_source_sidecar(
+                source_root, "anderson/bell", "genre.json", good_payload
+            )
+            broken_dir = source_root / "anderson" / "broken"
+            broken_dir.mkdir(parents=True)
+            (broken_dir / "story.json").write_text(
+                json.dumps({"name": "broken"}), encoding="utf-8"
+            )
+            (broken_dir / "genre.json").write_text("{not valid json", encoding="utf-8")
+            self._write_dest_story(dest_root, "anderson/bell")
+            self._write_dest_story(dest_root, "anderson/broken")
+
+            report = promote.promote_sidecar_insert(
+                None, dest_root, "genre", scan_source=source_root
+            )
+
+            self.assertEqual(("anderson/bell",), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertEqual("anderson/broken", report.rejected[0].lcats_id)
+
+    def test_scan_upsert_overwrites_an_existing_destination(self):
+        with (
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+            new_payload = _valid_sidecar_record(
+                "anderson/bell", "anderson/bell/story.json"
+            )
+            self._write_source_sidecar(
+                source_root, "anderson/bell", "genre.json", new_payload
+            )
+            bucket_dir = self._write_dest_story(dest_root, "anderson/bell")
+            old_payload = _valid_sidecar_record(
+                "anderson/bell", "anderson/bell/story.json"
+            )
+            old_payload["story_path"] = "stale"
+            (bucket_dir / "genre.json").write_text(
+                json.dumps(old_payload), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_upsert(
+                None, dest_root, "genre", scan_source=source_root
+            )
+
+            self.assertEqual(("anderson/bell",), report.promoted)
+            self.assertEqual(
+                new_payload,
+                json.loads((bucket_dir / "genre.json").read_text(encoding="utf-8")),
+            )
+
+    def test_scan_insert_refuses_when_destination_already_exists(self):
+        with (
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            self._write_source_sidecar(
+                source_root, "anderson/bell", "genre.json", payload
+            )
+            bucket_dir = self._write_dest_story(dest_root, "anderson/bell")
+            existing = _valid_sidecar_record(
+                "anderson/bell", "anderson/bell/story.json"
+            )
+            (bucket_dir / "genre.json").write_text(
+                json.dumps(existing), encoding="utf-8"
+            )
+
+            report = promote.promote_sidecar_insert(
+                None, dest_root, "genre", scan_source=source_root
+            )
+
+            self.assertEqual((), report.promoted)
+            self.assertEqual(1, len(report.rejected))
+            self.assertIn("already exists", report.rejected[0].error)
+
+    def test_scan_and_manifest_both_given_is_rejected(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            _write_manifest(manifest_path, [])
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+
+            with self.assertRaises(ValueError) as ctx:
+                promote.promote_sidecar_insert(
+                    manifest_path, dest_root, "genre", scan_source=source_root
+                )
+            self.assertIn("exactly one of", str(ctx.exception))
+
+    def test_neither_manifest_nor_scan_given_is_rejected(self):
+        with tempfile.TemporaryDirectory() as dest_tmp:
+            dest_root = pathlib.Path(dest_tmp)
+
+            with self.assertRaises(ValueError) as ctx:
+                promote.promote_sidecar_insert(None, dest_root, "genre")
+            self.assertIn("exactly one of", str(ctx.exception))
+
+    def test_scan_dry_run_makes_no_writes(self):
+        with (
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            self._write_source_sidecar(
+                source_root, "anderson/bell", "genre.json", payload
+            )
+            self._write_dest_story(dest_root, "anderson/bell")
+
+            report = promote.promote_sidecar_insert(
+                None, dest_root, "genre", scan_source=source_root, dry_run=True
+            )
+
+            self.assertEqual(("anderson/bell",), report.promoted)
+            self.assertFalse((dest_root / "anderson" / "bell" / "genre.json").exists())
+
+    def test_unsafe_sidecar_filename_is_rejected_before_scanning(self):
+        with (
+            tempfile.TemporaryDirectory() as source_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            source_root = pathlib.Path(source_tmp)
+            dest_root = pathlib.Path(dest_tmp)
+
+            with self.assertRaises(ValueError) as ctx:
+                promote.promote_sidecar_insert(
+                    None,
+                    dest_root,
+                    "story.json",
+                    scan_source=source_root,
+                    allow_unvalidated=True,
+                )
+            self.assertIn("unsafe sidecar filename", str(ctx.exception))
+
+
 class PromoteCliTest(unittest.TestCase):
     """Tests for the promote CLI exit-code and reporting behavior."""
 
@@ -1437,6 +1753,95 @@ class PromoteCliTest(unittest.TestCase):
             self.assertTrue(
                 (pathlib.Path(dest_tmp) / "anderson" / "bell" / "genre.json").is_file()
             )
+
+    def test_insert_mode_source_flag_reaches_scan_sourcing(self):
+        # The whole point of Required Change 2: the CLI's --source flag
+        # must actually reach promote_sidecar_insert's scan_source
+        # parameter, not just the manifest-file library path exercised
+        # above.
+        with (
+            tempfile.TemporaryDirectory() as scan_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            scan_root = pathlib.Path(scan_tmp)
+            payload = _valid_sidecar_record("anderson/bell", "anderson/bell/story.json")
+            bucket_dir = scan_root / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+            (bucket_dir / "genre.json").write_text(
+                json.dumps(payload), encoding="utf-8"
+            )
+            dest_bucket_dir = pathlib.Path(dest_tmp) / "anderson" / "bell"
+            dest_bucket_dir.mkdir(parents=True)
+            (dest_bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+
+            output = io.StringIO()
+            with unittest.mock.patch("sys.stdout", output):
+                exit_code = promote_cli.run(
+                    [
+                        "insert",
+                        "--dest",
+                        dest_tmp,
+                        "--sidecar",
+                        "genre",
+                        "--source",
+                        str(scan_root),
+                    ]
+                )
+
+            self.assertEqual(0, exit_code)
+            self.assertIn("promoted sidecar: anderson/bell", output.getvalue())
+            self.assertEqual(
+                payload,
+                json.loads(
+                    (dest_bucket_dir / "genre.json").read_text(encoding="utf-8")
+                ),
+            )
+
+    def test_source_and_tranche_manifest_flags_are_mutually_exclusive_via_cli(self):
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as scan_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            _write_manifest(manifest_path, [])
+
+            error_output = io.StringIO()
+            with (
+                unittest.mock.patch("sys.stderr", error_output),
+                self.assertRaises(SystemExit) as ctx,
+            ):
+                promote_cli.run(
+                    [
+                        "insert",
+                        "--dest",
+                        dest_tmp,
+                        "--sidecar",
+                        "genre",
+                        "--tranche-manifest",
+                        str(manifest_path),
+                        "--source",
+                        scan_tmp,
+                    ]
+                )
+
+            self.assertNotEqual(0, ctx.exception.code)
+
+    def test_neither_source_nor_tranche_manifest_flag_is_rejected_via_cli(self):
+        with tempfile.TemporaryDirectory() as dest_tmp:
+            error_output = io.StringIO()
+            with (
+                unittest.mock.patch("sys.stderr", error_output),
+                self.assertRaises(SystemExit) as ctx,
+            ):
+                promote_cli.run(["insert", "--dest", dest_tmp, "--sidecar", "genre"])
+
+            self.assertNotEqual(0, ctx.exception.code)
 
     def test_insert_mode_second_pass_on_same_destination_is_refused(self):
         with (
