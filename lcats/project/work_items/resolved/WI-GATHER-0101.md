@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Investigation complete via PR #414 (commit d0e7d69e). Classified sherlock as full reconciliation (zero behavior change once corrected on review), lovecraft and mass_quantities as no reconciliation without further work. Findings in project/design/gatherer-reconciliation-audit.md."
 blocked_reason: null
 blocked: false
 id: WI-GATHER-0101
 title: Audit mass_quantities/sherlock/lovecraft's separate gather() implementations for reconciliation onto gatherlib.gather()
 type: investigation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
