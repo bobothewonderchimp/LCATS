@@ -1616,6 +1616,36 @@ class PromoteSidecarScanSourcingTest(unittest.TestCase):
                 )
             self.assertIn("unsafe sidecar filename", str(ctx.exception))
 
+    def test_allow_unvalidated_and_dry_run_remain_positional_or_keyword(self):
+        """P2 review finding, PR #411: adding scan_source must not make
+        the pre-existing allow_unvalidated/dry_run parameters
+        keyword-only -- a caller passing them positionally (the
+        documented signature before this item) must still work
+        unchanged."""
+        with (
+            tempfile.TemporaryDirectory() as manifest_tmp,
+            tempfile.TemporaryDirectory() as dest_tmp,
+        ):
+            dest_root = pathlib.Path(dest_tmp)
+            manifest_path = pathlib.Path(manifest_tmp) / "manifest.jsonl"
+            _write_manifest(
+                manifest_path, [_envelope("anderson/bell", {"anything": True})]
+            )
+            bucket_dir = dest_root / "anderson" / "bell"
+            bucket_dir.mkdir(parents=True)
+            (bucket_dir / "story.json").write_text(
+                json.dumps({"name": "bell"}), encoding="utf-8"
+            )
+
+            # Fifth positional argument (dry_run=True) -- must not raise
+            # TypeError, and must not write anything.
+            report = promote.promote_sidecar_insert(
+                manifest_path, dest_root, "wordcloud.png", True, True
+            )
+
+            self.assertEqual(("anderson/bell",), report.promoted)
+            self.assertFalse((bucket_dir / "wordcloud.png").exists())
+
 
 class PromoteCliTest(unittest.TestCase):
     """Tests for the promote CLI exit-code and reporting behavior."""

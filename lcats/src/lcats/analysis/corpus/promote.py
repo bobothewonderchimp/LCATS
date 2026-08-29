@@ -863,10 +863,10 @@ def promote_sidecar_insert(
     manifest_path: pathlib.Path | None,
     dest_root: pathlib.Path,
     sidecar: str,
-    *,
-    scan_source: pathlib.Path | None = None,
     allow_unvalidated: bool = False,
     dry_run: bool = False,
+    *,
+    scan_source: pathlib.Path | None = None,
 ) -> SidecarTranchePromotionReport:
     """Create-only: write named sidecars into existing story buckets,
     refusing (not overwriting) any that already exist. Never touches any
@@ -893,10 +893,10 @@ def promote_sidecar_upsert(
     manifest_path: pathlib.Path | None,
     dest_root: pathlib.Path,
     sidecar: str,
-    *,
-    scan_source: pathlib.Path | None = None,
     allow_unvalidated: bool = False,
     dry_run: bool = False,
+    *,
+    scan_source: pathlib.Path | None = None,
 ) -> SidecarTranchePromotionReport:
     """Create-or-overwrite: write named sidecars into existing story
     buckets, whole-file overwrite only (no in-sidecar content merge).
