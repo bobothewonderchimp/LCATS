@@ -75,8 +75,8 @@ Implementation Plan):
 1. Sidecar-validator registry + mandatory mode split + uniform validation
    requirement + `--sidecar` flag. **Resolved — `WI-PROMOTE-0097`
    (PR #405).**
-2. `replace`'s targeted orphaned-sidecar guard. **Scoped —
-   `WI-PROMOTE-0101`.**
+2. `replace`'s targeted orphaned-sidecar guard. **Resolved —
+   `WI-PROMOTE-0101` (PR #416).**
 3. `insert`/`upsert` live-directory-scan sourcing — flagged as a priority
    given the imminent linguistics-sidecar rollout this directly de-risks.
    **Resolved — `WI-PROMOTE-0100` (PR #411).**

@@ -2,10 +2,10 @@
 execution_id: 2026_08_29_17_45_48_WI_PROMOTE_0101_ORPHAN_GUARD_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_PROMOTE_0101_ORPHAN_GUARD_SELFREVIEW)[2026-08-29T17:45:43+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_29_17_01_30_WI_PROMOTE_0101
 pr: https://github.com/xenotaur/LCATS/pull/416
-commit: 5411cac6e2bab56976fc51c8fbcdb6159f6b625e
+commit: a19322d28fb09fa3cd70000a3cc5ed9cd523fbff
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/416
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0

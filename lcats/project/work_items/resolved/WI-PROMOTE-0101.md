@@ -2,7 +2,7 @@
 id: WI-PROMOTE-0101
 title: Add orphaned-sidecar guard to lcats promote's replace mode
 type: deliverable
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []
@@ -22,7 +22,7 @@ depends_on:
 blocked_by: []
 blocked: false
 blocked_reason: null
-resolution: null
+resolution: "Implemented and merged in PR #416 (merge commit a19322d28fb09fa3cd70000a3cc5ed9cd523fbff). lcats promote replace now blocks an otherwise-clean collection by default when the wholesale replace would delete a registered sidecar kind that exists at the destination for a story but is missing from the corresponding source - the exact scenario PR #362's original review finding described. Added OrphanedSidecarFinding and _find_orphaned_sidecars(), which walks the destination collection's story buckets (the opposite traversal direction from every other check in promote.py) and checks only registered sidecar kinds via sidecar_validators.registered_filenames(), never a generic destination-only-file diff. --allow-orphaned-sidecar-deletion, replace-only, overrides the guard. A destination collection that doesn't exist yet is never blocked. insert/upsert are entirely unaffected. Review (Copilot) found and fixed 1 real P1 issue before merge: the original guard wrongly flagged a story that exists only at the destination (no story.json anywhere in the corresponding source bucket) as having an orphaned sidecar, blocking legitimate replaces of collections with retired stories; fixed by skipping any story whose source bucket lacks story.json before checking its sidecars. Also fixed a minor missing read_text() encoding on a new test. No automated reviewer response landed on the post-fix commits after a reasonable wait, so REVIEW-LANDED was satisfied via a substitute self-review pass (cold-context subagent + independent re-verification), which found no further issues. See project/executions/WI-PROMOTE-0101/ and project/executions/AD_HOC/*WI_PROMOTE_0101_ORPHAN_GUARD* for the full record chain. This was the last of WS-PROMOTE-MODE-REDESIGN's three anticipated stages."
 expected_actions:
   - edit_file
   - run_tests

@@ -2,10 +2,10 @@
 execution_id: 2026_08_29_17_08_39_WI_PROMOTE_0101_ORPHAN_GUARD_REVIEW
 prompt_id: PROMPT(AD_HOC:WI_PROMOTE_0101_ORPHAN_GUARD_REVIEW)[2026-08-29T17:08:34+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_29_17_01_30_WI_PROMOTE_0101
 pr: https://github.com/xenotaur/LCATS/pull/416
-commit: 8d61ad207c85d4f7c2c8d4c6ec26e6e7a4f3d34a
+commit: a19322d28fb09fa3cd70000a3cc5ed9cd523fbff
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/416
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
