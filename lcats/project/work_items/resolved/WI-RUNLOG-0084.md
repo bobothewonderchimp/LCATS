@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #410 (commit e7c634bf)."
 blocked_reason: null
 blocked: false
 id: WI-RUNLOG-0084
 title: Record no-log-needed disposition for run-log audit's out-of-scope sites
 type: operation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []

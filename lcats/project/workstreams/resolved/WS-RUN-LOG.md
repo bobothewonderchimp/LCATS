@@ -2,8 +2,8 @@
 id: WS-RUN-LOG
 kind: planning_node
 title: Shared run-event logging for LCATS batch scripts
-status: proposed
-stage: designed
+status: resolved
+stage: closed
 origin: design_review
 summary: Deliver PROP-LCATS-RUN-LOG's shared lcats.utils.run_log module (function + RunLog context manager) and migrate the 7 warranted batch-script/CLI sites to it, plus record the disposition of the 5 explicitly out-of-scope sites.
 related_focus: []
