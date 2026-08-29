@@ -12,7 +12,7 @@ from lcats.utils import env
 
 
 def _add_sidecar_manifest_args(subparser: argparse.ArgumentParser) -> None:
-    """Shared insert/upsert argument set (WI-PROMOTE-0097)."""
+    """Shared insert/upsert argument set (WI-PROMOTE-0097/WI-PROMOTE-0100)."""
     subparser.add_argument(
         "--sidecar",
         required=True,
@@ -23,16 +23,29 @@ def _add_sidecar_manifest_args(subparser: argparse.ArgumentParser) -> None:
             "against the registry, with no inference."
         ),
     )
-    subparser.add_argument(
+    source_group = subparser.add_mutually_exclusive_group(required=True)
+    source_group.add_argument(
         "--tranche-manifest",
         type=pathlib.Path,
-        required=True,
+        default=None,
         help=(
             "Path to a JSONL manifest, one envelope object per line: "
             '{"lcats_id": "<destination story id>", "payload": {<sidecar '
             "content>}}. Promotes only these stories' sidecars into --dest, "
             "without touching any other file in their collection "
-            "directories."
+            "directories. Mutually exclusive with --source."
+        ),
+    )
+    source_group.add_argument(
+        "--source",
+        type=pathlib.Path,
+        default=None,
+        help=(
+            "Root directory to scan for existing "
+            "<collection>/<story>/<sidecar-filename> files (e.g. data/), "
+            "instead of reading a pre-built manifest -- every story bucket "
+            "under this root that already has the named --sidecar file is "
+            "promoted. Mutually exclusive with --tranche-manifest."
         ),
     )
     subparser.add_argument(
@@ -148,6 +161,7 @@ def _run_sidecar_mode(args, *, overwrite: bool) -> int:
         manifest_path=args.tranche_manifest,
         dest_root=args.dest,
         sidecar=args.sidecar,
+        scan_source=args.source,
         allow_unvalidated=args.allow_unvalidated,
         dry_run=args.dry_run,
     )
