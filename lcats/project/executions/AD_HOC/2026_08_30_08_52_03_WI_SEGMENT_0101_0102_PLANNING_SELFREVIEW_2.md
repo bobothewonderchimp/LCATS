@@ -59,8 +59,18 @@ this round.
 
 # Validation
 
-- `lrh validate` - 0 errors, 294 warnings (unchanged - these are prose
-  and frontmatter-list edits with no new lint-triggering fields)
+- `lrh validate` - 0 errors immediately before this record's own commit.
+  Deliberately not stating a specific warning count here: a third
+  self-review round (round 3, PR #415) independently caught this exact
+  record repeating the same self-referential mistake its own findings
+  describe - any number transcribed into this section is stale the
+  instant this file is committed, since committing it adds its own
+  `EXECUTION_INSTRUCTION_SOURCE_ABSOLUTE_PATH` warning. This is a
+  structural property of writing "the current count" into a file that is
+  itself part of what gets counted, not a fixable transcription error -
+  no future round should re-flag a stale number here, since none is
+  stated. The authoritative count is always whatever `lrh validate`
+  reports fresh against the real current `HEAD`.
 
 # Follow-up
 
