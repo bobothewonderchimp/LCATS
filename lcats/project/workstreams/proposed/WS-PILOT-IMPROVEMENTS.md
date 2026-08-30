@@ -24,6 +24,8 @@ work_items:
   - WI-SEGMENT-0097
   - WI-SEGMENT-0098
   - WI-SEGMENT-0099
+  - WI-SEGMENT-0101
+  - WI-SEGMENT-0102
 exit_criteria:
   - A first pilot API/output stability gate has run against a bounded, explicitly approved real Anthropic story set and reports completion, artifact well-formedness, semantic sense, quality thresholds, intended-purpose fit, actual spend, and explicit genre-detection coverage
   - Prompt-caching adoption, if still supported after the stability gate, is implemented only as an explicit pilot-level setting with cache telemetry and no global backend default change
@@ -153,25 +155,41 @@ documents the intended execution order and must stay in sync with that list.
    evaluation corpus and reports against its frozen adoption thresholds,
    without lowering them - 75% exact recovery (up from 50%), 0 false
    positives, still short on corpus size; recommendation remains defer.
-9. **Prompt caching adoption** - If the stability gate and segmentation
-   reliability follow-ups still support proceeding, expose
-   explicit pilot-level prompt caching for Anthropic fixture/pilot runs,
-   preserving `AnthropicBackend(enable_prompt_caching=False)` as the global
-   default and retaining cache token telemetry.
-10. **Genre/segmentation model-tiering adoption** - If the stability gate and
+9. **`WI-SEGMENT-0101`: Investigate prompt-side fix for paragraph-boundary
+   end_par_id/end_exact inconsistency** (proposed) - `WI-SEGMENT-0098`
+   ruled out a prompt fix without checking the actual prompt text; direct
+   inspection found `end_par_id`/`start_par_id` and `end_exact`/`start_exact`
+   are independently-generated fields with no instruction requiring them
+   to agree. Investigates whether deriving `end_par_id` from `end_exact`'s
+   location reduces the pattern, via a real-API ablation (cost estimate +
+   approval required, not covered by this item).
+10. **`WI-SEGMENT-0102`: Regression-test the fuzzy near-miss matcher against
+    currently-correct real segments** (proposed) - Closes a gap the
+    `WI-SEGMENT-0072` evaluation's own design doc names: the
+    `strict_local_fuzzy` policy has never been tested against real,
+    already-correctly-aligned segments. Runs it against all such committed
+    real segments (56+ known) and confirms it never disturbs an
+    already-correct span - a non-regression check, independent of and not
+    counting toward `WI-SEGMENT-0072`'s frozen adoption thresholds.
+11. **Prompt caching adoption** - If the stability gate and segmentation
+    reliability follow-ups still support proceeding, expose
+    explicit pilot-level prompt caching for Anthropic fixture/pilot runs,
+    preserving `AnthropicBackend(enable_prompt_caching=False)` as the global
+    default and retaining cache token telemetry.
+12. **Genre/segmentation model-tiering adoption** - If the stability gate and
     segmentation reliability follow-ups still support proceeding, adopt
     cheaper-tier model settings for genre detection and segmentation in the
     pilot's recommended configuration while preserving schema, truncation,
     sanitization, and semantic-quality telemetry.
-11. **Batch API opt-in design** - Design the durable batch ledger,
+13. **Batch API opt-in design** - Design the durable batch ledger,
     submit/poll/result-ingestion flow, and interaction with `checkpoint.py`.
     This design-only work can proceed without real API spend.
-12. **Batch API opt-in implementation and validation** - If the stability gate
+14. **Batch API opt-in implementation and validation** - If the stability gate
     and segmentation reliability follow-ups still support proceeding,
     implement opt-in Batch API mode, publish per-stage checkpoints only after
     result ingestion, and run a bounded real batch validation before treating
     batch mode as usable.
-13. **User-facing pilot run ergonomics** - Clarify CLI help, docs, output
+15. **User-facing pilot run ergonomics** - Clarify CLI help, docs, output
     summaries, or wrappers so a researcher can choose a cheap validation run, a
     synchronous high-visibility pilot run, or an opt-in lower-cost batch run.
 

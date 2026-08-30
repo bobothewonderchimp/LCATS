@@ -61,9 +61,18 @@ prior record, not a contested or ambiguous claim.
 
 # Validation
 
-- `lrh validate` - 0 errors, 293 warnings (down from 294 - the unsafe
-  YAML scalar fix removed one warning; the warning-count-claim fix
-  changed prose only, no schema effect)
+- `lrh validate` - 0 errors, 293 warnings measured immediately after the
+  two fixes above, before this record file itself existed; the unsafe
+  YAML scalar fix removed one warning, the warning-count-claim fix
+  changed prose only (no schema effect). This record's own creation adds
+  its own `EXECUTION_INSTRUCTION_SOURCE_ABSOLUTE_PATH` warning on top of
+  that 293 baseline, the same self-referential +1 both fixes above
+  describe - a subsequent round of this same self-review (round 2)
+  independently caught this file's own first draft repeating that exact
+  mistake by stating "293" as if it were the final count. Do not treat
+  any single number in this section as the PR's final warning count;
+  the true count is whatever `lrh validate` reports fresh against the
+  actual final `HEAD`, not a number transcribed into any one record.
 
 # Follow-up
 
