@@ -2,10 +2,10 @@
 execution_id: 2026_08_29_16_56_18_WI_SEGMENT_0101_0102_PLANNING_CONFIRM
 prompt_id: PROMPT(AD_HOC:WI_SEGMENT_0101_0102_PLANNING_CONFIRM)[2026-08-29T16:56:10+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/415
-commit: "19874354"
+commit: 63cca599497beb86c5c2affcb511236d8e3fccb1
 agent: claude_app
 instruction_source: "/lrh-land https://github.com/xenotaur/LCATS/pull/415 (inline review-response)"
 session_transcript: pending

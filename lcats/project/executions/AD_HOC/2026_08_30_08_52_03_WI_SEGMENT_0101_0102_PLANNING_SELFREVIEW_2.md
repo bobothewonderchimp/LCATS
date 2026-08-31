@@ -2,10 +2,10 @@
 execution_id: 2026_08_30_08_52_03_WI_SEGMENT_0101_0102_PLANNING_SELFREVIEW_2
 prompt_id: PROMPT(AD_HOC:WI_SEGMENT_0101_0102_PLANNING_SELFREVIEW_2)[2026-08-30T08:51:54+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_29_18_25_51_WI_SEGMENT_0101_0102_PLANNING_SELFREVIEW
 pr: https://github.com/xenotaur/LCATS/pull/415
-commit: b22360e2
+commit: 63cca599497beb86c5c2affcb511236d8e3fccb1
 agent: claude_app
 instruction_source: "/lrh-land https://github.com/xenotaur/LCATS/pull/415 (substitute self-review round 2, /lrh-confirm-fixes Step 8)"
 session_transcript: pending
