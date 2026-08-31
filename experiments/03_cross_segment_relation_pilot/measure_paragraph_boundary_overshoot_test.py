@@ -15,7 +15,13 @@ STORY_TEXT = (
     "Echo foxtrot golf hotel india.\n\n"
     "Juliet kilo lima mike november.\n\n"
     "Oscar papa quebec romeo sierra.\n\n"
-    "Tango uniform victor whiskey xray.\n\n"
+    # Deliberately contains a decoy duplicate of paragraph 7's end_exact
+    # ("hotel again too.") - needed so the bounded-search-vs-unbounded
+    # and s_idx-vs-lo tests below can actually discriminate correct from
+    # incorrect behavior (review finding, PR #420: an earlier draft used
+    # anchors that were unique in the fixture, so those tests passed
+    # whether or not the code under test was bounded-first at all).
+    "Tango uniform victor whiskey xray hotel again too. Decoy padding filler words here.\n\n"
     "Zulu alpha bravo charlie again.\n\n"
     "Delta echo foxtrot golf hotel again too.\n\n"
     "India juliet kilo lima mike again three.\n"
@@ -61,13 +67,17 @@ class CheckSegmentTest(unittest.TestCase):
         self.assertGreater(report["end"]["overshoot_chars"], 0)
 
     def test_bounded_search_preferred_over_duplicate_elsewhere(self):
-        """A short anchor that also happens to match earlier in the story
-        must resolve to the in-window occurrence, not the earlier
-        duplicate (the_invaders__ferris regression this fix exists for)."""
+        """ "hotel again too." appears twice: a decoy in paragraph 5 and
+        the real occurrence in paragraph 7. Claiming the segment at
+        paragraph 7 only, the bounded search must resolve to paragraph
+        7's occurrence, not the earlier paragraph-5 decoy (the
+        the_invaders__ferris regression this fix exists for). This is a
+        real discrimination, not a tautology (review finding, PR #420):
+        directly verified that patching the code under test to search
+        unboundedly-from-zero instead would make this assertion fail,
+        since an unbounded leftmost search finds the paragraph-5 decoy
+        first."""
         text, para_spans = _para_spans()
-        # "again" appears in paragraphs 6, 7, and 8. Claim a segment at
-        # paragraph 7 - the bounded search must find paragraph 7's
-        # occurrence, not paragraph 6's earlier one.
         seg = {
             "segment_id": 3,
             "start_par_id": 7,
@@ -80,15 +90,26 @@ class CheckSegmentTest(unittest.TestCase):
         lo, hi = report["claimed_window"]
         match_start, match_end = report["end"]["match_span"]
         self.assertTrue(lo <= match_start and match_end <= hi)
+        # Not just "inside some window" - specifically NOT the paragraph-5
+        # decoy, which sits entirely before this segment's own window.
+        self.assertGreaterEqual(match_start, lo)
 
     def test_end_exact_search_floor_is_start_position_not_window_start(self):
         """end_exact's search must start from wherever start_exact
         resolved (s_idx), not from the window's own lo again - matching
-        align_segment's real sequencing."""
+        align_segment's real sequencing. Constructed so lo and s_idx
+        genuinely differ (review finding, PR #420: an earlier draft had
+        lo ~= s_idx, so it couldn't tell the two apart): start_par_id=5
+        puts lo at paragraph 5's start, but start_exact ("Zulu alpha")
+        only resolves in paragraph 6 - AFTER paragraph 5's own decoy
+        occurrence of end_exact. A lo-anchored (incorrect) search for
+        end_exact over [lo, hi) would find the paragraph-5 decoy first;
+        the correct s_idx-anchored search skips past it and finds the
+        real paragraph-7 occurrence."""
         text, para_spans = _para_spans()
         seg = {
             "segment_id": 4,
-            "start_par_id": 6,
+            "start_par_id": 5,
             "end_par_id": 7,
             "start_exact": "Zulu alpha",
             "end_exact": "hotel again too.",
@@ -97,6 +118,11 @@ class CheckSegmentTest(unittest.TestCase):
         self.assertTrue(report["start"]["located"])
         self.assertTrue(report["end"]["located"])
         self.assertTrue(report["end"]["inside_claimed_window"])
+        # The real (paragraph-7) occurrence, not the paragraph-5 decoy:
+        # its offset must be strictly after where start_exact resolved.
+        s_idx = report["start"]["match_span"][0]
+        end_match_start = report["end"]["match_span"][0]
+        self.assertGreater(end_match_start, s_idx)
 
     def test_bool_par_id_is_rejected(self):
         text, para_spans = _para_spans()
