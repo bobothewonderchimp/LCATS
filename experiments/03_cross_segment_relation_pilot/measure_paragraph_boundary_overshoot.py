@@ -70,19 +70,26 @@ def _check_segment(
     failure mode this measurement does not classify).
 
     Normalizes start_par_id/end_par_id the same way
-    text_segmenter.align_segment does (review finding, PR #420): bools
-    are rejected even though isinstance(True, int) is true in Python
-    (align_segment explicitly excludes them, WI-SEGMENT-0059 review
-    finding, PR #269), and end_par_id is clamped up to start_par_id when
-    the model reports it lower (align_segment's `ep = max(ep, sp)`) - an
-    earlier draft of this function neither excluded bools nor clamped,
-    which could compute a reversed/invalid window and skew overshoot
-    reports relative to what production would actually have done. This
-    dataset never hit either case (verified: no segment in either
-    committed results directory has start_par_id > end_par_id), so the
-    fix does not change this run's reported numbers, but the check now
-    matches align_segment's real normalization instead of only
-    approximately.
+    text_segmenter.align_segment does, including two review-caught cases
+    (PR #420):
+
+    - bools are rejected even though isinstance(True, int) is true in
+      Python (align_segment explicitly excludes them, WI-SEGMENT-0059
+      review finding, PR #269);
+    - end_par_id is clamped up to start_par_id when the model reports it
+      lower (align_segment's `ep = max(ep, sp)`);
+    - out-of-range par_ids are clamped into [1, len(para_spans)] via
+      align_segment's own `max(1, min(x, n))`, not skipped - an earlier
+      draft of this function returned None (treating the segment as
+      unchecked) for an out-of-range par_id instead of clamping like
+      production does, which would silently drop such segments from the
+      measurement rather than mirror what align_segment would actually
+      compute.
+
+    None of these three cases occurred in either committed results
+    directory (verified directly), so none of these fixes changed this
+    run's reported numbers - the check now matches align_segment's real
+    normalization exactly rather than only approximately.
     """
     start_par_id = seg.get("start_par_id")
     end_par_id = seg.get("end_par_id")
@@ -93,12 +100,10 @@ def _check_segment(
         or isinstance(end_par_id, bool)
     ):
         return None
-    if not (1 <= start_par_id <= len(para_spans)) or not (
-        1 <= end_par_id <= len(para_spans)
-    ):
-        return None
 
-    sp, ep = start_par_id - 1, end_par_id - 1
+    n = len(para_spans)
+    sp = max(1, min(start_par_id, n)) - 1
+    ep = max(1, min(end_par_id, n)) - 1
     if ep < sp:
         ep = sp
     lo, hi = para_spans[sp][0], para_spans[ep][1]
