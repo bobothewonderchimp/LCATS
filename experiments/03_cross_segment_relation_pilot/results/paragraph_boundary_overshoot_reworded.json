@@ -3,6 +3,8 @@
   "total_segments": 162,
   "total_checked": 162,
   "total_outside_claimed_window": 8,
+  "total_anchors_checked": 321,
+  "total_anchors_outside_claimed_window": 9,
   "per_story": {
     "lovecraft/the_haunter_of_the_dark": {
       "outcome": "alignment_error:alignment failed: ValueError('alignment failed for segment_id=3: anchor text not found in story text')",

@@ -22,13 +22,20 @@ located position of `start_exact`/`end_exact` rather than an independent
 judgment, with an explicit rule for anchors that straddle a paragraph
 break - was run against the real 17-story `WI-EVENT-0033`/`WI-EVENT-0096`
 baseline cohort (`claude-haiku-4-5-20251001`, one real API call per
-story, $0.59 actual cost). Comparing against the unchanged production
-prompt's own already-committed real output from the same cohort:
+story, $0.57 actual cost - see Cost estimate and approval below).
+Comparing against the unchanged production prompt's own already-committed
+real output from the same cohort:
 
-- **Anchor-level boundary overshoot dropped from 12/177 to 8/162**
+- **Segment-level boundary overshoot dropped from 12/177 to 8/162**
   (measuring every segment the model returned, both `start_exact` and
   `end_exact`, not just the one segment per story that caused an
-  `alignment_error` - broader than `WI-SEGMENT-0098`'s original scan).
+  `alignment_error` - broader than `WI-SEGMENT-0098`'s original scan). A
+  segment counts once here if *either* anchor is outside the claimed
+  window. **At the individual-anchor level, 12/350 anchors were outside
+  in the baseline versus 9/321 in the reworded run** - one reworded
+  segment (`easy_money__sinclair` segment 4) has both anchors outside,
+  so the anchor-level count (9) exceeds the segment-level count (8) for
+  that run; both metrics point the same direction.
 - **The specific story that motivated the fix improved to zero
   overshoot.** `the_voice_in_the_fog__leverage` - whose `end_exact`
   anchor was found (during this item's own review round) to straddle
@@ -114,17 +121,23 @@ approved:
 - Estimated cost: ~$0.59-0.60 (`WI-EVENT-0096`'s actual cost was $0.593
   at Haiku 4.5 pricing of $1.00/1M input, $5.00/1M output).
 - **Approved** in-session before the ablation ran.
+- **Real reworded-run cost (review finding, PR #420): $0.57, not $0.59.**
+  The design doc's first draft reused `WI-EVENT-0096`'s baseline cost
+  ($0.593) for the reworded run instead of computing the reworded run's
+  own usage. Recomputed directly from the committed reworded result
+  files: 229,485 input tokens, 67,179 output tokens, $0.5654 -> $0.57 -
+  close to the estimate, but the $0.593 figure belongs to the baseline
+  run and should not have been reused here.
 
 ### Ablation run
 
 `experiments/03_cross_segment_relation_pilot/run_boundary_prompt_ablation.py`
 ran the reworded extractor against the same 17-story cohort
 (`results/segmentation_reliability/baseline_story_list.txt`), same model
-(`claude-haiku-4-5-20251001`), one real call per story. Real cost: 17
-calls, comparable token volume to `WI-EVENT-0096`'s original run (the
-reworded block adds 910 characters / ~200-250 tokens to the system
-prompt; everything else - user prompt, schema, output shape - is
-unchanged). Results persisted at
+(`claude-haiku-4-5-20251001`), one real call per story: 17 calls, actual
+cost $0.57 (229,485 input / 67,179 output tokens - see Cost estimate and
+approval above), comparable token volume to `WI-EVENT-0096`'s original
+run. Results persisted at
 `results/segmentation_reliability_reworded_prompt/`.
 
 The **"before" side reused `WI-EVENT-0096`'s already-committed real
@@ -172,6 +185,21 @@ correct on the first attempt:
   actual numbers (re-verified: identical 12/177 and 8/162 results before
   and after the fix), but the measurement now matches production's real
   algorithm exactly rather than only approximately.
+- A third draft (review finding, PR #420) conflated "found via the
+  bounded search" with "inside the claimed window": because `end_exact`'s
+  search range can be widened below the true window's start (when
+  `start_exact` itself only resolved via the unbounded fallback), a match
+  found in that widened gap was wrongly marked inside. Two real cases hit
+  this (`the_haunter_of_the_dark` segment 10, baseline;
+  `the_guardians__cox` segment 6, reworded) - in both, the end anchor's
+  match happened to still fall inside the true window on direct
+  recheck, so this had no effect on the reported counts either, but the
+  fix makes "inside the claimed window" always a check against the true
+  window rather than a coincidence of the search range used. The same
+  fix also matched `align_segment`'s own par_id normalization exactly
+  (rejecting bool values even though `isinstance(True, int)` is true in
+  Python; clamping `end_par_id` up to `start_par_id` when reported
+  lower) - neither case occurred in this dataset either.
 
 ## Results
 
@@ -180,8 +208,16 @@ correct on the first attempt:
 | Stories `included` (fully aligned) | 7/17 | 8/17 |
 | Total segments seen | 177 | 162 |
 | Segments checked (had valid par_ids) | 177 | 162 |
-| Segments with an anchor outside its claimed window | 12 | 8 |
+| Segments with >=1 anchor outside its claimed window | 12 | 8 |
+| Individual anchors outside their claimed window | 12/350 | 9/321 |
 | Stories with at least one overshoot segment | 9 | 6 |
+
+The segment-level and anchor-level counts differ because one reworded
+segment (`easy_money__sinclair` segment 4) has *both* anchors outside -
+it counts once at the segment level but twice at the anchor level. Both
+metrics point the same direction; neither is more "correct" than the
+other, they answer slightly different questions ("how many segments have
+a problem" vs. "how many individual anchor placements have a problem").
 
 Stories with overshoot, baseline: `the_haunter_of_the_dark`,
 `calling_the_empress__smith`, `easy_money__sinclair`,

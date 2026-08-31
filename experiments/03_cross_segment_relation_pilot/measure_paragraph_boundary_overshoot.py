@@ -67,17 +67,41 @@ def _check_segment(
     """Return a per-anchor overshoot report for one segment, or None if
     the segment lacks the fields needed to check it (e.g. missing
     start_par_id/end_par_id from a malformed model response - a separate
-    failure mode this measurement does not classify)."""
+    failure mode this measurement does not classify).
+
+    Normalizes start_par_id/end_par_id the same way
+    text_segmenter.align_segment does (review finding, PR #420): bools
+    are rejected even though isinstance(True, int) is true in Python
+    (align_segment explicitly excludes them, WI-SEGMENT-0059 review
+    finding, PR #269), and end_par_id is clamped up to start_par_id when
+    the model reports it lower (align_segment's `ep = max(ep, sp)`) - an
+    earlier draft of this function neither excluded bools nor clamped,
+    which could compute a reversed/invalid window and skew overshoot
+    reports relative to what production would actually have done. This
+    dataset never hit either case (verified: no segment in either
+    committed results directory has start_par_id > end_par_id), so the
+    fix does not change this run's reported numbers, but the check now
+    matches align_segment's real normalization instead of only
+    approximately.
+    """
     start_par_id = seg.get("start_par_id")
     end_par_id = seg.get("end_par_id")
-    if not isinstance(start_par_id, int) or not isinstance(end_par_id, int):
+    if (
+        not isinstance(start_par_id, int)
+        or isinstance(start_par_id, bool)
+        or not isinstance(end_par_id, int)
+        or isinstance(end_par_id, bool)
+    ):
         return None
     if not (1 <= start_par_id <= len(para_spans)) or not (
         1 <= end_par_id <= len(para_spans)
     ):
         return None
 
-    lo, hi = para_spans[start_par_id - 1][0], para_spans[end_par_id - 1][1]
+    sp, ep = start_par_id - 1, end_par_id - 1
+    if ep < sp:
+        ep = sp
+    lo, hi = para_spans[sp][0], para_spans[ep][1]
 
     report: Dict[str, Any] = {
         "segment_id": seg.get("segment_id"),
@@ -87,19 +111,17 @@ def _check_segment(
     }
 
     # Resolve start_exact first, exactly matching align_segment's own
-    # sequencing (text_segmenter.py align_segment): start_exact is bounded
-    # to [lo, hi), and end_exact is then bounded to [s_idx, hi) - the
-    # resolved START position, NOT lo (self-review finding: an earlier
-    # draft used `lo` for both anchors, which is not what production
-    # actually does; confirmed against align_segment's real code that it
-    # narrows end_exact's search to start from wherever start_exact
-    # resolved, not from the paragraph window's own start).
+    # sequencing: start_exact is searched in [lo, hi), and end_exact is
+    # then searched starting from wherever start_exact actually resolved
+    # (s_idx), not from lo again.
     start_report, s_idx = _locate_one_anchor(
         text, seg.get("start_exact"), lo, hi, lo, hi
     )
     report["start"] = start_report
-    end_lo = s_idx if s_idx is not None else lo
-    end_report, _ = _locate_one_anchor(text, seg.get("end_exact"), end_lo, hi, lo, hi)
+    end_search_lo = s_idx if s_idx is not None else lo
+    end_report, _ = _locate_one_anchor(
+        text, seg.get("end_exact"), end_search_lo, hi, lo, hi
+    )
     report["end"] = end_report
 
     return report
@@ -108,25 +130,37 @@ def _check_segment(
 def _locate_one_anchor(
     text: str,
     anchor: str | None,
-    bounded_lo: int,
-    bounded_hi: int,
+    search_lo: int,
+    search_hi: int,
     window_lo: int,
     window_hi: int,
 ) -> tuple:
-    """Locate one anchor the same way align_segment does: try the bounded
-    range first (production's real success path - a match here IS inside
-    the claimed window by construction, whatever `bounded_lo` was
-    narrowed to for the end anchor). Only on bounded-search failure -
-    the real WI-SEGMENT-0098 diagnostic case - fall back to an unbounded
-    full-document search to size the overshoot. The unbounded fallback is
-    load-bearing, not optional: it can match an EARLIER duplicate
-    occurrence of a short anchor elsewhere in the story even when the
-    segment aligned correctly (review-caught during this item's own
-    execution: mass_quantities/the_invaders__ferris segment 8's end_exact
-    anchor also happens, coincidentally, to occur thousands of characters
-    earlier in the same story - an unbounded-only search wrongly flagged
-    that coincidence as a boundary overshoot instead of trusting the
-    bounded match that production itself would have used).
+    """Locate one anchor, preferring the search range production would
+    actually use, but always judging "inside the claimed window" against
+    the TRUE window (window_lo/window_hi) - not against whatever range
+    was searched.
+
+    These two are deliberately kept separate (review finding, PR #420):
+    an earlier draft treated "found via the bounded search" as
+    synonymous with "inside the claimed window," but end_exact's own
+    search range can be widened below the true window's start when
+    start_exact itself only resolved via the unbounded fallback (i.e.
+    search_lo can be < window_lo). A match found in that widened gap is
+    NOT actually inside the claimed window even though the bounded
+    search "succeeded" - two real cases in this dataset hit exactly this
+    (lovecraft/the_haunter_of_the_dark segment 10 in the baseline;
+    mass_quantities/the_guardians__cox segment 6 in the reworded run),
+    though in both, re-checking against the true window happened to
+    still classify the end anchor as inside - this fix makes that a
+    guarantee of the method, not a coincidence of this particular data.
+
+    Still tries the search range first (not an unconditional unbounded
+    search) to prefer the occurrence production would actually find over
+    an unrelated duplicate elsewhere in the story (see
+    mass_quantities/the_invaders__ferris segment 8, an `included` story
+    whose end_exact anchor also happens, coincidentally, to occur
+    thousands of characters earlier in the same story - an
+    unbounded-only search would wrongly flag that as an overshoot).
 
     Returns (report_dict, resolved_start_or_None) - the resolved absolute
     start offset is returned separately so the caller can use it as the
@@ -135,34 +169,25 @@ def _locate_one_anchor(
     if not anchor:
         return {"anchor_present": False}, None
 
-    bounded_match = text_segmenter._locate_anchor_span(
-        text, anchor, bounded_lo, bounded_hi
-    )
-    if bounded_match is not None:
-        match_start, match_end = bounded_match
-        return (
-            {
-                "anchor_present": True,
-                "located": True,
-                "match_span": [match_start, match_end],
-                "inside_claimed_window": True,
-                "overshoot_chars": 0,
-            },
-            match_start,
-        )
-
-    match = text_segmenter._locate_anchor_span(text, anchor, 0, len(text))
+    match = text_segmenter._locate_anchor_span(text, anchor, search_lo, search_hi)
+    if match is None:
+        match = text_segmenter._locate_anchor_span(text, anchor, 0, len(text))
     if match is None:
         return {"anchor_present": True, "located": False}, None
+
     match_start, match_end = match
+    inside = window_lo <= match_start and match_end <= window_hi
     return (
         {
             "anchor_present": True,
             "located": True,
             "match_span": [match_start, match_end],
-            "inside_claimed_window": False,
-            "overshoot_chars": max(0, window_lo - match_start)
-            + max(0, match_end - window_hi),
+            "inside_claimed_window": inside,
+            "overshoot_chars": (
+                0
+                if inside
+                else max(0, window_lo - match_start) + max(0, match_end - window_hi)
+            ),
         },
         match_start,
     )
@@ -173,6 +198,8 @@ def measure(results_dir: pathlib.Path) -> Dict[str, Any]:
     total_segments = 0
     total_checked = 0
     total_outside = 0
+    total_anchors = 0
+    total_anchors_outside = 0
 
     for story_dir in sorted(results_dir.iterdir()):
         if not story_dir.is_dir():
@@ -196,14 +223,34 @@ def measure(results_dir: pathlib.Path) -> Dict[str, Any]:
                 if report is None:
                     continue
                 total_checked += 1
-                outside = any(
-                    report.get(side, {}).get("located")
-                    and not report[side].get("inside_claimed_window", True)
+                # Two distinct metrics, deliberately both reported (review
+                # finding, PR #420): "segment-level" counts a segment once
+                # if EITHER anchor is outside; "anchor-level" counts each
+                # outside anchor individually (a segment with both anchors
+                # outside, e.g. easy_money__sinclair segment 4 in the
+                # reworded run, contributes 1 to the segment-level count
+                # but 2 to the anchor-level count) - an earlier draft's
+                # prose called the segment-level number "anchor-level,"
+                # which understated the true per-anchor rate.
+                side_outside = {
+                    side: bool(
+                        report.get(side, {}).get("located")
+                        and not report[side].get("inside_claimed_window", True)
+                    )
                     for side in ("start", "end")
-                )
+                }
+                outside = any(side_outside.values())
                 report["outside_claimed_window"] = outside
                 if outside:
                     total_outside += 1
+                for side, present in (
+                    ("start", report.get("start", {}).get("anchor_present")),
+                    ("end", report.get("end", {}).get("anchor_present")),
+                ):
+                    if present:
+                        total_anchors += 1
+                        if side_outside[side]:
+                            total_anchors_outside += 1
                 story_reports.append(report)
 
             per_story[story_id] = {
@@ -216,6 +263,8 @@ def measure(results_dir: pathlib.Path) -> Dict[str, Any]:
         "total_segments": total_segments,
         "total_checked": total_checked,
         "total_outside_claimed_window": total_outside,
+        "total_anchors_checked": total_anchors,
+        "total_anchors_outside_claimed_window": total_anchors_outside,
         "per_story": per_story,
     }
 
@@ -236,9 +285,11 @@ def main() -> int:
         pathlib.Path(args.output).write_text(output + "\n", encoding="utf-8")
     print(
         f"{args.label or args.results_dir}: "
-        f"{result['total_outside_claimed_window']}/{result['total_checked']} "
-        f"segments have an anchor outside the claimed paragraph window "
-        f"({result['total_segments']} total segments seen)"
+        f"{result['total_outside_claimed_window']}/{result['total_checked']} segments "
+        f"have >=1 anchor outside the claimed paragraph window "
+        f"({result['total_anchors_outside_claimed_window']}/"
+        f"{result['total_anchors_checked']} individual anchors outside; "
+        f"{result['total_segments']} total segments seen)"
     )
     if not args.output:
         print(output)
