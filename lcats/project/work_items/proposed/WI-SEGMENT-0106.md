@@ -37,9 +37,9 @@ forbidden_actions:
   - force_push
   - delete_branch
 acceptance:
-  - "Both stories that regressed under WI-SEGMENT-0101's reworded prompt (mass_quantities/the_last_days_of_l_a__smith, ohenry-whirligigs/girl) are root-caused with a stated verdict - genuine new confusion introduced by the reworded instruction, or ordinary run-to-run stochastic variance - grounded in their actual committed reworded-prompt output, not speculation"
-  - "A margin-sizing analysis reports the full distribution of overshoot sizes (in characters) needed to recover every currently-available real anchor-level overshoot instance across both WI-SEGMENT-0098's baseline data and WI-SEGMENT-0101's reworded-prompt data (21 real instances as of this item's filing, ranging 4-5,345 characters) - not just a single min/max/typical number, since the real distribution has a long tail a fixed small margin would not cover"
-  - "A simulated combined-fix pass applies a hypothetical widened end-boundary window (sized per the margin analysis) to WI-SEGMENT-0101's already-committed real reworded-prompt output and reports: how many of the remaining anchor-level overshoot instances it would recover, and whether it would ever accept a match outside the model's claimed window that is not the correct one (a false-accept risk) - using the exact same strict exact/typography/whitespace/case-tolerant match criteria text_segmenter._locate_anchor_span already uses, never a looser fuzzy search"
+  - "Both stories that regressed under WI-SEGMENT-0101's reworded prompt (mass_quantities/the_last_days_of_l_a__smith, ohenry-whirligigs/girl) are examined against their actual committed reworded-prompt output and story text, and a verdict is stated for each: genuine new confusion introduced by the reworded instruction, ordinary run-to-run stochastic variance, OR explicitly inconclusive if a single baseline/reworded run pair cannot support a causal verdict either way (review finding, PR #422: with only one generation per prompt variant per story, examining committed anchors can explain WHAT happened but not establish WHY - inconclusive is a valid, expected answer here, not a fallback for insufficient effort)"
+  - "A margin-sizing analysis reports the full distribution of overshoot sizes (in characters) separately for start-side and end-side anchor failures across both WI-SEGMENT-0098's baseline data and WI-SEGMENT-0101's reworded-prompt data (21 real instances as of this item's filing: 4 start-side - 1533, 319, 126, 48 chars - and 17 end-side, 4-5,345 chars) - not merged into one distribution (review finding, PR #422: WI-SEGMENT-0098 explicitly recommends widening only the end boundary, never the start; mixing start-side failures into an end-margin-sizing distribution both misrepresents what an end-only widening could ever recover and skews the reported spread) and not just a single min/max/typical number, since the end-side distribution alone has a long tail a fixed small margin would not cover"
+  - "A simulated combined-fix pass applies a hypothetical widened end-boundary window (sized per the end-side margin distribution) to WI-SEGMENT-0101's already-committed real reworded-prompt output and reports, for every newly-recovered match (an anchor that had no match at all in the original same-window search): an explicit correctness check against the real story text/context confirming it is the actually-correct occurrence, not merely that a match was found (review finding, PR #422: comparing against what the original search found is vacuous for a newly-recovered anchor, since the original result was `None` - the widened window could expose an unrelated duplicate before the correct occurrence, exactly the ambiguity this dataset has already demonstrated on other cases, and that must be checked directly, not inferred from the absence of a prior result to differ from) - using the exact same strict exact/typography/whitespace/case-tolerant match criteria text_segmenter._locate_anchor_span already uses, never a looser fuzzy search"
   - "A plain recommendation is stated: implement a combined-fix deliverable WI now, defer pending a larger real sample, or reject the combined approach - grounded in the findings above, not asserted"
   - "No production code (scene_analysis.py, text_segmenter.py) or prompt text is changed by this item - investigation and simulation only"
   - "No new real API spend - this item's entire analysis is performed against already-committed real data from WI-SEGMENT-0098 and WI-SEGMENT-0101"
@@ -85,24 +85,35 @@ answerable from already-committed real data:
    the unmodified production prompt on the same cohort. `WI-SEGMENT-0101`
    explicitly left this unresolved, citing the single-run/model-
    stochasticity limitation, and did not investigate further.
-2. **The window-widening margin was never sized against real data.**
+2. **The window-widening margin was never sized against real data - and
+   the two overshoot directions must not be conflated.**
    `WI-SEGMENT-0098`'s original 6 cases all needed only 1-2 paragraphs of
    margin, but that investigation explicitly flagged the sample as too
-   thin to trust as representative. The combined real dataset now
-   available (`WI-SEGMENT-0098`'s baseline + `WI-SEGMENT-0101`'s
-   reworded-prompt residuals) has 21 real anchor-level overshoot
-   instances with `overshoot_chars` values ranging from 4 to 5,345 -
+   thin to trust as representative, and its recommendation is explicitly
+   **end-boundary-only** - it names no evidence for widening the start.
+   The combined real dataset now available (`WI-SEGMENT-0098`'s baseline +
+   `WI-SEGMENT-0101`'s reworded-prompt residuals) has 21 real anchor-level
+   overshoot instances, but they are not all the same failure mode: 4 are
+   `start_exact` failures (1533, 319, 126, 48 chars - the anchor's real
+   position is *before* the claimed window's lower bound) and 17 are
+   `end_exact` failures (4-5,345 chars - *after* the upper bound),
    spot-checked directly from the committed
    `paragraph_boundary_overshoot_baseline.json`/`_reworded.json`
-   artifacts - a spread wide enough that a single small fixed margin
-   would clearly miss the tail.
-3. **No one has checked whether the two fixes interact safely together.**
+   artifacts. An end-only widening can never recover a start-side
+   failure, so the two must be sized and reported as separate
+   distributions, not merged.
+3. **No one has checked whether the two fixes interact safely together -
+   and a "recovered" count alone is not the safety-relevant signal.**
    Applying a widened window on top of the already-reworded prompt's
    output has never been simulated, so it's unknown whether a combined
-   fix would recover the residual 9/321 anchor-level failures, or
-   whether widening risks a false-accept (a match outside the model's
-   claimed window that isn't actually the correct location) on any of
-   the 162 already-checked reworded-prompt segments.
+   fix would recover the residual 9/321 anchor-level failures. Recovery
+   count by itself is insufficient: a newly-recovered anchor's original
+   search returned no match at all, so there is nothing to compare it
+   against for a false-accept check - it must instead be independently
+   verified as the actually-correct occurrence, since a widened window
+   could just as easily expose an unrelated duplicate before the correct
+   text (an ambiguity this dataset has already demonstrated - see
+   `WI-SEGMENT-0101`'s own bounded-search-vs-duplicate fix).
 
 ### Duplication search
 
@@ -131,18 +142,26 @@ answerable from already-committed real data:
 
 - Root-cause the 2 regressed stories by reading their real committed
   `parsed_output` (both baseline and reworded) directly, alongside the
-  real story text, to determine whether the reworded prompt introduced a
-  genuine new confusion or the regression is ordinary sampling noise.
+  real story text; state a verdict of genuine new confusion, sampling
+  variance, or explicitly inconclusive - do not force a causal choice
+  a single run pair per story cannot support.
 - Gather every real anchor-level overshoot instance currently available
   (both `WI-SEGMENT-0098`'s baseline data and `WI-SEGMENT-0101`'s
-  reworded-prompt data) and report the full distribution of
-  `overshoot_chars` needed to recover each one.
-- Simulate a widened end-boundary window against `WI-SEGMENT-0101`'s
-  already-committed reworded-prompt output: for each currently-failing
-  anchor, would a window widened by the sized margin recover it using
-  the same strict match criteria; for each currently-*passing* segment,
-  does the widened window ever produce a different, wrong match.
-- State a plain go/defer/reject recommendation.
+  reworded-prompt data), split by direction (`start_exact` vs.
+  `end_exact` failures), and report each direction's own distribution of
+  `overshoot_chars` separately.
+- Simulate a widened end-boundary window (sized from the end-side
+  distribution only) against `WI-SEGMENT-0101`'s already-committed
+  reworded-prompt output: for each currently-failing end anchor, does a
+  widened window recover it using the same strict match criteria, and -
+  for every newly-recovered match specifically - independently verify it
+  against the real story text as the actually-correct occurrence, not
+  merely "a match was found." For each currently-*passing* segment, does
+  the widened window ever produce a different, wrong match.
+- State a plain go/defer/reject recommendation, including whether
+  start-side failures need their own separate follow-on investigation
+  (widening the start boundary is out of scope for this item, per
+  `WI-SEGMENT-0098`'s own recommendation).
 - Do not implement the prompt change, the window-widening code, or spend
   any new real API budget.
 
@@ -152,27 +171,36 @@ answerable from already-committed real data:
    that loads `mass_quantities/the_last_days_of_l_a__smith` and
    `ohenry-whirligigs/girl`'s real committed reworded-prompt
    `parsed_output`, locates the relevant segments' anchors in the real
-   story text, and reports a root-cause verdict for each with supporting
-   evidence (not just the offsets already known - inspect the actual
-   anchor text and surrounding context).
+   story text, and reports a verdict for each with supporting evidence
+   (not just the offsets already known - inspect the actual anchor text
+   and surrounding context) - explicitly allowing "inconclusive" as the
+   reported verdict when the evidence does not support a causal claim.
 2. Aggregate all real `overshoot_chars` values from
    `experiments/03_cross_segment_relation_pilot/results/paragraph_boundary_overshoot_baseline.json`
    and `..._reworded.json` (or freshly regenerate them from the
-   underlying committed result directories if either has drifted) into a
-   single distribution; report percentiles or a full sorted list, not
-   just min/max.
-3. Write a simulation function that, given a margin size, re-checks every
-   segment in `WI-SEGMENT-0101`'s reworded-prompt results with the end
-   boundary widened by that margin (still using
+   underlying committed result directories if either has drifted),
+   **split into two separate distributions by direction** (`start`
+   anchor failures vs. `end` anchor failures - do not merge); report
+   percentiles or a full sorted list for each, not just min/max.
+3. Write a simulation function that, given an end-margin size, re-checks
+   every segment in `WI-SEGMENT-0101`'s reworded-prompt results with the
+   end boundary widened by that margin only (still using
    `text_segmenter._locate_anchor_span`'s existing strict matching, never
-   a fuzzy/looser search), and reports: newly-recovered anchor count,
-   and any segment where the widened window's accepted match differs
-   from what the strict same-window search already found (a potential
-   false-accept signal).
+   a fuzzy/looser search). For every anchor that becomes newly-recovered
+   (had no match at all in the original same-window search), read the
+   real story text at the widened match's location and record an
+   explicit correctness verdict against the actual expected content -
+   not merely whether a match was returned. For every already-passing
+   segment, report whether the widened window ever produces a *different*
+   match than the original same-window search found (a genuine
+   regression signal for those cases, where a prior result does exist to
+   compare against).
 4. Write
    `lcats/project/design/segmentation-combined-boundary-fix-feasibility.md`
-   with the root-cause findings, the margin distribution, the simulation
-   results, and a plain recommendation.
+   with the root-cause findings (including any inconclusive verdicts,
+   reported as such), the two separate margin distributions, the
+   simulation results (with per-newly-recovered-match correctness
+   verdicts), and a plain recommendation.
 5. If a combined-implementation WI is recommended, note that as a
    follow-up - do not file or implement it as part of this item.
 
@@ -212,8 +240,16 @@ answerable from already-committed real data:
   prefers a wrong match over the correct one is a stop condition for
   recommending implementation, not a tuning parameter to adjust past.
 - **Root-causing the 2 regressions might turn up nothing conclusive**
-  given only one real trace per story - if so, say that plainly rather
-  than forcing a confident-sounding explanation.
+  given only one real trace per story - "inconclusive" is now an
+  explicit acceptance-criteria outcome (review finding, PR #422), not
+  just a caveat here; say so plainly rather than forcing a
+  confident-sounding explanation.
+- **Start-side and end-side overshoot failures are different failure
+  modes and must not be conflated** (review finding, PR #422) - only
+  end-boundary widening is in scope, per `WI-SEGMENT-0098`'s own
+  recommendation; the 4 real start-side failures in this dataset
+  characterize a distinct, out-of-scope pattern worth flagging as a
+  possible future follow-on, not folded into the end-margin sizing.
 
 ## Related Workstream and Designs
 
