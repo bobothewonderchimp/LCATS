@@ -2,10 +2,10 @@
 execution_id: 2026_08_31_09_36_05_WI_SEGMENT_0101_PARAGRAPH_BOUNDARY_PROMPT_CONSISTENCY
 prompt_id: PROMPT(WI-SEGMENT-0101:WI_SEGMENT_0101_PARAGRAPH_BOUNDARY_PROMPT_CONSISTENCY)[2026-08-31T09:35:59+00:00]
 work_item: WI-SEGMENT-0101
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/420
-commit: f211066e
+commit: 6f888a044facc293491f56b3e192d137730cafe8
 agent: claude_app
 instruction_source: lcats/project/work_items/proposed/WI-SEGMENT-0101.md
 session_transcript: pending

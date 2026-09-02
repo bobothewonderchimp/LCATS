@@ -2,10 +2,10 @@
 execution_id: 2026_08_31_11_33_24_WI_SEGMENT_0101_PARAGRAPH_BOUNDARY_PROMPT_CONSISTENCY_SELFREVIEW_4
 prompt_id: PROMPT(AD_HOC:WI_SEGMENT_0101_PARAGRAPH_BOUNDARY_PROMPT_CONSISTENCY_SELFREVIEW_4)[2026-08-31T11:33:17+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_31_11_23_05_WI_SEGMENT_0101_PARAGRAPH_BOUNDARY_PROMPT_CONSISTENCY_SELFREVIEW_3
 pr: https://github.com/xenotaur/LCATS/pull/420
-commit: 97b174fd
+commit: 6f888a044facc293491f56b3e192d137730cafe8
 agent: claude_app
 instruction_source: "/lrh-land https://github.com/xenotaur/LCATS/pull/420 (substitute self-review round 4, /lrh-confirm-fixes Step 8)"
 session_transcript: pending

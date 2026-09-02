@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Investigated via PR #420. Built an isolated, non-production reworded prompt variant deriving end_par_id/start_par_id from end_exact/start_exact's located position; ran a real 17-story API ablation (claude-haiku-4-5-20251001, $0.57 actual cost). Result: directionally positive, not conclusive - segment-level boundary overshoot dropped 12/177->8/162, anchor-level 12/350->9/321; the specific case that motivated the fix (the_voice_in_the_fog__leverage) resolved cleanly, but 2 stories showed new overshoot and one new error shape (bidirectional narrowing) appeared. Recommendation: adopt as a complement to WI-SEGMENT-0098's window-widening recommendation, not a replacement - do not implement in production from this evidence alone; a follow-on deliverable WI combining both, sized against a larger sample, would be the next step if pursued. No production behavior changed. Full results in lcats/project/design/segmentation-paragraph-boundary-prompt-consistency-investigation.md."
 blocked_reason: null
 blocked: false
 id: WI-SEGMENT-0101
 title: Investigate prompt-side fix for paragraph-boundary end_par_id/end_exact inconsistency
 type: investigation
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []

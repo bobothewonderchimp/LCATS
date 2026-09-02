@@ -2,10 +2,10 @@
 execution_id: 2026_08_31_09_34_37_WI_SEGMENT_0101_PARAGRAPH_BOUNDARY_PROMPT_CONSISTENCY_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_SEGMENT_0101_PARAGRAPH_BOUNDARY_PROMPT_CONSISTENCY_SELFREVIEW)[2026-08-31T08:13:18+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
-pr: 
-commit: 
+pr: https://github.com/xenotaur/LCATS/pull/420
+commit: 6f888a044facc293491f56b3e192d137730cafe8
 agent: claude_app
 instruction_source: "/lrh-execute WI-SEGMENT-0101 (inlined /lrh-implement Step 7.5)"
 session_transcript: pending
