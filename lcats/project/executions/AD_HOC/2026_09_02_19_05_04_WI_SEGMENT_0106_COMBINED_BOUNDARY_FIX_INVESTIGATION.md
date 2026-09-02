@@ -4,7 +4,7 @@ prompt_id: PROMPT(AD_HOC:WI_SEGMENT_0106_COMBINED_BOUNDARY_FIX_INVESTIGATION)[20
 work_item: AD_HOC
 status: in_progress
 rerun_of: 
-pr: 
+pr: https://github.com/xenotaur/LCATS/pull/422
 agent: claude_app
 instruction_source: "user request in-session (follow-on to WI-SEGMENT-0101 closeout's open follow-up item)"
 session_transcript: pending
@@ -44,6 +44,6 @@ implementing either mitigation directly.
 
 # Follow-up
 
-- PR not yet opened.
+- PR opened: https://github.com/xenotaur/LCATS/pull/422
 - `session_transcript` still `pending` - update to the durable session
   pointer before landing.
