@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #421 (commit 5c6e9e5e)."
 blocked_reason: null
 blocked: false
 id: WI-GATHER-0103
 title: Reconcile sherlock/gatherer.py onto gatherlib.gather()
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
