@@ -92,6 +92,11 @@ class ParquetBridgeTest(unittest.TestCase):
             )
             self.assertTrue(restored_lexicon.exists())
 
+    def test_non_string_compact_json_cell_is_treated_as_missing(self):
+        self.assertEqual("", parquet_bridge._optional_json_cell(None))
+        self.assertEqual("", parquet_bridge._optional_json_cell(float("nan")))
+        self.assertEqual("{}", parquet_bridge._optional_json_cell("{}"))
+
 
 def _token(
     body: str, text: str, upos: str, head_index: int, cursor: int
@@ -112,4 +117,3 @@ def _token(
 
 if __name__ == "__main__":
     unittest.main()
-

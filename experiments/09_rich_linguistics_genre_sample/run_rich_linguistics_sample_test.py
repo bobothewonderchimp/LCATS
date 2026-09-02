@@ -86,6 +86,7 @@ class RichPilotHarnessTest(unittest.TestCase):
 
             self.assertTrue(report["run_clean"])
             self.assertEqual(report["selected_story_count"], 2)
+            self.assertEqual(report["projected_full_corpus"]["story_count"], 2)
             self.assertEqual(report["compact_sidecar_count"], 2)
             self.assertEqual(report["token_detail_count"], 2)
             self.assertEqual(report["lexicon_count"], 2)
@@ -113,6 +114,41 @@ class RichPilotHarnessTest(unittest.TestCase):
             self.assertTrue((output_dir / "pos_audit_sample.csv").exists())
             audit = json.loads((output_dir / "pos_audit.json").read_text())
             self.assertEqual(audit["status"], "manual_audit_pending")
+
+    def test_missing_output_findings_use_dict_shape(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            story_path = _write_story(root / "corpora", "alpha", "one")
+
+            summary = run_rich_linguistics_sample.validate_generated_artifacts(
+                [story_path]
+            )
+
+            [row] = summary["results"]
+            self.assertFalse(row["valid"])
+            self.assertEqual(
+                [
+                    {
+                        "artifact": "outputs",
+                        "severity": "error",
+                        "message": "missing one or more generated outputs",
+                    }
+                ],
+                row["findings"],
+            )
+
+    def test_prune_results_removes_stale_parquet_export(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = pathlib.Path(tmp) / "results"
+            stale_parquet = output_dir / "parquet"
+            stale_parquet.mkdir(parents=True)
+            (stale_parquet / "parquet_manifest.json").write_text(
+                "{}", encoding="utf-8"
+            )
+
+            run_rich_linguistics_sample.prune_results(output_dir)
+
+            self.assertFalse(stale_parquet.exists())
 
     def test_resume_validates_snapshot_and_skips_existing_outputs(self):
         with tempfile.TemporaryDirectory() as tmp:

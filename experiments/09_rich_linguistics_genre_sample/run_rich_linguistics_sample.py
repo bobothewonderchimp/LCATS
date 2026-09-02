@@ -388,7 +388,13 @@ def validate_generated_artifacts(story_paths: Iterable[pathlib.Path]) -> dict[st
         if not compact_path.exists() or not detail_path.exists() or not lexicon_path.exists():
             counts["missing_outputs"] += 1
             row["valid"] = False
-            row["findings"] = ["missing one or more generated outputs"]
+            row["findings"] = [
+                {
+                    "artifact": "outputs",
+                    "severity": "error",
+                    "message": "missing one or more generated outputs",
+                }
+            ]
             results.append(row)
             continue
         story_data = corpus_cli.read_story_data(story_path)
@@ -869,6 +875,7 @@ def build_report(
         "token_total": token_total,
         "lexical_row_total": lexical_row_total,
         "projected_full_corpus": project_full_corpus_cost(
+            corpus_root=corpus_root,
             sample_story_count=len(copied_stories),
             sample_bytes=copied_bytes,
             sample_elapsed_seconds=elapsed_seconds,
@@ -894,10 +901,15 @@ def build_report(
 
 
 def project_full_corpus_cost(
-    *, sample_story_count: int, sample_bytes: int, sample_elapsed_seconds: float
+    *,
+    corpus_root: pathlib.Path,
+    sample_story_count: int,
+    sample_bytes: int,
+    sample_elapsed_seconds: float,
 ) -> dict[str, Any]:
     """Project full-corpus cost from the pilot sample."""
-    full_count = len(list(CORPUS_ROOT.rglob("story.json"))) if CORPUS_ROOT.exists() else None
+    corpus_root = pathlib.Path(corpus_root)
+    full_count = len(list(corpus_root.rglob("story.json"))) if corpus_root.exists() else None
     if not full_count or not sample_story_count:
         return {"story_count": full_count, "basis": "insufficient_sample"}
     scale = full_count / sample_story_count
@@ -943,6 +955,7 @@ def prune_results(output_dir: pathlib.Path) -> None:
         output_dir / REPORT_FILENAME,
         output_dir / AUDIT_FILENAME,
         output_dir / AUDIT_SAMPLE_FILENAME,
+        output_dir / "parquet",
     ):
         if path.is_dir():
             shutil.rmtree(path)

@@ -177,7 +177,7 @@ def restore_token_details(
             )
         sidecar.write_json_atomic(story_dir / sidecar.TOKEN_DETAIL_FILENAME, detail)
         restored_details += 1
-        compact_json = story.get("compact_json") or ""
+        compact_json = _optional_json_cell(story.get("compact_json"))
         if include_compact and compact_json:
             sidecar.write_json_atomic(
                 story_dir / sidecar.SIDECAR_FILENAME, json.loads(compact_json)
@@ -259,6 +259,10 @@ def _load_json_cell(value: Any) -> Any:
     return json.loads(value if isinstance(value, str) else "{}")
 
 
+def _optional_json_cell(value: Any) -> str:
+    return value if isinstance(value, str) else ""
+
+
 def _token_from_row(row: dict[str, Any]) -> dict[str, Any]:
     return {
         "token_index": _int_or_none(row["token_index"]),
@@ -309,4 +313,3 @@ def _sha256_file(path: pathlib.Path) -> str:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
