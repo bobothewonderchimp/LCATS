@@ -204,6 +204,56 @@ class RichPilotHarnessTest(unittest.TestCase):
         self.assertEqual(decisions["sample_pos_figures"]["decision"], "proceed")
         self.assertEqual(scoring["overall"]["noun_family"]["precision"], 1.0)
 
+    def test_scoring_preserves_labels_when_labels_path_is_output_sample(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            output_dir = root / "results"
+            sample_rows = [
+                {
+                    "story_id": "alpha/one",
+                    "selection_genre": "fantasy",
+                    "audit_bucket": "NOUN",
+                    "audit_features": "ordinary",
+                    "token_key": "alpha/one#g1",
+                    "sentence_index": 0,
+                    "token_index": 0,
+                    "global_token_index": 1,
+                    "text": "machine",
+                    "lemma": "machine",
+                    "machine_upos": "NOUN",
+                    "context": "The machine hums.",
+                    "gold_upos": "",
+                    "notes": "",
+                }
+            ]
+            sample_path = output_dir / "pos_audit_sample.csv"
+            output_dir.mkdir(parents=True)
+            with sample_path.open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(
+                    handle, fieldnames=run_rich_linguistics_sample.AUDIT_FIELDS
+                )
+                writer.writeheader()
+                writer.writerow({**sample_rows[0], "gold_upos": "NOUN"})
+
+            original_select = run_rich_linguistics_sample.select_audit_rows
+            try:
+                run_rich_linguistics_sample.select_audit_rows = (
+                    lambda _snapshot, _paths: sample_rows
+                )
+                audit = run_rich_linguistics_sample.build_pos_audit(
+                    snapshot_manifest={"stories": []},
+                    copied_story_paths=[],
+                    output_dir=output_dir,
+                    labels_path=sample_path,
+                )
+            finally:
+                run_rich_linguistics_sample.select_audit_rows = original_select
+
+            self.assertEqual("scored", audit["status"])
+            with sample_path.open("r", encoding="utf-8", newline="") as handle:
+                scored_rows = list(csv.DictReader(handle))
+            self.assertEqual("NOUN", scored_rows[0]["gold_upos"])
+
     def test_genre_audit_selection_balances_machine_positive_and_negative_rows(self):
         buckets = {"NOUN": [], "PROPN": [], "OTHER": []}
         for bucket in buckets:

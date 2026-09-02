@@ -447,9 +447,9 @@ def build_pos_audit(
     """Create or score the preregistered noun-family POS audit."""
     samples = select_audit_rows(snapshot_manifest, copied_story_paths)
     sample_path = output_dir / AUDIT_SAMPLE_FILENAME
-    write_audit_sample(samples, sample_path)
     preregistration = audit_preregistration()
     if labels_path is None:
+        write_audit_sample(samples, sample_path)
         return {
             "schema_version": "rich-linguistics-pos-audit-v1",
             "status": "manual_audit_pending",
@@ -463,6 +463,7 @@ def build_pos_audit(
         raise ValueError("no audit sample rows are available to score")
     labels = load_audit_labels(labels_path)
     scoring = score_audit(samples, labels)
+    write_audit_sample(_apply_audit_labels(samples, labels), sample_path)
     return {
         "schema_version": "rich-linguistics-pos-audit-v1",
         "status": "scored",
@@ -639,6 +640,12 @@ def write_audit_sample(rows: list[dict[str, Any]], path: pathlib.Path) -> None:
         writer.writeheader()
         for row in rows:
             writer.writerow({field: row.get(field, "") for field in AUDIT_FIELDS})
+
+
+def _apply_audit_labels(
+    rows: list[dict[str, Any]], labels: dict[str, str]
+) -> list[dict[str, Any]]:
+    return [{**row, "gold_upos": labels.get(row["token_key"], "")} for row in rows]
 
 
 def load_audit_labels(path: pathlib.Path) -> dict[str, str]:
