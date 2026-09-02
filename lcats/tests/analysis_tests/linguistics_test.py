@@ -384,6 +384,25 @@ class LinguisticsSidecarValidationTest(unittest.TestCase):
         self.assertTrue(result.valid)
         self.assertEqual((), result.findings)
 
+    def test_v2_validation_accepts_spacy_space_tag(self):
+        body = "The old machine hummed."
+        options = sidecar.LinguisticsOptions(
+            backend_name="fake",
+            include_token_detail=True,
+            token_detail_version=sidecar.TOKEN_DETAIL_VERSION_V2,
+        )
+        _compact, detail = sidecar.build_sidecar(
+            story_data=_story_data(body),
+            story_path=pathlib.Path("collection/story/story.json"),
+            backend=_v2_backend(body),
+            options=options,
+        )
+        detail["sentences"][0]["tokens"][1]["upos"] = "SPACE"
+
+        result = sidecar.validate_token_detail(detail, source_body=body)
+
+        self.assertTrue(result.valid)
+
     def test_v2_validation_rejects_bad_span_head_upos_and_count(self):
         body = "The old machine hummed."
         options = sidecar.LinguisticsOptions(

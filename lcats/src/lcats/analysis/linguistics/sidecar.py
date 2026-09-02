@@ -40,6 +40,7 @@ VALID_UPOS_TAGS = frozenset(
         "PROPN",
         "PUNCT",
         "SCONJ",
+        "SPACE",
         "SYM",
         "VERB",
         "X",
