@@ -2,10 +2,10 @@
 execution_id: 2026_09_01_23_43_42_WI_GATHER_0103_0105_CONFIRM_SELFREVIEW_2
 prompt_id: PROMPT(AD_HOC:WI_GATHER_0103_0105_CONFIRM_SELFREVIEW_2)[2026-09-01T23:43:39+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_09_01_23_40_35_WI_GATHER_0103_0105_CONFIRM_SELFREVIEW
 pr: https://github.com/xenotaur/LCATS/pull/419
-commit: 770257857b9755cecfafcb3c47ca2df3221a7923
+commit: f0fa6acb6324af78a415f59abb0c60a3db71a8d1
 created_at: 2026-09-01T23:43:42+00:00
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/419
