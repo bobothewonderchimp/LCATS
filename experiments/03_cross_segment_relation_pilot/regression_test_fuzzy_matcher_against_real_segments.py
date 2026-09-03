@@ -370,6 +370,25 @@ def check_segment(
         ep = sp
     lo, hi = para_spans[sp][0], para_spans[ep][1]
 
+    # Mirror align_segment's real two-step search exactly (review finding,
+    # PR #425, 2nd self-review round): production searches end_exact
+    # within [s_idx, hi) - starting from wherever start_exact was ACTUALLY
+    # found - not within [lo, hi) again. Comparing the end anchor's fuzzy
+    # match against a production search over the wider [lo, hi) window
+    # could misclassify required_fuzzy_tolerance if end_exact's text also
+    # happens to occur earlier, in [lo, s_idx). No case in the current
+    # real inventory triggers this (verified directly: s_idx == lo for
+    # every validated segment's start anchor), but the comparison must be
+    # structurally correct, not incidentally correct for today's data.
+    start_anchor = seg.get("start_exact") or ""
+    if start_anchor.strip():
+        start_production_span = text_segmenter._locate_anchor_span(
+            text, start_anchor, lo, hi
+        )
+        s_idx = start_production_span[0] if start_production_span else lo
+    else:
+        s_idx = lo
+
     report: Dict[str, Any] = {"segment_id": seg.get("segment_id")}
     for anchor_field, offset_field, side in (
         ("start_exact", "start_char", "start"),
@@ -392,7 +411,8 @@ def check_segment(
         # 32 of 44 originally-flagged "required tolerance" cases were
         # already reproduced by _locate_anchor_span at the identical
         # span).
-        production_span = text_segmenter._locate_anchor_span(text, anchor, lo, hi)
+        prod_lo = lo if side == "start" else s_idx
+        production_span = text_segmenter._locate_anchor_span(text, anchor, prod_lo, hi)
         required_fuzzy_tolerance = production_span != (match.start, match.end)
         report[side] = {
             "fuzzy_matched": True,

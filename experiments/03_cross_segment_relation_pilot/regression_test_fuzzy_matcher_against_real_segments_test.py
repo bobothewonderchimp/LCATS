@@ -226,6 +226,47 @@ class CheckSegmentTest(unittest.TestCase):
         self.assertTrue(report["start"]["agrees"])
         self.assertFalse(report["start"]["required_fuzzy_tolerance"])
 
+    def test_end_anchor_tolerance_uses_production_narrowed_search_window(self):
+        """Review finding, PR #425 (2nd self-review round): production's
+        align_segment searches end_exact within [s_idx, hi) - starting
+        from where start_exact was actually found - not [lo, hi) again.
+        Comparing the fuzzy end match against a production search over
+        the WIDER [lo, hi) window could misclassify
+        required_fuzzy_tolerance if end_exact's text also occurs earlier,
+        in [lo, s_idx). This directly controls _locate_anchor_span's
+        return value per call to make that earlier-occurrence scenario
+        concrete without depending on candidate_matches' own tie-breaking
+        between multiple real occurrences."""
+        text, para_spans = _para_spans()
+        policy = m.load_default_policy()
+        # start_exact locates at char 12 (not 0), so the end anchor's
+        # narrowed production search [12, hi) is distinguishable from an
+        # (incorrect) wide search [0, hi) by its `lo` argument alone.
+        seg = _segment(1, 1, 1, "charlie delta echo", "foxtrot golf hotel.", 0, 50)
+
+        real_locate = text_segmenter._locate_anchor_span
+
+        def fake_locate(text_arg, anchor, lo, hi):
+            if anchor == "foxtrot golf hotel.":
+                # Wide window [0, hi) would (incorrectly) report an
+                # earlier, different span; narrowed window starting from
+                # s_idx reports the real match fuzzy also finds.
+                if lo == 0:
+                    return (5, 10)
+                return real_locate(text_arg, anchor, lo, hi)
+            return real_locate(text_arg, anchor, lo, hi)
+
+        with mock.patch.object(
+            text_segmenter, "_locate_anchor_span", side_effect=fake_locate
+        ):
+            report = m.check_segment(para_spans, text, policy, seg)
+
+        # The real (narrowed-window) production span agrees with fuzzy's
+        # match, so no tolerance beyond production was actually needed -
+        # a wide-window comparison would have wrongly reported True here.
+        self.assertTrue(report["end"]["agrees"])
+        self.assertFalse(report["end"]["required_fuzzy_tolerance"])
+
     def test_zero_paragraph_story_does_not_crash(self):
         """Review finding, PR #425: check_segment must guard the same
         zero-paragraph edge case validate_controls does, as defense in

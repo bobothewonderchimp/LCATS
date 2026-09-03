@@ -74,8 +74,12 @@ Per the WI's own Problem/Context (`the_secret_of_kralitz__kuttner` segments
 guarantee non-overlapping or correct boundaries. Four checks are applied
 before a segment is trusted as ground truth:
 
-1. **Overlap** — sorted by `(start_char, end_char)`, any adjacent pair
-   where `a.end_char > b.start_char` excludes both.
+1. **Overlap** — sorted by `(start_char, end_char)`, a running-cluster
+   sweep: extending a cluster's max `end_char` across every member (not
+   just the immediately-preceding segment) catches a segment overlapping
+   any earlier member of its cluster, not only its adjacent neighbor in
+   sort order — see Review round, finding 6, for why the earlier
+   adjacent-pairs-only version was insufficient.
 2. **Reused anchor** — a `start_exact`/`end_exact` string shared by more
    than one segment in the same story excludes every segment touching it.
 3. **Paragraph-window containment** (added during this item's own first
