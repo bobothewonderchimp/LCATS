@@ -26,6 +26,7 @@ work_items:
   - WI-SEGMENT-0099
   - WI-SEGMENT-0101
   - WI-SEGMENT-0102
+  - WI-SEGMENT-0106
 exit_criteria:
   - A first pilot API/output stability gate has run against a bounded, explicitly approved real Anthropic story set and reports completion, artifact well-formedness, semantic sense, quality thresholds, intended-purpose fit, actual spend, and explicit genre-detection coverage
   - Prompt-caching adoption, if still supported after the stability gate, is implemented only as an explicit pilot-level setting with cache telemetry and no global backend default change
@@ -171,25 +172,36 @@ documents the intended execution order and must stay in sync with that list.
     real segments (56+ known) and confirms it never disturbs an
     already-correct span - a non-regression check, independent of and not
     counting toward `WI-SEGMENT-0072`'s frozen adoption thresholds.
-11. **Prompt caching adoption** - If the stability gate and segmentation
+11. **`WI-SEGMENT-0106`: Investigate combining paragraph-boundary prompt
+    fix with window-widening** (proposed) - `WI-SEGMENT-0098` recommended
+    an end-boundary window-widening fix but never sized the margin;
+    `WI-SEGMENT-0101` found its own prompt-side fix directionally
+    positive but incomplete, with 2 unexplained regressions. This item
+    resolves both open questions entirely from already-committed real
+    data (no new API spend): root-causes the 2 regressions (allowing an
+    explicit inconclusive verdict), sizes the window-widening margin
+    separately for start-side and end-side anchor failures, and
+    simulates the combined fix with an independent correctness check on
+    every newly-recovered match.
+12. **Prompt caching adoption** - If the stability gate and segmentation
     reliability follow-ups still support proceeding, expose
     explicit pilot-level prompt caching for Anthropic fixture/pilot runs,
     preserving `AnthropicBackend(enable_prompt_caching=False)` as the global
     default and retaining cache token telemetry.
-12. **Genre/segmentation model-tiering adoption** - If the stability gate and
+13. **Genre/segmentation model-tiering adoption** - If the stability gate and
     segmentation reliability follow-ups still support proceeding, adopt
     cheaper-tier model settings for genre detection and segmentation in the
     pilot's recommended configuration while preserving schema, truncation,
     sanitization, and semantic-quality telemetry.
-13. **Batch API opt-in design** - Design the durable batch ledger,
+14. **Batch API opt-in design** - Design the durable batch ledger,
     submit/poll/result-ingestion flow, and interaction with `checkpoint.py`.
     This design-only work can proceed without real API spend.
-14. **Batch API opt-in implementation and validation** - If the stability gate
+15. **Batch API opt-in implementation and validation** - If the stability gate
     and segmentation reliability follow-ups still support proceeding,
     implement opt-in Batch API mode, publish per-stage checkpoints only after
     result ingestion, and run a bounded real batch validation before treating
     batch mode as usable.
-15. **User-facing pilot run ergonomics** - Clarify CLI help, docs, output
+16. **User-facing pilot run ergonomics** - Clarify CLI help, docs, output
     summaries, or wrappers so a researcher can choose a cheap validation run, a
     synchronous high-visibility pilot run, or an opt-in lower-cost batch run.
 

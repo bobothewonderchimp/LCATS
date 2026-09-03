@@ -2,13 +2,13 @@
 execution_id: 2026_09_02_19_31_47_WI_SEGMENT_0106_COMBINED_BOUNDARY_FIX_INVESTIGATION_SELFREVIEW_2
 prompt_id: PROMPT(AD_HOC:WI_SEGMENT_0106_COMBINED_BOUNDARY_FIX_INVESTIGATION_SELFREVIEW_2)[2026-09-02T19:31:39+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_09_02_19_22_28_WI_SEGMENT_0106_COMBINED_BOUNDARY_FIX_INVESTIGATION_SELFREVIEW
 pr: https://github.com/xenotaur/LCATS/pull/422
 agent: claude_app
 instruction_source: "/lrh-land https://github.com/xenotaur/LCATS/pull/422 (substitute self-review round 2, /lrh-confirm-fixes Step 8)"
 session_transcript: pending
-commit: 22b79857
+commit: 68e9a8225f91fafa61c979e62dc60da8a32f198e
 created_at: 2026-09-02T19:31:47+00:00
 ---
 

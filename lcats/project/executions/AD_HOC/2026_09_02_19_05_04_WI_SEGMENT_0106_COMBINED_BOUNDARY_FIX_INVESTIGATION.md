@@ -2,13 +2,13 @@
 execution_id: 2026_09_02_19_05_04_WI_SEGMENT_0106_COMBINED_BOUNDARY_FIX_INVESTIGATION
 prompt_id: PROMPT(AD_HOC:WI_SEGMENT_0106_COMBINED_BOUNDARY_FIX_INVESTIGATION)[2026-09-02T19:04:50+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 
 pr: https://github.com/xenotaur/LCATS/pull/422
 agent: claude_app
 instruction_source: "user request in-session (follow-on to WI-SEGMENT-0101 closeout's open follow-up item)"
 session_transcript: pending
-commit: 
+commit: 68e9a8225f91fafa61c979e62dc60da8a32f198e
 created_at: 2026-09-02T19:05:04+00:00
 ---
 
