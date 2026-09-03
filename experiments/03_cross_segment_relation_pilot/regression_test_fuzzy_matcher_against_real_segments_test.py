@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import json
 import pathlib
 import sys
+import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "lcats" / "src"))
@@ -49,6 +52,23 @@ class IsRealSegmentTest(unittest.TestCase):
     def test_accepts_a_well_formed_segment(self):
         seg = _segment(1, 1, 1, "Alpha bravo", "hotel.", 0, 50)
         self.assertTrue(m._is_real_segment(seg))
+
+    def test_rejects_bool_offsets(self):
+        """Review finding, PR #425: bool is an int subclass in Python, so
+        an unguarded isinstance(x, int) check would accept True/False as
+        if they were real character offsets."""
+        seg = _segment(1, 1, 1, "a", "b", True, 50)
+        self.assertFalse(m._is_real_segment(seg))
+        seg2 = _segment(1, 1, 1, "a", "b", 0, False)
+        self.assertFalse(m._is_real_segment(seg2))
+
+    def test_rejects_start_not_less_than_end(self):
+        """Review finding, PR #425: a segment whose start_char >= end_char
+        is malformed and must not be treated as real, checkable data."""
+        seg = _segment(1, 1, 1, "a", "b", 50, 50)
+        self.assertFalse(m._is_real_segment(seg))
+        seg2 = _segment(1, 1, 1, "a", "b", 60, 50)
+        self.assertFalse(m._is_real_segment(seg2))
 
 
 class ValidateControlsTest(unittest.TestCase):
@@ -111,6 +131,39 @@ class ValidateControlsTest(unittest.TestCase):
         self.assertEqual(valid, [])
         self.assertIn("malformed", excluded[0]["reasons"][0])
 
+    def test_segment_not_reproduced_by_production_matcher_is_excluded(self):
+        """Review finding, PR #425: the first three checks (overlap,
+        reused anchor, window containment) are all structural - none of
+        them confirm the CURRENT production align_segment still finds
+        this segment's recorded offsets. A segment whose start_exact
+        anchor is not actually present in its claimed window is
+        structurally fine but not a currently-correct control, and must
+        be excluded, not silently accepted."""
+        text, para_spans = _para_spans()
+        seg = _segment(1, 1, 1, "this text is not in paragraph one", "hotel.", 0, 50)
+        valid, excluded = m.validate_controls(text, [seg])
+        self.assertEqual(valid, [])
+        self.assertEqual(len(excluded), 1)
+        self.assertTrue(any("does not reproduce" in r for r in excluded[0]["reasons"]))
+
+    def test_zero_paragraph_story_excludes_all_without_crashing(self):
+        """Review finding, PR #425: text_segmenter.paragraph_text_indexer
+        always returns at least one paragraph span in practice, but
+        validate_controls must not crash with IndexError if it were ever
+        called with a story whose index has zero paragraphs (a defensive
+        guard against a scenario the real indexer does not currently
+        produce, not a reachable-through-canonicalize_text case)."""
+        seg = _segment(1, 1, 1, "a", "b", 0, 1)
+        with mock.patch.object(
+            text_segmenter,
+            "paragraph_text_indexer",
+            return_value=("", {"para_spans": []}),
+        ):
+            valid, excluded = m.validate_controls("irrelevant", [seg])
+        self.assertEqual(valid, [])
+        self.assertEqual(len(excluded), 1)
+        self.assertTrue(any("zero paragraphs" in r for r in excluded[0]["reasons"]))
+
 
 class CheckSegmentTest(unittest.TestCase):
     def test_exact_anchor_agrees_with_recorded_offsets(self):
@@ -134,6 +187,39 @@ class CheckSegmentTest(unittest.TestCase):
         self.assertIn("start", report)
         self.assertIn("end", report)
 
+    def test_tolerance_flag_compares_against_production_normalized_match(self):
+        """Review finding, PR #425: required_fuzzy_tolerance must compare
+        the fuzzy match against production's own normalized fallback
+        (_locate_anchor_span, which is case/typography/whitespace-run
+        tolerant), not a raw byte-exact substring check. An anchor with a
+        single space where the real text has a whitespace run of two is
+        something production's own fallback already resolves - it must
+        not be reported as needing fuzzy tolerance beyond that."""
+        double_space_text = (
+            "Alpha bravo charlie delta echo foxtrot golf hotel.\n\n"
+            "India juliet  kilo lima mike november oscar papa.\n\n"
+        )
+        text, para_spans = _para_spans(double_space_text)
+        policy = m.load_default_policy()
+        seg = _segment(
+            1, 2, 2, "India juliet kilo", "oscar papa.", para_spans[1][0], 100
+        )
+        report = m.check_segment(para_spans, text, policy, seg)
+        self.assertTrue(report["start"]["fuzzy_matched"])
+        self.assertTrue(report["start"]["agrees"])
+        self.assertFalse(report["start"]["required_fuzzy_tolerance"])
+
+    def test_zero_paragraph_story_does_not_crash(self):
+        """Review finding, PR #425: check_segment must guard the same
+        zero-paragraph edge case validate_controls does, as defense in
+        depth against being called directly on such data."""
+        text, _ = _para_spans()
+        policy = m.load_default_policy()
+        seg = _segment(1, 1, 1, "Alpha bravo charlie", "foxtrot golf hotel.", 0, 50)
+        report = m.check_segment([], text, policy, seg)
+        self.assertFalse(report["start"]["fuzzy_matched"])
+        self.assertFalse(report["end"]["fuzzy_matched"])
+
     def test_anchor_with_internal_punctuation_can_fail_to_match(self):
         """Documents the real WI-SEGMENT-0102 finding: candidate_matches'
         token-ngram regex joins tokens with \\s+ only, so an anchor whose
@@ -150,6 +236,74 @@ class CheckSegmentTest(unittest.TestCase):
         # separated by a comma in the real text but only \s+ in the
         # reconstructed regex - accepted_match finds nothing.
         self.assertFalse(report["end"]["fuzzy_matched"])
+
+
+class DiscoverSourcesTest(unittest.TestCase):
+    def test_same_story_id_from_distinct_sources_is_not_deduplicated_away(self):
+        """Review finding, PR #425 (the most severe of this item's own
+        review round): the same story_id recurs across sources with
+        genuinely distinct segment arrays (different segmentation runs -
+        e.g. a reworded-prompt ablation over the same cohort), never as
+        byte-identical duplicates. Deduplicating by story_id alone
+        silently dropped 52 real segments from 5 stories in the real
+        inventory. The fix keys discovery by (source, story_id)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            base_dir = (
+                root
+                / "experiments/03_cross_segment_relation_pilot/results"
+                / "segmentation_reliability"
+            )
+            reworded_dir = (
+                root
+                / "experiments/03_cross_segment_relation_pilot/results"
+                / "segmentation_reliability_reworded_prompt"
+            )
+            replay_dir = (
+                root
+                / "experiments/03_cross_segment_relation_pilot/results"
+                / "segmentation_paragraph_misnumbering_diagnostics/replay_fixture"
+            )
+            for d in (base_dir, reworded_dir, replay_dir):
+                d.mkdir(parents=True, exist_ok=True)
+            corpora_dir = root / "corpora" / "storyA"
+            corpora_dir.mkdir(parents=True)
+            (corpora_dir / "story.json").write_text(
+                json.dumps({"body": "Alpha bravo charlie delta echo."}), "utf-8"
+            )
+
+            def _write(path, n_segments):
+                segs = [
+                    _segment(i, 1, 1, "a", "b", i * 10, i * 10 + 5)
+                    for i in range(n_segments)
+                ]
+                path.write_text(
+                    json.dumps(
+                        {
+                            "outcome": "included",
+                            "story_id": "storyA",
+                            "parsed_output": {"segments": segs},
+                        }
+                    ),
+                    "utf-8",
+                )
+
+            _write(base_dir / "storyA.json", 3)
+            _write(reworded_dir / "storyA.json", 2)
+
+            with mock.patch.object(m, "REPO_ROOT", root), mock.patch.object(
+                m, "CORPORA_ROOT", root / "corpora"
+            ):
+                sources = m.discover_sources()
+
+        story_a_entries = [s for s in sources if s[1] == "storyA"]
+        self.assertEqual(
+            len(story_a_entries),
+            2,
+            "expected one entry per (source, story_id), not one merged entry",
+        )
+        segment_counts = sorted(len(s[3]) for s in story_a_entries)
+        self.assertEqual(segment_counts, [2, 3])
 
 
 if __name__ == "__main__":

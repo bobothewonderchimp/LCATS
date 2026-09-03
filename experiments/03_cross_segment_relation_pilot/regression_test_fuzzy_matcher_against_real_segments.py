@@ -57,6 +57,21 @@ detection alone would not catch them - but their paragraph metadata is
 still corrupted, and using them as "ground truth" would search a
 nonsensical window. This is reported as its own explicit finding, not
 silently absorbed into the overlap-exclusion count.
+
+A FOURTH check (review finding, PR #425) re-runs the current production
+`text_segmenter.align_segment` over each structurally-valid segment and
+excludes it if that does not reproduce the segment's own recorded
+(start_char, end_char) exactly - structural validity alone does not
+establish "currently correct," which is what a ground-truth control for
+this item actually requires. 13 segments were excluded on this basis
+alone that the first three checks would have accepted.
+
+Sources are keyed by (source, story_id), not story_id alone: the same
+story_id recurs across sources with genuinely different segment arrays
+(different segmentation runs, e.g. the original vs. WI-SEGMENT-0101's
+reworded-prompt cohort) - confirmed none are byte-identical duplicates -
+so deduplicating by story_id alone silently dropped 52 real segments
+(review finding, PR #425).
 """
 
 from __future__ import annotations
@@ -93,9 +108,12 @@ def _is_real_segment(seg: Any) -> bool:
     for field in REQUIRED_SEGMENT_FIELDS:
         if field not in seg:
             return False
-    return isinstance(seg.get("start_char"), int) and isinstance(
-        seg.get("end_char"), int
-    )
+    start_char, end_char = seg.get("start_char"), seg.get("end_char")
+    if not isinstance(start_char, int) or isinstance(start_char, bool):
+        return False
+    if not isinstance(end_char, int) or isinstance(end_char, bool):
+        return False
+    return start_char < end_char
 
 
 def _segments_from_parsed_output(parsed_output: Any) -> List[Dict[str, Any]]:
@@ -122,13 +140,21 @@ def _story_text_from_corpora(story_id: str) -> str | None:
 
 def discover_sources() -> List[Tuple[str, str, str, List[Dict[str, Any]]]]:
     """Return (source_label, story_id, story_text, segments) tuples for
-    every real, `outcome: included` story discovered across all known
-    real-data locations. Deduplicates by story_id - a story committed to
-    more than one location (e.g. peace_manoeuvres__davis, present in both
-    segmentation_reliability and the replay_fixture) is only used once,
-    keeping the first discovered copy, so its real segments are not
-    double-counted as independent evidence."""
-    found: Dict[str, Tuple[str, str, str, List[Dict[str, Any]]]] = {}
+    every real, `outcome: included` story output discovered across all
+    known real-data locations.
+
+    Keyed by (source_label, story_id), NOT story_id alone: a story_id
+    reused across sources (e.g. peace_manoeuvres__davis, present in
+    segmentation_reliability, segmentation_reliability_reworded_prompt,
+    and the replay_fixture) represents a genuinely distinct segmentation
+    run per source - different prompt, different model call, a different
+    segment array and count - not a duplicate of the same evidence
+    (confirmed: no two sources ever produced byte-identical segment
+    arrays for the same story_id). Deduplicating by story_id alone
+    silently dropped 52 real segments from 5 stories' alternate runs
+    (review finding, PR #425) - every committed real segmentation output
+    must be evaluated, per this item's own acceptance criteria."""
+    found: Dict[Tuple[str, str], Tuple[str, str, str, List[Dict[str, Any]]]] = {}
 
     reliability_dirs = [
         REPO_ROOT
@@ -141,6 +167,7 @@ def discover_sources() -> List[Tuple[str, str, str, List[Dict[str, Any]]]]:
     for base in reliability_dirs:
         if not base.exists():
             continue
+        source_label = str(base.relative_to(REPO_ROOT))
         for f in sorted(base.rglob("*.json")):
             try:
                 data = json.loads(f.read_text("utf-8"))
@@ -149,7 +176,8 @@ def discover_sources() -> List[Tuple[str, str, str, List[Dict[str, Any]]]]:
             if not isinstance(data, dict) or data.get("outcome") != "included":
                 continue
             story_id = data.get("story_id")
-            if not story_id or story_id in found:
+            key = (source_label, story_id)
+            if not story_id or key in found:
                 continue
             segments = _segments_from_parsed_output(data.get("parsed_output"))
             if not segments:
@@ -157,17 +185,13 @@ def discover_sources() -> List[Tuple[str, str, str, List[Dict[str, Any]]]]:
             text = _story_text_from_corpora(story_id)
             if text is None:
                 continue
-            found[story_id] = (
-                str(base.relative_to(REPO_ROOT)),
-                story_id,
-                text,
-                segments,
-            )
+            found[key] = (source_label, story_id, text, segments)
 
     trial_base = (
         REPO_ROOT / "lcats/experimental/annotation_feasibility_trial/source/trial"
     )
     if trial_base.exists():
+        source_label = "annotation_feasibility_trial/source/trial"
         for story_dir in sorted(trial_base.iterdir()):
             if not story_dir.is_dir():
                 continue
@@ -176,12 +200,15 @@ def discover_sources() -> List[Tuple[str, str, str, List[Dict[str, Any]]]]:
             if not scenes_path.exists() or not story_path.exists():
                 continue
             story_id = f"annotation_feasibility_trial/{story_dir.name}"
-            if story_id in found:
+            key = (source_label, story_id)
+            if key in found:
                 continue
             try:
                 scenes_data = json.loads(scenes_path.read_text("utf-8"))
                 story_data = json.loads(story_path.read_text("utf-8"))
             except (OSError, json.JSONDecodeError):
+                continue
+            if not isinstance(scenes_data, dict) or not isinstance(story_data, dict):
                 continue
             segments = [
                 seg
@@ -193,12 +220,7 @@ def discover_sources() -> List[Tuple[str, str, str, List[Dict[str, Any]]]]:
             text = text_segmenter.canonicalize_text(
                 story_analysis.coerce_text(story_data.get("body", ""))
             )
-            found[story_id] = (
-                "annotation_feasibility_trial/source/trial",
-                story_id,
-                text,
-                segments,
-            )
+            found[key] = (source_label, story_id, text, segments)
 
     return list(found.values())
 
@@ -210,6 +232,15 @@ def validate_controls(
     _, index_meta = text_segmenter.paragraph_text_indexer(text)
     para_spans = index_meta["para_spans"]
     n = len(para_spans)
+
+    if n == 0:
+        return [], [
+            {
+                "segment_id": seg.get("segment_id"),
+                "reasons": ["story has zero paragraphs - cannot validate any window"],
+            }
+            for seg in segments
+        ]
 
     by_span = sorted(segments, key=lambda s: (s["start_char"], s["end_char"]))
     overlapping_ids = set()
@@ -259,6 +290,29 @@ def validate_controls(
                     "contain the segment's own recorded (start_char, end_char) - "
                     "likely pre-WI-SEGMENT-0059 collapsed-paragraph data"
                 )
+            else:
+                # Fourth check (review finding, PR #425): structural
+                # validity (non-overlap, non-reused anchor, window
+                # containment) does not by itself establish that the
+                # CURRENT production matcher still reproduces this
+                # segment's recorded offsets - re-running
+                # align_segment directly is the only way to confirm
+                # "currently-correct," which is what this item's own
+                # acceptance criteria require of a ground-truth control.
+                reproduced = text_segmenter.align_segment(
+                    text,
+                    para_spans,
+                    sp,
+                    ep,
+                    seg.get("start_exact") or "",
+                    seg.get("end_exact") or "",
+                )
+                if reproduced != (seg["start_char"], seg["end_char"]):
+                    reasons.append(
+                        "current production align_segment does not reproduce this "
+                        "segment's recorded (start_char, end_char) - not a "
+                        "currently-correct control"
+                    )
         else:
             reasons.append("start_par_id/end_par_id missing or malformed")
 
@@ -287,6 +341,12 @@ def check_segment(
     # window, so re-deriving it here must match exactly, not just
     # subtract 1 from the raw (possibly out-of-range) par_id values.
     n = len(para_spans)
+    if n == 0:
+        return {
+            "segment_id": seg.get("segment_id"),
+            "start": {"fuzzy_matched": False, "agrees": None},
+            "end": {"fuzzy_matched": False, "agrees": None},
+        }
     sp = max(1, min(seg["start_par_id"], n)) - 1
     ep = max(1, min(seg["end_par_id"], n)) - 1
     if ep < sp:
@@ -305,19 +365,24 @@ def check_segment(
             report[side] = {"fuzzy_matched": False, "agrees": None}
             continue
         actual = match.start if side == "start" else match.end
-        # Per acceptance criterion 2: report even an exact-offset AGREEMENT
-        # as a distinct observation when the fuzzy policy needed its own
-        # tolerance (edit_distance > 0, or the matched text isn't a
-        # byte-exact substring at that position) to find it - the exact
-        # matcher already in production would not have accepted this same
-        # candidate on its own, even though the offset happens to agree.
-        exact_hit = match.edit_distance == 0 and text[match.start : match.end] == anchor
+        # Per acceptance criterion 2: report when the fuzzy match differs
+        # from, or is more permissive than, the CURRENT exact/normalized
+        # result - which is production's _locate_anchor_span (case,
+        # typography, and whitespace-run tolerant), not a raw byte-exact
+        # substring check. A byte-exact comparison overstated how often
+        # fuzzy tolerance added anything beyond what production's own
+        # normalized fallback already reaches (review finding, PR #425:
+        # 32 of 44 originally-flagged "required tolerance" cases were
+        # already reproduced by _locate_anchor_span at the identical
+        # span).
+        production_span = text_segmenter._locate_anchor_span(text, anchor, lo, hi)
+        required_fuzzy_tolerance = production_span != (match.start, match.end)
         report[side] = {
             "fuzzy_matched": True,
             "fuzzy_offset": actual,
             "expected_offset": expected,
             "agrees": actual == expected,
-            "required_fuzzy_tolerance": not exact_hit,
+            "required_fuzzy_tolerance": required_fuzzy_tolerance,
         }
     return report
 
@@ -337,6 +402,15 @@ def main() -> int:
     total_required_fuzzy_tolerance = 0
     disagreements: List[Dict[str, Any]] = []
     fuzzy_tolerance_cases: List[Dict[str, Any]] = []
+    # Anchor-level counts (review finding, PR #425): a segment-level
+    # "disagreement" bucket hides a wrong-offset anchor whenever the
+    # OTHER anchor on the same segment has no match at all - counting
+    # per anchor, not per segment, is the only way every wrong-offset
+    # case is actually reported (acceptance criterion 2's "any case...
+    # is reported explicitly, not silently absorbed").
+    total_no_match_anchors = 0
+    total_wrong_offset_anchors = 0
+    wrong_offset_anchors: List[Dict[str, Any]] = []
     per_source: Dict[str, Any] = {}
 
     for source_label, story_id, text, segments in sources:
@@ -358,13 +432,35 @@ def main() -> int:
             if both_agree:
                 total_agree_both += 1
             else:
-                disagreements.append({"story_id": story_id, **check})
-            if any(
-                check.get(side, {}).get("required_fuzzy_tolerance")
-                for side in ("start", "end")
-            ):
-                total_required_fuzzy_tolerance += 1
-                fuzzy_tolerance_cases.append({"story_id": story_id, **check})
+                disagreements.append(
+                    {"source": source_label, "story_id": story_id, **check}
+                )
+            for side in ("start", "end"):
+                side_report = check.get(side, {})
+                if side_report.get("fuzzy_matched") is False:
+                    total_no_match_anchors += 1
+                elif side_report.get("agrees") is False:
+                    total_wrong_offset_anchors += 1
+                    wrong_offset_anchors.append(
+                        {
+                            "source": source_label,
+                            "story_id": story_id,
+                            "segment_id": seg.get("segment_id"),
+                            "side": side,
+                            **side_report,
+                        }
+                    )
+                if side_report.get("required_fuzzy_tolerance"):
+                    total_required_fuzzy_tolerance += 1
+                    fuzzy_tolerance_cases.append(
+                        {
+                            "source": source_label,
+                            "story_id": story_id,
+                            "segment_id": seg.get("segment_id"),
+                            "side": side,
+                            **side_report,
+                        }
+                    )
             story_checks.append(check)
 
         per_source.setdefault(source_label, []).append(
@@ -386,6 +482,9 @@ def main() -> int:
         "total_agree_both_anchors": total_agree_both,
         "total_disagreements": len(disagreements),
         "disagreements": disagreements,
+        "total_no_match_anchors": total_no_match_anchors,
+        "total_wrong_offset_anchors": total_wrong_offset_anchors,
+        "wrong_offset_anchors": wrong_offset_anchors,
         "total_required_fuzzy_tolerance": total_required_fuzzy_tolerance,
         "fuzzy_tolerance_cases": fuzzy_tolerance_cases,
         "per_source": per_source,
@@ -395,11 +494,14 @@ def main() -> int:
     if args.output:
         pathlib.Path(args.output).write_text(output + "\n", encoding="utf-8")
     print(
-        f"Discovered {total_segments} real segments across {len(sources)} stories; "
+        f"Discovered {total_segments} real segments across {len(sources)} "
+        f"(source, story) outputs; "
         f"{total_excluded} excluded as invalid controls; "
         f"{total_valid} validated; "
         f"{total_agree_both} agree exactly on both anchors; "
-        f"{len(disagreements)} disagreements"
+        f"{len(disagreements)} segment-level disagreements "
+        f"({total_no_match_anchors} no-match anchors, "
+        f"{total_wrong_offset_anchors} wrong-offset anchors)"
     )
     if not args.output:
         print(output)

@@ -1,16 +1,18 @@
 {
-  "total_segments_discovered": 280,
-  "total_excluded": 23,
+  "total_segments_discovered": 332,
+  "total_excluded": 41,
   "exclusion_reasons": {
-    "overlaps an adjacent segment in the same story": 11,
-    "shares a start_exact/end_exact anchor with another segment": 2,
-    "paragraph window derived from start_par_id/end_par_id does not contain the segment's own recorded (start_char, end_char) - likely pre-WI-SEGMENT-0059 collapsed-paragraph data": 19
+    "overlaps an adjacent segment in the same story": 15,
+    "shares a start_exact/end_exact anchor with another segment": 3,
+    "paragraph window derived from start_par_id/end_par_id does not contain the segment's own recorded (start_char, end_char) - likely pre-WI-SEGMENT-0059 collapsed-paragraph data": 19,
+    "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control": 13
   },
-  "total_validated": 257,
-  "total_agree_both_anchors": 145,
-  "total_disagreements": 112,
+  "total_validated": 291,
+  "total_agree_both_anchors": 176,
+  "total_disagreements": 115,
   "disagreements": [
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/junior__abernathy",
       "segment_id": 4,
       "start": {
@@ -26,6 +28,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/junior__abernathy",
       "segment_id": 5,
       "start": {
@@ -41,6 +44,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/peace_manoeuvres__davis",
       "segment_id": 4,
       "start": {
@@ -56,6 +60,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/peace_manoeuvres__davis",
       "segment_id": 7,
       "start": {
@@ -68,6 +73,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/peace_manoeuvres__davis",
       "segment_id": 11,
       "start": {
@@ -80,6 +86,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/the_invaders__ferris",
       "segment_id": 5,
       "start": {
@@ -95,6 +102,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/the_invaders__ferris",
       "segment_id": 8,
       "start": {
@@ -110,6 +118,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/the_invaders__ferris",
       "segment_id": 9,
       "start": {
@@ -125,6 +134,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/the_lost_charm__norton",
       "segment_id": 1,
       "start": {
@@ -140,6 +150,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/the_lost_charm__norton",
       "segment_id": 3,
       "start": {
@@ -155,6 +166,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/the_lost_charm__norton",
       "segment_id": 6,
       "start": {
@@ -170,6 +182,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/the_lost_charm__norton",
       "segment_id": 8,
       "start": {
@@ -182,6 +195,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/the_lost_charm__norton",
       "segment_id": 9,
       "start": {
@@ -193,10 +207,11 @@
         "fuzzy_offset": 31551,
         "expected_offset": 31551,
         "agrees": true,
-        "required_fuzzy_tolerance": true
+        "required_fuzzy_tolerance": false
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/the_lost_charm__norton",
       "segment_id": 11,
       "start": {
@@ -212,6 +227,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/the_lost_charm__norton",
       "segment_id": 12,
       "start": {
@@ -227,6 +243,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "ohenry-four_million/romance_of_a_busy_broker",
       "segment_id": 3,
       "start": {
@@ -242,6 +259,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "ohenry-whirligigs/girl",
       "segment_id": 3,
       "start": {
@@ -257,6 +275,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "ohenry-whirligigs/girl",
       "segment_id": 4,
       "start": {
@@ -269,6 +288,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "ohenry-whirligigs/girl",
       "segment_id": 5,
       "start": {
@@ -287,6 +307,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
       "story_id": "mass_quantities/calling_the_empress__smith",
       "segment_id": 3,
       "start": {
@@ -299,6 +320,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
       "story_id": "mass_quantities/calling_the_empress__smith",
       "segment_id": 5,
       "start": {
@@ -314,6 +336,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
       "story_id": "mass_quantities/calling_the_empress__smith",
       "segment_id": 13,
       "start": {
@@ -329,6 +352,23 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/peace_manoeuvres__davis",
+      "segment_id": 3,
+      "start": {
+        "fuzzy_matched": false,
+        "agrees": null
+      },
+      "end": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 5941,
+        "expected_offset": 5941,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
       "story_id": "mass_quantities/problem_in_solid__smith",
       "segment_id": 8,
       "start": {
@@ -344,6 +384,231 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_invaders__ferris",
+      "segment_id": 5,
+      "start": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 10583,
+        "expected_offset": 10583,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      },
+      "end": {
+        "fuzzy_matched": false,
+        "agrees": null
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_invaders__ferris",
+      "segment_id": 8,
+      "start": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 20513,
+        "expected_offset": 20513,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      },
+      "end": {
+        "fuzzy_matched": false,
+        "agrees": null
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_invaders__ferris",
+      "segment_id": 9,
+      "start": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 23039,
+        "expected_offset": 23039,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      },
+      "end": {
+        "fuzzy_matched": false,
+        "agrees": null
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_lost_charm__norton",
+      "segment_id": 3,
+      "start": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 1577,
+        "expected_offset": 1576,
+        "agrees": false,
+        "required_fuzzy_tolerance": true
+      },
+      "end": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 5279,
+        "expected_offset": 5279,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_lost_charm__norton",
+      "segment_id": 4,
+      "start": {
+        "fuzzy_matched": false,
+        "agrees": null
+      },
+      "end": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 15034,
+        "expected_offset": 15034,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_lost_charm__norton",
+      "segment_id": 5,
+      "start": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 15036,
+        "expected_offset": 15036,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      },
+      "end": {
+        "fuzzy_matched": false,
+        "agrees": null
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_lost_charm__norton",
+      "segment_id": 6,
+      "start": {
+        "fuzzy_matched": false,
+        "agrees": null
+      },
+      "end": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 20910,
+        "expected_offset": 20910,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_lost_charm__norton",
+      "segment_id": 8,
+      "start": {
+        "fuzzy_matched": false,
+        "agrees": null
+      },
+      "end": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 31290,
+        "expected_offset": 31290,
+        "agrees": true,
+        "required_fuzzy_tolerance": true
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_lost_charm__norton",
+      "segment_id": 9,
+      "start": {
+        "fuzzy_matched": false,
+        "agrees": null
+      },
+      "end": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 35142,
+        "expected_offset": 35142,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_lost_charm__norton",
+      "segment_id": 10,
+      "start": {
+        "fuzzy_matched": false,
+        "agrees": null
+      },
+      "end": {
+        "fuzzy_matched": false,
+        "agrees": null
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_lost_charm__norton",
+      "segment_id": 11,
+      "start": {
+        "fuzzy_matched": false,
+        "agrees": null
+      },
+      "end": {
+        "fuzzy_matched": false,
+        "agrees": null
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_secret_of_kralitz__kuttner",
+      "segment_id": 2,
+      "start": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 2306,
+        "expected_offset": 2306,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      },
+      "end": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 5908,
+        "expected_offset": 5907,
+        "agrees": false,
+        "required_fuzzy_tolerance": true
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "ohenry-four_million/romance_of_a_busy_broker",
+      "segment_id": 2,
+      "start": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 2359,
+        "expected_offset": 2359,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      },
+      "end": {
+        "fuzzy_matched": false,
+        "agrees": null
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "ohenry-four_million/romance_of_a_busy_broker",
+      "segment_id": 4,
+      "start": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 6556,
+        "expected_offset": 6556,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      },
+      "end": {
+        "fuzzy_matched": false,
+        "agrees": null
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
       "story_id": "wodehouse/romance_of_an_ugly_policeman",
       "segment_id": 1,
       "start": {
@@ -359,6 +624,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
       "story_id": "wodehouse/romance_of_an_ugly_policeman",
       "segment_id": 2,
       "start": {
@@ -371,6 +637,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
       "story_id": "wodehouse/romance_of_an_ugly_policeman",
       "segment_id": 3,
       "start": {
@@ -386,6 +653,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
       "story_id": "wodehouse/romance_of_an_ugly_policeman",
       "segment_id": 4,
       "start": {
@@ -398,6 +666,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
       "story_id": "wodehouse/romance_of_an_ugly_policeman",
       "segment_id": 5,
       "start": {
@@ -410,6 +679,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
       "story_id": "wodehouse/romance_of_an_ugly_policeman",
       "segment_id": 6,
       "start": {
@@ -422,6 +692,23 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_paragraph_misnumbering_diagnostics/replay_fixture",
+      "story_id": "mass_quantities/peace_manoeuvres__davis",
+      "segment_id": 13,
+      "start": {
+        "fuzzy_matched": true,
+        "fuzzy_offset": 34130,
+        "expected_offset": 34130,
+        "agrees": true,
+        "required_fuzzy_tolerance": false
+      },
+      "end": {
+        "fuzzy_matched": false,
+        "agrees": null
+      }
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_paragraph_misnumbering_diagnostics/replay_fixture",
       "story_id": "mass_quantities/the_last_days_of_l_a__smith",
       "segment_id": 9,
       "start": {
@@ -437,6 +724,7 @@
       }
     },
     {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_paragraph_misnumbering_diagnostics/replay_fixture",
       "story_id": "mass_quantities/the_last_days_of_l_a__smith",
       "segment_id": 14,
       "start": {
@@ -452,6 +740,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/a_city_near_centaurus__doede",
       "segment_id": 1,
       "start": {
@@ -467,6 +756,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/a_city_near_centaurus__doede",
       "segment_id": 6,
       "start": {
@@ -479,6 +769,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/a_martian_odyssey__weinbaum",
       "segment_id": 3,
       "start": {
@@ -494,6 +785,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/a_martian_odyssey__weinbaum",
       "segment_id": 4,
       "start": {
@@ -509,6 +801,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/a_martian_odyssey__weinbaum",
       "segment_id": 6,
       "start": {
@@ -524,6 +817,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/a_martian_odyssey__weinbaum",
       "segment_id": 7,
       "start": {
@@ -536,6 +830,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/a_martian_odyssey__weinbaum",
       "segment_id": 8,
       "start": {
@@ -548,6 +843,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/a_martian_odyssey__weinbaum",
       "segment_id": 9,
       "start": {
@@ -563,6 +859,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/a_martian_odyssey__weinbaum",
       "segment_id": 10,
       "start": {
@@ -578,6 +875,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/chaparral_christmas_gift",
       "segment_id": 5,
       "start": {
@@ -593,6 +891,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/crowned_heads",
       "segment_id": 1,
       "start": {
@@ -608,6 +907,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/crowned_heads",
       "segment_id": 2,
       "start": {
@@ -623,6 +923,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/crowned_heads",
       "segment_id": 3,
       "start": {
@@ -638,6 +939,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/crowned_heads",
       "segment_id": 7,
       "start": {
@@ -653,6 +955,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/crowned_heads",
       "segment_id": 8,
       "start": {
@@ -665,6 +968,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/extricating_young_gussie",
       "segment_id": 1,
       "start": {
@@ -677,6 +981,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/extricating_young_gussie",
       "segment_id": 2,
       "start": {
@@ -692,6 +997,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/extricating_young_gussie",
       "segment_id": 3,
       "start": {
@@ -704,6 +1010,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/extricating_young_gussie",
       "segment_id": 4,
       "start": {
@@ -716,6 +1023,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/extricating_young_gussie",
       "segment_id": 5,
       "start": {
@@ -728,6 +1036,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/extricating_young_gussie",
       "segment_id": 6,
       "start": {
@@ -740,6 +1049,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/extricating_young_gussie",
       "segment_id": 7,
       "start": {
@@ -752,6 +1062,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/extricating_young_gussie",
       "segment_id": 8,
       "start": {
@@ -764,6 +1075,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/gift_of_the_magi",
       "segment_id": 3,
       "start": {
@@ -779,6 +1091,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/gift_of_the_magi",
       "segment_id": 5,
       "start": {
@@ -791,6 +1104,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/hansel_and_gretel",
       "segment_id": 3,
       "start": {
@@ -803,6 +1117,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/hansel_and_gretel",
       "segment_id": 5,
       "start": {
@@ -818,6 +1133,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/hansel_and_gretel",
       "segment_id": 7,
       "start": {
@@ -833,6 +1149,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/hansel_and_gretel",
       "segment_id": 8,
       "start": {
@@ -845,6 +1162,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/one_touch_of_nature",
       "segment_id": 2,
       "start": {
@@ -857,6 +1175,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/one_touch_of_nature",
       "segment_id": 3,
       "start": {
@@ -872,6 +1191,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/one_touch_of_nature",
       "segment_id": 4,
       "start": {
@@ -884,21 +1204,7 @@
       }
     },
     {
-      "story_id": "annotation_feasibility_trial/rapunzel",
-      "segment_id": 2,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 2731,
-        "expected_offset": 2731,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": false,
-        "agrees": null
-      }
-    },
-    {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/rapunzel",
       "segment_id": 3,
       "start": {
@@ -914,6 +1220,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/rapunzel",
       "segment_id": 4,
       "start": {
@@ -929,6 +1236,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/red_headed_league",
       "segment_id": 1,
       "start": {
@@ -944,18 +1252,7 @@
       }
     },
     {
-      "story_id": "annotation_feasibility_trial/red_headed_league",
-      "segment_id": 2,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": false,
-        "agrees": null
-      }
-    },
-    {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/red_headed_league",
       "segment_id": 3,
       "start": {
@@ -974,6 +1271,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/red_headed_league",
       "segment_id": 5,
       "start": {
@@ -992,6 +1290,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/red_headed_league",
       "segment_id": 6,
       "start": {
@@ -1010,48 +1309,7 @@
       }
     },
     {
-      "story_id": "annotation_feasibility_trial/red_headed_league",
-      "segment_id": 7,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 49417,
-        "expected_offset": 49419,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/scandal_in_bohemia",
-      "segment_id": 2,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": false,
-        "agrees": null
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/scandal_in_bohemia",
-      "segment_id": 3,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 30694,
-        "expected_offset": 30695,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/scandal_in_bohemia",
       "segment_id": 4,
       "start": {
@@ -1070,6 +1328,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/scandal_in_bohemia",
       "segment_id": 5,
       "start": {
@@ -1088,6 +1347,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/service_of_love",
       "segment_id": 3,
       "start": {
@@ -1103,6 +1363,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/service_of_love",
       "segment_id": 4,
       "start": {
@@ -1118,6 +1379,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/service_of_love",
       "segment_id": 6,
       "start": {
@@ -1133,6 +1395,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/snow_white_and_rose_red",
       "segment_id": 3,
       "start": {
@@ -1148,6 +1411,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/snow_white_and_rose_red",
       "segment_id": 5,
       "start": {
@@ -1163,78 +1427,7 @@
       }
     },
     {
-      "story_id": "annotation_feasibility_trial/snow_white_and_rose_red",
-      "segment_id": 7,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": false,
-        "agrees": null
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/speckled_band",
-      "segment_id": 2,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": false,
-        "agrees": null
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/speckled_band",
-      "segment_id": 3,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 25793,
-        "expected_offset": 25792,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 27101,
-        "expected_offset": 27101,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/speckled_band",
-      "segment_id": 6,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 39214,
-        "expected_offset": 39214,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/speckled_band",
-      "segment_id": 8,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 49306,
-        "expected_offset": 49306,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      }
-    },
-    {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/springtime_a_la_carte",
       "segment_id": 1,
       "start": {
@@ -1250,18 +1443,7 @@
       }
     },
     {
-      "story_id": "annotation_feasibility_trial/springtime_a_la_carte",
-      "segment_id": 4,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": false,
-        "agrees": null
-      }
-    },
-    {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/springtime_a_la_carte",
       "segment_id": 5,
       "start": {
@@ -1277,21 +1459,7 @@
       }
     },
     {
-      "story_id": "annotation_feasibility_trial/springtime_a_la_carte",
-      "segment_id": 6,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 10511,
-        "expected_offset": 10511,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": false,
-        "agrees": null
-      }
-    },
-    {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_call_of_cthulhu",
       "segment_id": 3,
       "start": {
@@ -1307,6 +1475,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_call_of_cthulhu",
       "segment_id": 8,
       "start": {
@@ -1322,6 +1491,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_call_of_cthulhu",
       "segment_id": 9,
       "start": {
@@ -1337,6 +1507,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_colour_out_of_space",
       "segment_id": 4,
       "start": {
@@ -1352,6 +1523,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_colour_out_of_space",
       "segment_id": 10,
       "start": {
@@ -1367,6 +1539,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_colour_out_of_space",
       "segment_id": 11,
       "start": {
@@ -1382,6 +1555,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_cowboy_and_the_lady_and_her_pa_b_a_story_of_a__cobb",
       "segment_id": 7,
       "start": {
@@ -1394,6 +1568,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_cowboy_and_the_lady_and_her_pa_b_a_story_of_a__cobb",
       "segment_id": 8,
       "start": {
@@ -1409,6 +1584,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_cowboy_and_the_lady_and_her_pa_b_a_story_of_a__cobb",
       "segment_id": 9,
       "start": {
@@ -1424,6 +1600,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_dunwich_horror",
       "segment_id": 1,
       "start": {
@@ -1439,6 +1616,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_dunwich_horror",
       "segment_id": 2,
       "start": {
@@ -1454,6 +1632,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_dunwich_horror",
       "segment_id": 3,
       "start": {
@@ -1469,6 +1648,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_dunwich_horror",
       "segment_id": 4,
       "start": {
@@ -1484,6 +1664,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_dunwich_horror",
       "segment_id": 7,
       "start": {
@@ -1496,6 +1677,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_dunwich_horror",
       "segment_id": 9,
       "start": {
@@ -1511,6 +1693,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_dunwich_horror",
       "segment_id": 10,
       "start": {
@@ -1522,10 +1705,11 @@
         "fuzzy_offset": 50709,
         "expected_offset": 50709,
         "agrees": true,
-        "required_fuzzy_tolerance": true
+        "required_fuzzy_tolerance": false
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_dunwich_horror",
       "segment_id": 12,
       "start": {
@@ -1541,6 +1725,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_dunwich_horror",
       "segment_id": 13,
       "start": {
@@ -1556,6 +1741,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_dunwich_horror",
       "segment_id": 14,
       "start": {
@@ -1571,21 +1757,7 @@
       }
     },
     {
-      "story_id": "annotation_feasibility_trial/the_sheriff_and_his_partner__harris",
-      "segment_id": 1,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 0,
-        "expected_offset": 0,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": false,
-        "agrees": null
-      }
-    },
-    {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_sheriff_and_his_partner__harris",
       "segment_id": 3,
       "start": {
@@ -1601,6 +1773,7 @@
       }
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_sheriff_and_his_partner__harris",
       "segment_id": 5,
       "start": {
@@ -1613,766 +1786,242 @@
       }
     }
   ],
-  "total_required_fuzzy_tolerance": 43,
-  "fuzzy_tolerance_cases": [
+  "total_no_match_anchors": 137,
+  "total_wrong_offset_anchors": 9,
+  "wrong_offset_anchors": [
     {
-      "story_id": "mass_quantities/junior__abernathy",
-      "segment_id": 1,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 5,
-        "expected_offset": 5,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 1703,
-        "expected_offset": 1703,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      }
-    },
-    {
-      "story_id": "mass_quantities/peace_manoeuvres__davis",
-      "segment_id": 8,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 19183,
-        "expected_offset": 19183,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 24052,
-        "expected_offset": 24052,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "mass_quantities/peace_manoeuvres__davis",
-      "segment_id": 10,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 27289,
-        "expected_offset": 27289,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 33700,
-        "expected_offset": 33700,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "mass_quantities/the_invaders__ferris",
-      "segment_id": 1,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 0,
-        "expected_offset": 0,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 2519,
-        "expected_offset": 2519,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "mass_quantities/the_invaders__ferris",
-      "segment_id": 10,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 27169,
-        "expected_offset": 27169,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 32093,
-        "expected_offset": 32093,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      }
-    },
-    {
-      "story_id": "mass_quantities/the_lost_charm__norton",
-      "segment_id": 2,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 96,
-        "expected_offset": 96,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 1850,
-        "expected_offset": 1850,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "mass_quantities/the_lost_charm__norton",
       "segment_id": 3,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 4955,
-        "expected_offset": 4956,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      }
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 4955,
+      "expected_offset": 4956,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
     },
     {
-      "story_id": "mass_quantities/the_lost_charm__norton",
-      "segment_id": 9,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 31551,
-        "expected_offset": 31551,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "mass_quantities/the_lost_charm__norton",
-      "segment_id": 10,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 31553,
-        "expected_offset": 31553,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 35900,
-        "expected_offset": 35900,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      }
-    },
-    {
-      "story_id": "mass_quantities/the_secret_of_kralitz__kuttner",
-      "segment_id": 2,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 2306,
-        "expected_offset": 2306,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 5907,
-        "expected_offset": 5907,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "mass_quantities/the_secret_of_kralitz__kuttner",
-      "segment_id": 3,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 5911,
-        "expected_offset": 5911,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 11444,
-        "expected_offset": 11444,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "mass_quantities/the_secret_of_kralitz__kuttner",
-      "segment_id": 7,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 15129,
-        "expected_offset": 15129,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 16001,
-        "expected_offset": 16001,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "ohenry-four_million/romance_of_a_busy_broker",
-      "segment_id": 1,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 1,
-        "expected_offset": 1,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 2356,
-        "expected_offset": 2356,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "ohenry-four_million/romance_of_a_busy_broker",
-      "segment_id": 2,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 2359,
-        "expected_offset": 2359,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 5567,
-        "expected_offset": 5567,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
       "story_id": "ohenry-whirligigs/girl",
       "segment_id": 5,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 9551,
-        "expected_offset": 9551,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 10691,
-        "expected_offset": 10692,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      }
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 10691,
+      "expected_offset": 10692,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
     },
     {
-      "story_id": "mass_quantities/calling_the_empress__smith",
-      "segment_id": 1,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 0,
-        "expected_offset": 0,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 1713,
-        "expected_offset": 1713,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_lost_charm__norton",
+      "segment_id": 3,
+      "side": "start",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 1577,
+      "expected_offset": 1576,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
     },
     {
-      "story_id": "mass_quantities/calling_the_empress__smith",
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_secret_of_kralitz__kuttner",
       "segment_id": 2,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 1889,
-        "expected_offset": 1889,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 4280,
-        "expected_offset": 4280,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 5908,
+      "expected_offset": 5907,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
     },
     {
-      "story_id": "mass_quantities/calling_the_empress__smith",
-      "segment_id": 6,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 19864,
-        "expected_offset": 19864,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 23382,
-        "expected_offset": 23382,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
+      "source": "annotation_feasibility_trial/source/trial",
+      "story_id": "annotation_feasibility_trial/red_headed_league",
+      "segment_id": 3,
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 30179,
+      "expected_offset": 30180,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
     },
     {
-      "story_id": "mass_quantities/calling_the_empress__smith",
-      "segment_id": 7,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 23386,
-        "expected_offset": 23386,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 27747,
-        "expected_offset": 27747,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "mass_quantities/calling_the_empress__smith",
-      "segment_id": 10,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 37954,
-        "expected_offset": 37954,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 44349,
-        "expected_offset": 44349,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "mass_quantities/problem_in_solid__smith",
+      "source": "annotation_feasibility_trial/source/trial",
+      "story_id": "annotation_feasibility_trial/red_headed_league",
       "segment_id": 5,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 15841,
-        "expected_offset": 15841,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 24265,
-        "expected_offset": 24265,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 36946,
+      "expected_offset": 36947,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
+      "story_id": "annotation_feasibility_trial/red_headed_league",
+      "segment_id": 6,
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 45487,
+      "expected_offset": 45488,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
+    },
+    {
+      "source": "annotation_feasibility_trial/source/trial",
+      "story_id": "annotation_feasibility_trial/scandal_in_bohemia",
+      "segment_id": 4,
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 40249,
+      "expected_offset": 40250,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
+    },
+    {
+      "source": "annotation_feasibility_trial/source/trial",
+      "story_id": "annotation_feasibility_trial/scandal_in_bohemia",
+      "segment_id": 5,
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 40692,
+      "expected_offset": 40693,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
+    }
+  ],
+  "total_required_fuzzy_tolerance": 12,
+  "fuzzy_tolerance_cases": [
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
+      "story_id": "mass_quantities/the_lost_charm__norton",
+      "segment_id": 3,
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 4955,
+      "expected_offset": 4956,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability",
+      "story_id": "ohenry-whirligigs/girl",
+      "segment_id": 5,
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 10691,
+      "expected_offset": 10692,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_lost_charm__norton",
+      "segment_id": 3,
+      "side": "start",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 1577,
+      "expected_offset": 1576,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_lost_charm__norton",
+      "segment_id": 8,
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 31290,
+      "expected_offset": 31290,
+      "agrees": true,
+      "required_fuzzy_tolerance": true
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
+      "story_id": "mass_quantities/the_secret_of_kralitz__kuttner",
+      "segment_id": 2,
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 5908,
+      "expected_offset": 5907,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
+    },
+    {
+      "source": "experiments/03_cross_segment_relation_pilot/results/segmentation_reliability_reworded_prompt",
       "story_id": "wodehouse/romance_of_an_ugly_policeman",
       "segment_id": 7,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 24121,
-        "expected_offset": 24121,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 29363,
-        "expected_offset": 29363,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      }
+      "side": "start",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 24121,
+      "expected_offset": 24121,
+      "agrees": true,
+      "required_fuzzy_tolerance": true
     },
     {
-      "story_id": "mass_quantities/the_last_days_of_l_a__smith",
-      "segment_id": 2,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 1128,
-        "expected_offset": 1128,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 2812,
-        "expected_offset": 2812,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      }
-    },
-    {
-      "story_id": "mass_quantities/the_last_days_of_l_a__smith",
-      "segment_id": 5,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 12597,
-        "expected_offset": 12597,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 13665,
-        "expected_offset": 13665,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "mass_quantities/the_last_days_of_l_a__smith",
-      "segment_id": 7,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 14464,
-        "expected_offset": 14464,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 15391,
-        "expected_offset": 15391,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "mass_quantities/the_last_days_of_l_a__smith",
-      "segment_id": 10,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 21030,
-        "expected_offset": 21030,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 22388,
-        "expected_offset": 22388,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "mass_quantities/the_last_days_of_l_a__smith",
-      "segment_id": 12,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 22930,
-        "expected_offset": 22930,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 28504,
-        "expected_offset": 28504,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "mass_quantities/the_last_days_of_l_a__smith",
-      "segment_id": 13,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 28508,
-        "expected_offset": 28508,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 30391,
-        "expected_offset": 30391,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/gift_of_the_magi",
-      "segment_id": 2,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 3724,
-        "expected_offset": 3724,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 5321,
-        "expected_offset": 5321,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/red_headed_league",
       "segment_id": 3,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 26784,
-        "expected_offset": 26784,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 30179,
-        "expected_offset": 30180,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      }
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 30179,
+      "expected_offset": 30180,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/red_headed_league",
       "segment_id": 5,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 33293,
-        "expected_offset": 33293,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 36946,
-        "expected_offset": 36947,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      }
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 36946,
+      "expected_offset": 36947,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/red_headed_league",
       "segment_id": 6,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 36950,
-        "expected_offset": 36950,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 45487,
-        "expected_offset": 45488,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      }
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 45487,
+      "expected_offset": 45488,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
     },
     {
-      "story_id": "annotation_feasibility_trial/red_headed_league",
-      "segment_id": 7,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 49417,
-        "expected_offset": 49419,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/scandal_in_bohemia",
-      "segment_id": 3,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 30694,
-        "expected_offset": 30695,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/scandal_in_bohemia",
       "segment_id": 4,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 30698,
-        "expected_offset": 30698,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 40249,
-        "expected_offset": 40250,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      }
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 40249,
+      "expected_offset": 40250,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
     },
     {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/scandal_in_bohemia",
       "segment_id": 5,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 40253,
-        "expected_offset": 40253,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 40692,
-        "expected_offset": 40693,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      }
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 40692,
+      "expected_offset": 40693,
+      "agrees": false,
+      "required_fuzzy_tolerance": true
     },
     {
-      "story_id": "annotation_feasibility_trial/speckled_band",
-      "segment_id": 3,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 25793,
-        "expected_offset": 25792,
-        "agrees": false,
-        "required_fuzzy_tolerance": true
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 27101,
-        "expected_offset": 27101,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/the_call_of_cthulhu",
-      "segment_id": 2,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 739,
-        "expected_offset": 739,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 17904,
-        "expected_offset": 17904,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/the_call_of_cthulhu",
-      "segment_id": 4,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 40075,
-        "expected_offset": 40075,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 44332,
-        "expected_offset": 44332,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/the_call_of_cthulhu",
-      "segment_id": 5,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 44334,
-        "expected_offset": 44334,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 46124,
-        "expected_offset": 46124,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/the_call_of_cthulhu",
-      "segment_id": 6,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 46126,
-        "expected_offset": 46126,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 53704,
-        "expected_offset": 53704,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
+      "source": "annotation_feasibility_trial/source/trial",
       "story_id": "annotation_feasibility_trial/the_cowboy_and_the_lady_and_her_pa_b_a_story_of_a__cobb",
       "segment_id": 3,
-      "start": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 11557,
-        "expected_offset": 11557,
-        "agrees": true,
-        "required_fuzzy_tolerance": false
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 14141,
-        "expected_offset": 14141,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
-    },
-    {
-      "story_id": "annotation_feasibility_trial/the_dunwich_horror",
-      "segment_id": 10,
-      "start": {
-        "fuzzy_matched": false,
-        "agrees": null
-      },
-      "end": {
-        "fuzzy_matched": true,
-        "fuzzy_offset": 50709,
-        "expected_offset": 50709,
-        "agrees": true,
-        "required_fuzzy_tolerance": true
-      }
+      "side": "end",
+      "fuzzy_matched": true,
+      "fuzzy_offset": 14141,
+      "expected_offset": 14141,
+      "agrees": true,
+      "required_fuzzy_tolerance": true
     }
   ],
   "per_source": {
@@ -2391,7 +2040,7 @@
               "fuzzy_offset": 5,
               "expected_offset": 5,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             },
             "end": {
               "fuzzy_matched": true,
@@ -2613,7 +2262,7 @@
               "fuzzy_offset": 24052,
               "expected_offset": 24052,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -2647,7 +2296,7 @@
               "fuzzy_offset": 33700,
               "expected_offset": 33700,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -2684,7 +2333,7 @@
               "fuzzy_offset": 2519,
               "expected_offset": 2519,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -2821,7 +2470,7 @@
               "fuzzy_offset": 27169,
               "expected_offset": 27169,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             },
             "end": {
               "fuzzy_matched": true,
@@ -2898,7 +2547,7 @@
               "fuzzy_offset": 1850,
               "expected_offset": 1850,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -2968,7 +2617,7 @@
               "fuzzy_offset": 31551,
               "expected_offset": 31551,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -2978,7 +2627,7 @@
               "fuzzy_offset": 31553,
               "expected_offset": 31553,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             },
             "end": {
               "fuzzy_matched": true,
@@ -3088,7 +2737,7 @@
               "fuzzy_offset": 5907,
               "expected_offset": 5907,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3105,7 +2754,7 @@
               "fuzzy_offset": 11444,
               "expected_offset": 11444,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3139,7 +2788,7 @@
               "fuzzy_offset": 16001,
               "expected_offset": 16001,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           }
         ]
@@ -3165,7 +2814,7 @@
               "fuzzy_offset": 2356,
               "expected_offset": 2356,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3182,7 +2831,7 @@
               "fuzzy_offset": 5567,
               "expected_offset": 5567,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3309,7 +2958,7 @@
               "fuzzy_offset": 1713,
               "expected_offset": 1713,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3326,7 +2975,7 @@
               "fuzzy_offset": 4280,
               "expected_offset": 4280,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3385,7 +3034,7 @@
               "fuzzy_offset": 23382,
               "expected_offset": 23382,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3402,7 +3051,7 @@
               "fuzzy_offset": 27747,
               "expected_offset": 27747,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3453,7 +3102,7 @@
               "fuzzy_offset": 44349,
               "expected_offset": 44349,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3502,6 +3151,148 @@
             "end": {
               "fuzzy_matched": false,
               "agrees": null
+            }
+          }
+        ]
+      },
+      {
+        "story_id": "mass_quantities/peace_manoeuvres__davis",
+        "total_segments": 8,
+        "excluded": 0,
+        "exclusion_detail": [],
+        "validated": 8,
+        "checks": [
+          {
+            "segment_id": 1,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 0,
+              "expected_offset": 0,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 2484,
+              "expected_offset": 2484,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 2,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 2486,
+              "expected_offset": 2486,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 3407,
+              "expected_offset": 3407,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 3,
+            "start": {
+              "fuzzy_matched": false,
+              "agrees": null
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 5941,
+              "expected_offset": 5941,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 4,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 6349,
+              "expected_offset": 6349,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 15746,
+              "expected_offset": 15746,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 5,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 15748,
+              "expected_offset": 15748,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 23026,
+              "expected_offset": 23026,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 6,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 23028,
+              "expected_offset": 23028,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 27241,
+              "expected_offset": 27241,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 7,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 27289,
+              "expected_offset": 27289,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 33888,
+              "expected_offset": 33888,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 8,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 33890,
+              "expected_offset": 33890,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 35759,
+              "expected_offset": 35759,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
             }
           }
         ]
@@ -3595,7 +3386,7 @@
               "fuzzy_offset": 24265,
               "expected_offset": 24265,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3661,6 +3452,496 @@
               "expected_offset": 46363,
               "agrees": true,
               "required_fuzzy_tolerance": false
+            }
+          }
+        ]
+      },
+      {
+        "story_id": "mass_quantities/the_invaders__ferris",
+        "total_segments": 10,
+        "excluded": 2,
+        "exclusion_detail": [
+          {
+            "segment_id": 2,
+            "reasons": [
+              "overlaps an adjacent segment in the same story"
+            ]
+          },
+          {
+            "segment_id": 3,
+            "reasons": [
+              "overlaps an adjacent segment in the same story"
+            ]
+          }
+        ],
+        "validated": 8,
+        "checks": [
+          {
+            "segment_id": 1,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 0,
+              "expected_offset": 0,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 2519,
+              "expected_offset": 2519,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 4,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 7679,
+              "expected_offset": 7679,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 9989,
+              "expected_offset": 9989,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 5,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 10583,
+              "expected_offset": 10583,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": false,
+              "agrees": null
+            }
+          },
+          {
+            "segment_id": 6,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 14461,
+              "expected_offset": 14461,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 18593,
+              "expected_offset": 18593,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 7,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 18597,
+              "expected_offset": 18597,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 20510,
+              "expected_offset": 20510,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 8,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 20513,
+              "expected_offset": 20513,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": false,
+              "agrees": null
+            }
+          },
+          {
+            "segment_id": 9,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 23039,
+              "expected_offset": 23039,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": false,
+              "agrees": null
+            }
+          },
+          {
+            "segment_id": 10,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 27169,
+              "expected_offset": 27169,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 32722,
+              "expected_offset": 32722,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          }
+        ]
+      },
+      {
+        "story_id": "mass_quantities/the_lost_charm__norton",
+        "total_segments": 12,
+        "excluded": 1,
+        "exclusion_detail": [
+          {
+            "segment_id": 1,
+            "reasons": [
+              "shares a start_exact/end_exact anchor with another segment"
+            ]
+          }
+        ],
+        "validated": 11,
+        "checks": [
+          {
+            "segment_id": 2,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 96,
+              "expected_offset": 96,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 1574,
+              "expected_offset": 1574,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 3,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 1577,
+              "expected_offset": 1576,
+              "agrees": false,
+              "required_fuzzy_tolerance": true
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 5279,
+              "expected_offset": 5279,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 4,
+            "start": {
+              "fuzzy_matched": false,
+              "agrees": null
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 15034,
+              "expected_offset": 15034,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 5,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 15036,
+              "expected_offset": 15036,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": false,
+              "agrees": null
+            }
+          },
+          {
+            "segment_id": 6,
+            "start": {
+              "fuzzy_matched": false,
+              "agrees": null
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 20910,
+              "expected_offset": 20910,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 7,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 20912,
+              "expected_offset": 20912,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 26594,
+              "expected_offset": 26594,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 8,
+            "start": {
+              "fuzzy_matched": false,
+              "agrees": null
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 31290,
+              "expected_offset": 31290,
+              "agrees": true,
+              "required_fuzzy_tolerance": true
+            }
+          },
+          {
+            "segment_id": 9,
+            "start": {
+              "fuzzy_matched": false,
+              "agrees": null
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 35142,
+              "expected_offset": 35142,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 10,
+            "start": {
+              "fuzzy_matched": false,
+              "agrees": null
+            },
+            "end": {
+              "fuzzy_matched": false,
+              "agrees": null
+            }
+          },
+          {
+            "segment_id": 11,
+            "start": {
+              "fuzzy_matched": false,
+              "agrees": null
+            },
+            "end": {
+              "fuzzy_matched": false,
+              "agrees": null
+            }
+          },
+          {
+            "segment_id": 12,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 46188,
+              "expected_offset": 46188,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 46932,
+              "expected_offset": 46932,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          }
+        ]
+      },
+      {
+        "story_id": "mass_quantities/the_secret_of_kralitz__kuttner",
+        "total_segments": 5,
+        "excluded": 0,
+        "exclusion_detail": [],
+        "validated": 5,
+        "checks": [
+          {
+            "segment_id": 1,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 0,
+              "expected_offset": 0,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 2302,
+              "expected_offset": 2302,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 2,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 2306,
+              "expected_offset": 2306,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 5908,
+              "expected_offset": 5907,
+              "agrees": false,
+              "required_fuzzy_tolerance": true
+            }
+          },
+          {
+            "segment_id": 3,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 5911,
+              "expected_offset": 5911,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 11444,
+              "expected_offset": 11444,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 4,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 11448,
+              "expected_offset": 11448,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 13102,
+              "expected_offset": 13102,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 5,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 13104,
+              "expected_offset": 13104,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 16001,
+              "expected_offset": 16001,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          }
+        ]
+      },
+      {
+        "story_id": "ohenry-four_million/romance_of_a_busy_broker",
+        "total_segments": 4,
+        "excluded": 0,
+        "exclusion_detail": [],
+        "validated": 4,
+        "checks": [
+          {
+            "segment_id": 1,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 1,
+              "expected_offset": 1,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 2356,
+              "expected_offset": 2356,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 2,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 2359,
+              "expected_offset": 2359,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": false,
+              "agrees": null
+            }
+          },
+          {
+            "segment_id": 3,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 4906,
+              "expected_offset": 4906,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 6553,
+              "expected_offset": 6553,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 4,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 6556,
+              "expected_offset": 6556,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": false,
+              "agrees": null
             }
           }
         ]
@@ -3766,6 +4047,212 @@
     ],
     "experiments/03_cross_segment_relation_pilot/results/segmentation_paragraph_misnumbering_diagnostics/replay_fixture": [
       {
+        "story_id": "mass_quantities/peace_manoeuvres__davis",
+        "total_segments": 13,
+        "excluded": 2,
+        "exclusion_detail": [
+          {
+            "segment_id": 6,
+            "reasons": [
+              "overlaps an adjacent segment in the same story"
+            ]
+          },
+          {
+            "segment_id": 7,
+            "reasons": [
+              "overlaps an adjacent segment in the same story"
+            ]
+          }
+        ],
+        "validated": 11,
+        "checks": [
+          {
+            "segment_id": 1,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 0,
+              "expected_offset": 0,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 1471,
+              "expected_offset": 1471,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 2,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 2333,
+              "expected_offset": 2333,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 3128,
+              "expected_offset": 3128,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 3,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 3130,
+              "expected_offset": 3130,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 4443,
+              "expected_offset": 4443,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 4,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 4445,
+              "expected_offset": 4445,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 5541,
+              "expected_offset": 5541,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 5,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 6349,
+              "expected_offset": 6349,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 8007,
+              "expected_offset": 8007,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 8,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 16471,
+              "expected_offset": 16471,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 20110,
+              "expected_offset": 20110,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 9,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 20112,
+              "expected_offset": 20112,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 23026,
+              "expected_offset": 23026,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 10,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 23028,
+              "expected_offset": 23028,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 26717,
+              "expected_offset": 26717,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 11,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 26719,
+              "expected_offset": 26719,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 31038,
+              "expected_offset": 31038,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 12,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 31040,
+              "expected_offset": 31040,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 34128,
+              "expected_offset": 34128,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            }
+          },
+          {
+            "segment_id": 13,
+            "start": {
+              "fuzzy_matched": true,
+              "fuzzy_offset": 34130,
+              "expected_offset": 34130,
+              "agrees": true,
+              "required_fuzzy_tolerance": false
+            },
+            "end": {
+              "fuzzy_matched": false,
+              "agrees": null
+            }
+          }
+        ]
+      },
+      {
         "story_id": "mass_quantities/the_last_days_of_l_a__smith",
         "total_segments": 18,
         "excluded": 0,
@@ -3796,7 +4283,7 @@
               "fuzzy_offset": 1128,
               "expected_offset": 1128,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             },
             "end": {
               "fuzzy_matched": true,
@@ -3854,7 +4341,7 @@
               "fuzzy_offset": 13665,
               "expected_offset": 13665,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3881,14 +4368,14 @@
               "fuzzy_offset": 14464,
               "expected_offset": 14464,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             },
             "end": {
               "fuzzy_matched": true,
               "fuzzy_offset": 15391,
               "expected_offset": 15391,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3936,7 +4423,7 @@
               "fuzzy_offset": 22388,
               "expected_offset": 22388,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3970,7 +4457,7 @@
               "fuzzy_offset": 28504,
               "expected_offset": 28504,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -3987,7 +4474,7 @@
               "fuzzy_offset": 30391,
               "expected_offset": 30391,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -4812,7 +5299,7 @@
               "fuzzy_offset": 5321,
               "expected_offset": 5321,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -5160,9 +5647,16 @@
       {
         "story_id": "annotation_feasibility_trial/rapunzel",
         "total_segments": 4,
-        "excluded": 0,
-        "exclusion_detail": [],
-        "validated": 4,
+        "excluded": 1,
+        "exclusion_detail": [
+          {
+            "segment_id": 2,
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          }
+        ],
+        "validated": 3,
         "checks": [
           {
             "segment_id": 1,
@@ -5179,20 +5673,6 @@
               "expected_offset": 2718,
               "agrees": true,
               "required_fuzzy_tolerance": false
-            }
-          },
-          {
-            "segment_id": 2,
-            "start": {
-              "fuzzy_matched": true,
-              "fuzzy_offset": 2731,
-              "expected_offset": 2731,
-              "agrees": true,
-              "required_fuzzy_tolerance": false
-            },
-            "end": {
-              "fuzzy_matched": false,
-              "agrees": null
             }
           },
           {
@@ -5228,9 +5708,22 @@
       {
         "story_id": "annotation_feasibility_trial/red_headed_league",
         "total_segments": 7,
-        "excluded": 0,
-        "exclusion_detail": [],
-        "validated": 7,
+        "excluded": 2,
+        "exclusion_detail": [
+          {
+            "segment_id": 2,
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          },
+          {
+            "segment_id": 7,
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          }
+        ],
+        "validated": 5,
         "checks": [
           {
             "segment_id": 1,
@@ -5240,17 +5733,6 @@
               "expected_offset": 1,
               "agrees": true,
               "required_fuzzy_tolerance": false
-            },
-            "end": {
-              "fuzzy_matched": false,
-              "agrees": null
-            }
-          },
-          {
-            "segment_id": 2,
-            "start": {
-              "fuzzy_matched": false,
-              "agrees": null
             },
             "end": {
               "fuzzy_matched": false,
@@ -5324,29 +5806,28 @@
               "agrees": false,
               "required_fuzzy_tolerance": true
             }
-          },
-          {
-            "segment_id": 7,
-            "start": {
-              "fuzzy_matched": false,
-              "agrees": null
-            },
-            "end": {
-              "fuzzy_matched": true,
-              "fuzzy_offset": 49417,
-              "expected_offset": 49419,
-              "agrees": false,
-              "required_fuzzy_tolerance": true
-            }
           }
         ]
       },
       {
         "story_id": "annotation_feasibility_trial/scandal_in_bohemia",
         "total_segments": 6,
-        "excluded": 0,
-        "exclusion_detail": [],
-        "validated": 6,
+        "excluded": 2,
+        "exclusion_detail": [
+          {
+            "segment_id": 2,
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          },
+          {
+            "segment_id": 3,
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          }
+        ],
+        "validated": 4,
         "checks": [
           {
             "segment_id": 1,
@@ -5363,31 +5844,6 @@
               "expected_offset": 2449,
               "agrees": true,
               "required_fuzzy_tolerance": false
-            }
-          },
-          {
-            "segment_id": 2,
-            "start": {
-              "fuzzy_matched": false,
-              "agrees": null
-            },
-            "end": {
-              "fuzzy_matched": false,
-              "agrees": null
-            }
-          },
-          {
-            "segment_id": 3,
-            "start": {
-              "fuzzy_matched": false,
-              "agrees": null
-            },
-            "end": {
-              "fuzzy_matched": true,
-              "fuzzy_offset": 30694,
-              "expected_offset": 30695,
-              "agrees": false,
-              "required_fuzzy_tolerance": true
             }
           },
           {
@@ -5548,9 +6004,16 @@
       {
         "story_id": "annotation_feasibility_trial/snow_white_and_rose_red",
         "total_segments": 7,
-        "excluded": 0,
-        "exclusion_detail": [],
-        "validated": 7,
+        "excluded": 1,
+        "exclusion_detail": [
+          {
+            "segment_id": 7,
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          }
+        ],
+        "validated": 6,
         "checks": [
           {
             "segment_id": 1,
@@ -5647,26 +6110,40 @@
               "agrees": true,
               "required_fuzzy_tolerance": false
             }
-          },
-          {
-            "segment_id": 7,
-            "start": {
-              "fuzzy_matched": false,
-              "agrees": null
-            },
-            "end": {
-              "fuzzy_matched": false,
-              "agrees": null
-            }
           }
         ]
       },
       {
         "story_id": "annotation_feasibility_trial/speckled_band",
         "total_segments": 9,
-        "excluded": 0,
-        "exclusion_detail": [],
-        "validated": 9,
+        "excluded": 4,
+        "exclusion_detail": [
+          {
+            "segment_id": 2,
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          },
+          {
+            "segment_id": 3,
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          },
+          {
+            "segment_id": 6,
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          },
+          {
+            "segment_id": 8,
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          }
+        ],
+        "validated": 5,
         "checks": [
           {
             "segment_id": 1,
@@ -5681,34 +6158,6 @@
               "fuzzy_matched": true,
               "fuzzy_offset": 1230,
               "expected_offset": 1230,
-              "agrees": true,
-              "required_fuzzy_tolerance": false
-            }
-          },
-          {
-            "segment_id": 2,
-            "start": {
-              "fuzzy_matched": false,
-              "agrees": null
-            },
-            "end": {
-              "fuzzy_matched": false,
-              "agrees": null
-            }
-          },
-          {
-            "segment_id": 3,
-            "start": {
-              "fuzzy_matched": true,
-              "fuzzy_offset": 25793,
-              "expected_offset": 25792,
-              "agrees": false,
-              "required_fuzzy_tolerance": true
-            },
-            "end": {
-              "fuzzy_matched": true,
-              "fuzzy_offset": 27101,
-              "expected_offset": 27101,
               "agrees": true,
               "required_fuzzy_tolerance": false
             }
@@ -5748,20 +6197,6 @@
             }
           },
           {
-            "segment_id": 6,
-            "start": {
-              "fuzzy_matched": false,
-              "agrees": null
-            },
-            "end": {
-              "fuzzy_matched": true,
-              "fuzzy_offset": 39214,
-              "expected_offset": 39214,
-              "agrees": true,
-              "required_fuzzy_tolerance": false
-            }
-          },
-          {
             "segment_id": 7,
             "start": {
               "fuzzy_matched": true,
@@ -5774,20 +6209,6 @@
               "fuzzy_matched": true,
               "fuzzy_offset": 42351,
               "expected_offset": 42351,
-              "agrees": true,
-              "required_fuzzy_tolerance": false
-            }
-          },
-          {
-            "segment_id": 8,
-            "start": {
-              "fuzzy_matched": false,
-              "agrees": null
-            },
-            "end": {
-              "fuzzy_matched": true,
-              "fuzzy_offset": 49306,
-              "expected_offset": 49306,
               "agrees": true,
               "required_fuzzy_tolerance": false
             }
@@ -5814,9 +6235,22 @@
       {
         "story_id": "annotation_feasibility_trial/springtime_a_la_carte",
         "total_segments": 6,
-        "excluded": 0,
-        "exclusion_detail": [],
-        "validated": 6,
+        "excluded": 2,
+        "exclusion_detail": [
+          {
+            "segment_id": 4,
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          },
+          {
+            "segment_id": 6,
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          }
+        ],
+        "validated": 4,
         "checks": [
           {
             "segment_id": 1,
@@ -5867,36 +6301,11 @@
             }
           },
           {
-            "segment_id": 4,
-            "start": {
-              "fuzzy_matched": false,
-              "agrees": null
-            },
-            "end": {
-              "fuzzy_matched": false,
-              "agrees": null
-            }
-          },
-          {
             "segment_id": 5,
             "start": {
               "fuzzy_matched": true,
               "fuzzy_offset": 9874,
               "expected_offset": 9874,
-              "agrees": true,
-              "required_fuzzy_tolerance": false
-            },
-            "end": {
-              "fuzzy_matched": false,
-              "agrees": null
-            }
-          },
-          {
-            "segment_id": 6,
-            "start": {
-              "fuzzy_matched": true,
-              "fuzzy_offset": 10511,
-              "expected_offset": 10511,
               "agrees": true,
               "required_fuzzy_tolerance": false
             },
@@ -5986,7 +6395,7 @@
               "fuzzy_offset": 17904,
               "expected_offset": 17904,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -6017,7 +6426,7 @@
               "fuzzy_offset": 44332,
               "expected_offset": 44332,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -6034,7 +6443,7 @@
               "fuzzy_offset": 46124,
               "expected_offset": 46124,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -6051,7 +6460,7 @@
               "fuzzy_offset": 53704,
               "expected_offset": 53704,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -6588,7 +6997,7 @@
               "fuzzy_offset": 50709,
               "expected_offset": 50709,
               "agrees": true,
-              "required_fuzzy_tolerance": true
+              "required_fuzzy_tolerance": false
             }
           },
           {
@@ -6672,24 +7081,17 @@
       {
         "story_id": "annotation_feasibility_trial/the_sheriff_and_his_partner__harris",
         "total_segments": 8,
-        "excluded": 0,
-        "exclusion_detail": [],
-        "validated": 8,
-        "checks": [
+        "excluded": 1,
+        "exclusion_detail": [
           {
             "segment_id": 1,
-            "start": {
-              "fuzzy_matched": true,
-              "fuzzy_offset": 0,
-              "expected_offset": 0,
-              "agrees": true,
-              "required_fuzzy_tolerance": false
-            },
-            "end": {
-              "fuzzy_matched": false,
-              "agrees": null
-            }
-          },
+            "reasons": [
+              "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control"
+            ]
+          }
+        ],
+        "validated": 7,
+        "checks": [
           {
             "segment_id": 2,
             "start": {
