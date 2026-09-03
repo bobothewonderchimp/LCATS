@@ -2,10 +2,10 @@
 execution_id: 2026_09_03_06_41_21_WI_PROMOTE_0102_REVIEW_ROUND2
 prompt_id: PROMPT(AD_HOC:WI_PROMOTE_0102_REVIEW_ROUND2)[2026-09-03T06:41:00+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_08_31_01_51_25_WI_PROMOTE_0102
 pr: https://github.com/xenotaur/LCATS/pull/417
-commit: ec817772
+commit: 06d18c981d68cc9697f84e3b1d4e26a1b84b0ed6
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/417
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0
