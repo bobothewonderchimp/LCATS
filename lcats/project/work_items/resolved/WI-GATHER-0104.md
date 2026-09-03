@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #424 (commit 1d8879fd)."
 blocked_reason: null
 blocked: false
 id: WI-GATHER-0104
 title: Extend gatherlib.gather() for per-entry URL/extraction/name, then reconcile lovecraft/gatherer.py
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
