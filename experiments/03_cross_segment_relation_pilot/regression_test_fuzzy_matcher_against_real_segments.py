@@ -242,13 +242,30 @@ def validate_controls(
             for seg in segments
         ]
 
+    # Sweep by start_char, tracking the running max end_char seen in the
+    # current overlapping cluster (review finding, PR #425): comparing
+    # only ADJACENT pairs after sorting misses a segment that overlaps a
+    # non-adjacent neighbor - e.g. A=(0,170) fully encloses both B=(5,20)
+    # and C=(100,120), but B and C don't overlap each other, so a
+    # sorted order of A, B, C would only ever compare (A,B) and (B,C),
+    # never (A,C), silently accepting C as non-overlapping ground truth
+    # even though it genuinely overlaps A. Extending the cluster's max
+    # end_char (rather than resetting it to each new segment's own end)
+    # keeps A's reach visible to every later segment in the same
+    # cluster, not just its immediate successor.
     by_span = sorted(segments, key=lambda s: (s["start_char"], s["end_char"]))
     overlapping_ids = set()
-    for i in range(len(by_span) - 1):
-        a, b = by_span[i], by_span[i + 1]
-        if a["end_char"] > b["start_char"]:
-            overlapping_ids.add(id(a))
-            overlapping_ids.add(id(b))
+    cluster: List[Dict[str, Any]] = []
+    cluster_max_end = None
+    for seg in by_span:
+        if cluster and seg["start_char"] < cluster_max_end:
+            cluster.append(seg)
+            cluster_max_end = max(cluster_max_end, seg["end_char"])
+            for member in cluster:
+                overlapping_ids.add(id(member))
+        else:
+            cluster = [seg]
+            cluster_max_end = seg["end_char"]
 
     anchor_counts: Dict[str, int] = {}
     for seg in segments:

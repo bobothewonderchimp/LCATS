@@ -110,7 +110,7 @@ discovered; reasons are not mutually exclusive per segment):
 
 | Reason | Count |
 |---|---|
-| Overlaps an adjacent segment | 15 |
+| Overlaps an adjacent segment | 19 |
 | Reused start_exact/end_exact anchor | 3 |
 | Paragraph window does not contain recorded char span | 19 |
 | Current production matcher does not reproduce recorded offsets | 13 |
@@ -140,7 +140,7 @@ all):
 
 ### The 9 wrong-offset cases: a genuine, narrow disagreement
 
-All 9 wrong-offset cases are off by exactly **1 character**, spanning 4
+All 9 wrong-offset cases are off by exactly **1 character**, spanning 5
 distinct stories (`the_lost_charm__norton` — 2 separate segmentation
 runs, `the_secret_of_kralitz__kuttner`, `ohenry-whirligigs/girl`,
 `red_headed_league` ×3, `scandal_in_bohemia` ×2), 8 on the `end_exact`
@@ -292,17 +292,45 @@ project's standing review-response discipline) — all were confirmed real:
    `canonicalize_text`'s real output, but guarded defensively); an unused
    `para_spans` variable in two test cases was removed.
 
+**Second round: substitute self-review (no automated bot response landed
+against the fix commit after an extended wait).** A cold-context
+subagent independently reviewed the fix commit and surfaced 2 more
+findings, both independently re-verified before being accepted:
+
+6. **Medium — the overlap check only compared adjacent pairs after
+   sorting by `start_char`, missing a segment that overlaps a
+   non-adjacent neighbor.** Verified by direct reproduction: a
+   synthetic `A=(0,170)` enclosing both `B=(5,20)` and `C=(100,120)`
+   (with `B`, `C` not overlapping each other) left `C` incorrectly
+   accepted as valid ground truth, because sorted order `A, B, C` only
+   ever compares `(A,B)` and `(B,C)`, never `(A,C)`. Checked against the
+   real committed inventory: this did not change which segments end up
+   excluded overall (all 4 newly-caught cases — `love_of_life` segments
+   8/9/10/13 — were already excluded via the paragraph-window check), but
+   it did change the **overlap** exclusion-reason count from 15 to 19
+   (reflected in the table above) and the algorithm's correctness
+   guarantee was unsound in general, with no regression coverage for the
+   non-adjacent case. **Fixed**: replaced the adjacent-pair comparison
+   with a running-cluster sweep (extending a cluster's max `end_char`
+   across every member, not resetting it to each new segment's own end),
+   and added a dedicated regression test reproducing the exact
+   3-segment non-adjacent scenario.
+7. **Low — a doc prose error.** This document originally said the 9
+   wrong-offset cases span "4 distinct stories" while naming 5. Verified
+   directly against the committed JSON (5 distinct `story_id` values).
+   **Fixed** — corrected above.
+
 ## Regression coverage
 
-`regression_test_fuzzy_matcher_against_real_segments_test.py` (18 tests)
+`regression_test_fuzzy_matcher_against_real_segments_test.py` (19 tests)
 covers `_is_real_segment` (including the bool-offset and
 start-not-less-than-end cases from the review), all four
 `validate_controls` checks (including the new production-reproduction
-check and a zero-paragraph guard), `check_segment`'s exact-agreement path,
-its out-of-range-`par_id` clamp, its zero-paragraph guard, the
-production-normalized tolerance-metric fix, the punctuation-causes-no-match
-case, and a dedicated `discover_sources` test reproducing the exact
-(source, story_id) dedup scenario the review's most severe finding
-identified. Re-run this suite after any future change to
-`strict_local_fuzzy` or its evaluator to re-verify this safety property
+check, the non-adjacent-overlap sweep fix, and a zero-paragraph guard),
+`check_segment`'s exact-agreement path, its out-of-range-`par_id` clamp,
+its zero-paragraph guard, the production-normalized tolerance-metric fix,
+the punctuation-causes-no-match case, and a dedicated `discover_sources`
+test reproducing the exact (source, story_id) dedup scenario the review's
+most severe finding identified. Re-run this suite after any future change
+to `strict_local_fuzzy` or its evaluator to re-verify this safety property
 still holds.

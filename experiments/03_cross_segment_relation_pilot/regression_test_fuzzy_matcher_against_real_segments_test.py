@@ -99,6 +99,23 @@ class ValidateControlsTest(unittest.TestCase):
             )
         )
 
+    def test_non_adjacent_overlap_is_caught_not_just_adjacent_pairs(self):
+        """Review finding, PR #425 (2nd round): comparing only adjacent
+        pairs after sorting by start_char misses a segment that overlaps
+        a NON-adjacent neighbor. A=(0,140) encloses both B=(5,20) and
+        C=(70,90); B and C don't overlap each other, so sorted order
+        A, B, C only ever directly compares (A,B) and (B,C) - never
+        (A,C) - which would silently accept C as valid ground truth even
+        though it genuinely overlaps A."""
+        text, para_spans = _para_spans()
+        a = _segment(1, 1, 4, "Alpha", "whiskey.", 0, 140)
+        b = _segment(2, 1, 1, "bravo", "delta", 5, 20)
+        c = _segment(3, 3, 3, "sierra", "victor", 70, 90)
+        valid, excluded = m.validate_controls(text, [a, b, c])
+        self.assertEqual(valid, [])
+        excluded_ids = {ex["segment_id"] for ex in excluded}
+        self.assertEqual(excluded_ids, {1, 2, 3})
+
     def test_reused_anchor_across_segments_is_excluded(self):
         text, para_spans = _para_spans()
         segs = [

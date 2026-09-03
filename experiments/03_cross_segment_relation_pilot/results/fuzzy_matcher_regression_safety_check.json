@@ -2,7 +2,7 @@
   "total_segments_discovered": 332,
   "total_excluded": 41,
   "exclusion_reasons": {
-    "overlaps an adjacent segment in the same story": 15,
+    "overlaps an adjacent segment in the same story": 19,
     "shares a start_exact/end_exact anchor with another segment": 3,
     "paragraph window derived from start_par_id/end_par_id does not contain the segment's own recorded (start_char, end_char) - likely pre-WI-SEGMENT-0059 collapsed-paragraph data": 19,
     "current production align_segment does not reproduce this segment's recorded (start_char, end_char) - not a currently-correct control": 13
@@ -5543,18 +5543,21 @@
           {
             "segment_id": 8,
             "reasons": [
+              "overlaps an adjacent segment in the same story",
               "paragraph window derived from start_par_id/end_par_id does not contain the segment's own recorded (start_char, end_char) - likely pre-WI-SEGMENT-0059 collapsed-paragraph data"
             ]
           },
           {
             "segment_id": 9,
             "reasons": [
+              "overlaps an adjacent segment in the same story",
               "paragraph window derived from start_par_id/end_par_id does not contain the segment's own recorded (start_char, end_char) - likely pre-WI-SEGMENT-0059 collapsed-paragraph data"
             ]
           },
           {
             "segment_id": 10,
             "reasons": [
+              "overlaps an adjacent segment in the same story",
               "paragraph window derived from start_par_id/end_par_id does not contain the segment's own recorded (start_char, end_char) - likely pre-WI-SEGMENT-0059 collapsed-paragraph data"
             ]
           },
@@ -5575,6 +5578,7 @@
           {
             "segment_id": 13,
             "reasons": [
+              "overlaps an adjacent segment in the same story",
               "paragraph window derived from start_par_id/end_par_id does not contain the segment's own recorded (start_char, end_char) - likely pre-WI-SEGMENT-0059 collapsed-paragraph data"
             ]
           }
