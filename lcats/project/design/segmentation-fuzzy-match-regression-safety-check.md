@@ -326,7 +326,7 @@ findings, both independently re-verified before being accepted:
 
 ## Regression coverage
 
-`regression_test_fuzzy_matcher_against_real_segments_test.py` (19 tests)
+`regression_test_fuzzy_matcher_against_real_segments_test.py` (20 tests)
 covers `_is_real_segment` (including the bool-offset and
 start-not-less-than-end cases from the review), all four
 `validate_controls` checks (including the new production-reproduction
