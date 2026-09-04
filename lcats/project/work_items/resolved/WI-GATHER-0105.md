@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #426 (commit c74fd3f7)."
 blocked_reason: null
 blocked: false
 id: WI-GATHER-0105
 title: Add a dedicated run-log wrapper to mass_quantities/gatherer.py
 type: deliverable
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
