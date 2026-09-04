@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged in PR #425 (commit 9ab824e2). Not a blanket safety clearance: found 9 real wrong-offset disagreements (3.1% of 291 validated real segments, all off-by-1-character typography-boundary cases) where WI-SEGMENT-0072's frozen strict_local_fuzzy policy disagrees with the current correct result - the two-independent-matchers-disagree risk WI-SEGMENT-0059 warns about, at small but non-zero scale. Separately and more significantly, discovered two previously-undocumented structural limitations in candidate_matches (a punctuation-blind token-join regex, and a hard 3-token minimum) causing it to propose no candidate at all for well over a third of real anchors - a false-negative robustness gap, safe but material to any future adoption decision. No production code or WI-SEGMENT-0072's thresholds were changed."
 blocked_reason: null
 blocked: false
 id: WI-SEGMENT-0102
 title: Regression-test the fuzzy near-miss matcher against currently-correct real segments
 type: evaluation
-status: proposed
+status: resolved
 priority: medium
 owner: unassigned
 contributors: []

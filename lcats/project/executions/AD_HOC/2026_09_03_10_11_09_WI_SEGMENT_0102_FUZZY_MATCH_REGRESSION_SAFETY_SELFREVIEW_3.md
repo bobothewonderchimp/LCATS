@@ -2,10 +2,13 @@
 execution_id: 2026_09_03_10_11_09_WI_SEGMENT_0102_FUZZY_MATCH_REGRESSION_SAFETY_SELFREVIEW_3
 prompt_id: PROMPT(AD_HOC:WI_SEGMENT_0102_FUZZY_MATCH_REGRESSION_SAFETY_SELFREVIEW_3)[2026-09-03T10:10:58+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
+agent: claude_app
+instruction_source: "/lrh-land https://github.com/xenotaur/LCATS/pull/425 (substitute self-review round 3, /lrh-confirm-fixes Step 8)"
+session_transcript: claude-app:e8e46d5d-35d3-4ccc-9cba-137bd31bf3a5
 rerun_of: 2026_09_03_10_04_32_WI_SEGMENT_0102_FUZZY_MATCH_REGRESSION_SAFETY_SELFREVIEW_2
 pr: https://github.com/xenotaur/LCATS/pull/425
-commit: e8f8fc7d5500e1c07bb2ef08e9a15a72f47091d2
+commit: 9ab824e25a3e71e94060ed587668771deba2f375
 created_at: 2026-09-03T10:11:09+00:00
 ---
 
