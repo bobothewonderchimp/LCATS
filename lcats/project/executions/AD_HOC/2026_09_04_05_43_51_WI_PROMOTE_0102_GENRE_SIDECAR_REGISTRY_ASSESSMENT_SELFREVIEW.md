@@ -2,10 +2,10 @@
 execution_id: 2026_09_04_05_43_51_WI_PROMOTE_0102_GENRE_SIDECAR_REGISTRY_ASSESSMENT_SELFREVIEW
 prompt_id: PROMPT(AD_HOC:WI_PROMOTE_0102_GENRE_SIDECAR_REGISTRY_ASSESSMENT_SELFREVIEW)[2026-09-04T05:43:45+00:00]
 work_item: AD_HOC
-status: in_progress
+status: landed
 rerun_of: 2026_09_04_05_27_55_WI_PROMOTE_0102
 pr: https://github.com/xenotaur/LCATS/pull/427
-commit: 873dc46369e94bbea1494b894471297c6daeee9a
+commit: 4a41604487ee4fea2a8cc1d79a059174b52472f1
 agent: claude_app
 instruction_source: https://github.com/xenotaur/LCATS/pull/427
 session_transcript: claude-app:6a2dbae2-adca-4a2a-92fe-2e95d3b2a4e0

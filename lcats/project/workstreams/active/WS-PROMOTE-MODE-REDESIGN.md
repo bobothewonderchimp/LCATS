@@ -86,7 +86,12 @@ Implementation Plan):
    satisfy exit criterion 3 literally, or whether that criterion's
    wording should be narrowed instead — surfaced by a post-Stage-3
    exit-criteria audit, not part of the original Implementation Plan.
-   **In progress — `WI-PROMOTE-0102` (PR #417).**
+   **Resolved — `WI-PROMOTE-0102` (PR #427).** Recommended narrowing
+   exit criterion 3's wording rather than a partial code swap (see
+   `project/design/promote-genre-sidecar-import-assessment.md` for the
+   full analysis and proposed replacement text) — **exit criterion 3
+   below has not yet been updated to match**; applying that wording
+   change is an open follow-up action.
 
 ## Non-Goals
 

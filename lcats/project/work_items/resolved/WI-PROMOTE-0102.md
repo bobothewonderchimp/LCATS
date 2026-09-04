@@ -2,7 +2,7 @@
 id: WI-PROMOTE-0102
 title: Assess routing promote.py's legacy genre_sidecar usages through the sidecar-validator registry
 type: investigation
-status: proposed
+status: resolved
 priority: low
 owner: unassigned
 contributors: []
@@ -20,7 +20,7 @@ depends_on: []
 blocked_by: []
 blocked: false
 blocked_reason: null
-resolution: null
+resolution: "Implemented and merged in PR #427 (merge commit 4a41604487ee4fea2a8cc1d79a059174b52472f1). Delivered project/design/promote-genre-sidecar-import-assessment.md: documented both genre_sidecar usage sites in promote.py (_validate_sidecars' structural check, _promote_sidecar_records' legacy-flat overwrite guard), their origin (WI-GENRE-0075/0076, PRs #350/#357), and an accurate per-usage account of what WI-PROMOTE-0097 (PR #405) did to each. Found that sidecar_validators.py's own docstring already documents replace mode as never validating through the registry at all, an intentional WI-PROMOTE-0097-time design choice. Assessed each usage independently: two call sites (v1-genre.json validation, scenes.json check) are technically registry-routable, but is_legacy_flat_sidecar()'s shape-detection call has no registry equivalent in either usage, so no partial swap achieves full literal compliance. Recommended narrowing the exit-criterion wording rather than a partial code change, and proposed exact replacement text for WS-PROMOTE-MODE-REDESIGN's exit criterion 3 and WI-PROMOTE-0097's acceptance criterion (neither file edited, per this WI's Non-Goals -- the wording change itself is a follow-up action for whoever applies it). No code change applied. Review (Codex) found and fixed 1 real P2 during implementation: the Recommendation section originally mischaracterized all of replace's pre-flight logic as legacy-shape detection, contradicting the note's own findings; reworked into two distinct, accurate grounds. See project/executions/WI-PROMOTE-0102/ and project/executions/AD_HOC/*WI_PROMOTE_0102* for the full record chain."
 expected_actions:
   - create_file
   - create_pr
