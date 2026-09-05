@@ -1,11 +1,11 @@
 ---
-resolution: null
+resolution: "Implemented and merged the 146-story rich linguistic pilot in PR #423 (commit ede5d004338917e383369f3b98d49ee7beb7baa7)"
 blocked_reason: null
 blocked: false
 id: WI-LINGUISTICS-0007
 title: Run and audit a 146-story rich linguistic pilot
 type: evaluation
-status: proposed
+status: resolved
 owner: unassigned
 contributors: []
 assigned_agents: []
